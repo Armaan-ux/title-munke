@@ -10,6 +10,12 @@
       "StackName": "amplify-titlemunke-dev-02519",
       "StackId": "arn:aws:cloudformation:eu-west-1:010928219538:stack/amplify-titlemunke-dev-02519/4e05f750-d764-11ef-b04f-06899623e76f",
       "AmplifyAppId": "d36o4llm57vxd"
+    },
+    "categories": {
+      "auth": {
+        "titlemunke19973b7e": {},
+        "userPoolGroups": {}
+      }
     }
   }
 }
