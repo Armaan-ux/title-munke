@@ -1,15 +1,15 @@
 {
-  "dev": {
+  "master": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-titlemunke-dev-02519-authRole",
-      "UnauthRoleArn": "arn:aws:iam::010928219538:role/amplify-titlemunke-dev-02519-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::010928219538:role/amplify-titlemunke-dev-02519-authRole",
-      "Region": "eu-west-1",
-      "DeploymentBucketName": "amplify-titlemunke-dev-02519-deployment",
-      "UnauthRoleName": "amplify-titlemunke-dev-02519-unauthRole",
-      "StackName": "amplify-titlemunke-dev-02519",
-      "StackId": "arn:aws:cloudformation:eu-west-1:010928219538:stack/amplify-titlemunke-dev-02519/4e05f750-d764-11ef-b04f-06899623e76f",
-      "AmplifyAppId": "d36o4llm57vxd"
+      "AuthRoleName": "amplify-titlemunke-master-89007-authRole",
+      "UnauthRoleArn": "arn:aws:iam::010928219538:role/amplify-titlemunke-master-89007-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::010928219538:role/amplify-titlemunke-master-89007-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-titlemunke-master-89007-deployment",
+      "UnauthRoleName": "amplify-titlemunke-master-89007-unauthRole",
+      "StackName": "amplify-titlemunke-master-89007",
+      "StackId": "arn:aws:cloudformation:us-east-1:010928219538:stack/amplify-titlemunke-master-89007/74940e60-d76a-11ef-82d8-0affcca2c7a1",
+      "AmplifyAppId": "d19qvtploz5fw4"
     },
     "categories": {
       "auth": {

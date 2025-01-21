@@ -1,56 +1,69 @@
 import "./index.css";
-import { signIn } from 'aws-amplify/auth';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ResetPassword from "../ResetPassword";
+import { useUser } from "../../context/usercontext";
 
 function Login() {
-
+    const { user, signIn } = useUser();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [isReset, setIsReset] = useState(false);
 
     const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
+    useEffect(() => {
+        if (user) {
+            navigate('/' + user.signInUserSession.idToken.payload["cognito:groups"][0])
+        }
+    }, [user, navigate])
 
+
+    const handleLogin = async () => {
         try {
-            // Perform login
-            const user = await signIn(username, password);
+            const { user, isResetRequired } = await signIn(username, password);
+            if (isResetRequired) {
+                setIsReset(true);
+                return;
+            }
 
-            // Check user group
             const groups = user.signInUserSession.idToken.payload['cognito:groups'];
 
-            if (groups && groups.includes('Admin')) {
+            if (groups && groups.includes('admin')) {
                 // Redirect to Admin dashboard
                 navigate('/admin');
-            } else if (groups && groups.includes('User')) {
+            } else if (groups && groups.includes('agent')) {
                 // Redirect to User dashboard
-                navigate('/user');
-            } else {
-                // Handle unknown group or no group
-                navigate('/welcome');
+                navigate('/agent');
+            } else if (groups && groups.includes('broker')) {
+                // Redirect to User dashboard
+                navigate('/broker');
             }
         } catch (error) {
             setError(error.message || 'Login failed');
         }
     };
 
+    if (isReset) return <ResetPassword username={username} password={password} />
+
     return (
-        <div class="login-container">
-            <form class="login-form">
-                <h2>Title Munke</h2>
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required onChange={(e) => setUsername(e.target.value)} />
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required onChange={(e) => setPassword(e.target.value)} />
-                </div>
-                <button onClick={handleLogin} type="button">Login</button>
-                {error && <div className="error">{error}</div>}
-            </form>
+        <div className="main">
+            <div className="login-container">
+                <form className="login-form">
+                    <h2>Title Munke</h2>
+                    <div className="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" value={username} required onChange={(e) => setUsername(e.target.value)} />
+                    </div>
+                    <div className="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" value={password} required onChange={(e) => setPassword(e.target.value)} />
+                    </div>
+                    <button onClick={() => handleLogin()} type="button">Login</button>
+                    {error && <div className="error">{error}</div>}
+                </form>
+            </div >
         </div>
     )
 }

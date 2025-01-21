@@ -1,0 +1,65 @@
+/* Ensure the main-content takes the full viewport height */
+.main-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Full viewport height */
+    background-color: #f9f9f9; /* Optional: Background color */
+  }
+  
+  /* Card styling */
+  .card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 650px; /* Card width */
+    text-align: center;
+  }
+  
+  /* Title inside the card */
+  .card-title {
+    font-size: 22px;
+    color: rgb(30, 39, 46); /* Title color */
+    margin-bottom: 20px;
+  }
+  
+  /* Container for the search field */
+  .search-field-container {
+    display: flex;
+    gap: 10px; /* Space between input and button */
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Input field styling */
+  .search-input {
+    padding: 12px;
+    font-size: 16px;
+    /* width: 250px; Long input field */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+  }
+  
+  .search-input:focus {
+    border-color: rgb(30, 39, 46); /* Input field focus border color */
+  }
+  
+  /* Button styling */
+  .search-button {
+    width: 150px;
+    padding: 12px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: rgb(30, 39, 46); /* Button background color */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .search-button:hover {
+    background-color: #333; /* Darker shade on hover */
+  }
+  

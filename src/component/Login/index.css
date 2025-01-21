@@ -1,4 +1,4 @@
-body {
+.main {
     margin: 0;
     padding: 0;
     display: flex;
@@ -12,7 +12,7 @@ body {
 /* Login container */
 .login-container {
     width: 100%;
-    min-width: 400px;
+    max-width: 400px;
     padding: 20px;
     border: 2px solid rgb(30, 39, 46);
     border-radius: 8px;

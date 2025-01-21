@@ -1,76 +1,67 @@
 import React from "react";
-import "./App.css";
 import Login from "./component/Login";
-import { getCurrentUser } from "aws-amplify/auth";
-import { Amplify } from "aws-amplify";
-import awsconfig from "./aws-exports";
 import {
   BrowserRouter as Router,
   Route,
   Navigate,
   Routes,
 } from "react-router-dom";
-
-Amplify.configure(awsconfig);
-
-const AdminPage = () => <h2>Admin Dashboard</h2>;
-const UserPage = () => <h2>User Dashboard</h2>;
+import NotFound from "./component/NotFound";
+import ProtectedRoute from "./component/ProtectedRoute";
+import { adminRoutes, agentRoutes, brokerRoutes } from "./routes";
+import Layout from "./component/Layout";
+import { useUser } from "./context/usercontext";
+import Loader from "./component/Loader";
 
 function App() {
-  const [user, setUser] = React.useState(null);
+  const { isLoading } = useUser();
+  if (isLoading) {
+    return <Loader />;
+  }
 
-  React.useEffect(() => {
-    const initialCall = async () => {
-      const { username } = await getCurrentUser();
-      setUser(!!username);
-    };
-
-    initialCall();
-  }, []);
-  console.log("user");
   return (
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route
-          path="/admin"
-          element={
-            user &&
-            user.signInUserSession.idToken.payload["cognito:groups"]?.includes(
-              "Admin"
-            ) ? (
-              <AdminPage />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/user"
-          element={
-            user &&
-            user.signInUserSession.idToken.payload["cognito:groups"]?.includes(
-              "User"
-            ) ? (
-              <UserPage />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/"
-          element={
-            user ? (
-              <Navigate
-                to={user.groups.includes("Admin") ? "/admin" : "/user"}
-              />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route path="*" element={<Navigate to="/login" />} />
+        <Route path="/notfound" element={<NotFound />} />
+        <Route path="/" element={<Layout />}>
+          {adminRoutes.map(({ path, component: Component }) => (
+            <Route
+              key={path}
+              path={path}
+              element={
+                <ProtectedRoute allowedGroups={["admin"]}>
+                  <Component />
+                </ProtectedRoute>
+              }
+            />
+          ))}
+
+          {agentRoutes.map(({ path, component: Component }) => (
+            <Route
+              key={path}
+              path={path}
+              element={
+                <ProtectedRoute allowedGroups={["agent"]}>
+                  <Component />
+                </ProtectedRoute>
+              }
+            />
+          ))}
+
+          {brokerRoutes.map(({ path, component: Component }) => (
+            <Route
+              key={path}
+              path={path}
+              element={
+                <ProtectedRoute allowedGroups={["broker"]}>
+                  <Component />
+                </ProtectedRoute>
+              }
+            />
+          ))}
+        </Route>
+        <Route path="*" element={<Navigate to="/notfound" />} />
       </Routes>
     </Router>
   );
