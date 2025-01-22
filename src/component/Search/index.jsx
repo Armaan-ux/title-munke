@@ -114,7 +114,7 @@ const Search = () => {
           <button
             className="search-button"
             onClick={handleSearch}
-            disabled={loading}
+            disabled={loading || !address.trim().length}
           >
             {loading ? "Processing..." : "Search"}
           </button>

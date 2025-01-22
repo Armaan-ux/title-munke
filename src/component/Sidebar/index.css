@@ -58,7 +58,18 @@
 .sidebar .nav-links a:hover {
     background-color: #444;
 }
+
+
 .logout{
+    width: 100%;
+    padding: 10px;
+    background-color: rgb(30, 39, 46);
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
     cursor: pointer;
     position: absolute;
     bottom: 5%;

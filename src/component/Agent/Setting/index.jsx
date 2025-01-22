@@ -6,7 +6,7 @@ const Setting = () => {
   const [newpassword, setNewpassword] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [confirmPassword, setConfirmpassword] = useState("");
-  const [isSuccess, setIsSuccess] = useState(true);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
 
   const resetState = () => {

@@ -82,3 +82,7 @@
     background-color: #333; /* Darker shade on hover */
   }
   
+  .search-button:disabled{
+    cursor: not-allowed;
+    background-color: rgb(97 103 107);
+  }

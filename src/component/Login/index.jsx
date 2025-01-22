@@ -5,67 +5,98 @@ import ResetPassword from "../ResetPassword";
 import { useUser } from "../../context/usercontext";
 
 function Login() {
-    const { user, signIn } = useUser();
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [isReset, setIsReset] = useState(false);
+  const { user, signIn } = useUser();
+  const [isChecking, setIsChecking] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isReset, setIsReset] = useState(false);
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        if (user) {
-            navigate('/' + user.signInUserSession.idToken.payload["cognito:groups"][0])
-        }
-    }, [user, navigate])
+  useEffect(() => {
+    if (user) {
+      navigate(
+        "/" + user.signInUserSession.idToken.payload["cognito:groups"][0]
+      );
+    }
+  }, [user, navigate]);
 
+  const handleLogin = async () => {
+    try {
+      setError("");
+      setIsChecking(true);
+      const { user, isResetRequired } = await signIn(username, password);
+      if (!user) {
+        setError("User does not exist.");
+        return;
+      }
+      if (isResetRequired) {
+        setIsReset(true);
+        return;
+      }
 
-    const handleLogin = async () => {
-        try {
-            const { user, isResetRequired } = await signIn(username, password);
-            if (isResetRequired) {
-                setIsReset(true);
-                return;
-            }
+      const groups = user.signInUserSession.idToken.payload["cognito:groups"];
 
-            const groups = user.signInUserSession.idToken.payload['cognito:groups'];
+      if (groups && groups.includes("admin")) {
+        // Redirect to Admin dashboard
+        navigate("/admin");
+      } else if (groups && groups.includes("agent")) {
+        // Redirect to User dashboard
+        navigate("/agent");
+      } else if (groups && groups.includes("broker")) {
+        // Redirect to User dashboard
+        navigate("/broker");
+      }
+    } catch (error) {
+      setError(error.message || "Login failed");
+    } finally {
+      setIsChecking(false);
+    }
+  };
 
-            if (groups && groups.includes('admin')) {
-                // Redirect to Admin dashboard
-                navigate('/admin');
-            } else if (groups && groups.includes('agent')) {
-                // Redirect to User dashboard
-                navigate('/agent');
-            } else if (groups && groups.includes('broker')) {
-                // Redirect to User dashboard
-                navigate('/broker');
-            }
-        } catch (error) {
-            setError(error.message || 'Login failed');
-        }
-    };
+  if (isReset) return <ResetPassword username={username} password={password} />;
 
-    if (isReset) return <ResetPassword username={username} password={password} />
-
-    return (
-        <div className="main">
-            <div className="login-container">
-                <form className="login-form">
-                    <h2>Title Munke</h2>
-                    <div className="form-group">
-                        <label for="username">Username</label>
-                        <input type="text" id="username" name="username" value={username} required onChange={(e) => setUsername(e.target.value)} />
-                    </div>
-                    <div className="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" value={password} required onChange={(e) => setPassword(e.target.value)} />
-                    </div>
-                    <button onClick={() => handleLogin()} type="button">Login</button>
-                    {error && <div className="error">{error}</div>}
-                </form>
-            </div >
-        </div>
-    )
+  return (
+    <div className="main">
+      <div className="login-container">
+        <form className="login-form">
+          <h2>Title Munke</h2>
+          <div className="form-group">
+            <label for="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={username}
+              required
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={password}
+              required
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <button
+            disabled={isChecking}
+            onClick={() => handleLogin()}
+            type="button"
+            className="loginBtn"
+          >
+            {isChecking ? "Signing in.." : "Login"}
+          </button>
+          {error && <div className="error">{error}</div>}
+        </form>
+      </div>
+    </div>
+  );
 }
 
 export default Login;
