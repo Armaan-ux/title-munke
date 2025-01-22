@@ -1,0 +1,5 @@
+{
+  "AppSyncApiName": "titlemunke",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false
+}

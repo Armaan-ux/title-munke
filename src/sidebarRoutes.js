@@ -3,14 +3,18 @@ export const routes = {
     {
       link: "/agent/search",
       name: "Search",
+      class: "fas fa-search",
+    },
+
+    {
+      link: "/agent/history",
+      name: "View Search History",
+      class: "fas fa-history",
     },
     {
       link: "/agent/setting",
       name: "Setting",
-    },
-    {
-      link: "/agent/history",
-      name: "View Search History",
+      class: "fas fa-cog",
     },
   ],
   admin: [

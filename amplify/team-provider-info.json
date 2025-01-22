@@ -15,6 +15,9 @@
       "auth": {
         "titlemunke19973b7e": {},
         "userPoolGroups": {}
+      },
+      "api": {
+        "titlemunke": {}
       }
     }
   }
