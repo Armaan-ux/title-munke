@@ -11,3 +11,10 @@ type SearchHistory @model {
   downloadLink: String
   status: String
 }
+
+type AuditLog @model {
+  id: ID!
+  userId: ID!
+  action: String!
+  detail: String!
+}

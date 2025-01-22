@@ -41,3 +41,37 @@ export const listSearchHistories = /* GraphQL */ `
     }
   }
 `;
+export const getAuditLog = /* GraphQL */ `
+  query GetAuditLog($id: ID!) {
+    getAuditLog(id: $id) {
+      id
+      userId
+      action
+      detail
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const listAuditLogs = /* GraphQL */ `
+  query ListAuditLogs(
+    $filter: ModelAuditLogFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listAuditLogs(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        userId
+        action
+        detail
+        createdAt
+        updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;

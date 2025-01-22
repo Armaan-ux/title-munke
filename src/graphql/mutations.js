@@ -58,3 +58,51 @@ export const deleteSearchHistory = /* GraphQL */ `
     }
   }
 `;
+export const createAuditLog = /* GraphQL */ `
+  mutation CreateAuditLog(
+    $input: CreateAuditLogInput!
+    $condition: ModelAuditLogConditionInput
+  ) {
+    createAuditLog(input: $input, condition: $condition) {
+      id
+      userId
+      action
+      detail
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const updateAuditLog = /* GraphQL */ `
+  mutation UpdateAuditLog(
+    $input: UpdateAuditLogInput!
+    $condition: ModelAuditLogConditionInput
+  ) {
+    updateAuditLog(input: $input, condition: $condition) {
+      id
+      userId
+      action
+      detail
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const deleteAuditLog = /* GraphQL */ `
+  mutation DeleteAuditLog(
+    $input: DeleteAuditLogInput!
+    $condition: ModelAuditLogConditionInput
+  ) {
+    deleteAuditLog(input: $input, condition: $condition) {
+      id
+      userId
+      action
+      detail
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;

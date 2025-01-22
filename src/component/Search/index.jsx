@@ -4,6 +4,7 @@ import { API, graphqlOperation } from "aws-amplify";
 import { createSearchHistory } from "../../graphql/mutations";
 import "./index.css";
 import { useUser } from "../../context/usercontext";
+import { handleCreateAuditLog } from "../../utils";
 
 const Search = () => {
   const [address, setAddress] = useState("");
@@ -18,6 +19,9 @@ const Search = () => {
     setLoading(true);
 
     try {
+      handleCreateAuditLog("SEARCH", {
+        address,
+      });
       const response = await axios.post(
         "https://qwwdyrp4y5gtw2on3t5jd67g5i0leuga.lambda-url.us-east-1.on.aws/",
         {
@@ -130,7 +134,15 @@ const Search = () => {
         {message && <p style={{ marginTop: "10px" }}>{message}</p>}
         {zipUrl && (
           <div className="downloadbtn">
-            <a href={zipUrl} download>
+            <a
+              href={zipUrl}
+              download
+              onClick={() =>
+                handleCreateAuditLog("DOWNLOAD", {
+                  zipUrl,
+                })
+              }
+            >
               Download Results
             </a>
           </div>

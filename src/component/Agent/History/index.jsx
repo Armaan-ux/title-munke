@@ -5,6 +5,7 @@ import "./index.css";
 import axios from "axios";
 import { updateSearchHistory } from "../../../graphql/mutations";
 import { useUser } from "../../../context/usercontext";
+import { handleCreateAuditLog } from "../../../utils";
 
 function History() {
   const [searchHistories, setSearchHistories] = useState([]);
@@ -89,7 +90,7 @@ function History() {
       inProgressSearches.forEach((search) => {
         checkSearchStatus(search.searchId, search.id);
       });
-    }, 60000);
+    }, 300000);
 
     return () => clearInterval(interval);
   }, [inProgressSearches]);
@@ -121,7 +122,15 @@ function History() {
                 <td>{elem?.createdAt}</td>
                 <td>
                   {elem?.downloadLink ? (
-                    <a href={elem.downloadLink} download>
+                    <a
+                      href={elem.downloadLink}
+                      download
+                      onClick={() =>
+                        handleCreateAuditLog("DOWNLOAD", {
+                          zipUrl: elem.downloadLink,
+                        })
+                      }
+                    >
                       Click to Download
                     </a>
                   ) : (
