@@ -1,5 +1,7 @@
 import { Auth, API, graphqlOperation } from "aws-amplify";
 import { createAgent, createRelationship } from "../../graphql/mutations"; // Auto-generated
+import AWSExport from "../../aws-exports";
+import { fetchBroker } from "./broker";
 const AWS = require("aws-sdk");
 
 AWS.config.update({
@@ -7,6 +9,9 @@ AWS.config.update({
   secretAccessKey: process.env.REACT_APP_SECRET_KEY,
   region: "us-east-1",
 });
+
+const cognito = new AWS.CognitoIdentityServiceProvider();
+const userPoolId = AWSExport.aws_user_pools_id;
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 const brokerId = "14e814a8-10f1-7045-1386-78fcbb24a0ed";
 
@@ -60,28 +65,40 @@ export async function getAgentTotalSearchesThisMonth() {
 
 export async function createAgentForBroker(brokerId, name, email, password) {
   try {
-    // Step 1: Create a Cognito User
-    await Auth.signUp({
-      username: name,
-      password: password,
-      attributes: {
-        email: email,
-        "custom:name": name, // Add custom attribute 'name'
-      },
-    });
+    const createUserResponse = await cognito
+      .adminCreateUser({
+        UserPoolId: userPoolId,
+        Username: name,
+        TemporaryPassword: password,
+        UserAttributes: [{ Name: "email", Value: email }],
+        MessageAction: "SUPPRESS",
+      })
+      .promise();
 
-    console.log("Cognito user created successfully!");
+    console.log("User created:", createUserResponse);
+
+    const response = await cognito
+      .adminAddUserToGroup({
+        UserPoolId: userPoolId,
+        Username: name,
+        GroupName: "agent",
+      })
+      .promise();
+
+    console.log("User added to Agent group:", response);
 
     // Step 2: Add Agent Data to DynamoDB
     const agentInput = {
+      id: createUserResponse?.User?.Attributes[1].Value,
       name: name,
-      email: email,
-      brokerId: brokerId,
     };
+
+    const broker = await fetchBroker(brokerId);
 
     const newAgent = await API.graphql(
       graphqlOperation(createAgent, { input: agentInput })
     );
+
     const agentId = newAgent.data.createAgent.id;
 
     console.log("Agent created successfully in DynamoDB:", newAgent);
@@ -90,6 +107,8 @@ export async function createAgentForBroker(brokerId, name, email, password) {
     const relationshipInput = {
       brokerId: brokerId,
       agentId: agentId,
+      agentName: name,
+      brokerName: broker.name,
     };
 
     const newRelationship = await API.graphql(
