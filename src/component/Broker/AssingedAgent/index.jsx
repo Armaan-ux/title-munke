@@ -1,23 +1,35 @@
 import { useEffect } from "react";
-import { getTotalSearchesThisMonth } from "./service";
+import "./index.css";
+import AddAgentModal from "../../Modal/AddUserModal";
+import { getAgentTotalSearchesThisMonth } from "../../service/agent";
 
 const AssginedAgents = () => {
   useEffect(() => {
-    getTotalSearchesThisMonth();
+    getAgentTotalSearchesThisMonth();
   }, []);
+
   return (
     <>
-      <div className="main-content">
+      <AddAgentModal />
+      <div className="main-content" style={{ display: "block" }}>
         <div
           className="page-title"
           style={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
+            alignIitems: "center",
             marginBottom: "20px",
           }}
         >
-          <h1 style={{ marginLeft: "20px" }}>Agent Dashboard</h1>
+          <h1 style={{ marginLeft: "20px" }}>Broker Management</h1>
+          <div className="action-buttons">
+            <button className="btn add-user-btn">
+              <i className="fas fa-user-plus"></i> Add User
+            </button>
+            <button className="btn delete-user-btn">
+              <i className="fas fa-user-minus"></i> Delete User
+            </button>
+          </div>
         </div>
 
         <div className="widgets">
@@ -62,7 +74,7 @@ const AssginedAgents = () => {
               <tr id="broker-row-1">
                 <td>
                   <img
-                    src="img/agent1.png'"
+                    src="{{ url_for('static', filename='images/agent1.png') }}"
                     alt="Broker Photo"
                     className="profile-photo"
                   />
@@ -91,7 +103,7 @@ const AssginedAgents = () => {
               <tr id="broker-row-2">
                 <td>
                   <img
-                    src="img/agent1.png"
+                    src="{{ url_for('static', filename='images/agent1.png') }}"
                     alt="Broker Photo"
                     className="profile-photo"
                   />
@@ -120,7 +132,7 @@ const AssginedAgents = () => {
               <tr id="broker-row-3">
                 <td>
                   <img
-                    src="img/agent1.png"
+                    src="{{ url_for('static', filename='images/agent1.png') }}"
                     alt="Broker Photo"
                     className="profile-photo"
                   />
@@ -149,7 +161,7 @@ const AssginedAgents = () => {
               <tr id="broker-row-4">
                 <td>
                   <img
-                    src="img/agent1.png"
+                    src="{{ url_for('static', filename='images/agent1.png') }}"
                     alt="Broker Photo"
                     className="profile-photo"
                   />
