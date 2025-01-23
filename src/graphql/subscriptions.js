@@ -94,3 +94,117 @@ export const onDeleteAuditLog = /* GraphQL */ `
     }
   }
 `;
+export const onCreateRelationship = /* GraphQL */ `
+  subscription OnCreateRelationship(
+    $filter: ModelSubscriptionRelationshipFilterInput
+  ) {
+    onCreateRelationship(filter: $filter) {
+      id
+      agentId
+      brokerId
+      agentName
+      brokerName
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onUpdateRelationship = /* GraphQL */ `
+  subscription OnUpdateRelationship(
+    $filter: ModelSubscriptionRelationshipFilterInput
+  ) {
+    onUpdateRelationship(filter: $filter) {
+      id
+      agentId
+      brokerId
+      agentName
+      brokerName
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onDeleteRelationship = /* GraphQL */ `
+  subscription OnDeleteRelationship(
+    $filter: ModelSubscriptionRelationshipFilterInput
+  ) {
+    onDeleteRelationship(filter: $filter) {
+      id
+      agentId
+      brokerId
+      agentName
+      brokerName
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onCreateAgent = /* GraphQL */ `
+  subscription OnCreateAgent($filter: ModelSubscriptionAgentFilterInput) {
+    onCreateAgent(filter: $filter) {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onUpdateAgent = /* GraphQL */ `
+  subscription OnUpdateAgent($filter: ModelSubscriptionAgentFilterInput) {
+    onUpdateAgent(filter: $filter) {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onDeleteAgent = /* GraphQL */ `
+  subscription OnDeleteAgent($filter: ModelSubscriptionAgentFilterInput) {
+    onDeleteAgent(filter: $filter) {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onCreateBroker = /* GraphQL */ `
+  subscription OnCreateBroker($filter: ModelSubscriptionBrokerFilterInput) {
+    onCreateBroker(filter: $filter) {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onUpdateBroker = /* GraphQL */ `
+  subscription OnUpdateBroker($filter: ModelSubscriptionBrokerFilterInput) {
+    onUpdateBroker(filter: $filter) {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onDeleteBroker = /* GraphQL */ `
+  subscription OnDeleteBroker($filter: ModelSubscriptionBrokerFilterInput) {
+    onDeleteBroker(filter: $filter) {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;

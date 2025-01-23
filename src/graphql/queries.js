@@ -75,3 +75,159 @@ export const listAuditLogs = /* GraphQL */ `
     }
   }
 `;
+export const getRelationship = /* GraphQL */ `
+  query GetRelationship($id: ID!) {
+    getRelationship(id: $id) {
+      id
+      agentId
+      brokerId
+      agentName
+      brokerName
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const listRelationships = /* GraphQL */ `
+  query ListRelationships(
+    $filter: ModelRelationshipFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listRelationships(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        agentId
+        brokerId
+        agentName
+        brokerName
+        createdAt
+        updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+export const getAgent = /* GraphQL */ `
+  query GetAgent($id: ID!) {
+    getAgent(id: $id) {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const listAgents = /* GraphQL */ `
+  query ListAgents(
+    $filter: ModelAgentFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listAgents(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        createdAt
+        updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+export const getBroker = /* GraphQL */ `
+  query GetBroker($id: ID!) {
+    getBroker(id: $id) {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const listBrokers = /* GraphQL */ `
+  query ListBrokers(
+    $filter: ModelBrokerFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listBrokers(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        createdAt
+        updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+export const relationshipsByAgentId = /* GraphQL */ `
+  query RelationshipsByAgentId(
+    $agentId: ID!
+    $sortDirection: ModelSortDirection
+    $filter: ModelRelationshipFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    relationshipsByAgentId(
+      agentId: $agentId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        agentId
+        brokerId
+        agentName
+        brokerName
+        createdAt
+        updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+export const relationshipsByBrokerId = /* GraphQL */ `
+  query RelationshipsByBrokerId(
+    $brokerId: String!
+    $sortDirection: ModelSortDirection
+    $filter: ModelRelationshipFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    relationshipsByBrokerId(
+      brokerId: $brokerId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        agentId
+        brokerId
+        agentName
+        brokerName
+        createdAt
+        updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;

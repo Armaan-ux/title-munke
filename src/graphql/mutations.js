@@ -106,3 +106,138 @@ export const deleteAuditLog = /* GraphQL */ `
     }
   }
 `;
+export const createRelationship = /* GraphQL */ `
+  mutation CreateRelationship(
+    $input: CreateRelationshipInput!
+    $condition: ModelRelationshipConditionInput
+  ) {
+    createRelationship(input: $input, condition: $condition) {
+      id
+      agentId
+      brokerId
+      agentName
+      brokerName
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const updateRelationship = /* GraphQL */ `
+  mutation UpdateRelationship(
+    $input: UpdateRelationshipInput!
+    $condition: ModelRelationshipConditionInput
+  ) {
+    updateRelationship(input: $input, condition: $condition) {
+      id
+      agentId
+      brokerId
+      agentName
+      brokerName
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const deleteRelationship = /* GraphQL */ `
+  mutation DeleteRelationship(
+    $input: DeleteRelationshipInput!
+    $condition: ModelRelationshipConditionInput
+  ) {
+    deleteRelationship(input: $input, condition: $condition) {
+      id
+      agentId
+      brokerId
+      agentName
+      brokerName
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const createAgent = /* GraphQL */ `
+  mutation CreateAgent(
+    $input: CreateAgentInput!
+    $condition: ModelAgentConditionInput
+  ) {
+    createAgent(input: $input, condition: $condition) {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const updateAgent = /* GraphQL */ `
+  mutation UpdateAgent(
+    $input: UpdateAgentInput!
+    $condition: ModelAgentConditionInput
+  ) {
+    updateAgent(input: $input, condition: $condition) {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const deleteAgent = /* GraphQL */ `
+  mutation DeleteAgent(
+    $input: DeleteAgentInput!
+    $condition: ModelAgentConditionInput
+  ) {
+    deleteAgent(input: $input, condition: $condition) {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const createBroker = /* GraphQL */ `
+  mutation CreateBroker(
+    $input: CreateBrokerInput!
+    $condition: ModelBrokerConditionInput
+  ) {
+    createBroker(input: $input, condition: $condition) {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const updateBroker = /* GraphQL */ `
+  mutation UpdateBroker(
+    $input: UpdateBrokerInput!
+    $condition: ModelBrokerConditionInput
+  ) {
+    updateBroker(input: $input, condition: $condition) {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const deleteBroker = /* GraphQL */ `
+  mutation DeleteBroker(
+    $input: DeleteBrokerInput!
+    $condition: ModelBrokerConditionInput
+  ) {
+    deleteBroker(input: $input, condition: $condition) {
+      id
+      name
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;

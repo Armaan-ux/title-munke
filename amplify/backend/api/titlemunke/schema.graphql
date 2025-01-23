@@ -18,3 +18,22 @@ type AuditLog @model {
   action: String!
   detail: String!
 }
+
+type Relationship @model {
+  id: ID!
+  agentId: ID! @index(name: "agentIdIndex", queryField: "relationshipsByAgentId")
+  brokerId: String! @index(name: "brokerIdIndex", queryField: "relationshipsByBrokerId")
+  agentName: String!
+  brokerName:String!
+}
+
+type Agent @model {
+  id: ID!
+  name: String!
+}
+
+type Broker @model {
+  id: ID!
+  name: String!
+}
+
