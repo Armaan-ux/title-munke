@@ -165,6 +165,7 @@ export const createAgent = /* GraphQL */ `
     createAgent(input: $input, condition: $condition) {
       id
       name
+      status
       createdAt
       updatedAt
       __typename
@@ -179,6 +180,7 @@ export const updateAgent = /* GraphQL */ `
     updateAgent(input: $input, condition: $condition) {
       id
       name
+      status
       createdAt
       updatedAt
       __typename
@@ -193,6 +195,7 @@ export const deleteAgent = /* GraphQL */ `
     deleteAgent(input: $input, condition: $condition) {
       id
       name
+      status
       createdAt
       updatedAt
       __typename
@@ -207,6 +210,7 @@ export const createBroker = /* GraphQL */ `
     createBroker(input: $input, condition: $condition) {
       id
       name
+      status
       createdAt
       updatedAt
       __typename
@@ -221,6 +225,7 @@ export const updateBroker = /* GraphQL */ `
     updateBroker(input: $input, condition: $condition) {
       id
       name
+      status
       createdAt
       updatedAt
       __typename
@@ -235,6 +240,7 @@ export const deleteBroker = /* GraphQL */ `
     deleteBroker(input: $input, condition: $condition) {
       id
       name
+      status
       createdAt
       updatedAt
       __typename

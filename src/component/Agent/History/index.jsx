@@ -13,7 +13,7 @@ function History() {
   const [hasMore, setHasMore] = useState(true);
   const [nextToken, setNextToken] = useState(null);
   const [inProgressSearches, setInProgressSearches] = useState([]);
-  const user = useUser();
+  const { user } = useUser();
 
   const fetchSearchHistories = async () => {
     if (loading || !hasMore) return;

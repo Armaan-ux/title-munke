@@ -18,6 +18,12 @@
       },
       "api": {
         "titlemunke": {}
+      },
+      "function": {
+        "checkUserStatus": {
+          "deploymentBucketName": "amplify-titlemunke-master-89007-deployment",
+          "s3Key": "amplify-builds/checkUserStatus-47376479734736516844-build.zip"
+        }
       }
     }
   }

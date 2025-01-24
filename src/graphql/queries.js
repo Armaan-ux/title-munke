@@ -116,6 +116,7 @@ export const getAgent = /* GraphQL */ `
     getAgent(id: $id) {
       id
       name
+      status
       createdAt
       updatedAt
       __typename
@@ -132,6 +133,7 @@ export const listAgents = /* GraphQL */ `
       items {
         id
         name
+        status
         createdAt
         updatedAt
         __typename
@@ -146,6 +148,7 @@ export const getBroker = /* GraphQL */ `
     getBroker(id: $id) {
       id
       name
+      status
       createdAt
       updatedAt
       __typename
@@ -162,6 +165,7 @@ export const listBrokers = /* GraphQL */ `
       items {
         id
         name
+        status
         createdAt
         updatedAt
         __typename

@@ -1,16 +1,55 @@
-import { useEffect } from "react";
-import "./index.css";
+import { useEffect, useState } from "react";
 import AddAgentModal from "../../Modal/AddUserModal";
-import { getAgentTotalSearchesThisMonth } from "../../service/agent";
+import {
+  calculateAverage,
+  getAgentsTotalSearchesThisMonth,
+  inActiveAgent,
+  UnassignAgent,
+} from "../../service/agent";
+import { useUser } from "../../../context/usercontext";
+import { fetchAgentsWithSearchCount } from "../../service/broker";
+import "./index.css";
 
 const AssginedAgents = () => {
+  const { user } = useUser();
+  const [isOpen, setIsOpen] = useState(false);
+  const [agents, setAgents] = useState([]);
+  const [totalSearchesThisMonth, setTotalSearchesThisMonth] = useState(0);
+
   useEffect(() => {
-    getAgentTotalSearchesThisMonth();
+    getAgentsTotalSearchesThisMonth();
   }, []);
+
+  useEffect(() => {
+    if (user?.attributes?.sub)
+      getAgentsTotalSearchesThisMonth()
+        .then((item) => setTotalSearchesThisMonth(item.totalSearches))
+        .catch((err) => console.error(err));
+    fetchAgentsWithSearchCount(user?.attributes?.sub)
+      .then((item) => setAgents(item))
+      .catch((err) => console.error("Error fetching agents", err));
+  }, [user]);
+
+  const unAssignAgent = async (id) => {
+    const result = await UnassignAgent(id);
+    if (result) {
+      setAgents(agents.filter((elem) => elem.id !== id));
+    }
+  };
+
+  const inActiveAgentStatus = async (id) => {
+    const result = await inActiveAgent(id);
+    if (result) {
+      const temp = agents;
+      const indx = temp.findIndex((elem) => elem.agentId === id);
+      temp[indx] = { ...temp[indx], status: "INACTIVE" };
+      setAgents(temp);
+    }
+  };
 
   return (
     <>
-      <AddAgentModal />
+      {isOpen && <AddAgentModal setIsOpen={setIsOpen} />}
       <div className="main-content" style={{ display: "block" }}>
         <div
           className="page-title"
@@ -23,7 +62,10 @@ const AssginedAgents = () => {
         >
           <h1 style={{ marginLeft: "20px" }}>Broker Management</h1>
           <div className="action-buttons">
-            <button className="btn add-user-btn">
+            <button
+              onClick={() => setIsOpen(true)}
+              className="btn add-user-btn"
+            >
               <i className="fas fa-user-plus"></i> Add User
             </button>
             <button className="btn delete-user-btn">
@@ -36,10 +78,15 @@ const AssginedAgents = () => {
           <div className="widget">
             <h4>Team Performance Overview</h4>
             <p>
-              <strong>Total Searches This Month:</strong> 650
+              <strong>Total Searches This Month:</strong>{" "}
+              {totalSearchesThisMonth}
             </p>
             <p>
-              <strong>Average Searches per Agent:</strong> 162.5
+              <strong>Average Searches per Agent:</strong>{" "}
+              {(totalSearchesThisMonth > 0 &&
+                agents.length > 0 &&
+                calculateAverage(totalSearchesThisMonth, agents.length)) ||
+                0}
             </p>
             <p>
               <strong>Top Performer:</strong> Linda Smith (200 searches)
@@ -47,14 +94,11 @@ const AssginedAgents = () => {
           </div>
 
           <div className="widget">
-            <h4>Pending Tasks</h4>
+            <h4>In Progress Searches</h4>
             <p>
-              <strong>Total Pending Reports:</strong> 5
+              <strong>Total Pending Searches:</strong> 5
             </p>
-            <p>
-              <strong>Recent Alerts:</strong> 2 flagged documents (e.g., missing
-              liens).
-            </p>
+            <p></p>
           </div>
         </div>
 
@@ -63,7 +107,6 @@ const AssginedAgents = () => {
           <table className="styled-table">
             <thead>
               <tr>
-                <th>Photo</th>
                 <th>Name</th>
                 <th>Status</th>
                 <th>Searches This Month</th>
@@ -71,122 +114,34 @@ const AssginedAgents = () => {
               </tr>
             </thead>
             <tbody>
-              <tr id="broker-row-1">
-                <td>
-                  <img
-                    src="{{ url_for('static', filename='images/agent1.png') }}"
-                    alt="Broker Photo"
-                    className="profile-photo"
-                  />
-                </td>
-                <td>Damon Parker</td>
-                <td>
-                  <span className="status active">ACTIVE</span>
-                </td>
-                <td>150</td>
-                <td>
-                  <div className="dropdown">
-                    <button className="btn action-btn">
-                      Actions <i className="fas fa-caret-down"></i>
-                    </button>
-                    <div className="dropdown-content">
-                      <a href="#" onclick="editBroker(1)">
-                        Edit
-                      </a>
-                      <a href="#" onclick="deleteBroker(1)">
-                        Delete
-                      </a>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr id="broker-row-2">
-                <td>
-                  <img
-                    src="{{ url_for('static', filename='images/agent1.png') }}"
-                    alt="Broker Photo"
-                    className="profile-photo"
-                  />
-                </td>
-                <td>Thomas Joe</td>
-                <td>
-                  <span className="status active">ACTIVE</span>
-                </td>
-                <td>120</td>
-                <td>
-                  <div className="dropdown">
-                    <button className="btn action-btn">
-                      Actions <i className="fas fa-caret-down"></i>
-                    </button>
-                    <div className="dropdown-content">
-                      <a href="#" onclick="editBroker(2)">
-                        Edit
-                      </a>
-                      <a href="#" onclick="deleteBroker(2)">
-                        Delete
-                      </a>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr id="broker-row-3">
-                <td>
-                  <img
-                    src="{{ url_for('static', filename='images/agent1.png') }}"
-                    alt="Broker Photo"
-                    className="profile-photo"
-                  />
-                </td>
-                <td>Linda Smith</td>
-                <td>
-                  <span className="status active">ACTIVE</span>
-                </td>
-                <td>200</td>
-                <td>
-                  <div className="dropdown">
-                    <button className="btn action-btn">
-                      Actions <i className="fas fa-caret-down"></i>
-                    </button>
-                    <div className="dropdown-content">
-                      <a href="#" onclick="editBroker(3)">
-                        Edit
-                      </a>
-                      <a href="#" onclick="deleteBroker(3)">
-                        Delete
-                      </a>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr id="broker-row-4">
-                <td>
-                  <img
-                    src="{{ url_for('static', filename='images/agent1.png') }}"
-                    alt="Broker Photo"
-                    className="profile-photo"
-                  />
-                </td>
-                <td>Sarah Johnson</td>
-                <td>
-                  <span className="status active">ACTIVE</span>
-                </td>
-                <td>180</td>
-                <td>
-                  <div className="dropdown">
-                    <button className="btn action-btn">
-                      Actions <i className="fas fa-caret-down"></i>
-                    </button>
-                    <div className="dropdown-content">
-                      <a href="#" onclick="editBroker(4)">
-                        Edit
-                      </a>
-                      <a href="#" onclick="deleteBroker(4)">
-                        Delete
-                      </a>
-                    </div>
-                  </div>
-                </td>
-              </tr>
+              {agents?.map((elem) => (
+                <>
+                  <tr id="broker-row-1">
+                    <td>{elem.agentName}</td>
+                    <td>
+                      <span className="status active">{elem.status}</span>
+                    </td>
+                    <td>{elem.totalSearches}</td>
+                    <td>
+                      <div className="dropdown">
+                        <button className="btn action-btn">
+                          Actions <i className="fas fa-caret-down"></i>
+                        </button>
+                        <div className="dropdown-content">
+                          <span onClick={() => unAssignAgent(elem.id)}>
+                            Unassign
+                          </span>
+                          <span
+                            onClick={() => inActiveAgentStatus(elem.agentId)}
+                          >
+                            Delete
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </>
+              ))}
             </tbody>
           </table>
         </div>

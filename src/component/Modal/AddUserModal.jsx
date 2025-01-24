@@ -3,8 +3,7 @@ import { useUser } from "../../context/usercontext";
 import { createAgentForBroker } from "../service/agent";
 import "./AddUserModal.css";
 
-function AddAgentModal() {
-  const [isOpen, setIsOpen] = useState(true);
+function AddAgentModal({ setIsOpen }) {
   const { user } = useUser();
   const [formData, setFormData] = useState({
     name: "",
@@ -39,57 +38,55 @@ function AddAgentModal() {
         Open Modal
       </button>
 
-      {isOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>Agent Registration</h2>
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label>Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Password</label>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="modal-actions">
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="cancel-btn"
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="submit-btn">
-                  Submit
-                </button>
-              </div>
-            </form>
-          </div>
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <h2>Agent Registration</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Name</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Password</label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="modal-actions">
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="cancel-btn"
+              >
+                Cancel
+              </button>
+              <button type="submit" className="submit-btn">
+                Submit
+              </button>
+            </div>
+          </form>
         </div>
-      )}
+      </div>
     </div>
   );
 }

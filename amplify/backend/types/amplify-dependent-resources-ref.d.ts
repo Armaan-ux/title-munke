@@ -21,5 +21,14 @@ export type AmplifyDependentResourcesAttributes = {
       "agentGroupRole": "string",
       "brokerGroupRole": "string"
     }
+  },
+  "function": {
+    "checkUserStatus": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    }
   }
 }

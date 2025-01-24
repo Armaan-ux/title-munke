@@ -147,6 +147,7 @@ export const onCreateAgent = /* GraphQL */ `
     onCreateAgent(filter: $filter) {
       id
       name
+      status
       createdAt
       updatedAt
       __typename
@@ -158,6 +159,7 @@ export const onUpdateAgent = /* GraphQL */ `
     onUpdateAgent(filter: $filter) {
       id
       name
+      status
       createdAt
       updatedAt
       __typename
@@ -169,6 +171,7 @@ export const onDeleteAgent = /* GraphQL */ `
     onDeleteAgent(filter: $filter) {
       id
       name
+      status
       createdAt
       updatedAt
       __typename
@@ -180,6 +183,7 @@ export const onCreateBroker = /* GraphQL */ `
     onCreateBroker(filter: $filter) {
       id
       name
+      status
       createdAt
       updatedAt
       __typename
@@ -191,6 +195,7 @@ export const onUpdateBroker = /* GraphQL */ `
     onUpdateBroker(filter: $filter) {
       id
       name
+      status
       createdAt
       updatedAt
       __typename
@@ -202,6 +207,7 @@ export const onDeleteBroker = /* GraphQL */ `
     onDeleteBroker(filter: $filter) {
       id
       name
+      status
       createdAt
       updatedAt
       __typename

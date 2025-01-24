@@ -1,5 +1,11 @@
 import { Auth, API, graphqlOperation } from "aws-amplify";
-import { createAgent, createRelationship } from "../../graphql/mutations"; // Auto-generated
+import {
+  createAgent,
+  createRelationship,
+  deleteAgent,
+  deleteRelationship,
+  updateAgent,
+} from "../../graphql/mutations"; // Auto-generated
 import AWSExport from "../../aws-exports";
 import { fetchBroker } from "./broker";
 const AWS = require("aws-sdk");
@@ -15,7 +21,7 @@ const userPoolId = AWSExport.aws_user_pools_id;
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 const brokerId = "14e814a8-10f1-7045-1386-78fcbb24a0ed";
 
-export async function getAgentTotalSearchesThisMonth() {
+export async function getAgentsTotalSearchesThisMonth() {
   const currentMonthStart = new Date();
   currentMonthStart.setDate(1);
   currentMonthStart.setHours(0, 0, 0, 0);
@@ -63,6 +69,45 @@ export async function getAgentTotalSearchesThisMonth() {
   return { totalSearches };
 }
 
+export function calculateAverage(totalSearches, agentCount) {
+  return totalSearches / agentCount;
+}
+
+export async function getAgentTotalSearchesThisMonth(agentId) {
+  // Get the start of the current month
+  const currentMonthStart = new Date();
+  currentMonthStart.setDate(1);
+  currentMonthStart.setHours(0, 0, 0, 0);
+
+  // Get the start of the next month
+  const nextMonthStart = new Date(currentMonthStart);
+  nextMonthStart.setMonth(nextMonthStart.getMonth() + 1);
+
+  // Construct the query for the agent's search history
+  const searchQuery = {
+    TableName: "SearchHistory-mxixmn4cbbcgrhwtar46djww4q-master",
+    FilterExpression: "#userId = :agentId AND #ts BETWEEN :start AND :end",
+    ExpressionAttributeNames: {
+      "#userId": "userId",
+      "#ts": "timestamp",
+    },
+    ExpressionAttributeValues: {
+      ":agentId": agentId,
+      ":start": currentMonthStart.toISOString(),
+      ":end": nextMonthStart.toISOString(),
+    },
+  };
+
+  // Fetch the search data
+  const searchData = await dynamoDB.scan(searchQuery).promise();
+
+  // Return the total searches
+  const totalSearches = searchData.Count || 0;
+
+  console.log(`Total searches for agent ${agentId}:`, totalSearches);
+  return totalSearches;
+}
+
 export async function createAgentForBroker(brokerId, name, email, password) {
   try {
     const createUserResponse = await cognito
@@ -91,6 +136,7 @@ export async function createAgentForBroker(brokerId, name, email, password) {
     const agentInput = {
       id: createUserResponse?.User?.Attributes[1].Value,
       name: name,
+      status: "ACTIVE",
     };
 
     const broker = await fetchBroker(brokerId);
@@ -103,7 +149,6 @@ export async function createAgentForBroker(brokerId, name, email, password) {
 
     console.log("Agent created successfully in DynamoDB:", newAgent);
 
-    // Step 3: Add Relationship Data
     const relationshipInput = {
       brokerId: brokerId,
       agentId: agentId,
@@ -121,5 +166,29 @@ export async function createAgentForBroker(brokerId, name, email, password) {
   } catch (error) {
     console.error("Error creating agent for broker:", error);
     return { success: false, error: error.message };
+  }
+}
+
+export async function UnassignAgent(id) {
+  try {
+    await API.graphql(graphqlOperation(deleteRelationship, { input: { id } }));
+    return true;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+}
+
+export async function inActiveAgent(agentId) {
+  try {
+    await API.graphql(
+      graphqlOperation(updateAgent, {
+        input: { id: agentId, status: "INACTIVE" },
+      })
+    );
+    return true;
+  } catch (err) {
+    console.error(err);
+    return false;
   }
 }
