@@ -4,6 +4,7 @@ import {
   calculateAverage,
   getAgentsTotalSearchesThisMonth,
   inActiveAgent,
+  pendingAgentSearch,
   UnassignAgent,
 } from "../../service/agent";
 import { useUser } from "../../../context/usercontext";
@@ -15,18 +16,18 @@ const AssginedAgents = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [agents, setAgents] = useState([]);
   const [totalSearchesThisMonth, setTotalSearchesThisMonth] = useState(0);
-
-  useEffect(() => {
-    getAgentsTotalSearchesThisMonth();
-  }, []);
+  const [pendingSearch, setPendingSearch] = useState(0);
 
   useEffect(() => {
     if (user?.attributes?.sub)
-      getAgentsTotalSearchesThisMonth()
+      getAgentsTotalSearchesThisMonth(user?.attributes?.sub)
         .then((item) => setTotalSearchesThisMonth(item.totalSearches))
         .catch((err) => console.error(err));
     fetchAgentsWithSearchCount(user?.attributes?.sub)
       .then((item) => setAgents(item))
+      .catch((err) => console.error("Error fetching agents", err));
+    pendingAgentSearch(user?.attributes?.sub)
+      .then((item) => setPendingSearch(item.pendingSearches))
       .catch((err) => console.error("Error fetching agents", err));
   }, [user]);
 
@@ -68,9 +69,6 @@ const AssginedAgents = () => {
             >
               <i className="fas fa-user-plus"></i> Add User
             </button>
-            <button className="btn delete-user-btn">
-              <i className="fas fa-user-minus"></i> Delete User
-            </button>
           </div>
         </div>
 
@@ -96,7 +94,7 @@ const AssginedAgents = () => {
           <div className="widget">
             <h4>In Progress Searches</h4>
             <p>
-              <strong>Total Pending Searches:</strong> 5
+              <strong>Total Pending Searches:</strong> {pendingSearch}
             </p>
             <p></p>
           </div>

@@ -5,7 +5,7 @@ import {
   deleteAgent,
   deleteRelationship,
   updateAgent,
-} from "../../graphql/mutations"; // Auto-generated
+} from "../../graphql/mutations";
 import AWSExport from "../../aws-exports";
 import { fetchBroker } from "./broker";
 const AWS = require("aws-sdk");
@@ -19,9 +19,8 @@ AWS.config.update({
 const cognito = new AWS.CognitoIdentityServiceProvider();
 const userPoolId = AWSExport.aws_user_pools_id;
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
-const brokerId = "14e814a8-10f1-7045-1386-78fcbb24a0ed";
 
-export async function getAgentsTotalSearchesThisMonth() {
+export async function getAgentsTotalSearchesThisMonth(brokerId) {
   const currentMonthStart = new Date();
   currentMonthStart.setDate(1);
   currentMonthStart.setHours(0, 0, 0, 0);
@@ -44,6 +43,7 @@ export async function getAgentsTotalSearchesThisMonth() {
   if (agentIds.length === 0) {
     return { totalSearches: 0 };
   }
+
   let totalSearches = 0;
 
   for (const agentId of agentIds) {
@@ -191,4 +191,43 @@ export async function inActiveAgent(agentId) {
     console.error(err);
     return false;
   }
+}
+
+export async function pendingAgentSearch(brokerId) {
+  const relationshipQuery = {
+    TableName: "Relationship-mxixmn4cbbcgrhwtar46djww4q-master",
+    IndexName: "brokerIdIndex", // Assuming you have a GSI on brokerId
+    KeyConditionExpression: "brokerId = :brokerId",
+    ExpressionAttributeValues: {
+      ":brokerId": brokerId,
+    },
+  };
+
+  const relationshipData = await dynamoDB.query(relationshipQuery).promise();
+  const agentIds = relationshipData.Items.map((item) => item.agentId);
+
+  let pendingSearches = 0;
+
+  if (agentIds.length === 0) {
+    return { pendingSearches };
+  }
+
+  for (const agentId of agentIds) {
+    const searchQuery = {
+      TableName: "SearchHistory-mxixmn4cbbcgrhwtar46djww4q-master",
+      FilterExpression: "#userId = :agentId AND #status = :inProgress",
+      ExpressionAttributeNames: {
+        "#userId": "userId",
+        "#status": "status",
+      },
+      ExpressionAttributeValues: {
+        ":agentId": agentId,
+        ":inProgress": "In Progress",
+      },
+    };
+
+    const searchData = await dynamoDB.scan(searchQuery).promise();
+    pendingSearches += searchData.Count;
+  }
+  return { pendingSearches };
 }
