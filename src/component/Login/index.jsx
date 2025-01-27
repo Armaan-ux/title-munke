@@ -1,7 +1,7 @@
 import "./index.css";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import ResetPassword from "../ResetPassword";
+import { Link, useNavigate } from "react-router-dom";
+import OTP from "../OTP";
 import { useUser } from "../../context/usercontext";
 
 function Login() {
@@ -26,11 +26,11 @@ function Login() {
     try {
       setError("");
       setIsChecking(true);
-      const { user, isResetRequired } = await signIn(username, password);
-      if (!user) {
-        setError("User does not exist.");
-        return;
-      }
+      const { isResetRequired } = await signIn(username, password);
+      // if (!user) {
+      //   setError("User does not exist.");
+      //   return;
+      // }
       if (isResetRequired) {
         setIsReset(true);
         return;
@@ -55,7 +55,13 @@ function Login() {
     }
   };
 
-  if (isReset) return <ResetPassword username={username} password={password} />;
+  const resetForLogin = () => {
+    setPassword("");
+    setUsername("");
+    setIsReset(false);
+  };
+
+  if (isReset) return <OTP username={username} resetForLogin={resetForLogin} />;
 
   return (
     <div className="main">
@@ -83,6 +89,11 @@ function Login() {
               required
               onChange={(e) => setPassword(e.target.value)}
             />
+          </div>
+          <div className="form-group">
+            <Link to="/forgot-password" className="forgot-password">
+              Forgot Password?
+            </Link>
           </div>
           <button
             disabled={isChecking}

@@ -108,19 +108,32 @@ export async function getAgentTotalSearchesThisMonth(agentId) {
   return totalSearches;
 }
 
+export const confirmUser = async (username, code) => {
+  try {
+    const response = await Auth.confirmSignUp(username, code);
+    console.log("User confirmed successfully!", response);
+    return response;
+  } catch (error) {
+    if (error.code === "ExpiredCodeException") {
+      console.error("OTP has expired. Please request a new one.");
+    } else if (error.code === "CodeMismatchException") {
+      console.error("Invalid OTP. Please try again.");
+    } else {
+      console.error("Error confirming user:", error);
+    }
+    throw error;
+  }
+};
+
 export async function createAgentForBroker(brokerId, name, email, password) {
   try {
-    const createUserResponse = await cognito
-      .adminCreateUser({
-        UserPoolId: userPoolId,
-        Username: name,
-        TemporaryPassword: password,
-        UserAttributes: [{ Name: "email", Value: email }],
-        MessageAction: "SUPPRESS",
-      })
-      .promise();
-
-    console.log("User created:", createUserResponse);
+    const createUserResponse = await Auth.signUp({
+      username: name,
+      password: password,
+      attributes: {
+        email,
+      },
+    });
 
     const response = await cognito
       .adminAddUserToGroup({
@@ -134,7 +147,7 @@ export async function createAgentForBroker(brokerId, name, email, password) {
 
     // Step 2: Add Agent Data to DynamoDB
     const agentInput = {
-      id: createUserResponse?.User?.Attributes[1].Value,
+      id: createUserResponse.userSub,
       name: name,
       status: "ACTIVE",
     };

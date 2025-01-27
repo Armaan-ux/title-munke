@@ -67,16 +67,3 @@
     cursor: not-allowed;
     background-color: rgb(97 103 107);
   }
-
-  .forgot-password {
-    display: block;
-    text-align: right;
-    color: #1e272e;
-    text-decoration: none;
-    font-size: 14px;
-    margin-top: 5px;
-  }
-  
-  .forgot-password:hover {
-    text-decoration: underline;
-  }

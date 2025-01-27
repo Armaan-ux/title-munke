@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useUser } from "../../context/usercontext";
 import { createAgentForBroker } from "../service/agent";
 import "./AddUserModal.css";
+import { toast } from "react-toastify";
 
 function AddAgentModal({ setIsOpen }) {
   const { user } = useUser();
@@ -24,6 +25,7 @@ function AddAgentModal({ setIsOpen }) {
       e.preventDefault();
       const { name, email, password } = formData;
       await createAgentForBroker(user?.attributes?.sub, name, email, password);
+      toast.success("Please ask agent to ch email for otp");
       console.log(formData);
     } catch (err) {
       console.error(err);

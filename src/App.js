@@ -12,9 +12,11 @@ import { adminRoutes, agentRoutes, brokerRoutes } from "./routes";
 import Layout from "./component/Layout";
 import { useUser } from "./context/usercontext";
 import Loader from "./component/Loader";
+import ForgetPassword from "./component/ForgetPassword";
 
 function App() {
   const { isLoading } = useUser();
+
   if (isLoading) {
     return <Loader />;
   }
@@ -23,6 +25,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgetPassword />} />
         <Route path="/notfound" element={<NotFound />} />
         <Route path="/" element={<Layout />}>
           {adminRoutes.map(({ path, component: Component }) => (

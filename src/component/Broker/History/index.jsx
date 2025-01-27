@@ -129,7 +129,7 @@ function History() {
 
     return () => clearInterval(interval);
   }, [inProgressSearches]);
-
+  console.log("inProgressSearches", inProgressSearches);
   useEffect(() => {
     if (user?.attributes?.sub) {
       if (activeTab === "history") fetchSearchHistories();

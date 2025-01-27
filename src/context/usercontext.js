@@ -39,7 +39,10 @@ export const UserProvider = ({ children }) => {
       setIsAuthenticated(true);
       return { user, isResetRequired: false };
     } catch (error) {
-      console.error(error);
+      if (error.code === "UserNotConfirmedException") {
+        console.error("User is not confirmed. Prompt for OTP verification.");
+        return { isResetRequired: true, error: "UserNotConfirmed" };
+      }
       return { user: null, isResetRequired: false };
     }
   };
