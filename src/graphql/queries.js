@@ -11,6 +11,8 @@ export const getSearchHistory = /* GraphQL */ `
       timestamp
       downloadLink
       status
+      brokerId
+      username
       createdAt
       updatedAt
       __typename
@@ -32,6 +34,8 @@ export const listSearchHistories = /* GraphQL */ `
         timestamp
         downloadLink
         status
+        brokerId
+        username
         createdAt
         updatedAt
         __typename

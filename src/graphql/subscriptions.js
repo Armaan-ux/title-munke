@@ -13,6 +13,8 @@ export const onCreateSearchHistory = /* GraphQL */ `
       timestamp
       downloadLink
       status
+      brokerId
+      username
       createdAt
       updatedAt
       __typename
@@ -31,6 +33,8 @@ export const onUpdateSearchHistory = /* GraphQL */ `
       timestamp
       downloadLink
       status
+      brokerId
+      username
       createdAt
       updatedAt
       __typename
@@ -49,6 +53,8 @@ export const onDeleteSearchHistory = /* GraphQL */ `
       timestamp
       downloadLink
       status
+      brokerId
+      username
       createdAt
       updatedAt
       __typename

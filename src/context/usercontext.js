@@ -1,7 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { Auth } from "aws-amplify";
 
-// Create the UserContext
 const UserContext = createContext();
 
 export const useUser = () => {
@@ -16,10 +15,10 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const checkUserSession = async () => {
       try {
-        console.log("user", user);
         const currentUser = await Auth.currentAuthenticatedUser();
         setUser(currentUser);
         setIsAuthenticated(true);
+        console.log("user", currentUser);
       } catch (error) {
         setIsAuthenticated(false);
       } finally {

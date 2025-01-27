@@ -3,6 +3,7 @@ import AddAgentModal from "../../Modal/AddUserModal";
 import {
   calculateAverage,
   getAgentsTotalSearchesThisMonth,
+  getTopPerformerAgent,
   inActiveAgent,
   pendingAgentSearch,
   UnassignAgent,
@@ -17,18 +18,23 @@ const AssginedAgents = () => {
   const [agents, setAgents] = useState([]);
   const [totalSearchesThisMonth, setTotalSearchesThisMonth] = useState(0);
   const [pendingSearch, setPendingSearch] = useState(0);
+  const [topPerformer, setTopPerformer] = useState("");
 
   useEffect(() => {
-    if (user?.attributes?.sub)
+    if (user?.attributes?.sub) {
       getAgentsTotalSearchesThisMonth(user?.attributes?.sub)
         .then((item) => setTotalSearchesThisMonth(item.totalSearches))
         .catch((err) => console.error(err));
-    fetchAgentsWithSearchCount(user?.attributes?.sub)
-      .then((item) => setAgents(item))
-      .catch((err) => console.error("Error fetching agents", err));
-    pendingAgentSearch(user?.attributes?.sub)
-      .then((item) => setPendingSearch(item.pendingSearches))
-      .catch((err) => console.error("Error fetching agents", err));
+      fetchAgentsWithSearchCount(user?.attributes?.sub)
+        .then((item) => setAgents(item))
+        .catch((err) => console.error("Error fetching agents", err));
+      pendingAgentSearch(user?.attributes?.sub)
+        .then((item) => setPendingSearch(item.pendingSearches))
+        .catch((err) => console.error("Error fetching agents", err));
+      getTopPerformerAgent(user?.attributes?.sub)
+        .then((item) => setTopPerformer(item))
+        .catch((err) => console.error("Error fetching agents", err));
+    }
   }, [user]);
 
   const unAssignAgent = async (id) => {
@@ -87,7 +93,7 @@ const AssginedAgents = () => {
                 0}
             </p>
             <p>
-              <strong>Top Performer:</strong> Linda Smith (200 searches)
+              <strong>Top Performer:</strong> {topPerformer}
             </p>
           </div>
 

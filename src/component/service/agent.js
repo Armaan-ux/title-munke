@@ -231,3 +231,63 @@ export async function pendingAgentSearch(brokerId) {
   }
   return { pendingSearches };
 }
+
+function findTopSearcher(agentData) {
+  let topAgent = null;
+  let maxCount = 0;
+
+  for (const [agentId, data] of Object.entries(agentData)) {
+    if (data.count > maxCount) {
+      maxCount = data.count;
+      topAgent = { agentId, ...data };
+    }
+  }
+
+  return topAgent;
+}
+
+export const getTopPerformerAgent = async (brokerId) => {
+  const relationshipQuery = {
+    TableName: "Relationship-mxixmn4cbbcgrhwtar46djww4q-master",
+    IndexName: "brokerIdIndex", // Assuming you have a GSI on brokerId
+    KeyConditionExpression: "brokerId = :brokerId",
+    ExpressionAttributeValues: {
+      ":brokerId": brokerId,
+    },
+  };
+
+  const relationshipData = await dynamoDB.query(relationshipQuery).promise();
+
+  const currentMonthStart = new Date();
+  currentMonthStart.setDate(1);
+  currentMonthStart.setHours(0, 0, 0, 0);
+
+  const nextMonthStart = new Date(currentMonthStart);
+  nextMonthStart.setMonth(nextMonthStart.getMonth() + 1);
+  const allSearches = {};
+  for (const agent of relationshipData.Items) {
+    const searchQuery = {
+      TableName: "SearchHistory-mxixmn4cbbcgrhwtar46djww4q-master",
+      FilterExpression: "#userId = :agentId AND #ts BETWEEN :start AND :end",
+      ExpressionAttributeNames: {
+        "#userId": "userId",
+        "#ts": "timestamp",
+      },
+      ExpressionAttributeValues: {
+        ":agentId": agent.agentId,
+        ":start": "2024-12-31T19:00:00.000Z",
+        ":end": "2025-01-31T19:00:00.000Z",
+      },
+    };
+
+    const searchData = await dynamoDB.scan(searchQuery).promise();
+    allSearches[agent.agentId] = {
+      count: searchData.Count,
+      agentName: agent.agentName,
+    };
+  }
+
+  console.log(allSearches);
+  const topSearcher = findTopSearcher(allSearches);
+  return `${topSearcher.agentName} (${topSearcher.count})`;
+};

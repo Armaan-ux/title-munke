@@ -12,6 +12,7 @@ function History() {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [nextToken, setNextToken] = useState(null);
+  const [activeTab, setActiveTab] = useState("history");
   const [inProgressSearches, setInProgressSearches] = useState([]);
   const { user } = useUser();
 
@@ -42,7 +43,33 @@ function History() {
     }
     setLoading(false);
   };
+  const fetchAgentSearchHistories = async () => {
+    if (loading || !hasMore) return;
 
+    setLoading(true);
+    try {
+      const response = await API.graphql({
+        query: listSearchHistories,
+        variables: {
+          filter: { brokerId: { eq: user?.attributes?.sub } },
+          limit: 10,
+          nextToken,
+        },
+      });
+      const { items, nextToken: newNextToken } =
+        response.data.listSearchHistories;
+
+      setSearchHistories((prev) => [...prev, ...items]);
+      setNextToken(newNextToken);
+      setHasMore(!!newNextToken);
+
+      const inProgress = items.filter((item) => item.status === "In Progress");
+      setInProgressSearches((prev) => [...prev, ...inProgress]);
+    } catch (error) {
+      console.error("Error fetching search histories:", error);
+    }
+    setLoading(false);
+  };
   const checkSearchStatus = async (searchId, id) => {
     try {
       const response = await axios.post(
@@ -85,6 +112,14 @@ function History() {
     }
   };
 
+  const resetStateOnTabChange = () => {
+    setInProgressSearches([]);
+    setHasMore(true);
+    setLoading(false);
+    setNextToken(null);
+    setSearchHistories([]);
+  };
+
   useEffect(() => {
     const interval = setInterval(() => {
       inProgressSearches.forEach((search) => {
@@ -96,13 +131,36 @@ function History() {
   }, [inProgressSearches]);
 
   useEffect(() => {
-    if (user?.attributes?.sub) fetchSearchHistories();
-  }, [user]);
+    if (user?.attributes?.sub) {
+      if (activeTab === "history") fetchSearchHistories();
+      else fetchAgentSearchHistories();
+    }
+  }, [user, activeTab]);
 
   return (
     <div className="history-main-content">
       <div class="setting-page-title">
         <h1>Search History</h1>
+      </div>
+      <div className="tab-container">
+        <button
+          className={`tab-button ${activeTab === "history" ? "active" : ""}`}
+          onClick={() => {
+            resetStateOnTabChange();
+            setActiveTab("history");
+          }}
+        >
+          My history
+        </button>
+        <button
+          className={`tab-button ${activeTab === "agents" ? "active" : ""}`}
+          onClick={() => {
+            resetStateOnTabChange();
+            setActiveTab("agents");
+          }}
+        >
+          Agents
+        </button>
       </div>
       <div className="history-card">
         <table className="history-styled-table table-container">
@@ -111,6 +169,7 @@ function History() {
               <th>Search ID</th>
               <th>Status</th>
               <th>Time</th>
+              {activeTab === "agents" && <th>Name</th>}
               <th>Download Link</th>
             </tr>
           </thead>
@@ -120,6 +179,7 @@ function History() {
                 <td>{elem?.searchId}</td>
                 <td> {elem?.status}</td>
                 <td>{elem?.createdAt}</td>
+                {activeTab === "agents" && <th>{elem.username}</th>}
                 <td>
                   {elem?.downloadLink ? (
                     <a

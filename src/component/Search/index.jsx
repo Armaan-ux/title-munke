@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API, graphqlOperation } from "aws-amplify";
 import { createSearchHistory } from "../../graphql/mutations";
 import "./index.css";
 import { useUser } from "../../context/usercontext";
 import { handleCreateAuditLog } from "../../utils";
+import {
+  getAgent,
+  getBroker,
+  relationshipsByAgentId,
+} from "../../graphql/queries";
 
 const Search = () => {
   const [address, setAddress] = useState("");
@@ -85,6 +90,30 @@ const Search = () => {
 
   const addToDynamoDB = async (address, searchId, userId) => {
     try {
+      let brokerId = "";
+      let username = "";
+
+      if (
+        user?.signInUserSession?.idToken?.payload?.["cognito:groups"].includes(
+          "agent"
+        )
+      ) {
+        const response = await API.graphql(
+          graphqlOperation(relationshipsByAgentId, { agentId: userId })
+        );
+        const agentDetail = await API.graphql(
+          graphqlOperation(getAgent, { id: userId })
+        );
+        username = agentDetail?.data?.getAgent?.name;
+        brokerId =
+          response.data?.relationshipsByAgentId?.items[0]?.brokerId || "";
+      } else {
+        const agentDetail = await API.graphql(
+          graphqlOperation(getBroker, { id: userId })
+        );
+        username = agentDetail?.data?.getAgent?.name;
+      }
+
       const newEntry = {
         userId,
         address,
@@ -92,6 +121,8 @@ const Search = () => {
         downloadLink: "",
         status: "In Progress",
         searchId,
+        brokerId,
+        username,
       };
 
       await API.graphql(

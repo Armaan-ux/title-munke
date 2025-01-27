@@ -10,6 +10,8 @@ type SearchHistory @model {
   timestamp: AWSDateTime!
   downloadLink: String
   status: String
+  brokerId: String
+  username: String
 }
 
 type AuditLog @model {
