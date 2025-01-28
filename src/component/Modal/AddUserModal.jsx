@@ -3,8 +3,9 @@ import { useUser } from "../../context/usercontext";
 import { createAgentForBroker } from "../service/agent";
 import "./AddUserModal.css";
 import { toast } from "react-toastify";
+import { createBrokerLogin } from "../service/broker";
 
-function AddAgentModal({ setIsOpen }) {
+function AddUserModal({ setIsOpen, userType }) {
   const { user } = useUser();
   const [formData, setFormData] = useState({
     name: "",
@@ -24,8 +25,21 @@ function AddAgentModal({ setIsOpen }) {
     try {
       e.preventDefault();
       const { name, email, password } = formData;
-      await createAgentForBroker(user?.attributes?.sub, name, email, password);
-      toast.success("Please ask agent to ch email for otp");
+      if (userType === "agent") {
+        await createAgentForBroker(
+          user?.attributes?.sub,
+          name,
+          email,
+          password
+        );
+        toast.success("Agent Created Successfully.");
+      } else if (userType === "broker") {
+        const { newBroker } = await createBrokerLogin(name, email, password);
+        toast.success("Broker Created Successfully.");
+        //call function for broker
+      } else if (userType === "admin") {
+        //call function for admin
+      }
       console.log(formData);
     } catch (err) {
       console.error(err);
@@ -42,7 +56,7 @@ function AddAgentModal({ setIsOpen }) {
 
       <div className="modal-overlay">
         <div className="modal-content">
-          <h2>Agent Registration</h2>
+          <h2>{userType} Registration</h2>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label>Name</label>
@@ -93,4 +107,4 @@ function AddAgentModal({ setIsOpen }) {
   );
 }
 
-export default AddAgentModal;
+export default AddUserModal;

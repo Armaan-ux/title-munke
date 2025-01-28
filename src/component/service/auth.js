@@ -24,3 +24,16 @@ export const resetPassword = async (username, code, newPassword) => {
     console.error("Error resetting password:", error);
   }
 };
+
+export const resendOTP = async (username) => {
+  try {
+    await Auth.resendSignUp(username);
+    console.log("New OTP sent successfully.");
+  } catch (error) {
+    if (error.code === "LimitExceededException") {
+      console.error("Too many attempts. Please wait before resending the OTP.");
+    } else {
+      console.error("Error resending OTP:", error);
+    }
+  }
+};

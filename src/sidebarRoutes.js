@@ -22,6 +22,21 @@ export const routes = {
       link: "/agent/search",
       name: "Admin",
     },
+    {
+      link: "/admin/brokers",
+      name: "Admin Broker List",
+      class: "fas fa-history",
+    },
+    {
+      link: "/admin/admins",
+      name: "Admins List",
+      class: "fas fa-history",
+    },
+    {
+      link: "/admin/setting",
+      name: "Setting",
+      class: "fas fa-cog",
+    },
   ],
   broker: [
     {

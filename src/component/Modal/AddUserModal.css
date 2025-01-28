@@ -27,6 +27,9 @@
     color: #1e272e;
   }
   
+  .modal-content h2{
+    text-transform: capitalize;
+  }
   .form-group {
     margin-bottom: 15px;
   }

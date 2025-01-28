@@ -34,7 +34,9 @@ export const handler = async (event, context) => {
     }
 
     let tableName;
-    if (userGroups.includes("agent")) {
+    if (userGroups.includes("admin")) {
+      return event;
+    } else if (userGroups.includes("agent")) {
       tableName = AGENT_TABLE_NAME;
     } else if (userGroups.includes("broker")) {
       tableName = BROKER_TABLE_NAME;

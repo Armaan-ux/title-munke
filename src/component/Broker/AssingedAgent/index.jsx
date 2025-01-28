@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import AddAgentModal from "../../Modal/AddUserModal";
+import AddUserModal from "../../Modal/AddUserModal";
 import {
   calculateAverage,
   getAgentsTotalSearchesThisMonth,
@@ -11,6 +11,7 @@ import {
 import { useUser } from "../../../context/usercontext";
 import { fetchAgentsWithSearchCount } from "../../service/broker";
 import "./index.css";
+import { resendOTP } from "../../service/auth";
 
 const AssginedAgents = () => {
   const { user } = useUser();
@@ -56,7 +57,7 @@ const AssginedAgents = () => {
 
   return (
     <>
-      {isOpen && <AddAgentModal setIsOpen={setIsOpen} />}
+      {isOpen && <AddUserModal setIsOpen={setIsOpen} userType="agent" />}
       <div className="main-content" style={{ display: "block" }}>
         <div
           className="page-title"
@@ -106,7 +107,7 @@ const AssginedAgents = () => {
           </div>
         </div>
 
-        <div className="card">
+        <div className="card" style={{ width: "100%" }}>
           <h3>Broker Roster</h3>
           <table className="styled-table">
             <thead>
@@ -131,16 +132,24 @@ const AssginedAgents = () => {
                         <button className="btn action-btn">
                           Actions <i className="fas fa-caret-down"></i>
                         </button>
-                        <div className="dropdown-content">
-                          <span onClick={() => unAssignAgent(elem.id)}>
-                            Unassign
-                          </span>
-                          <span
-                            onClick={() => inActiveAgentStatus(elem.agentId)}
-                          >
-                            Delete
-                          </span>
-                        </div>
+                        {elem.status === "UNCONFIRMED" ? (
+                          <div className="dropdown-content">
+                            <span onClick={() => resendOTP(elem.agentName)}>
+                              Resend OTP
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="dropdown-content">
+                            <span onClick={() => unAssignAgent(elem.id)}>
+                              Unassign
+                            </span>
+                            <span
+                              onClick={() => inActiveAgentStatus(elem.agentId)}
+                            >
+                              Delete
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </td>
                   </tr>

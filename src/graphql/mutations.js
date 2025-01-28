@@ -172,6 +172,7 @@ export const createAgent = /* GraphQL */ `
       id
       name
       status
+      lastLogin
       createdAt
       updatedAt
       __typename
@@ -187,6 +188,7 @@ export const updateAgent = /* GraphQL */ `
       id
       name
       status
+      lastLogin
       createdAt
       updatedAt
       __typename
@@ -202,6 +204,7 @@ export const deleteAgent = /* GraphQL */ `
       id
       name
       status
+      lastLogin
       createdAt
       updatedAt
       __typename
@@ -217,6 +220,7 @@ export const createBroker = /* GraphQL */ `
       id
       name
       status
+      lastLogin
       createdAt
       updatedAt
       __typename
@@ -232,6 +236,7 @@ export const updateBroker = /* GraphQL */ `
       id
       name
       status
+      lastLogin
       createdAt
       updatedAt
       __typename
@@ -247,6 +252,7 @@ export const deleteBroker = /* GraphQL */ `
       id
       name
       status
+      lastLogin
       createdAt
       updatedAt
       __typename

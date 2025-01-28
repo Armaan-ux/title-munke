@@ -33,11 +33,14 @@ type Agent @model {
   id: ID!
   name: String!
   status: String!
+  lastLogin: AWSDateTime!
 }
 
 type Broker @model {
   id: ID!
   name: String!
   status: String!
+  lastLogin: AWSDateTime!
 }
+
 

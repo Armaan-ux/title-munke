@@ -149,7 +149,8 @@ export async function createAgentForBroker(brokerId, name, email, password) {
     const agentInput = {
       id: createUserResponse.userSub,
       name: name,
-      status: "ACTIVE",
+      status: "UNCONFIRMED",
+      lastLogin: new Date().toISOString(),
     };
 
     const broker = await fetchBroker(brokerId);

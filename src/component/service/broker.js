@@ -1,6 +1,12 @@
-import { API, graphqlOperation } from "aws-amplify";
-import { getBroker, relationshipsByBrokerId } from "../../graphql/queries";
+import { API, Auth, graphqlOperation } from "aws-amplify";
+import { createBroker, updateBroker } from "../../graphql/mutations";
+import {
+  getBroker,
+  listBrokers,
+  relationshipsByBrokerId,
+} from "../../graphql/queries";
 import { getAgentTotalSearchesThisMonth } from "./agent";
+import AWSExport from "../../aws-exports";
 const AWS = require("aws-sdk");
 
 AWS.config.update({
@@ -9,6 +15,8 @@ AWS.config.update({
   region: "us-east-1",
 });
 
+const cognito = new AWS.CognitoIdentityServiceProvider();
+const userPoolId = AWSExport.aws_user_pools_id;
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 export async function fetchBroker(brokerId) {
   try {
@@ -81,5 +89,157 @@ export async function fetchAgentsWithSearchCount(brokerId) {
     return updatedAgents;
   } catch (error) {
     console.error("Error fetching agents and their search count:", error);
+  }
+}
+
+export async function getBrokerTotalSearchesThisMonth(brokerId) {
+  // Get the start of the current month
+  const currentMonthStart = new Date();
+  currentMonthStart.setDate(1);
+  currentMonthStart.setHours(0, 0, 0, 0);
+
+  // Get the start of the next month
+  const nextMonthStart = new Date(currentMonthStart);
+  nextMonthStart.setMonth(nextMonthStart.getMonth() + 1);
+
+  // Construct the query for the agent's search history
+  const searchQuery = {
+    TableName: "SearchHistory-mxixmn4cbbcgrhwtar46djww4q-master",
+    FilterExpression: "#userId = :agentId AND #ts BETWEEN :start AND :end",
+    ExpressionAttributeNames: {
+      "#userId": "userId",
+      "#ts": "timestamp",
+    },
+    ExpressionAttributeValues: {
+      ":agentId": brokerId,
+      ":start": currentMonthStart.toISOString(),
+      ":end": nextMonthStart.toISOString(),
+    },
+  };
+
+  // Fetch the search data
+  const searchData = await dynamoDB.scan(searchQuery).promise();
+
+  // Return the total searches
+  const totalSearches = searchData.Count || 0;
+
+  console.log(`Total searches for agent ${brokerId}:`, totalSearches);
+  return totalSearches;
+}
+
+export async function createBrokerLogin(name, email, password) {
+  try {
+    const createUserResponse = await Auth.signUp({
+      username: name,
+      password: password,
+      attributes: {
+        email,
+      },
+    });
+
+    const response = await cognito
+      .adminAddUserToGroup({
+        UserPoolId: userPoolId,
+        Username: name,
+        GroupName: "broker",
+      })
+      .promise();
+
+    console.log("User added to Broker group:", response);
+
+    // Step 2: Add Agent Data to DynamoDB
+    const brokerInput = {
+      id: createUserResponse.userSub,
+      name: name,
+      status: "UNCONFIRMED",
+      lastLogin: new Date().toISOString(),
+    };
+
+    const newBroker = await API.graphql(
+      graphqlOperation(createBroker, { input: brokerInput })
+    );
+
+    console.log("Broker Created successfully:", newBroker);
+
+    return {
+      newBroker: newBroker?.data?.createBroker.item,
+      success: true,
+      message: "Broker created and linked successfully.",
+    };
+  } catch (error) {
+    console.error("Error creating agent for broker:", error);
+    throw error;
+  }
+}
+
+export async function fetchTotalBrokerSearchesThisMonth() {
+  const brokers = await API.graphql(graphqlOperation(listBrokers, {}));
+  let search = 0;
+  await Promise.all(
+    brokers.data.listBrokers.items.map(async (broker) => {
+      const searchCount = await getBrokerTotalSearchesThisMonth(broker.id);
+      search = search + searchCount;
+    })
+  );
+  return search;
+}
+export async function fetchTotalBrokers() {
+  const brokers = await API.graphql(graphqlOperation(listBrokers, {}));
+  return brokers?.data?.listBrokers?.items;
+}
+
+export async function fetchTotalActiveBrokers() {
+  const brokers = await API.graphql({
+    query: listBrokers,
+    variables: {
+      filter: { status: { eq: "ACTIVE" } },
+    },
+  });
+
+  return brokers?.data?.listBrokers?.items;
+}
+
+export async function fetchBrokersWithSearchCount() {
+  try {
+    const brokers = await API.graphql(graphqlOperation(listBrokers, {}));
+
+    const updatedBrokers = await Promise.all(
+      brokers.data.listBrokers.items.map(async (broker) => {
+        const searchCount = await getBrokerTotalSearchesThisMonth(broker.id);
+        return { ...broker, totalSearches: searchCount };
+      })
+    );
+    console.log("updatedBroker", updatedBrokers);
+    return updatedBrokers;
+  } catch (error) {
+    console.error("Error fetching agents and their search count:", error);
+  }
+}
+
+export async function inActiveBroker(brokerId) {
+  try {
+    await API.graphql(
+      graphqlOperation(updateBroker, {
+        input: { id: brokerId, status: "INACTIVE" },
+      })
+    );
+    return true;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+}
+
+export async function activeBroker(brokerId) {
+  try {
+    await API.graphql(
+      graphqlOperation(updateBroker, {
+        input: { id: brokerId, status: "ACTIVE" },
+      })
+    );
+    return true;
+  } catch (err) {
+    console.error(err);
+    return false;
   }
 }

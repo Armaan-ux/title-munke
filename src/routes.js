@@ -7,8 +7,12 @@ import BrokerSetting from "./component/Broker/Setting";
 import Broker from "./component/Broker";
 import Search from "./component/Search";
 import AssginedAgents from "./component/Broker/AssingedAgent";
+import BorkerList from "./component/Admin/BrokerList";
 
-export const adminRoutes = [{ path: "admin", component: Admin }];
+export const adminRoutes = [
+  { path: "admin", component: Admin },
+  { path: "admin/brokers", component: BorkerList },
+];
 
 export const agentRoutes = [
   { path: "agent", component: Agent },

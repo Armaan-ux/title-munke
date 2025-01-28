@@ -1,5 +1,17 @@
 import { API, Auth } from "aws-amplify";
 import { createAuditLog } from "./graphql/mutations";
+import { format, toZonedTime } from "date-fns-tz";
+
+export const getFormattedDateTime = (lastLoginUTC) => {
+  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  const zonedDate = toZonedTime(new Date(lastLoginUTC), userTimeZone);
+  const formattedDate = format(zonedDate, "yyyy-MM-dd HH:mm:ss", {
+    timeZone: userTimeZone,
+  });
+
+  return formattedDate;
+};
 
 export const handleCreateAuditLog = async (action, detail) => {
   const user = await Auth.currentAuthenticatedUser();

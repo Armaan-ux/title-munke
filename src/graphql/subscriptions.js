@@ -154,6 +154,7 @@ export const onCreateAgent = /* GraphQL */ `
       id
       name
       status
+      lastLogin
       createdAt
       updatedAt
       __typename
@@ -166,6 +167,7 @@ export const onUpdateAgent = /* GraphQL */ `
       id
       name
       status
+      lastLogin
       createdAt
       updatedAt
       __typename
@@ -178,6 +180,7 @@ export const onDeleteAgent = /* GraphQL */ `
       id
       name
       status
+      lastLogin
       createdAt
       updatedAt
       __typename
@@ -190,6 +193,7 @@ export const onCreateBroker = /* GraphQL */ `
       id
       name
       status
+      lastLogin
       createdAt
       updatedAt
       __typename
@@ -202,6 +206,7 @@ export const onUpdateBroker = /* GraphQL */ `
       id
       name
       status
+      lastLogin
       createdAt
       updatedAt
       __typename
@@ -214,6 +219,7 @@ export const onDeleteBroker = /* GraphQL */ `
       id
       name
       status
+      lastLogin
       createdAt
       updatedAt
       __typename

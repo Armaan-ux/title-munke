@@ -5,7 +5,7 @@ import "./index.css";
 import axios from "axios";
 import { updateSearchHistory } from "../../../graphql/mutations";
 import { useUser } from "../../../context/usercontext";
-import { handleCreateAuditLog } from "../../../utils";
+import { getFormattedDateTime, handleCreateAuditLog } from "../../../utils";
 
 function History() {
   const [searchHistories, setSearchHistories] = useState([]);
@@ -119,7 +119,7 @@ function History() {
               <tr key={elem.id} id="broker-row-1">
                 <td>{elem?.searchId}</td>
                 <td> {elem?.status}</td>
-                <td>{elem?.createdAt}</td>
+                <td>{getFormattedDateTime(elem?.createdAt)}</td>
                 <td>
                   {elem?.downloadLink ? (
                     <a
