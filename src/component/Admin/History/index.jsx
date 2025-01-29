@@ -21,7 +21,7 @@ function AllSearchHistory() {
       const response = await API.graphql({
         query: listSearchHistories,
         variables: {
-          filter: { userId: { eq: user?.attributes?.sub } },
+          filter: { brokerId: { eq: "none" } },
           limit: 10,
           nextToken,
         },
@@ -45,7 +45,7 @@ function AllSearchHistory() {
       const response = await API.graphql({
         query: listSearchHistories,
         variables: {
-          filter: { brokerId: { eq: user?.attributes?.sub } },
+          filter: { brokerId: { ne: "none" } },
           limit: 10,
           nextToken,
         },
@@ -108,7 +108,7 @@ function AllSearchHistory() {
               <th>Search ID</th>
               <th>Status</th>
               <th>Time</th>
-              {activeTab === "agents" && <th>Name</th>}
+              <th>Name</th>
               <th>Download Link</th>
             </tr>
           </thead>
@@ -118,7 +118,7 @@ function AllSearchHistory() {
                 <td>{elem?.searchId}</td>
                 <td> {elem?.status}</td>
                 <td>{getFormattedDateTime(elem?.createdAt)}</td>
-                {activeTab === "agents" && <th>{elem.username}</th>}
+                <td>{elem.username}</td>
                 <td>
                   {elem?.downloadLink ? (
                     <a

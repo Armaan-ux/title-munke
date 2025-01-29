@@ -152,6 +152,7 @@ export async function createBrokerLogin(name, email, password) {
     const brokerInput = {
       id: createUserResponse.userSub,
       name: name,
+      email,
       status: "UNCONFIRMED",
       lastLogin: new Date().toISOString(),
     };

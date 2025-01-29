@@ -90,7 +90,7 @@ const Search = () => {
 
   const addToDynamoDB = async (address, searchId, userId) => {
     try {
-      let brokerId = "";
+      let brokerId = "none";
       let username = "";
 
       if (
@@ -108,10 +108,10 @@ const Search = () => {
         brokerId =
           response.data?.relationshipsByAgentId?.items[0]?.brokerId || "";
       } else {
-        const agentDetail = await API.graphql(
+        const brokerDetail = await API.graphql(
           graphqlOperation(getBroker, { id: userId })
         );
-        username = agentDetail?.data?.getAgent?.name;
+        username = brokerDetail?.data?.getBroker?.name;
       }
 
       const newEntry = {

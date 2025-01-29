@@ -149,6 +149,7 @@ export async function createAgentForBroker(brokerId, name, email, password) {
     const agentInput = {
       id: createUserResponse.userSub,
       name: name,
+      email,
       status: "UNCONFIRMED",
       lastLogin: new Date().toISOString(),
     };
