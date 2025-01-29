@@ -120,6 +120,7 @@ export const getAgent = /* GraphQL */ `
     getAgent(id: $id) {
       id
       name
+      email
       status
       lastLogin
       createdAt
@@ -138,6 +139,7 @@ export const listAgents = /* GraphQL */ `
       items {
         id
         name
+        email
         status
         lastLogin
         createdAt
@@ -154,6 +156,7 @@ export const getBroker = /* GraphQL */ `
     getBroker(id: $id) {
       id
       name
+      email
       status
       lastLogin
       createdAt
@@ -172,6 +175,7 @@ export const listBrokers = /* GraphQL */ `
       items {
         id
         name
+        email
         status
         lastLogin
         createdAt

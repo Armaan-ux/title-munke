@@ -28,9 +28,9 @@ export const routes = {
       class: "fas fa-history",
     },
     {
-      link: "/admin/admins",
-      name: "Admins List",
-      class: "fas fa-history",
+      link: "/admin/searchHistory",
+      name: "All Search History",
+      class: "fas fa-search",
     },
     {
       link: "/admin/setting",

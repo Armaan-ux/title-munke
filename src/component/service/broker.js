@@ -64,6 +64,7 @@ export async function fetchAgentsOfBroker(brokerId) {
         return {
           ...relationship,
           status: agentDetails?.status,
+          lastLogin: agentDetails.lastLogin,
         };
       }
     );
@@ -188,6 +189,17 @@ export async function fetchTotalBrokers() {
   return brokers?.data?.listBrokers?.items;
 }
 
+export async function fetchActiveBrokers() {
+  const brokers = await API.graphql(
+    graphqlOperation(listBrokers, {
+      filter: {
+        status: { eq: "ACTIVE" },
+      },
+    })
+  );
+  return brokers?.data?.listBrokers?.items;
+}
+
 export async function fetchTotalActiveBrokers() {
   const brokers = await API.graphql({
     query: listBrokers,
@@ -199,9 +211,14 @@ export async function fetchTotalActiveBrokers() {
   return brokers?.data?.listBrokers?.items;
 }
 
-export async function fetchBrokersWithSearchCount() {
+export async function fetchBrokersWithSearchCount(token) {
   try {
-    const brokers = await API.graphql(graphqlOperation(listBrokers, {}));
+    const brokers = await API.graphql(
+      graphqlOperation(listBrokers, {
+        limit: 10,
+        nextToken: token,
+      })
+    );
 
     const updatedBrokers = await Promise.all(
       brokers.data.listBrokers.items.map(async (broker) => {
@@ -210,7 +227,7 @@ export async function fetchBrokersWithSearchCount() {
       })
     );
     console.log("updatedBroker", updatedBrokers);
-    return updatedBrokers;
+    return { updatedBrokers, nextToken: brokers?.data?.listBrokers?.nextToken };
   } catch (error) {
     console.error("Error fetching agents and their search count:", error);
   }

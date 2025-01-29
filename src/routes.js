@@ -8,10 +8,12 @@ import Broker from "./component/Broker";
 import Search from "./component/Search";
 import AssginedAgents from "./component/Broker/AssingedAgent";
 import BorkerList from "./component/Admin/BrokerList";
+import AllSearchHistory from "./component/Admin/History";
 
 export const adminRoutes = [
   { path: "admin", component: Admin },
   { path: "admin/brokers", component: BorkerList },
+  { path: "admin/searchHistory", component: AllSearchHistory },
 ];
 
 export const agentRoutes = [

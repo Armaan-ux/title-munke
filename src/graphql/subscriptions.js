@@ -153,6 +153,7 @@ export const onCreateAgent = /* GraphQL */ `
     onCreateAgent(filter: $filter) {
       id
       name
+      email
       status
       lastLogin
       createdAt
@@ -166,6 +167,7 @@ export const onUpdateAgent = /* GraphQL */ `
     onUpdateAgent(filter: $filter) {
       id
       name
+      email
       status
       lastLogin
       createdAt
@@ -179,6 +181,7 @@ export const onDeleteAgent = /* GraphQL */ `
     onDeleteAgent(filter: $filter) {
       id
       name
+      email
       status
       lastLogin
       createdAt
@@ -192,6 +195,7 @@ export const onCreateBroker = /* GraphQL */ `
     onCreateBroker(filter: $filter) {
       id
       name
+      email
       status
       lastLogin
       createdAt
@@ -205,6 +209,7 @@ export const onUpdateBroker = /* GraphQL */ `
     onUpdateBroker(filter: $filter) {
       id
       name
+      email
       status
       lastLogin
       createdAt
@@ -218,6 +223,7 @@ export const onDeleteBroker = /* GraphQL */ `
     onDeleteBroker(filter: $filter) {
       id
       name
+      email
       status
       lastLogin
       createdAt

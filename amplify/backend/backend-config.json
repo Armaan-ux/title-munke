@@ -65,23 +65,5 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     }
-  },
-  "parameters": {
-    "AMPLIFY_function_checkUserStatus_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "checkUserStatus"
-        }
-      ]
-    },
-    "AMPLIFY_function_checkUserStatus_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "checkUserStatus"
-        }
-      ]
-    }
   }
 }

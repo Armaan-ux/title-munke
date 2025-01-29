@@ -171,6 +171,7 @@ export const createAgent = /* GraphQL */ `
     createAgent(input: $input, condition: $condition) {
       id
       name
+      email
       status
       lastLogin
       createdAt
@@ -187,6 +188,7 @@ export const updateAgent = /* GraphQL */ `
     updateAgent(input: $input, condition: $condition) {
       id
       name
+      email
       status
       lastLogin
       createdAt
@@ -203,6 +205,7 @@ export const deleteAgent = /* GraphQL */ `
     deleteAgent(input: $input, condition: $condition) {
       id
       name
+      email
       status
       lastLogin
       createdAt
@@ -219,6 +222,7 @@ export const createBroker = /* GraphQL */ `
     createBroker(input: $input, condition: $condition) {
       id
       name
+      email
       status
       lastLogin
       createdAt
@@ -235,6 +239,7 @@ export const updateBroker = /* GraphQL */ `
     updateBroker(input: $input, condition: $condition) {
       id
       name
+      email
       status
       lastLogin
       createdAt
@@ -251,6 +256,7 @@ export const deleteBroker = /* GraphQL */ `
     deleteBroker(input: $input, condition: $condition) {
       id
       name
+      email
       status
       lastLogin
       createdAt

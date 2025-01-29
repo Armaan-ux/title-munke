@@ -2,18 +2,15 @@ import { API } from "aws-amplify";
 import { useState, useEffect } from "react";
 import { listSearchHistories } from "../../../graphql/queries";
 import "./index.css";
-import axios from "axios";
-import { updateSearchHistory } from "../../../graphql/mutations";
 import { useUser } from "../../../context/usercontext";
 import { getFormattedDateTime, handleCreateAuditLog } from "../../../utils";
 
-function History() {
+function AllSearchHistory() {
   const [searchHistories, setSearchHistories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [nextToken, setNextToken] = useState(null);
   const [activeTab, setActiveTab] = useState("history");
-  const [inProgressSearches, setInProgressSearches] = useState([]);
   const { user } = useUser();
 
   const fetchSearchHistories = async () => {
@@ -35,9 +32,6 @@ function History() {
       setSearchHistories((prev) => [...prev, ...items]);
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
-
-      const inProgress = items.filter((item) => item.status === "In Progress");
-      setInProgressSearches((prev) => [...prev, ...inProgress]);
     } catch (error) {
       console.error("Error fetching search histories:", error);
     }
@@ -62,74 +56,19 @@ function History() {
       setSearchHistories((prev) => [...prev, ...items]);
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
-
-      const inProgress = items.filter((item) => item.status === "In Progress");
-      setInProgressSearches((prev) => [...prev, ...inProgress]);
     } catch (error) {
       console.error("Error fetching search histories:", error);
     }
     setLoading(false);
   };
-  const checkSearchStatus = async (searchId, id) => {
-    try {
-      const response = await axios.post(
-        "https://hwk77cjbdtmopznce6tneqknvi0rqvta.lambda-url.us-east-1.on.aws/",
-        {
-          mode: "CHECK_STATUS",
-          search_id: searchId,
-        }
-      );
-
-      const { status, zip_url } = response.data;
-
-      if (status === "SUCCESS") {
-        await API.graphql({
-          query: updateSearchHistory,
-          variables: {
-            input: {
-              id,
-              searchId,
-              status: "SUCCESS",
-              downloadLink: zip_url,
-            },
-          },
-        });
-
-        setSearchHistories((prev) =>
-          prev.map((record) =>
-            record.searchId === searchId
-              ? { ...record, status: "SUCCESS", downloadLink: zip_url }
-              : record
-          )
-        );
-
-        setInProgressSearches((prev) =>
-          prev.filter((record) => record.searchId !== searchId)
-        );
-      }
-    } catch (error) {
-      console.error(`Error checking status for ${searchId}:`, error);
-    }
-  };
 
   const resetStateOnTabChange = () => {
-    setInProgressSearches([]);
     setHasMore(true);
     setLoading(false);
     setNextToken(null);
     setSearchHistories([]);
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      inProgressSearches.forEach((search) => {
-        checkSearchStatus(search.searchId, search.id);
-      });
-    }, 300000);
-
-    return () => clearInterval(interval);
-  }, [inProgressSearches]);
-  console.log("inProgressSearches", inProgressSearches);
   useEffect(() => {
     if (user?.attributes?.sub) {
       if (activeTab === "history") fetchSearchHistories();
@@ -150,7 +89,7 @@ function History() {
             setActiveTab("history");
           }}
         >
-          My history
+          Brokers
         </button>
         <button
           className={`tab-button ${activeTab === "agents" ? "active" : ""}`}
@@ -216,4 +155,4 @@ function History() {
   );
 }
 
-export default History;
+export default AllSearchHistory;

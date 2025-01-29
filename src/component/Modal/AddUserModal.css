@@ -68,3 +68,17 @@
     color: white;
     border: 1px solid #1e272e;
   }
+
+  .form-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 5px;
+  }
+  
+  .form-group select:focus {
+    outline: none;
+    border-color: #1e272e;
+    box-shadow: 0 0 0 2px rgba(30, 39, 46, 0.1);
+  }
