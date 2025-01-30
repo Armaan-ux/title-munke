@@ -152,6 +152,7 @@ export async function createAgentForBroker(brokerId, name, email, password) {
       email,
       status: "UNCONFIRMED",
       lastLogin: new Date().toISOString(),
+      assigned: true,
     };
 
     const broker = await fetchBroker(brokerId);
@@ -177,16 +178,53 @@ export async function createAgentForBroker(brokerId, name, email, password) {
 
     console.log("Relationship added successfully:", newRelationship);
 
-    return { success: true, message: "Agent created and linked successfully." };
+    return {
+      newAgent: newAgent.data.createAgent,
+      success: true,
+      message: "Agent created and linked successfully.",
+    };
   } catch (error) {
     console.error("Error creating agent for broker:", error);
     return { success: false, error: error.message };
   }
 }
 
-export async function UnassignAgent(id) {
+export async function UnassignAgent(id, agentId) {
   try {
     await API.graphql(graphqlOperation(deleteRelationship, { input: { id } }));
+    await API.graphql(
+      graphqlOperation(updateAgent, {
+        input: { id: agentId, assigned: false },
+      })
+    );
+    return true;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+}
+
+export async function assignAgent(agentId, name, brokerId) {
+  try {
+    const broker = await fetchBroker(brokerId);
+
+    const relationshipInput = {
+      brokerId: brokerId,
+      agentId: agentId,
+      agentName: name,
+      brokerName: broker.name,
+    };
+
+    await API.graphql(
+      graphqlOperation(createRelationship, { input: relationshipInput })
+    );
+
+    await API.graphql(
+      graphqlOperation(updateAgent, {
+        input: { id: agentId, assigned: true },
+      })
+    );
+    console.log("Agent Assgined Successfully");
     return true;
   } catch (err) {
     console.error(err);

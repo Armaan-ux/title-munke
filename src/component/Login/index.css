@@ -67,6 +67,17 @@
     cursor: not-allowed;
     background-color: rgb(97 103 107);
   }
+  
+  .login-logo{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .login-logo img{
+    width: 120px;
+  }
 
   .forgot-password {
     display: block;

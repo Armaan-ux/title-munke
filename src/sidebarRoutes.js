@@ -19,8 +19,9 @@ export const routes = {
   ],
   admin: [
     {
-      link: "/agent/search",
-      name: "Admin",
+      link: "/admin/manage-admins",
+      name: "Manage Admins",
+      class: "fas fa-person",
     },
     {
       link: "/admin/brokers",
@@ -59,6 +60,11 @@ export const routes = {
       link: "/broker/manage-agents",
       name: "Agents",
       class: "fas fa-person",
+    },
+    {
+      link: "/broker/manage-not-assigned-agents",
+      name: "Not Assigned Agents",
+      class: "fas fa-users",
     },
   ],
 };

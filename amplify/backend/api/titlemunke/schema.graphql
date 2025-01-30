@@ -35,9 +35,18 @@ type Agent @model {
   email:String
   status: String!
   lastLogin: AWSDateTime!
+  assigned: Boolean
 }
 
 type Broker @model {
+  id: ID!
+  name: String!
+  email:String
+  status: String!
+  lastLogin: AWSDateTime!
+}
+
+type Admins @model {
   id: ID!
   name: String!
   email:String

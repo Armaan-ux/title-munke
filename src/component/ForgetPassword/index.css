@@ -9,6 +9,17 @@
     background-color: #f4f4f4;
   }
 
+  .login-logo{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .login-logo img{
+    width: 120px;
+  }
+  
 /* Login container */
 .login-container {
     width: 100%;

@@ -1,6 +1,7 @@
 import { useUser } from "../../context/usercontext";
 import { routes } from "../../sidebarRoutes";
 import { NavLink } from "react-router-dom";
+import logo from "../../img/Logo.svg";
 import "./index.css";
 
 function Sidebar() {
@@ -14,10 +15,26 @@ function Sidebar() {
 
   return (
     <div className="sidebar">
-      <h2 className="logo">
-        Title Munke <span>🐒</span>
-      </h2>
-      <nav className="nav-links">
+      <div
+        style={{
+          background: "#ffffff",
+          height: "85px",
+          padding: "0",
+          width: "288px",
+          position: "fixed",
+          top: "0",
+          left: "0",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <span>
+          <img src={logo} className="logoimg" />
+        </span>
+        <h2 className="logo">Title Munke </h2>
+      </div>
+      <nav className="nav-links" style={{ position: "absolute", top: "100px" }}>
         {roleRoutes.map((route, index) => (
           <NavLink
             key={index}

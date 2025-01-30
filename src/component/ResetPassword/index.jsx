@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { resetPassword } from "../service/auth";
+import logo from "../../img/Logo.svg";
 import "./index.css";
 
 function ResetPassword({ username }) {
@@ -24,7 +25,10 @@ function ResetPassword({ username }) {
     <div className="main">
       <div className="login-container">
         <form className="login-form">
-          <h2>Title Munke</h2>
+          <div className="login-logo">
+            <img src={logo} />
+            {/* <h2>Title Munke</h2> */}
+          </div>
           <div className="form-group">
             <label for="password">Reset Password</label>
             <input

@@ -9,11 +9,16 @@ import Search from "./component/Search";
 import AssginedAgents from "./component/Broker/AssingedAgent";
 import BorkerList from "./component/Admin/BrokerList";
 import AllSearchHistory from "./component/Admin/History";
+import AdminSettings from "./component/Admin/Setting";
+import ManageAdmins from "./component/Admin/ManageAdmins";
+import NotAssignedAgents from "./component/Broker/NotAssignedAgents";
 
 export const adminRoutes = [
   { path: "admin", component: Admin },
   { path: "admin/brokers", component: BorkerList },
   { path: "admin/searchHistory", component: AllSearchHistory },
+  { path: "admin/setting", component: AdminSettings },
+  { path: "admin/manage-admins", component: ManageAdmins },
 ];
 
 export const agentRoutes = [
@@ -29,4 +34,5 @@ export const brokerRoutes = [
   { path: "broker/history", component: BrokerHistory },
   { path: "broker/setting", component: BrokerSetting },
   { path: "broker/manage-agents", component: AssginedAgents },
+  { path: "broker/manage-not-assigned-agents", component: NotAssignedAgents },
 ];

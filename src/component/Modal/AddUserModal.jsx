@@ -4,8 +4,9 @@ import { createAgentForBroker } from "../service/agent";
 import "./AddUserModal.css";
 import { toast } from "react-toastify";
 import { createBrokerLogin } from "../service/broker";
+import { createAdminAccount } from "../service/admin";
 
-function AddUserModal({ setIsOpen, userType }) {
+function AddUserModal({ setIsOpen, userType, setUser }) {
   const { user } = useUser();
   const [formData, setFormData] = useState({
     name: "",
@@ -26,23 +27,30 @@ function AddUserModal({ setIsOpen, userType }) {
       e.preventDefault();
       const { name, email, password } = formData;
       if (userType === "agent") {
-        await createAgentForBroker(
+        const { newAgent } = await createAgentForBroker(
           user?.attributes?.sub,
           name,
           email,
           password
         );
+
+        setUser((prev) => [
+          ...prev,
+          { ...newAgent, totalSearches: 0, agentName: name },
+        ]);
         toast.success("Agent Created Successfully.");
       } else if (userType === "broker") {
         const { newBroker } = await createBrokerLogin(name, email, password);
-        toast.success("Broker Created Successfully.");
-        //call function for broker
+        toast.success("Broker Created Successfully.", newBroker);
       } else if (userType === "admin") {
-        //call function for admin
+        const { newAdmin } = await createAdminAccount(name, email, password);
+        setUser((prev) => [...prev, { ...newAdmin }]);
+        toast.success("Admin Created Successfully.", newAdmin);
       }
       console.log(formData);
     } catch (err) {
       console.error(err);
+      toast.error(err?.message || err);
     } finally {
       setIsOpen(false);
     }

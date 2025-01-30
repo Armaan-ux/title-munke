@@ -31,11 +31,16 @@ function AllSearchHistory() {
 
       setSearchHistories((prev) => [...prev, ...items]);
       setNextToken(newNextToken);
-      setHasMore(!!newNextToken);
+      if (items.length === 0) {
+        setHasMore(false);
+      } else {
+        setHasMore(!!newNextToken);
+      }
     } catch (error) {
       console.error("Error fetching search histories:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
   const fetchAgentSearchHistories = async () => {
     if (loading || !hasMore) return;
@@ -52,14 +57,18 @@ function AllSearchHistory() {
       });
       const { items, nextToken: newNextToken } =
         response.data.listSearchHistories;
-
+      if (items.length === 0) {
+        setHasMore(false);
+      } else {
+        setHasMore(!!newNextToken);
+      }
       setSearchHistories((prev) => [...prev, ...items]);
       setNextToken(newNextToken);
-      setHasMore(!!newNextToken);
     } catch (error) {
       console.error("Error fetching search histories:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const resetStateOnTabChange = () => {

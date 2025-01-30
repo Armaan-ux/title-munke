@@ -12,6 +12,8 @@ import { useUser } from "../../../context/usercontext";
 import { fetchAgentsWithSearchCount } from "../../service/broker";
 import "./index.css";
 import { resendOTP } from "../../service/auth";
+import { getFormattedDateTime } from "../../../utils";
+import { toast } from "react-toastify";
 
 const AssginedAgents = () => {
   const { user } = useUser();
@@ -38,10 +40,11 @@ const AssginedAgents = () => {
     }
   }, [user]);
 
-  const unAssignAgent = async (id) => {
-    const result = await UnassignAgent(id);
+  const unAssignAgent = async (id, agentId) => {
+    const result = await UnassignAgent(id, agentId);
     if (result) {
       setAgents(agents.filter((elem) => elem.id !== id));
+      toast.success("Agent UnAssigned Successfully.");
     }
   };
 
@@ -52,12 +55,19 @@ const AssginedAgents = () => {
       const indx = temp.findIndex((elem) => elem.agentId === id);
       temp[indx] = { ...temp[indx], status: "INACTIVE" };
       setAgents(temp);
+      toast.success("Agent InActive Successfully.");
     }
   };
 
   return (
     <>
-      {isOpen && <AddUserModal setIsOpen={setIsOpen} userType="agent" />}
+      {isOpen && (
+        <AddUserModal
+          setIsOpen={setIsOpen}
+          userType="agent"
+          setUser={setAgents}
+        />
+      )}
       <div className="main-content" style={{ display: "block" }}>
         <div
           className="page-title"
@@ -107,7 +117,7 @@ const AssginedAgents = () => {
           </div>
         </div>
 
-        <div className="card" style={{ width: "100%" }}>
+        <div className="card" style={{ width: "98%" }}>
           <h3>Broker Roster</h3>
           <table className="styled-table">
             <thead>
@@ -115,6 +125,7 @@ const AssginedAgents = () => {
                 <th>Name</th>
                 <th>Status</th>
                 <th>Searches This Month</th>
+                <th>Last login</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -127,6 +138,7 @@ const AssginedAgents = () => {
                       <span className="status active">{elem.status}</span>
                     </td>
                     <td>{elem.totalSearches}</td>
+                    <td>{getFormattedDateTime(elem.lastLogin)}</td>
                     <td>
                       <div className="dropdown">
                         <button className="btn action-btn">
@@ -140,7 +152,11 @@ const AssginedAgents = () => {
                           </div>
                         ) : (
                           <div className="dropdown-content">
-                            <span onClick={() => unAssignAgent(elem.id)}>
+                            <span
+                              onClick={() =>
+                                unAssignAgent(elem.id, elem.agentId)
+                              }
+                            >
                               Unassign
                             </span>
                             <span

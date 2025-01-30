@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { API, Auth, graphqlOperation } from "aws-amplify";
-import { getAgent, getBroker } from "../graphql/queries";
-import { updateAgent, updateBroker } from "../graphql/mutations";
+import { getAdmins, getAgent, getBroker } from "../graphql/queries";
+import { updateAdmins, updateAgent, updateBroker } from "../graphql/mutations";
 
 const UserContext = createContext();
 
@@ -36,7 +36,6 @@ export const UserProvider = ({ children }) => {
       const user = await Auth.signIn(username, password);
       setUser(user);
       setIsAuthenticated(true);
-      debugger;
       const userGroups =
         user?.signInUserSession?.idToken?.payload["cognito:groups"] || [];
       if (userGroups.includes("agent")) {
@@ -77,6 +76,29 @@ export const UserProvider = ({ children }) => {
         if (broker.data.getBroker.status === "UNCONFIRMED") {
           await API.graphql(
             graphqlOperation(updateBroker, {
+              input: {
+                id: user?.attributes?.sub,
+                status: "ACTIVE",
+              },
+            })
+          );
+        }
+      }
+      if (userGroups.includes("admin")) {
+        await API.graphql(
+          graphqlOperation(updateAdmins, {
+            input: {
+              id: user?.attributes?.sub,
+              lastLogin: new Date().toISOString(),
+            },
+          })
+        );
+        const admin = await API.graphql(
+          graphqlOperation(getAdmins, { id: user?.attributes?.sub })
+        );
+        if (admin.data.getAdmins.status === "UNCONFIRMED") {
+          await API.graphql(
+            graphqlOperation(updateAdmins, {
               input: {
                 id: user?.attributes?.sub,
                 status: "ACTIVE",

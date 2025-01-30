@@ -164,7 +164,7 @@ export async function createBrokerLogin(name, email, password) {
     console.log("Broker Created successfully:", newBroker);
 
     return {
-      newBroker: newBroker?.data?.createBroker.item,
+      newBroker: newBroker?.data?.createBroker,
       success: true,
       message: "Broker created and linked successfully.",
     };

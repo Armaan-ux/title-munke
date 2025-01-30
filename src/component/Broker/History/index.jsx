@@ -5,7 +5,11 @@ import "./index.css";
 import axios from "axios";
 import { updateSearchHistory } from "../../../graphql/mutations";
 import { useUser } from "../../../context/usercontext";
-import { getFormattedDateTime, handleCreateAuditLog } from "../../../utils";
+import {
+  getFormattedDateTime,
+  handleCreateAuditLog,
+  INTERVALTIME,
+} from "../../../utils";
 
 function History() {
   const [searchHistories, setSearchHistories] = useState([]);
@@ -125,7 +129,7 @@ function History() {
       inProgressSearches.forEach((search) => {
         checkSearchStatus(search.searchId, search.id);
       });
-    }, 300000);
+    }, INTERVALTIME);
 
     return () => clearInterval(interval);
   }, [inProgressSearches]);
@@ -179,7 +183,7 @@ function History() {
                 <td>{elem?.searchId}</td>
                 <td> {elem?.status}</td>
                 <td>{getFormattedDateTime(elem?.createdAt)}</td>
-                {activeTab === "agents" && <th>{elem.username}</th>}
+                {activeTab === "agents" && <td>{elem.username}</td>}
                 <td>
                   {elem?.downloadLink ? (
                     <a

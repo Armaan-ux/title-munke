@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import ResetPassword from "../ResetPassword";
 import { forgotPassword } from "../service/auth";
+import logo from "../../img/Logo.svg";
 import "./index.css";
 
 function ForgetPassword() {
@@ -26,7 +27,10 @@ function ForgetPassword() {
     <div className="main">
       <div className="login-container">
         <form className="login-form">
-          <h2>Title Munke</h2>
+          <div className="login-logo">
+            <img src={logo} />
+            {/* <h2>Title Munke</h2> */}
+          </div>
           <div className="form-group">
             <label for="password">Enter Email</label>
             <input

@@ -2,6 +2,7 @@ import "./index.css";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import OTP from "../OTP";
+import logo from "../../img/Logo.svg";
 import { useUser } from "../../context/usercontext";
 
 function Login() {
@@ -67,7 +68,10 @@ function Login() {
     <div className="main">
       <div className="login-container">
         <form className="login-form">
-          <h2>Title Munke</h2>
+          <div className="login-logo">
+            <img src={logo} />
+            {/* <h2>Title Munke</h2> */}
+          </div>
           <div className="form-group">
             <label for="username">Username</label>
             <input

@@ -156,6 +156,7 @@ export const onCreateAgent = /* GraphQL */ `
       email
       status
       lastLogin
+      assigned
       createdAt
       updatedAt
       __typename
@@ -170,6 +171,7 @@ export const onUpdateAgent = /* GraphQL */ `
       email
       status
       lastLogin
+      assigned
       createdAt
       updatedAt
       __typename
@@ -184,6 +186,7 @@ export const onDeleteAgent = /* GraphQL */ `
       email
       status
       lastLogin
+      assigned
       createdAt
       updatedAt
       __typename
@@ -221,6 +224,48 @@ export const onUpdateBroker = /* GraphQL */ `
 export const onDeleteBroker = /* GraphQL */ `
   subscription OnDeleteBroker($filter: ModelSubscriptionBrokerFilterInput) {
     onDeleteBroker(filter: $filter) {
+      id
+      name
+      email
+      status
+      lastLogin
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onCreateAdmins = /* GraphQL */ `
+  subscription OnCreateAdmins($filter: ModelSubscriptionAdminsFilterInput) {
+    onCreateAdmins(filter: $filter) {
+      id
+      name
+      email
+      status
+      lastLogin
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onUpdateAdmins = /* GraphQL */ `
+  subscription OnUpdateAdmins($filter: ModelSubscriptionAdminsFilterInput) {
+    onUpdateAdmins(filter: $filter) {
+      id
+      name
+      email
+      status
+      lastLogin
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onDeleteAdmins = /* GraphQL */ `
+  subscription OnDeleteAdmins($filter: ModelSubscriptionAdminsFilterInput) {
+    onDeleteAdmins(filter: $filter) {
       id
       name
       email

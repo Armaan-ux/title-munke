@@ -174,6 +174,7 @@ export const createAgent = /* GraphQL */ `
       email
       status
       lastLogin
+      assigned
       createdAt
       updatedAt
       __typename
@@ -191,6 +192,7 @@ export const updateAgent = /* GraphQL */ `
       email
       status
       lastLogin
+      assigned
       createdAt
       updatedAt
       __typename
@@ -208,6 +210,7 @@ export const deleteAgent = /* GraphQL */ `
       email
       status
       lastLogin
+      assigned
       createdAt
       updatedAt
       __typename
@@ -254,6 +257,57 @@ export const deleteBroker = /* GraphQL */ `
     $condition: ModelBrokerConditionInput
   ) {
     deleteBroker(input: $input, condition: $condition) {
+      id
+      name
+      email
+      status
+      lastLogin
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const createAdmins = /* GraphQL */ `
+  mutation CreateAdmins(
+    $input: CreateAdminsInput!
+    $condition: ModelAdminsConditionInput
+  ) {
+    createAdmins(input: $input, condition: $condition) {
+      id
+      name
+      email
+      status
+      lastLogin
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const updateAdmins = /* GraphQL */ `
+  mutation UpdateAdmins(
+    $input: UpdateAdminsInput!
+    $condition: ModelAdminsConditionInput
+  ) {
+    updateAdmins(input: $input, condition: $condition) {
+      id
+      name
+      email
+      status
+      lastLogin
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const deleteAdmins = /* GraphQL */ `
+  mutation DeleteAdmins(
+    $input: DeleteAdminsInput!
+    $condition: ModelAdminsConditionInput
+  ) {
+    deleteAdmins(input: $input, condition: $condition) {
       id
       name
       email

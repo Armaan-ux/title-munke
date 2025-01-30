@@ -123,6 +123,7 @@ export const getAgent = /* GraphQL */ `
       email
       status
       lastLogin
+      assigned
       createdAt
       updatedAt
       __typename
@@ -142,6 +143,7 @@ export const listAgents = /* GraphQL */ `
         email
         status
         lastLogin
+        assigned
         createdAt
         updatedAt
         __typename
@@ -172,6 +174,42 @@ export const listBrokers = /* GraphQL */ `
     $nextToken: String
   ) {
     listBrokers(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        email
+        status
+        lastLogin
+        createdAt
+        updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+export const getAdmins = /* GraphQL */ `
+  query GetAdmins($id: ID!) {
+    getAdmins(id: $id) {
+      id
+      name
+      email
+      status
+      lastLogin
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const listAdmins = /* GraphQL */ `
+  query ListAdmins(
+    $filter: ModelAdminsFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listAdmins(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
         name
