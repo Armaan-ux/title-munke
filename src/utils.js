@@ -13,12 +13,13 @@ export const getFormattedDateTime = (lastLoginUTC) => {
   return formattedDate;
 };
 
-export const handleCreateAuditLog = async (action, detail) => {
+export const handleCreateAuditLog = async (action, detail, isAgent = false) => {
   const user = await Auth.currentAuthenticatedUser();
   const input = {
     userId: user?.attributes?.sub,
     action,
     detail: JSON.stringify(detail),
+    isAgent,
   };
 
   try {

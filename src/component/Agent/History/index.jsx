@@ -130,9 +130,13 @@ function History() {
                       href={elem.downloadLink}
                       download
                       onClick={() =>
-                        handleCreateAuditLog("DOWNLOAD", {
-                          zipUrl: elem.downloadLink,
-                        })
+                        handleCreateAuditLog(
+                          "DOWNLOAD",
+                          {
+                            zipUrl: elem.downloadLink,
+                          },
+                          true
+                        )
                       }
                     >
                       Click to Download

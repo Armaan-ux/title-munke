@@ -115,14 +115,14 @@ export const UserProvider = ({ children }) => {
         console.error("User is not confirmed. Prompt for OTP verification.");
         return { isResetRequired: true, error: "UserNotConfirmed" };
       }
-      return { user: null, isResetRequired: false };
+      throw error;
     }
   };
 
   // Method to sign out
   const signOut = async () => {
     try {
-      await Auth.signOut();
+      Auth.signOut();
       setUser(null);
       setIsAuthenticated(false);
     } catch (error) {

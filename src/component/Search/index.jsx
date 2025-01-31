@@ -18,15 +18,31 @@ const Search = () => {
   const [message, setMessage] = useState("");
   const [percentage, setPercentage] = useState(null);
   const [zipUrl, setZipUrl] = useState(null);
+  const [isAgent, setIsAgent] = useState(false);
   const { user } = useUser();
 
+  useEffect(() => {
+    if (user?.attributes?.sub) {
+      const userGroups =
+        user?.signInUserSession?.idToken?.payload["cognito:groups"] || [];
+      if (userGroups?.includes("agent")) {
+        setIsAgent(true);
+      } else {
+        setIsAgent(false);
+      }
+    }
+  }, [user]);
   const handleSearch = async () => {
     setLoading(true);
 
     try {
-      handleCreateAuditLog("SEARCH", {
-        address,
-      });
+      handleCreateAuditLog(
+        "SEARCH",
+        {
+          address,
+        },
+        isAgent
+      );
       const response = await axios.post(
         "https://qwwdyrp4y5gtw2on3t5jd67g5i0leuga.lambda-url.us-east-1.on.aws/",
         {
@@ -169,9 +185,13 @@ const Search = () => {
               href={zipUrl}
               download
               onClick={() =>
-                handleCreateAuditLog("DOWNLOAD", {
-                  zipUrl,
-                })
+                handleCreateAuditLog(
+                  "DOWNLOAD",
+                  {
+                    zipUrl,
+                  },
+                  isAgent
+                )
               }
             >
               Download Results

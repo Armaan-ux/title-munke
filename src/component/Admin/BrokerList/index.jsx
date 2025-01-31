@@ -110,7 +110,13 @@ function BorkerList() {
           isAgentListLoading={isAgentListLoading}
         />
       )}
-      {isOpen && <AddUserModal setIsOpen={setIsOpen} userType={"broker"} />}
+      {isOpen && (
+        <AddUserModal
+          setIsOpen={setIsOpen}
+          userType={"broker"}
+          setUser={setBrokers}
+        />
+      )}
       {isAgentCreationModalOpen && (
         <AddAgentByAdminModal setIsOpen={setIsAgentCreationModalOpen} />
       )}

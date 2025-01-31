@@ -68,6 +68,7 @@ export const onCreateAuditLog = /* GraphQL */ `
       userId
       action
       detail
+      isAgent
       createdAt
       updatedAt
       __typename
@@ -81,6 +82,7 @@ export const onUpdateAuditLog = /* GraphQL */ `
       userId
       action
       detail
+      isAgent
       createdAt
       updatedAt
       __typename
@@ -94,6 +96,7 @@ export const onDeleteAuditLog = /* GraphQL */ `
       userId
       action
       detail
+      isAgent
       createdAt
       updatedAt
       __typename

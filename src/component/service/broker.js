@@ -36,7 +36,7 @@ export async function fetchAgentsOfBroker(brokerId) {
     const response = await API.graphql(
       graphqlOperation(relationshipsByBrokerId, { brokerId: brokerId })
     );
-
+    if (response.data?.relationshipsByBrokerId.items?.length === 0) return [];
     const agentDetailsQuery = {
       RequestItems: {
         "Agent-mxixmn4cbbcgrhwtar46djww4q-master": {
@@ -79,7 +79,7 @@ export async function fetchAgentsOfBroker(brokerId) {
 export async function fetchAgentsWithSearchCount(brokerId) {
   try {
     const agentsData = await fetchAgentsOfBroker(brokerId);
-
+    console.log("agentsData", agentsData);
     const updatedAgents = await Promise.all(
       agentsData.map(async (agent) => {
         const searchCount = await getAgentTotalSearchesThisMonth(agent.agentId);
@@ -87,7 +87,7 @@ export async function fetchAgentsWithSearchCount(brokerId) {
       })
     );
     console.log("updatedAgents", updatedAgents);
-    return updatedAgents;
+    return updatedAgents || [];
   } catch (error) {
     console.error("Error fetching agents and their search count:", error);
   }
@@ -131,7 +131,7 @@ export async function getBrokerTotalSearchesThisMonth(brokerId) {
 export async function createBrokerLogin(name, email, password) {
   try {
     const createUserResponse = await Auth.signUp({
-      username: name,
+      username: email,
       password: password,
       attributes: {
         email,
@@ -141,7 +141,7 @@ export async function createBrokerLogin(name, email, password) {
     const response = await cognito
       .adminAddUserToGroup({
         UserPoolId: userPoolId,
-        Username: name,
+        Username: email,
         GroupName: "broker",
       })
       .promise();

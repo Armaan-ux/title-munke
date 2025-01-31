@@ -5,6 +5,7 @@ import "./AddUserModal.css";
 import { toast } from "react-toastify";
 import { createBrokerLogin } from "../service/broker";
 import { createAdminAccount } from "../service/admin";
+import { handleCreateAuditLog } from "../../utils";
 
 function AddUserModal({ setIsOpen, userType, setUser }) {
   const { user } = useUser();
@@ -34,11 +35,18 @@ function AddUserModal({ setIsOpen, userType, setUser }) {
           password
         );
 
-        setUser((prev) => [
+        setUser((prev = []) => [
           ...prev,
           { ...newAgent, totalSearches: 0, agentName: name },
         ]);
         toast.success("Agent Created Successfully.");
+        const userGroups =
+          user?.signInUserSession?.idToken?.payload["cognito:groups"] || [];
+        if (userGroups.includes("broker")) {
+          handleCreateAuditLog("AGENT_CREATE", {
+            detail: `Broker ${user?.attributes?.sub} has created the agent ${newAgent.id}`,
+          });
+        }
       } else if (userType === "broker") {
         const { newBroker } = await createBrokerLogin(name, email, password);
         toast.success("Broker Created Successfully.", newBroker);

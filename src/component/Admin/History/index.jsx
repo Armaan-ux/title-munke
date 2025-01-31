@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { listSearchHistories } from "../../../graphql/queries";
 import "./index.css";
 import { useUser } from "../../../context/usercontext";
-import { getFormattedDateTime, handleCreateAuditLog } from "../../../utils";
+import { getFormattedDateTime } from "../../../utils";
 
 function AllSearchHistory() {
   const [searchHistories, setSearchHistories] = useState([]);
@@ -130,15 +130,7 @@ function AllSearchHistory() {
                 <td>{elem.username}</td>
                 <td>
                   {elem?.downloadLink ? (
-                    <a
-                      href={elem.downloadLink}
-                      download
-                      onClick={() =>
-                        handleCreateAuditLog("DOWNLOAD", {
-                          zipUrl: elem.downloadLink,
-                        })
-                      }
-                    >
+                    <a href={elem.downloadLink} download>
                       Click to Download
                     </a>
                   ) : (

@@ -2,7 +2,6 @@ import { Auth, API, graphqlOperation } from "aws-amplify";
 import {
   createAgent,
   createRelationship,
-  deleteAgent,
   deleteRelationship,
   updateAgent,
 } from "../../graphql/mutations";
@@ -128,7 +127,7 @@ export const confirmUser = async (username, code) => {
 export async function createAgentForBroker(brokerId, name, email, password) {
   try {
     const createUserResponse = await Auth.signUp({
-      username: name,
+      username: email,
       password: password,
       attributes: {
         email,
@@ -138,7 +137,7 @@ export async function createAgentForBroker(brokerId, name, email, password) {
     const response = await cognito
       .adminAddUserToGroup({
         UserPoolId: userPoolId,
-        Username: name,
+        Username: email,
         GroupName: "agent",
       })
       .promise();
@@ -342,5 +341,5 @@ export const getTopPerformerAgent = async (brokerId) => {
 
   console.log(allSearches);
   const topSearcher = findTopSearcher(allSearches);
-  return `${topSearcher.agentName} (${topSearcher.count})`;
+  return `${topSearcher?.agentName || "None"} (${topSearcher?.count || 0})`;
 };

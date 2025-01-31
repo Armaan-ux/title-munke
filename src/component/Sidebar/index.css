@@ -64,9 +64,9 @@
 .logoimg{
     position: absolute;
     /* background: white; */
-    top: 6px;
-    width: 60px;
-    left: 21px;
+    top: -4px;
+    width: 80px;
+    left: 6px;
 }
 
 .logout{

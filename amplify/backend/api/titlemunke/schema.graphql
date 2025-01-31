@@ -19,6 +19,7 @@ type AuditLog @model {
   userId: ID!
   action: String!
   detail: String!
+  isAgent:Boolean
 }
 
 type Relationship @model {

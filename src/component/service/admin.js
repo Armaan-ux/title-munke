@@ -14,7 +14,7 @@ const userPoolId = AWSExport.aws_user_pools_id;
 export async function createAdminAccount(name, email, password) {
   try {
     const createUserResponse = await Auth.signUp({
-      username: name,
+      username: email,
       password: password,
       attributes: {
         email,
@@ -24,7 +24,7 @@ export async function createAdminAccount(name, email, password) {
     const response = await cognito
       .adminAddUserToGroup({
         UserPoolId: userPoolId,
-        Username: name,
+        Username: email,
         GroupName: "admin",
       })
       .promise();

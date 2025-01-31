@@ -28,10 +28,7 @@ function Login() {
       setError("");
       setIsChecking(true);
       const { isResetRequired } = await signIn(username, password);
-      // if (!user) {
-      //   setError("User does not exist.");
-      //   return;
-      // }
+
       if (isResetRequired) {
         setIsReset(true);
         return;
@@ -70,10 +67,9 @@ function Login() {
         <form className="login-form">
           <div className="login-logo">
             <img src={logo} />
-            {/* <h2>Title Munke</h2> */}
           </div>
           <div className="form-group">
-            <label for="username">Username</label>
+            <label for="username">Email</label>
             <input
               type="text"
               id="username"
@@ -100,7 +96,7 @@ function Login() {
             </Link>
           </div>
           <button
-            disabled={isChecking}
+            disabled={isChecking || !username || !password}
             onClick={() => handleLogin()}
             type="button"
             className="loginBtn"

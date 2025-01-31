@@ -12,10 +12,6 @@
       "AmplifyAppId": "d19qvtploz5fw4"
     },
     "categories": {
-      "auth": {
-        "titlemunke19973b7e": {},
-        "userPoolGroups": {}
-      },
       "api": {
         "titlemunke": {}
       },
@@ -24,6 +20,10 @@
           "deploymentBucketName": "amplify-titlemunke-master-89007-deployment",
           "s3Key": "amplify-builds/checkUserStatus-656c5977416f50394356-build.zip"
         }
+      },
+      "auth": {
+        "titlemunke8f8f6271": {},
+        "userPoolGroups": {}
       }
     }
   }

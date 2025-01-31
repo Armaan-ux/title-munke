@@ -1,10 +1,10 @@
 {
   "version": "1",
   "cognitoConfig": {
-    "identityPoolName": "titlemunke19973b7e_identitypool_19973b7e",
+    "identityPoolName": "titlemunke8f8f6271_identitypool_8f8f6271",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "titlem19973b7e",
-    "userPoolName": "titlemunke19973b7e_userpool_19973b7e",
+    "resourceNameTruncated": "titlem8f8f6271",
+    "userPoolName": "titlemunke8f8f6271_userpool_8f8f6271",
     "autoVerifiedAttributes": [
       "email"
     ],
@@ -31,12 +31,16 @@
     "userpoolClientReadAttributes": [
       "email"
     ],
-    "userpoolClientLambdaRole": "titlem19973b7e_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "titlem8f8f6271_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "19973b7e",
-    "resourceName": "titlemunke19973b7e",
+    "sharedId": "8f8f6271",
+    "resourceName": "titlemunke8f8f6271",
     "authSelections": "identityPoolAndUserPool",
     "useDefault": "default",
+    "usernameAttributes": [
+      "email"
+    ],
+    "triggers": {},
     "userPoolGroupList": [
       "admin",
       "broker",
@@ -58,6 +62,10 @@
       ]
     },
     "breakCircularDependency": true,
-    "dependsOn": []
+    "dependsOn": [],
+    "parentStack": {
+      "Ref": "AWS::StackId"
+    },
+    "permissions": []
   }
 }
