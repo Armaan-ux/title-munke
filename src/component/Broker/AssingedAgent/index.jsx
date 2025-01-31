@@ -12,7 +12,7 @@ import { useUser } from "../../../context/usercontext";
 import { fetchAgentsWithSearchCount } from "../../service/broker";
 import "./index.css";
 import { resendOTP } from "../../service/auth";
-import { getFormattedDateTime } from "../../../utils";
+import { getFormattedDateTime, handleCreateAuditLog } from "../../../utils";
 import { toast } from "react-toastify";
 
 const AssginedAgents = () => {
@@ -49,11 +49,15 @@ const AssginedAgents = () => {
 
     if (user?.attributes?.sub) fetchData();
   }, [user]);
+
   const unAssignAgent = async (id, agentId) => {
     const result = await UnassignAgent(id, agentId);
     if (result) {
       setAgents(agents.filter((elem) => elem.id !== id));
       toast.success("Agent UnAssigned Successfully.");
+      handleCreateAuditLog("UNASSIGN", {
+        detial: `Unassigned Agent ${agentId}`,
+      });
     }
   };
 
@@ -62,9 +66,15 @@ const AssginedAgents = () => {
     if (result) {
       const temp = agents;
       const indx = temp.findIndex((elem) => elem.agentId === id);
-      temp[indx] = { ...temp[indx], status: "INACTIVE" };
-      setAgents(temp);
+      temp[indx] = {
+        ...temp[indx],
+        status: temp[indx].status === "INACTIVE" ? "ACTIVE" : "INACTIVE",
+      };
+      setAgents(temp.map((e) => e));
       toast.success("Agent InActive Successfully.");
+      handleCreateAuditLog("ACTIVE_STATUS", {
+        detial: `Convert Agent ${id} Status to INACTIVE`,
+      });
     }
   };
 
@@ -182,7 +192,9 @@ const AssginedAgents = () => {
                                   inActiveAgentStatus(elem.agentId)
                                 }
                               >
-                                Delete
+                                {elem.status === "ACTIVE"
+                                  ? "Inactive"
+                                  : "Active"}
                               </span>
                             </div>
                           )}

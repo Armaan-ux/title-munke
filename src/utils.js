@@ -2,6 +2,7 @@ import { API, Auth } from "aws-amplify";
 import { createAuditLog } from "./graphql/mutations";
 import { format, toZonedTime } from "date-fns-tz";
 export const INTERVALTIME = 3000;
+export const FETCH_LIMIT = 100;
 export const getFormattedDateTime = (lastLoginUTC) => {
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -20,6 +21,7 @@ export const handleCreateAuditLog = async (action, detail, isAgent = false) => {
     action,
     detail: JSON.stringify(detail),
     isAgent,
+    email: user?.attributes?.email,
   };
 
   try {

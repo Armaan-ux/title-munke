@@ -7,6 +7,7 @@ import {
 } from "../../graphql/queries";
 import { getAgentTotalSearchesThisMonth } from "./agent";
 import AWSExport from "../../aws-exports";
+import { FETCH_LIMIT } from "../../utils";
 const AWS = require("aws-sdk");
 
 AWS.config.update({
@@ -216,7 +217,7 @@ export async function fetchBrokersWithSearchCount(token) {
   try {
     const brokers = await API.graphql(
       graphqlOperation(listBrokers, {
-        limit: 10,
+        limit: FETCH_LIMIT,
         nextToken: token,
       })
     );

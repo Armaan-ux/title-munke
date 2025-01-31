@@ -90,8 +90,8 @@ const Search = () => {
 
       setProgress(status === "SUCCESS" ? "Search Completed" : "Processing...");
       setZipUrl(zip_url);
-      setPercentage(percent_completion);
-      setMessage(status_message);
+      setPercentage(percent_completion || "100");
+      setMessage(status_message || "Search Complete Successfully");
 
       if (status === "SUCCESS") {
         setLoading(false);

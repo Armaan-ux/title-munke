@@ -69,6 +69,7 @@ export const onCreateAuditLog = /* GraphQL */ `
       action
       detail
       isAgent
+      email
       createdAt
       updatedAt
       __typename
@@ -83,6 +84,7 @@ export const onUpdateAuditLog = /* GraphQL */ `
       action
       detail
       isAgent
+      email
       createdAt
       updatedAt
       __typename
@@ -97,6 +99,7 @@ export const onDeleteAuditLog = /* GraphQL */ `
       action
       detail
       isAgent
+      email
       createdAt
       updatedAt
       __typename

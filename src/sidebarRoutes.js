@@ -38,6 +38,11 @@ export const routes = {
       name: "Setting",
       class: "fas fa-cog",
     },
+    {
+      link: "/admin/audit-log",
+      name: "Audit Logs",
+      class: "fas fa-clipboard-list",
+    },
   ],
   broker: [
     {
@@ -65,6 +70,11 @@ export const routes = {
       link: "/broker/manage-not-assigned-agents",
       name: "Not Assigned Agents",
       class: "fas fa-users",
+    },
+    {
+      link: "/broker/agent-audit-log",
+      name: "Agents Audit Logs",
+      class: "fas fa-clipboard-list",
     },
   ],
 };

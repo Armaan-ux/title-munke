@@ -6,6 +6,7 @@ import axios from "axios";
 import { updateSearchHistory } from "../../../graphql/mutations";
 import { useUser } from "../../../context/usercontext";
 import {
+  FETCH_LIMIT,
   getFormattedDateTime,
   handleCreateAuditLog,
   INTERVALTIME,
@@ -29,7 +30,7 @@ function History() {
         query: listSearchHistories,
         variables: {
           filter: { userId: { eq: user?.attributes?.sub } },
-          limit: 10,
+          limit: FETCH_LIMIT,
           nextToken,
         },
       });
@@ -56,7 +57,7 @@ function History() {
         query: listSearchHistories,
         variables: {
           filter: { brokerId: { eq: user?.attributes?.sub } },
-          limit: 10,
+          limit: FETCH_LIMIT,
           nextToken,
         },
       });

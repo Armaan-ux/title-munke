@@ -5,6 +5,7 @@ import { listAgents } from "../../../graphql/queries";
 import { API } from "aws-amplify";
 import { assignAgent } from "../../service/agent";
 import { toast } from "react-toastify";
+import { handleCreateAuditLog } from "../../../utils";
 
 const NotAssignedAgents = () => {
   const { user } = useUser();
@@ -17,6 +18,9 @@ const NotAssignedAgents = () => {
     if (result) {
       setAgents(agents.filter((elem) => elem.id !== id));
       toast.success("Agent Assigned Successfully.");
+      handleCreateAuditLog("ASSIGN", {
+        detial: `Assigned Agent ${id}`,
+      });
     }
   };
 
@@ -76,28 +80,30 @@ const NotAssignedAgents = () => {
             </thead>
             <tbody>
               {isLoading ? (
-                <p style={{ display: "flex" }}>Loading.....</p>
+                <p key={"loading"} style={{ display: "flex" }}>
+                  Loading.....
+                </p>
               ) : agents?.length === 0 ? (
-                <p style={{ display: "flex" }}>No Records Found.</p>
+                <p key={"No-records"} style={{ display: "flex" }}>
+                  No Records Found.
+                </p>
               ) : (
                 agents?.map((elem) => (
-                  <>
-                    <tr id="broker-row-1">
-                      <td>{elem.name}</td>
-                      <td>{elem.email}</td>
-                      <td>
-                        <span className="status active">{elem.status}</span>
-                      </td>
-                      <td>
-                        <button
-                          onClick={() => handleAssignAgent(elem.id, elem.name)}
-                          className="btn action-btn"
-                        >
-                          Assign
-                        </button>
-                      </td>
-                    </tr>
-                  </>
+                  <tr key={elem.id}>
+                    <td>{elem.name}</td>
+                    <td>{elem.email}</td>
+                    <td>
+                      <span className="status active">{elem.status}</span>
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => handleAssignAgent(elem.id, elem.name)}
+                        className="btn action-btn"
+                      >
+                        Assign
+                      </button>
+                    </td>
+                  </tr>
                 ))
               )}
             </tbody>

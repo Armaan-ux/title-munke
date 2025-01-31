@@ -55,8 +55,8 @@ export async function getAgentsTotalSearchesThisMonth(brokerId) {
       },
       ExpressionAttributeValues: {
         ":agentId": agentId,
-        ":start": "2024-12-31T19:00:00.000Z",
-        ":end": "2025-01-31T19:00:00.000Z",
+        ":start": currentMonthStart.toISOString(),
+        ":end": nextMonthStart.toISOString(),
       },
     };
 
@@ -327,8 +327,8 @@ export const getTopPerformerAgent = async (brokerId) => {
       },
       ExpressionAttributeValues: {
         ":agentId": agent.agentId,
-        ":start": "2024-12-31T19:00:00.000Z",
-        ":end": "2025-01-31T19:00:00.000Z",
+        ":start": currentMonthStart.toISOString(),
+        ":end": nextMonthStart.toISOString(),
       },
     };
 
