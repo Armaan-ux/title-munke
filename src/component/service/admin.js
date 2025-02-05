@@ -1,6 +1,7 @@
-import { API, Auth, graphqlOperation } from "aws-amplify";
+import { API, graphqlOperation } from "aws-amplify";
 import { createAdmins } from "../../graphql/mutations";
 import AWSExport from "../../aws-exports";
+import { generatePassword } from "../../utils";
 const AWS = require("aws-sdk");
 
 AWS.config.update({
@@ -11,15 +12,21 @@ AWS.config.update({
 
 const cognito = new AWS.CognitoIdentityServiceProvider();
 const userPoolId = AWSExport.aws_user_pools_id;
-export async function createAdminAccount(name, email, password) {
+export async function createAdminAccount(name, email) {
   try {
-    const createUserResponse = await Auth.signUp({
-      username: email,
-      password: password,
-      attributes: {
-        email,
-      },
-    });
+    let temporaryPassword = generatePassword();
+    console.log("temporaryPassword", temporaryPassword);
+    const createUserResponse = await cognito
+      .adminCreateUser({
+        UserPoolId: userPoolId,
+        Username: email,
+        UserAttributes: [
+          { Name: "email", Value: email },
+          { Name: "email_verified", Value: "true" },
+        ],
+        TemporaryPassword: temporaryPassword,
+      })
+      .promise();
 
     const response = await cognito
       .adminAddUserToGroup({
@@ -32,7 +39,7 @@ export async function createAdminAccount(name, email, password) {
     console.log("User added to Admin group:", response);
 
     const adminInput = {
-      id: createUserResponse.userSub,
+      id: createUserResponse.User?.Attributes[2]?.Value,
       name: name,
       email,
       status: "UNCONFIRMED",

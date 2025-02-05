@@ -1,5 +1,5 @@
 .history-main-content {
-    margin-left: 270px;
+    margin-left: 289px;
     padding: 20px;
 }
 
@@ -21,7 +21,7 @@
 }
 
 .tab-button.active {
-  background: #1e272e;
+  background: #2F3628;
   color: white;
 }
 .loadmore {
@@ -33,7 +33,7 @@
     justify-content: center;
 
     padding: 10px;
-    background-color: rgb(30, 39, 46);
+    background-color: #2F3628;
     color: white;
     font-size: 16px;
     border: none;
@@ -60,7 +60,7 @@
   .history-styled-table thead {
     position: sticky; /* Keeps the header row fixed */
     top: 0; /* Required for sticky positioning */
-    background-color: rgb(30, 39, 46);
+    background-color: #2F3628;
     color: #fff;
     z-index: 1; /* Ensure it stays on top of the scrolling content */
   }

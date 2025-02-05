@@ -128,7 +128,7 @@
 
 .stat-card .stat-number {
     font-size: 24px;
-    color: #3742fa;
+    color: #007A33;
     font-weight: bold;
 }
 
@@ -142,7 +142,7 @@
 }
 
 .btn.view-btn {
-    background-color: #007bff;
+    background-color: #007A33;
     color: white;
     margin-right: 5px;
 }
@@ -168,7 +168,7 @@
 
 /* Main Content */
 .main-content {
-    margin-left: 270px;
+    margin-left: 289px;
     padding: 20px;
 }
 
@@ -201,7 +201,7 @@
 }
 
 .view-btn {
-    background-color: #007bff;
+    background-color: #007A33;
     color: white;
 }
 
@@ -236,7 +236,7 @@
 .add-user-btn,
 .delete-user-btn {
     padding: 5px 10px;
-    background-color: #007bff;
+    background-color: #007A33;
     color: white;
     border: none;
     border-radius: 5px;
@@ -255,7 +255,7 @@
 }
 
 .dropdown .action-btn {
-    background-color: #007bff;
+    background-color: #007A33;
     color: white;
     padding: 5px 10px;
     border: none;

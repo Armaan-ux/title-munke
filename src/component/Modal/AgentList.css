@@ -42,7 +42,7 @@
   }
   
   th {
-    background-color: #1e272e;
+    background-color: #2F3628;
     color: white;
     position: sticky;
     top: 0;
@@ -65,7 +65,7 @@
     cursor: pointer;
     font-size: 24px;
     font-weight: bold;
-    color: #1e272e;
+    color: #2F3628;
   }
   
   .close:hover {
@@ -74,7 +74,7 @@
   
   /* Button to Open Modal */
   .open-modal-btn {
-    background-color: #1e272e;
+    background-color: #2F3628;
     color: white;
     padding: 12px 24px;
     border: none;

@@ -13,6 +13,7 @@ import Layout from "./component/Layout";
 import { useUser } from "./context/usercontext";
 import Loader from "./component/Loader";
 import ForgetPassword from "./component/ForgetPassword";
+import Home from "./component/Home";
 
 function App() {
   const { isLoading } = useUser();
@@ -24,6 +25,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgetPassword />} />
         <Route path="/notfound" element={<NotFound />} />

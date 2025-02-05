@@ -1,7 +1,7 @@
 /* Sidebar Styles */
 .sidebar {
     width: 250px;
-    background-color: #1e272e;
+    background-color: #2F3628;
     color: white;
     display: flex;
     flex-direction: column;
@@ -15,7 +15,7 @@
     font-weight: bold;
     margin-bottom: 20px;
     text-align: center;
-    color: #1e272e;
+    color: #2F3628;
     /* display: flex; */
     /* align-items: center; */
 }
@@ -40,7 +40,7 @@
 }
 
 .sidebar .nav-links a.active {
-    background-color: #3742fa;
+    background-color: #007A33;
     font-weight: bold;
 }
 
@@ -52,7 +52,7 @@
     display: block;
     color: white;
     text-decoration: none;
-    margin: 10px 0;
+    margin: 20px 0;
     padding: 10px;
     transition: background 0.3s;
 }
@@ -62,17 +62,17 @@
 }
 
 .logoimg{
-    position: absolute;
+    /* position: absolute; */
     /* background: white; */
-    top: -4px;
-    width: 80px;
-    left: 6px;
+    /* top: -4px; */
+    width: 200px;
+    /* left: 6px; */
 }
 
 .logout{
     width: 100%;
     padding: 10px;
-    background-color: rgb(30, 39, 46);
+    background-color: #2F3628;
     color: white;
     font-size: 16px;
     border: none;
@@ -87,7 +87,7 @@
 }
 
 .logout:hover{
-    background-color: #1e272e;
+    background-color: #2F3628;
 }
 
 .logout svg{

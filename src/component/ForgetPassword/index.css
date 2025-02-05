@@ -25,7 +25,7 @@
     width: 100%;
     max-width: 400px;
     padding: 20px;
-    border: 2px solid rgb(30, 39, 46);
+    border: 2px solid #2F3628;
     border-radius: 8px;
     background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -35,7 +35,7 @@
   .login-form h2 {
     text-align: center;
     margin-bottom: 20px;
-    color: rgb(30, 39, 46);
+    color: #2F3628;
   }
   
   .form-group {
@@ -61,7 +61,7 @@
   .loginBtn {
     width: 100%;
     padding: 10px;
-    background-color: rgb(30, 39, 46);
+    background-color: #2F3628;
     color: white;
     font-size: 16px;
     border: none;

@@ -58,7 +58,6 @@ const ManageAdmins = () => {
                 <th>Name</th>
                 <th>Status</th>
                 <th>Email</th>
-                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -70,21 +69,6 @@ const ManageAdmins = () => {
                       <span className="status active">{elem.status}</span>
                     </td>
                     <td>{elem.email}</td>
-                    <td>
-                      {elem.status === "UNCONFIRMED" && (
-                        <div className="dropdown">
-                          <button className="btn action-btn">
-                            Actions <i className="fas fa-caret-down"></i>
-                          </button>
-
-                          <div className="dropdown-content">
-                            <span onClick={() => resendOTP(elem.agentName)}>
-                              Resend OTP
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                    </td>
                   </tr>
                 </>
               ))}

@@ -96,7 +96,7 @@
 
 .stat-card .stat-number {
     font-size: 24px;
-    color: #3742fa;
+    color: #007A33;
     font-weight: bold;
 }
 
@@ -110,7 +110,7 @@
 }
 
 .btn.view-btn {
-    background-color: #007bff;
+    background-color: #007A33;
     color: white;
     margin-right: 5px;
 }
@@ -133,7 +133,7 @@
     color: #888;
 }
 .main-content {
-    margin-left: 270px;
+    margin-left: 289px;
     padding: 20px;
 }
 
@@ -166,7 +166,7 @@
 }
 
 .view-btn {
-    background-color: #007bff;
+    background-color: #007A33;
     color: white;
 }
 
@@ -201,7 +201,7 @@
 .add-user-btn,
 .delete-user-btn {
     padding: 5px 10px;
-    background-color: #007bff;
+    background-color: #007A33;
     color: white;
     border: none;
     border-radius: 5px;
@@ -220,7 +220,7 @@
 }
 
 .dropdown .action-btn {
-    background-color: #007bff;
+    background-color: #007A33;
     color: white;
     padding: 5px 10px;
     border: none;
@@ -229,7 +229,7 @@
 }
 
 .action-btn {
-    background-color: #007bff;
+    background-color: #007A33;
     color: white;
     padding: 5px 10px;
     border: none;
@@ -281,7 +281,7 @@
   .broker-list-styled-table thead {
     position: sticky; /* Keeps the header row fixed */
     top: 0; /* Required for sticky positioning */
-    background-color: rgb(30, 39, 46);
+    background-color: #2F3628;
     color: #fff;
     z-index: 1; /* Ensure it stays on top of the scrolling content */
   }

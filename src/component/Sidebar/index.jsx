@@ -18,7 +18,7 @@ function Sidebar() {
       <div
         style={{
           background: "#ffffff",
-          height: "85px",
+          height: "285px",
           padding: "0",
           width: "288px",
           position: "fixed",
@@ -30,11 +30,11 @@ function Sidebar() {
         }}
       >
         <span>
-          <img src={logo} className="logoimg" />
+          <img src={logo} className="logoimg" alt="logo" />
         </span>
-        <h2 className="logo">Title Munke </h2>
+        {/* <h2 className="logo">Title Munke </h2> */}
       </div>
-      <nav className="nav-links" style={{ position: "absolute", top: "100px" }}>
+      <nav className="nav-links" style={{ position: "absolute", top: "300px" }}>
         {roleRoutes.map((route, index) => (
           <NavLink
             key={index}

@@ -20,7 +20,7 @@
   /* Title inside the card */
   .card-title {
     font-size: 22px;
-    color: rgb(30, 39, 46); /* Title color */
+    color: #2F3628; /* Title color */
     margin-bottom: 20px;
   }
   
@@ -43,7 +43,7 @@
   }
   
   .search-input:focus {
-    border-color: rgb(30, 39, 46); /* Input field focus border color */
+    border-color: #2F3628 /* Input field focus border color */
   }
   
   .downloadbtn{
@@ -53,7 +53,7 @@
     padding: 12px 20px;
     font-size: 16px;
     color: #fff;
-    background-color: rgb(30, 39, 46); /* Button background color */
+    background-color: #2F3628; /* Button background color */
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -71,7 +71,7 @@
     padding: 12px 20px;
     font-size: 16px;
     color: #fff;
-    background-color: rgb(30, 39, 46); /* Button background color */
+    background-color: #2F3628; /* Button background color */
     border: none;
     border-radius: 5px;
     cursor: pointer;

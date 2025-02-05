@@ -134,7 +134,7 @@ function History() {
 
     return () => clearInterval(interval);
   }, [inProgressSearches]);
-  console.log("inProgressSearches", inProgressSearches);
+
   useEffect(() => {
     if (user?.attributes?.sub) {
       if (activeTab === "history") fetchSearchHistories();
@@ -209,7 +209,9 @@ function History() {
 
         {searchHistories?.length === 0 && <p>No Records found.</p>}
         {loading && <p>Loading...</p>}
-        {!hasMore && <p>No more data to load.</p>}
+        {!hasMore && searchHistories?.length > 0 && (
+          <p>No more data to load.</p>
+        )}
 
         {searchHistories?.length > 0 && hasMore && !loading && (
           <button className="loadmore" onClick={fetchSearchHistories}>

@@ -191,23 +191,22 @@ function BorkerList() {
                   <td style={{ marginRight: "5px" }}>{elem.email}</td>
                   <td>
                     <div className="dropdown">
-                      <button className="btn action-btn">
-                        Actions <i className="fas fa-caret-down"></i>
-                      </button>
-                      {elem.status === "UNCONFIRMED" ? (
-                        <div className="dropdown-content">
-                          <span onClick={() => {}}>Resend OTP</span>
-                        </div>
-                      ) : (
-                        <div className="dropdown-content">
-                          <span
-                            onClick={() => {
-                              handleBrokerStatus(elem);
-                            }}
-                          >
-                            {elem.status === "ACTIVE" ? "InActive" : "Active"}
-                          </span>
-                        </div>
+                      {elem.status !== "UNCONFIRMED" && (
+                        <>
+                          <button className="btn action-btn">
+                            Actions <i className="fas fa-caret-down"></i>
+                          </button>
+
+                          <div className="dropdown-content">
+                            <span
+                              onClick={() => {
+                                handleBrokerStatus(elem);
+                              }}
+                            >
+                              {elem.status === "ACTIVE" ? "InActive" : "Active"}
+                            </span>
+                          </div>
+                        </>
                       )}
                     </div>
                   </td>

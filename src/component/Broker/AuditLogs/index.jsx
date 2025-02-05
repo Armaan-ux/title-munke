@@ -3,11 +3,8 @@ import { useState, useEffect } from "react";
 import { listAuditLogs } from "../../../graphql/queries";
 import "./index.css";
 import { useUser } from "../../../context/usercontext";
-import {
-  FETCH_LIMIT,
-  getFormattedDateTime,
-  handleCreateAuditLog,
-} from "../../../utils";
+import { FETCH_LIMIT, getFormattedDateTime } from "../../../utils";
+import { fetchAgentsOfBroker } from "../../service/broker";
 
 function AuditLogs() {
   const [logs, setLogs] = useState([]);
@@ -21,10 +18,19 @@ function AuditLogs() {
 
     setLoading(true);
     try {
+      const agentsData = await fetchAgentsOfBroker(user?.attributes?.sub);
+      if (agentsData.length === 0) {
+        setLoading(false);
+        return;
+      }
+      debugger;
       const response = await API.graphql({
         query: listAuditLogs,
         variables: {
-          filter: { isAgent: { eq: true } },
+          filter: {
+            // isAgent: { eq: true },
+            or: agentsData.map((elem) => ({ userId: { eq: elem.agentId } })),
+          },
           limit: FETCH_LIMIT,
           nextToken,
         },

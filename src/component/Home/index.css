@@ -1,0 +1,344 @@
+  /* /* ========================
+       GLOBAL STYLES
+    ========================= */
+    
+      .home {
+        font-family: 'Open Sans', sans-serif;
+        margin: 0;
+        padding: 0;
+        background:
+          linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)),
+          url('../../img/palm_trees_background.jpg')
+            no-repeat center center fixed;
+        background-size: cover;
+        color: #333;
+        line-height: 1.6;
+      }
+     
+  
+      /* MAIN WRAPPER FOR CONTENT */
+      .wrapper {
+        width: 85%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding-bottom: 50px;
+      }
+  
+      /* ========================
+         HEADER
+      ========================= */
+      header {
+        position: relative;
+        width: 100%;
+        padding: 20px 0 60px;
+        text-align: center;
+        background: linear-gradient(
+          to bottom,
+          rgba(255,255,255,0.15) 0%,
+          rgba(255,255,255,0) 100%
+        );
+      }
+      .logo-container {
+        display: inline-block;
+        background-color: rgba(255,255,255,0.85);
+        padding: 5px 10px;
+        border-radius: 4px;
+      }
+      .logo {
+        max-width: 140px;
+        display: block;
+        margin: 0 auto;
+      }
+      .nav-buttons {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+      }
+      .nav-buttons button {
+        background-color: #008F39;
+        color: #fff;
+        border: none;
+        padding: 8px 12px;
+        margin-left: 6px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9em;
+        transition: background-color 0.3s ease;
+      }
+      .nav-buttons button:hover {
+        background-color: #008F39;
+      }
+  
+      /* ========================
+         SECTIONS
+      ========================= */
+      .section {
+        margin-bottom: 60px;
+        background-color: rgba(255,255,255,0.85);
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        padding: 40px 20px;
+      }
+      .section h2 {
+        font-size: 2em;
+        color: #2F3628;
+        text-align: center;
+        margin-bottom: 20px;
+        position: relative;
+      }
+      .section p {
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+        font-size: 1.1em;
+        color: #555;
+        line-height: 1.6;
+      }
+  
+      /* Overwrite the icon from "About Title Munke" heading, if any */
+      .overview-section h2 svg {
+        display: none;
+      }
+  
+      /* ========================
+         HOW IT WORKS
+         Centering the chain &
+         making boxes uniform
+      ========================= */
+      .process-section {
+        position: relative;
+      }
+      /* The container is inline-flex to shrink to the width of the boxes;
+         margin: 0 auto centers them in the parent. */
+      .process-steps {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 30px;
+        margin: 0 auto;
+        position: relative;
+        width: fit-content;  /* auto-shrink to the row of boxes */
+      }
+      /* The green line is drawn behind the boxes from left to right. */
+      .process-steps::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: #2F3628;
+        z-index: 0;
+      }
+      /* Each process-step has a fixed width & height for uniform sizing. */
+      .process-step {
+        position: relative;
+        width: 220px;                 /* same width for each card */
+        min-height: 220px;            /* same height for each card */
+        background-color: rgba(255,255,255,0.95);
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        text-align: center;           /* center contents inside box */
+        padding: 20px;
+        display: flex;
+        flex-direction: column;       /* allows vertical alignment */
+        justify-content: center;      /* center vertically */
+        align-items: center;          /* center horizontally */
+        transition: all 0.3s ease;
+        z-index: 1;                   /* above the line */
+      }
+      /* Subtle hover effect */
+      .process-step:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      }
+      .step-number {
+        position: absolute;
+        top: 10px;
+        left: 10px;                   /* keep the step number in top-left corner */
+        width: 30px;
+        height: 30px;
+        background-color: #008F39;
+        border-radius: 50%;
+        color: #fff;
+        text-align: center;
+        line-height: 30px;
+        font-size: 1em;
+        font-weight: 600;
+      }
+      .process-step svg {
+        font-size: 2em;
+        color: #008F39;
+        margin-bottom: 10px;
+      }
+      .process-step h3 {
+        font-size: 1.2em;
+        margin-bottom: 8px;
+        color: #333;
+      }
+      .process-step p {
+        font-size: 0.95em;
+        color: #555;
+        margin: 0;
+      }
+  
+      /* The “View a Sample Report” button under How It Works. */
+      .view-sample {
+        margin-top: 30px;
+        text-align: center;
+      }
+      .view-sample button {
+        background-color: #008F39;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-size: 0.95em;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      .view-sample button:hover {
+        background-color: #2F3628;
+      }
+  
+      /* ========================
+         KEY FEATURES
+      ========================= */
+      .features-container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 30px;
+        margin-top: 30px;
+      }
+      .feature {
+        width: 240px;
+        background-color: rgba(255,255,255,0.95);
+        border-radius: 6px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        text-align: center;
+        transition: all 0.3s ease;
+      }
+      .feature:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
+      .feature svg {
+        font-size: 2em;
+        color: #008F39;
+        margin-bottom: 10px;
+      }
+      .feature h3 {
+        font-size: 1.2em;
+        margin-bottom: 8px;
+        color: #2F3628;
+      }
+      .feature p {
+        font-size: 0.95em;
+        color: #555;
+      }
+  
+      /* ========================
+         WHY CHOOSE TITLE MUNKE
+      ========================= */
+      .learn-more .content {
+        max-width: 700px;
+        margin: 0 auto;
+        text-align: left;
+        line-height: 1.7;
+      }
+      .learn-more .content h3 {
+        font-size: 1.3em;
+        color: #2F3628;
+        margin-top: 16px;
+        margin-bottom: 6px;
+        font-weight: 600;
+      }
+      .learn-more .content p {
+        font-size: 1em;
+        color: #555;
+        margin-bottom: 16px;
+      }
+  
+      /* ========================
+         CONTACT SECTION
+      ========================= */
+      .contact-section button {
+        background-color: #008F39;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background-color 0.3s ease;
+        display: block;
+        margin: 20px auto 0;
+      }
+      .contact-section svg{
+       color: #008F39;
+      }
+    
+      .contact-section button:hover {
+        background-color: #008F39;
+      }
+  
+      /* ========================
+         FOOTER
+      ========================= */
+      footer.footer {
+        width: 85%;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        background-color: rgba(255,255,255,0.7);
+        padding: 15px;
+        text-align: center;
+        border-top: 1px solid #eaeaea;
+        border-radius: 6px;
+      }
+      footer.footer p {
+        margin: 0;
+        font-size: 0.9em;
+        color: #555;
+      }
+  
+      /* ========================
+         RESPONSIVE STYLES
+      ========================= */
+      @media (max-width: 768px) {
+        .wrapper {
+          width: 90%;
+        }
+        section {
+          width: 100%;
+          margin-bottom: 40px;
+          padding: 30px 15px;
+        }
+        /* On narrow screens, remove the horizontal line behind steps.
+           The boxes stack vertically. */
+        .process-steps {
+          flex-direction: column;
+          align-items: center;
+          margin: 0 auto;
+          width: auto; /* allow them to fill the parent container */
+        }
+        .process-steps::before {
+          display: none;
+        }
+        .process-step {
+          width: 260px; /* slightly wider on mobile if you like */
+          min-height: auto;
+          margin-bottom: 20px;
+        }
+        .features-container {
+          flex-direction: column;
+          align-items: center;
+        }
+        footer.footer {
+          width: 90%;
+          margin-left: auto;
+          margin-right: auto;
+        }
+      }

@@ -8,10 +8,10 @@ function AddAgentByAdminModal({ setIsOpen }) {
   const [brokers, setBrokers] = useState([]);
   const [selectedBroker, setSelectedBroker] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    password: "",
   });
 
   const handleChange = (e) => {
@@ -24,15 +24,17 @@ function AddAgentByAdminModal({ setIsOpen }) {
 
   const handleSubmit = async (e) => {
     try {
+      setIsCreating(true);
       e.preventDefault();
-      const { name, email, password } = formData;
-      await createAgentForBroker(selectedBroker, name, email, password);
+      const { name, email } = formData;
+      await createAgentForBroker(selectedBroker, name, email);
       toast.success("Agent Created Successfully.");
       console.log(formData);
     } catch (err) {
       console.error(err);
     } finally {
       setIsOpen(false);
+      setIsCreating(false);
     }
   };
 
@@ -43,9 +45,7 @@ function AddAgentByAdminModal({ setIsOpen }) {
       .catch((err) => console.error(err))
       .finally(() => setIsLoading(false));
   }, []);
-  console.log(
-    !formData.email || !formData.name || !formData.password || !selectedBroker
-  );
+
   return (
     <div>
       <button onClick={() => setIsOpen(true)} className="open-modal-btn">
@@ -77,16 +77,6 @@ function AddAgentByAdminModal({ setIsOpen }) {
               />
             </div>
             <div className="form-group">
-              <label>Password</label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="form-group">
               <label>Broker list</label>
               {isLoading ? (
                 <p>Loading brokers...</p>
@@ -113,16 +103,11 @@ function AddAgentByAdminModal({ setIsOpen }) {
                 Cancel
               </button>
               <button
-                disabled={
-                  !formData.email ||
-                  !formData.name ||
-                  !formData.password ||
-                  !selectedBroker
-                }
+                disabled={!formData.email || !formData.name || !selectedBroker}
                 type="submit"
                 className="submit-btn"
               >
-                Submit
+                {isCreating ? "Processing..." : "Submit"}
               </button>
             </div>
           </form>

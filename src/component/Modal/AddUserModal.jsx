@@ -26,13 +26,12 @@ function AddUserModal({ setIsOpen, userType, setUser }) {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      const { name, email, password } = formData;
+      const { name, email } = formData;
       if (userType === "agent") {
         const { newAgent } = await createAgentForBroker(
           user?.attributes?.sub,
           name,
-          email,
-          password
+          email
         );
 
         setUser((prev = []) => [
@@ -48,10 +47,12 @@ function AddUserModal({ setIsOpen, userType, setUser }) {
           });
         }
       } else if (userType === "broker") {
-        const { newBroker } = await createBrokerLogin(name, email, password);
-        toast.success("Broker Created Successfully.", newBroker);
+        const { newBroker } = await createBrokerLogin(name, email);
+        toast.success("Broker Created Successfully.");
+        setUser((prev) => [...prev, { ...newBroker }]);
+        console.log("newBroker", newBroker);
       } else if (userType === "admin") {
-        const { newAdmin } = await createAdminAccount(name, email, password);
+        const { newAdmin } = await createAdminAccount(name, email);
         setUser((prev) => [...prev, { ...newAdmin }]);
         toast.success("Admin Created Successfully.", newAdmin);
       }
@@ -94,7 +95,7 @@ function AddUserModal({ setIsOpen, userType, setUser }) {
                 required
               />
             </div>
-            <div className="form-group">
+            {/* <div className="form-group">
               <label>Password</label>
               <input
                 type="password"
@@ -103,7 +104,7 @@ function AddUserModal({ setIsOpen, userType, setUser }) {
                 onChange={handleChange}
                 required
               />
-            </div>
+            </div> */}
             <div className="modal-actions">
               <button
                 type="button"

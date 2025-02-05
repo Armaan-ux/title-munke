@@ -28,7 +28,7 @@ function ForgetPassword() {
       <div className="login-container">
         <form className="login-form">
           <div className="login-logo">
-            <img src={logo} />
+            <img src={logo} alt="logo" />
             {/* <h2>Title Munke</h2> */}
           </div>
           <div className="form-group">

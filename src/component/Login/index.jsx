@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import OTP from "../OTP";
 import logo from "../../img/Logo.svg";
 import { useUser } from "../../context/usercontext";
+import ResetPassword from "../ResetPassword";
 
 function Login() {
   const { user, signIn } = useUser();
@@ -59,14 +60,14 @@ function Login() {
     setIsReset(false);
   };
 
-  if (isReset) return <OTP username={username} resetForLogin={resetForLogin} />;
+  if (isReset) return <ResetPassword username={username} password={password} />;
 
   return (
     <div className="main">
       <div className="login-container">
         <form className="login-form">
           <div className="login-logo">
-            <img src={logo} />
+            <img src={logo} alt="logo" />
           </div>
           <div className="form-group">
             <label for="username">Email</label>

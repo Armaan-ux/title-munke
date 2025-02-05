@@ -1,23 +1,37 @@
+import { Auth } from "aws-amplify";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { resetPassword } from "../service/auth";
+import { useUser } from "../../context/usercontext";
 import logo from "../../img/Logo.svg";
-import "./index.css";
 
-function ResetPassword({ username }) {
+function ResetPassword({ username, password }) {
+  const { signIn } = useUser();
   const [newPassword, setNewPassword] = useState("");
-  const [otp, setOTP] = useState("");
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handlePasswordReset = async () => {
     try {
-      await resetPassword(username, otp, newPassword);
-      toast.success("Password changed successfully");
-      navigate("/login");
+      setLoading(true);
+      const user = await Auth.signIn(username, password);
+      await Auth.completeNewPassword(user, newPassword);
+      const { user: completedUser } = await signIn(username, newPassword);
+      const groups =
+        completedUser.signInUserSession.idToken.payload["cognito:groups"];
+      if (groups.includes("admin")) {
+        navigate("/admin");
+      } else if (groups.includes("agent")) {
+        navigate("/agent");
+      } else if (groups.includes("broker")) {
+        navigate("/broker");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       setError(error.message || "Password reset failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -27,7 +41,6 @@ function ResetPassword({ username }) {
         <form className="login-form">
           <div className="login-logo">
             <img src={logo} />
-            {/* <h2>Title Munke</h2> */}
           </div>
           <div className="form-group">
             <label for="password">Reset Password</label>
@@ -40,24 +53,12 @@ function ResetPassword({ username }) {
               onChange={(e) => setNewPassword(e.target.value)}
             />
           </div>
-          <div className="form-group">
-            <label for="password">OTP</label>
-            <input
-              type="text"
-              id="otp"
-              name="otp"
-              value={otp}
-              required
-              onChange={(e) => setOTP(e.target.value)}
-            />
-          </div>
           <button
             onClick={() => handlePasswordReset()}
             className="loginBtn"
-            disabled={!otp.length || !newPassword.length}
             type="button"
           >
-            Reset
+            {loading ? "Processing..." : "Reset"}
           </button>
           {error && <div className="error">{error}</div>}
         </form>

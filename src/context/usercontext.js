@@ -34,6 +34,10 @@ export const UserProvider = ({ children }) => {
   const signIn = async (username, password) => {
     try {
       const user = await Auth.signIn(username, password);
+      if (user?.challengeName === "NEW_PASSWORD_REQUIRED") {
+        return { user, isResetRequired: true };
+      }
+
       setUser(user);
       setIsAuthenticated(true);
       const userGroups =
@@ -110,7 +114,7 @@ export const UserProvider = ({ children }) => {
 
       return { user, isResetRequired: false };
     } catch (error) {
-      console.error("Error", error);
+      console.error("Error", error.code);
       if (error.code === "UserNotConfirmedException") {
         console.error("User is not confirmed. Prompt for OTP verification.");
         return { isResetRequired: true, error: "UserNotConfirmed" };

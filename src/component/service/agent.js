@@ -7,6 +7,7 @@ import {
 } from "../../graphql/mutations";
 import AWSExport from "../../aws-exports";
 import { fetchBroker } from "./broker";
+import { generatePassword } from "../../utils";
 const AWS = require("aws-sdk");
 
 AWS.config.update({
@@ -124,15 +125,21 @@ export const confirmUser = async (username, code) => {
   }
 };
 
-export async function createAgentForBroker(brokerId, name, email, password) {
+export async function createAgentForBroker(brokerId, name, email) {
   try {
-    const createUserResponse = await Auth.signUp({
-      username: email,
-      password: password,
-      attributes: {
-        email,
-      },
-    });
+    let temporaryPassword = generatePassword();
+    console.log("temporaryPassword", temporaryPassword);
+    const createUserResponse = await cognito
+      .adminCreateUser({
+        UserPoolId: userPoolId,
+        Username: email,
+        UserAttributes: [
+          { Name: "email", Value: email },
+          { Name: "email_verified", Value: "true" },
+        ],
+        TemporaryPassword: temporaryPassword,
+      })
+      .promise();
 
     const response = await cognito
       .adminAddUserToGroup({
@@ -146,7 +153,7 @@ export async function createAgentForBroker(brokerId, name, email, password) {
 
     // Step 2: Add Agent Data to DynamoDB
     const agentInput = {
-      id: createUserResponse.userSub,
+      id: createUserResponse.User?.Attributes[2]?.Value,
       name: name,
       email,
       status: "UNCONFIRMED",

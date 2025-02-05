@@ -1,7 +1,7 @@
 .open-modal-btn {
     background-color: white;
-    color: #1e272e;
-    border: 1px solid #1e272e;
+    color: #2F3628;
+    border: 1px solid #2F3628;
     padding: 10px 15px;
     cursor: pointer;
   }
@@ -24,7 +24,7 @@
     padding: 20px;
     border-radius: 5px;
     width: 300px;
-    color: #1e272e;
+    color: #2F3628;
   }
   
   .modal-content h2{
@@ -43,8 +43,8 @@
     width: 100%;
     padding: 8px;
     background-color: white;
-    border: 1px solid #1e272e;
-    color: #1e272e;
+    border: 1px solid #2F3628;
+    color: #2F3628;
   }
   
   .modal-actions {
@@ -59,14 +59,14 @@
   
   .cancel-btn {
     background-color: white;
-    color: #1e272e;
-    border: 1px solid #1e272e;
+    color: #2F3628;
+    border: 1px solid #2F3628;
   }
   
   .submit-btn {
-    background-color: #1e272e;
+    background-color: #2F3628;
     color: white;
-    border: 1px solid #1e272e;
+    border: 1px solid #2F3628;
   }
 
   .form-group select {
@@ -79,6 +79,6 @@
   
   .form-group select:focus {
     outline: none;
-    border-color: #1e272e;
+    border-color: #2F3628;
     box-shadow: 0 0 0 2px rgba(30, 39, 46, 0.1);
   }

@@ -34,3 +34,23 @@ export const handleCreateAuditLog = async (action, detail, isAgent = false) => {
     console.error("Error creating audit log:", error);
   }
 };
+
+export const generatePassword = (
+  includeNumbers = true,
+  includeSymbols = true,
+  length = 14
+) => {
+  const numbers = "1234567890";
+  const symbols = "!@#$%^&*()_+{}[]|:;<>?";
+  let chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  if (includeNumbers) chars += numbers;
+  if (includeSymbols) chars += symbols;
+
+  let generatedPassword = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    generatedPassword += chars[randomIndex];
+  }
+  return generatedPassword;
+};
