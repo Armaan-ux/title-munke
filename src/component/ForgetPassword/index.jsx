@@ -4,14 +4,17 @@ import ResetPassword from "../ResetPassword";
 import { forgotPassword } from "../service/auth";
 import logo from "../../img/Logo.svg";
 import "./index.css";
+import ResetPasswordWithOTP from "../OTP";
 
 function ForgetPassword() {
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const [isReset, setIsReset] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleForgetPassword = async () => {
     try {
+      setLoading(true);
       const response = await forgotPassword(username);
       if (response) {
         toast.success("OTP has sent to your email.");
@@ -19,10 +22,12 @@ function ForgetPassword() {
       }
     } catch (error) {
       setError(error.message || "Password reset failed");
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (isReset) return <ResetPassword username={username} />;
+  if (isReset) return <ResetPasswordWithOTP username={username} />;
   return (
     <div className="main">
       <div className="login-container">
@@ -41,13 +46,15 @@ function ForgetPassword() {
               required
               onChange={(e) => setUsername(e.target.value)}
             />
+            <small>Please enter your email to reset your passsword</small>
           </div>
           <button
             onClick={() => handleForgetPassword()}
-            className="loginBtn"
+            className="forgotPasswordBtn"
+            disabled={username.length === 0 || loading}
             type="button"
           >
-            submit
+            {loading ? "Processing...." : "submit"}
           </button>
           {error && <div className="error">{error}</div>}
         </form>

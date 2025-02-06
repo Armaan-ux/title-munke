@@ -66,6 +66,11 @@
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
+    },
+    "sendmessage": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
     }
   },
   "parameters": {
@@ -82,6 +87,22 @@
         {
           "category": "function",
           "resourceName": "checkUserStatus"
+        }
+      ]
+    },
+    "AMPLIFY_function_sendmessage_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "sendmessage"
+        }
+      ]
+    },
+    "AMPLIFY_function_sendmessage_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "sendmessage"
         }
       ]
     }

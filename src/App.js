@@ -14,6 +14,7 @@ import { useUser } from "./context/usercontext";
 import Loader from "./component/Loader";
 import ForgetPassword from "./component/ForgetPassword";
 import Home from "./component/Home";
+import ContactUs from "./component/Contactus";
 
 function App() {
   const { isLoading } = useUser();
@@ -26,6 +27,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/contactus" element={<ContactUs />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgetPassword />} />
         <Route path="/notfound" element={<NotFound />} />

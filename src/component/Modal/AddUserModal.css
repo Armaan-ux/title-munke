@@ -1,7 +1,7 @@
 .open-modal-btn {
     background-color: white;
     color: #2F3628;
-    border: 1px solid #2F3628;
+    /* border: 1px solid #2F3628; */
     padding: 10px 15px;
     cursor: pointer;
   }
@@ -43,7 +43,7 @@
     width: 100%;
     padding: 8px;
     background-color: white;
-    border: 1px solid #2F3628;
+    /* border: 1px solid #2F3628; */
     color: #2F3628;
   }
   
@@ -60,13 +60,13 @@
   .cancel-btn {
     background-color: white;
     color: #2F3628;
-    border: 1px solid #2F3628;
+    /* border: 1px solid #2F3628; */
   }
   
   .submit-btn {
     background-color: #2F3628;
     color: white;
-    border: 1px solid #2F3628;
+    /* border: 1px solid #2F3628; */
   }
 
   .form-group select {

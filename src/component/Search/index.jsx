@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Logo from "../../img/Logo.svg";
 import { API, graphqlOperation } from "aws-amplify";
 import { createSearchHistory } from "../../graphql/mutations";
 import "./index.css";
@@ -10,12 +11,16 @@ import {
   getBroker,
   relationshipsByAgentId,
 } from "../../graphql/queries";
+import Loader from "../../img/loader.gif";
 
 const Search = () => {
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState("");
-  const [message, setMessage] = useState("");
+  const [isChecked, setIsChecked] = useState(false);
+  const [message, setMessage] = useState(
+    "Initializing title search... This process may take a few minutes."
+  );
   const [percentage, setPercentage] = useState(null);
   const [zipUrl, setZipUrl] = useState(null);
   const [isAgent, setIsAgent] = useState(false);
@@ -34,7 +39,12 @@ const Search = () => {
   }, [user]);
   const handleSearch = async () => {
     setLoading(true);
-
+    setProgress("");
+    setZipUrl(null);
+    setIsChecked(false);
+    setMessage(
+      "Initializing title search... This process may take a few minutes."
+    );
     try {
       handleCreateAuditLog(
         "SEARCH",
@@ -91,7 +101,11 @@ const Search = () => {
       setProgress(status === "SUCCESS" ? "Search Completed" : "Processing...");
       setZipUrl(zip_url);
       setPercentage(percent_completion || "100");
-      setMessage(status_message || "Search Complete Successfully");
+      if (status_message.includes("Initializing title search.")) {
+        setMessage(
+          "Initializing title search... This process may take a few minutes."
+        );
+      } else setMessage(status_message || "Search Complete Successfully");
 
       if (status === "SUCCESS") {
         setLoading(false);
@@ -151,24 +165,42 @@ const Search = () => {
   };
 
   return (
-    <div className="main-content">
-      <div className="card">
-        <h2 className="card-title">Search Address</h2>
+    <div className="search-main-content">
+      <div className="search-card">
+        <img src={Logo} className="card-title" />
+
         <div className="search-field-container">
+          {loading && <img src={Loader} className="search-field-loader" />}
           <input
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             type="text"
-            placeholder="Search..."
+            placeholder="Enter Address..."
             className="search-input"
           />
-          <button
-            className="search-button"
-            onClick={handleSearch}
-            disabled={loading || !address.trim().length}
-          >
-            {loading ? "Processing..." : "Search"}
-          </button>
+          {!loading && (
+            <>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <input
+                  type={"checkbox"}
+                  value={isChecked}
+                  onChange={(e) => setIsChecked(e.target.checked)}
+                  style={{ width: "18px" }}
+                />
+                <small>
+                  {" "}
+                  Check this box to confirm the address is correct.
+                </small>
+              </div>
+              <button
+                className="search-button"
+                onClick={handleSearch}
+                disabled={loading || !address.trim().length || !isChecked}
+              >
+                Search
+              </button>
+            </>
+          )}
         </div>
         {progress && (
           <p style={{ marginTop: "10px" }}>
@@ -178,8 +210,8 @@ const Search = () => {
             </span>
           </p>
         )}
-        {message && <p style={{ marginTop: "10px" }}>{message}</p>}
-        {zipUrl && (
+        {loading && message && <p style={{ marginTop: "10px" }}>{message}</p>}
+        {zipUrl && !loading && (
           <div className="downloadbtn">
             <a
               href={zipUrl}

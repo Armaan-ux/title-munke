@@ -19,6 +19,10 @@
         "checkUserStatus": {
           "deploymentBucketName": "amplify-titlemunke-master-89007-deployment",
           "s3Key": "amplify-builds/checkUserStatus-656c5977416f50394356-build.zip"
+        },
+        "sendmessage": {
+          "deploymentBucketName": "amplify-titlemunke-master-89007-deployment",
+          "s3Key": "amplify-builds/sendmessage-72494a6e387246384d62-build.zip"
         }
       },
       "auth": {

@@ -1,18 +1,21 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { confirmUser } from "../service/agent";
+import { resetPassword } from "../service/auth";
+import logo from "../../img/Logo.svg";
+import "./index.css";
 
-function OTP({ username, resetForLogin }) {
+function ResetPasswordWithOTP({ username }) {
   const [newPassword, setNewPassword] = useState("");
+  const [otp, setOTP] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handlePasswordReset = async () => {
     try {
-      const user = await confirmUser(username, newPassword);
-      if (user === "SUCCESS") {
-        toast.success("User Confimed successfully, please login to continue");
-        resetForLogin();
-      }
+      await resetPassword(username, otp, newPassword);
+      toast.success("Password changed successfully");
+      navigate("/login");
     } catch (error) {
       setError(error.message || "Password reset failed");
     }
@@ -22,11 +25,14 @@ function OTP({ username, resetForLogin }) {
     <div className="main">
       <div className="login-container">
         <form className="login-form">
-          <h2>Title Munke</h2>
+          <div className="login-logo">
+            <img src={logo} />
+            {/* <h2>Title Munke</h2> */}
+          </div>
           <div className="form-group">
-            <label for="password">Enter OTP</label>
+            <label for="password">Reset Password</label>
             <input
-              type="text"
+              type="password"
               id="password"
               name="password"
               value={newPassword}
@@ -34,12 +40,24 @@ function OTP({ username, resetForLogin }) {
               onChange={(e) => setNewPassword(e.target.value)}
             />
           </div>
+          <div className="form-group">
+            <label for="password">OTP</label>
+            <input
+              type="text"
+              id="otp"
+              name="otp"
+              value={otp}
+              required
+              onChange={(e) => setOTP(e.target.value)}
+            />
+          </div>
           <button
             onClick={() => handlePasswordReset()}
             className="loginBtn"
+            disabled={!otp.length || !newPassword.length}
             type="button"
           >
-            submit
+            Reset
           </button>
           {error && <div className="error">{error}</div>}
         </form>
@@ -48,4 +66,4 @@ function OTP({ username, resetForLogin }) {
   );
 }
 
-export default OTP;
+export default ResetPasswordWithOTP;

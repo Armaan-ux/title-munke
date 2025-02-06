@@ -16,7 +16,7 @@
     padding: 20px;
     border: 2px solid #2F3628;
     border-radius: 8px;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.9);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   
@@ -50,7 +50,7 @@
   .loginBtn {
     width: 100%;
     padding: 10px;
-    background-color: #2F3628;
+    background-color: #008F39;
     color: white;
     font-size: 16px;
     border: none;
@@ -69,10 +69,7 @@
   .login-logo img{
     width: 120px;
   }
-  
-  .loginBtn:hover {
-    background-color: rgb(40, 50, 56);
-  }
+
 
   .loginBtn:disabled{
     cursor: not-allowed;

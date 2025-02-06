@@ -49,6 +49,9 @@ function BorkerList() {
     };
 
     getBroker();
+    const interval = setInterval(getBroker, 1800000);
+
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {

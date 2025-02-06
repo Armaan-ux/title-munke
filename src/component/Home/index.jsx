@@ -81,9 +81,9 @@ export default function Home() {
             </div>
           </div>
           <div className="view-sample" data-aos="fade-up" data-aos-delay="350">
-            <button>
+            <a href="/pdf/report.pdf" target="_blank">
               <i className="fa-solid fa-file-alt"></i> View a Sample Report
-            </button>
+            </a>
           </div>
         </section>
 
@@ -144,7 +144,7 @@ export default function Home() {
             If you have any questions or need further assistance, our team is
             here to help you every step of the way.
           </p>
-          <button>Get in Touch</button>
+          <button onClick={() => navigate("/contactus")}>Get in Touch</button>
         </section>
       </div>
       <footer className="footer" data-aos="fade-up">

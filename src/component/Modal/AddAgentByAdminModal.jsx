@@ -103,7 +103,12 @@ function AddAgentByAdminModal({ setIsOpen }) {
                 Cancel
               </button>
               <button
-                disabled={!formData.email || !formData.name || !selectedBroker}
+                disabled={
+                  !formData.email ||
+                  !formData.name ||
+                  !selectedBroker ||
+                  isCreating
+                }
                 type="submit"
                 className="submit-btn"
               >

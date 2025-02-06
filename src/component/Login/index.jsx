@@ -63,7 +63,7 @@ function Login() {
   if (isReset) return <ResetPassword username={username} password={password} />;
 
   return (
-    <div className="main">
+    <div className="login-main">
       <div className="login-container">
         <form className="login-form">
           <div className="login-logo">
@@ -106,6 +106,9 @@ function Login() {
           </button>
           {error && <div className="error">{error}</div>}
         </form>
+        <div class="back-link">
+          <Link to={"/"}>&larr; Back to Home</Link>
+        </div>
       </div>
     </div>
   );

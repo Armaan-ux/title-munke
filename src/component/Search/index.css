@@ -1,19 +1,28 @@
 /* Ensure the main-content takes the full viewport height */
-.main-content {
+.search-main-content {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100vh; /* Full viewport height */
-    background-color: #f9f9f9; /* Optional: Background color */
+    /* background-color: #f9f9f9; Optional: Background color */
+    background:
+    linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)),
+    url('../../img/palm_trees_background.jpg')
+      no-repeat center center fixed;
+    background-size: cover;
+    margin-left: 250px;
   }
   
   /* Card styling */
-  .card {
-    background-color: #fff;
+  .search-card {
+    background-color: #ffffffc2;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    width: 650px; /* Card width */
+    width: 37% !important;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 00px;
     text-align: center;
   }
   
@@ -30,15 +39,25 @@
     gap: 10px; /* Space between input and button */
     justify-content: center;
     align-items: center;
+    flex-direction: column;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+position: relative;
   }
   
+  .search-field-loader{
+    width: 50px;
+    position: absolute;
+    right: 29px;
+  }
   /* Input field styling */
   .search-input {
     padding: 12px;
     font-size: 16px;
     /* width: 250px; Long input field */
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 15px;
     outline: none;
   }
   
@@ -67,13 +86,13 @@
 
   /* Button styling */
   .search-button {
-    width: 150px;
+    width: 100%;
     padding: 12px 20px;
     font-size: 16px;
     color: #fff;
     background-color: #2F3628; /* Button background color */
     border: none;
-    border-radius: 5px;
+    border-radius: 25px;
     cursor: pointer;
     transition: background-color 0.3s ease;
   }

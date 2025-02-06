@@ -11,7 +11,6 @@ import {
 import { useUser } from "../../../context/usercontext";
 import { fetchAgentsWithSearchCount } from "../../service/broker";
 import "./index.css";
-import { resendOTP } from "../../service/auth";
 import { getFormattedDateTime, handleCreateAuditLog } from "../../../utils";
 import { toast } from "react-toastify";
 
@@ -47,7 +46,12 @@ const AssginedAgents = () => {
       }
     };
 
-    if (user?.attributes?.sub) fetchData();
+    if (user?.attributes?.sub) {
+      fetchData();
+      const interval = setInterval(fetchData, 1800000);
+
+      return () => clearInterval(interval);
+    }
   }, [user]);
 
   const unAssignAgent = async (id, agentId) => {
@@ -169,34 +173,31 @@ const AssginedAgents = () => {
                       <td>{getFormattedDateTime(elem.lastLogin)}</td>
                       <td>
                         <div className="dropdown">
-                          <button className="btn action-btn">
-                            Actions <i className="fas fa-caret-down"></i>
-                          </button>
-                          {elem.status === "UNCONFIRMED" ? (
-                            <div className="dropdown-content">
-                              <span onClick={() => resendOTP(elem.agentName)}>
-                                Resend OTP
-                              </span>
-                            </div>
-                          ) : (
-                            <div className="dropdown-content">
-                              <span
-                                onClick={() =>
-                                  unAssignAgent(elem.id, elem.agentId)
-                                }
-                              >
-                                Unassign
-                              </span>
-                              <span
-                                onClick={() =>
-                                  inActiveAgentStatus(elem.agentId)
-                                }
-                              >
-                                {elem.status === "ACTIVE"
-                                  ? "Inactive"
-                                  : "Active"}
-                              </span>
-                            </div>
+                          {elem.status !== "UNCONFIRMED" && (
+                            <>
+                              <button className="btn action-btn">
+                                Actions <i className="fas fa-caret-down"></i>
+                              </button>
+
+                              <div className="dropdown-content">
+                                <span
+                                  onClick={() =>
+                                    unAssignAgent(elem.id, elem.agentId)
+                                  }
+                                >
+                                  Unassign
+                                </span>
+                                <span
+                                  onClick={() =>
+                                    inActiveAgentStatus(elem.agentId)
+                                  }
+                                >
+                                  {elem.status === "ACTIVE"
+                                    ? "Inactive"
+                                    : "Active"}
+                                </span>
+                              </div>
+                            </>
                           )}
                         </div>
                       </td>

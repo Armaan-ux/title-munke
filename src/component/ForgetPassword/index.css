@@ -6,7 +6,11 @@
     align-items: center;
     height: 100vh;
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background:
+    linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)),
+    url('../../img/palm_trees_background.jpg')
+      no-repeat center center fixed;
+    background-size: cover;
   }
 
   .login-logo{
@@ -27,7 +31,7 @@
     padding: 20px;
     border: 2px solid #2F3628;
     border-radius: 8px;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.9);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   
@@ -58,10 +62,10 @@
     box-sizing: border-box;
   }
   
-  .loginBtn {
+  .forgotPasswordBtn {
     width: 100%;
     padding: 10px;
-    background-color: #2F3628;
+    background-color: #008F39;
     color: white;
     font-size: 16px;
     border: none;
@@ -69,12 +73,8 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
-  
-  .loginBtn:hover {
-    background-color: rgb(40, 50, 56);
-  }
 
-  .loginBtn:disabled{
+  .forgotPasswordBtn:disabled{
     cursor: not-allowed;
     background-color: rgb(97 103 107);
   }

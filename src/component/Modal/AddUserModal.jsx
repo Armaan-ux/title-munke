@@ -9,6 +9,7 @@ import { handleCreateAuditLog } from "../../utils";
 
 function AddUserModal({ setIsOpen, userType, setUser }) {
   const { user } = useUser();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -113,8 +114,12 @@ function AddUserModal({ setIsOpen, userType, setUser }) {
               >
                 Cancel
               </button>
-              <button type="submit" className="submit-btn">
-                Submit
+              <button
+                type="submit"
+                disabled={loading || !formData.email || !formData.name}
+                className="submit-btn"
+              >
+                {loading ? "Processing..." : "Submit"}
               </button>
             </div>
           </form>
