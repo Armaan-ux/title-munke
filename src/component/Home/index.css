@@ -105,21 +105,37 @@
          Centering the chain &
          making boxes uniform
       ========================= */
+      /* .process-section {
+        position: relative;
+      } */
       .process-section {
-        position: relative;
+        overflow: hidden; /* Contain any potential overflow */
       }
-      /* The container is inline-flex to shrink to the width of the boxes;
-         margin: 0 auto centers them in the parent. */
+      
       .process-steps {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 30px;
-        margin: 0 auto;
-        position: relative;
-        width: fit-content;  /* auto-shrink to the row of boxes */
+        display: flex;
+        flex-wrap: wrap; /* Allow items to wrap */
+        gap: 1.5rem; /* Space between items */
+        justify-content: center; /* Center items */
+        padding: 1rem;
       }
-      /* The green line is drawn behind the boxes from left to right. */
+      
+      .process-step {
+        position: relative;
+        align-items: center;          /* center horizontally */
+        transition: all 0.3s ease;
+        z-index: 1;  
+        background-color: rgba(255,255,255,0.95);
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        text-align: center;           /* center contents inside box */
+        padding: 20px;
+        flex: 1 1 250px; /* Grow, shrink, with minimum width of 250px */
+        max-width: 300px; /* Maximum width before wrapping */
+        min-width: 250px; /* Minimum width before wrapping */
+        padding: 1.5rem;
+        box-sizing: border-box; /* Include padding in width calculation */
+      }
       .process-steps::before {
         content: "";
         position: absolute;
@@ -130,24 +146,6 @@
         background-color: #2F3628;
         z-index: 0;
       }
-      /* Each process-step has a fixed width & height for uniform sizing. */
-      .process-step {
-        position: relative;
-        width: 220px;                 /* same width for each card */
-        min-height: 220px;            /* same height for each card */
-        background-color: rgba(255,255,255,0.95);
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        text-align: center;           /* center contents inside box */
-        padding: 20px;
-        display: flex;
-        flex-direction: column;       /* allows vertical alignment */
-        justify-content: center;      /* center vertically */
-        align-items: center;          /* center horizontally */
-        transition: all 0.3s ease;
-        z-index: 1;                   /* above the line */
-      }
-      /* Subtle hover effect */
       .process-step:hover {
         transform: translateY(-5px);
         box-shadow: 0 4px 16px rgba(0,0,0,0.2);
@@ -343,3 +341,25 @@
           margin-right: auto;
         }
       }
+
+          /* Optional: Adjust for very small screens */
+          @media (max-width: 480px) {
+            .process-step {
+              flex-basis: 100%; /* Take full width on mobile */
+              max-width: 100%;
+              min-width: auto;
+            }
+            
+            .process-step svg {
+              width: 40px; /* Reduce icon size */
+              height: 40px;
+            }
+            
+            .process-step h3 {
+              font-size: 1.2rem; /* Adjust heading size */
+            }
+            
+            .process-step p {
+              font-size: 0.9rem; /* Adjust paragraph text */
+            }
+          }

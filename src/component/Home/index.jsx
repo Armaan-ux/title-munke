@@ -81,7 +81,10 @@ export default function Home() {
             </div>
           </div>
           <div className="view-sample" data-aos="fade-up" data-aos-delay="350">
-            <a href="/pdf/report.pdf" target="_blank">
+            <a
+              href="https://titlemunke-frontend-pdf-file.s3.us-east-1.amazonaws.com/report.pdf"
+              target="_blank"
+            >
               <i className="fa-solid fa-file-alt"></i> View a Sample Report
             </a>
           </div>
