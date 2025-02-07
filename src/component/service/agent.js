@@ -238,11 +238,11 @@ export async function assignAgent(agentId, name, brokerId) {
   }
 }
 
-export async function inActiveAgent(agentId) {
+export async function inActiveAgent(agentId, status) {
   try {
     await API.graphql(
       graphqlOperation(updateAgent, {
-        input: { id: agentId, status: "INACTIVE" },
+        input: { id: agentId, status },
       })
     );
     return true;

@@ -126,6 +126,9 @@ function History() {
   };
 
   useEffect(() => {
+    inProgressSearches.forEach((search) => {
+      checkSearchStatus(search.searchId, search.id);
+    });
     const interval = setInterval(() => {
       inProgressSearches.forEach((search) => {
         checkSearchStatus(search.searchId, search.id);

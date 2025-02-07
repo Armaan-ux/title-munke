@@ -65,19 +65,19 @@ const AssginedAgents = () => {
     }
   };
 
-  const inActiveAgentStatus = async (id) => {
-    const result = await inActiveAgent(id);
+  const inActiveAgentStatus = async (id, status) => {
+    const result = await inActiveAgent(id, status);
     if (result) {
       const temp = agents;
       const indx = temp.findIndex((elem) => elem.agentId === id);
       temp[indx] = {
         ...temp[indx],
-        status: temp[indx].status === "INACTIVE" ? "ACTIVE" : "INACTIVE",
+        status: (temp[indx].status = status),
       };
       setAgents(temp.map((e) => e));
-      toast.success("Agent InActive Successfully.");
+      toast.success(`Agent ${status} Successfully.`);
       handleCreateAuditLog("ACTIVE_STATUS", {
-        detial: `Convert Agent ${id} Status to INACTIVE`,
+        detial: `Convert Agent ${id} Status to ${status}`,
       });
     }
   };
@@ -189,7 +189,12 @@ const AssginedAgents = () => {
                                 </span>
                                 <span
                                   onClick={() =>
-                                    inActiveAgentStatus(elem.agentId)
+                                    inActiveAgentStatus(
+                                      elem.agentId,
+                                      elem.status === "INACTIVE"
+                                        ? "ACTIVE"
+                                        : "INACTIVE"
+                                    )
                                   }
                                 >
                                   {elem.status === "ACTIVE"
