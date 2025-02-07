@@ -211,7 +211,7 @@ const Search = () => {
           </p>
         )}
         {loading && message && <p style={{ marginTop: "10px" }}>{message}</p>}
-        {zipUrl && !loading && (
+        {zipUrl && (
           <div className="downloadbtn">
             <a
               href={zipUrl}
