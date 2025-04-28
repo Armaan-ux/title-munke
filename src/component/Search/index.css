@@ -105,3 +105,52 @@ position: relative;
     cursor: not-allowed;
     background-color: rgb(97 103 107);
   }
+  @media (max-width: 768px) {
+  .search-main-content {
+    margin-left: 0;
+    padding: 20px;
+    height: auto;
+    align-items: flex-start;
+  }
+
+  .search-card {
+    width: 100% !important;
+    max-width: 95vw;
+    padding: 20px;
+    margin-top: 40px;
+    box-sizing: border-box;
+  }
+
+  .search-input {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  .search-button {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  .search-field-container {
+    padding: 15px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .card-title {
+    font-size: 20px;
+    max-width: 90%;
+    margin-bottom: 15px;
+  }
+
+  .search-field-loader {
+    width: 40px;
+    right: 15px;
+    top: 10px;
+  }
+
+  .downloadbtn {
+    width: 100%;
+    margin-top: 15px;
+  }
+}

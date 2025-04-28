@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Logo from "../../img/Logo.svg";
 import { API, graphqlOperation } from "aws-amplify";
@@ -6,115 +6,170 @@ import { createSearchHistory } from "../../graphql/mutations";
 import "./index.css";
 import { useUser } from "../../context/usercontext";
 import { handleCreateAuditLog } from "../../utils";
-import {
-  getAgent,
-  getBroker,
-  relationshipsByAgentId,
-} from "../../graphql/queries";
+import { getAgent, getBroker, relationshipsByAgentId } from "../../graphql/queries";
 import Loader from "../../img/loader.gif";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const Search = () => {
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState("");
   const [isChecked, setIsChecked] = useState(false);
-  const [message, setMessage] = useState(
-    "Initializing title search... This process may take a few minutes."
-  );
+  const [message, setMessage] = useState("Initializing title search... This process may take a few minutes.");
   const [percentage, setPercentage] = useState(null);
   const [zipUrl, setZipUrl] = useState(null);
   const [isAgent, setIsAgent] = useState(false);
   const { user } = useUser();
 
-  useEffect(() => {
-    if (user?.attributes?.sub) {
-      const userGroups =
-        user?.signInUserSession?.idToken?.payload["cognito:groups"] || [];
-      if (userGroups?.includes("agent")) {
-        setIsAgent(true);
+  const ONE_AND_HALF_HOURS = 1.5 * 60 * 60 * 1000;
+
+  const clearSearchState = () => {
+    const searchKeys = [
+      "searchAddress",
+      "searchId",
+      "isChecked",
+      "searchStatus",
+      "zipUrl",
+      "searchTimestamp"
+    ];
+    searchKeys.forEach(key => localStorage.removeItem(key));
+    setAddress("");
+    setProgress("");
+    setPercentage(null);
+    setZipUrl(null);
+    setMessage("Initializing title search... This process may take a few minutes.");
+    setLoading(false);
+  };
+
+  const checkSearchStatus = useCallback(async (searchId, isRestoring = false) => {
+    try {
+      const response = await axios.post(
+        "https://ffdldf2c4ozijgyvor26zr5qyu0ulsie.lambda-url.us-east-1.on.aws/",
+        { mode: "CHECK_STATUS", search_id: searchId },
+        { timeout: 10000 }
+      );
+
+      const { status, status_message, zip_url, percent_completion } = response.data;
+
+      if (isRestoring && status === "IN_PROGRESS") setLoading(true);
+
+      if (status === "SUCCESS") {
+        setProgress("Search Completed");
+        setPercentage(100);
+        setMessage(status_message || "Search Complete Successfully");
+        setZipUrl(zip_url);
+        setLoading(false);
+        localStorage.setItem("searchStatus", "SUCCESS");
+        localStorage.setItem("searchTimestamp", Date.now().toString());
+        if (zip_url) localStorage.setItem("zipUrl", zip_url);
+      } else if (status === "IN_PROGRESS") {
+        setProgress("Processing...");
+        setPercentage(percent_completion || 0);
+        setMessage(status_message || "Search in progress...");
+        localStorage.setItem("searchStatus", "IN_PROGRESS");
+        setTimeout(() => checkSearchStatus(searchId, false), 5000);
+      } else if (["FAILED", "STOPPED"].includes(status)) {
+        clearSearchState();
+        toast.error("Search was stopped or failed. Please try again.");
       } else {
-        setIsAgent(false);
+        clearSearchState();
+        toast.error("Unexpected issue. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error checking status:", error.message);
+      clearSearchState();
+      toast.error("Network error or timeout. Please retry.");
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const storedStatus = localStorage.getItem("searchStatus");
+    const storedTimestamp = localStorage.getItem("searchTimestamp");
+    const storedZipUrl = localStorage.getItem("zipUrl");
+    const now = Date.now();
+
+    if (storedStatus === "SUCCESS" && storedTimestamp) {
+      const timeElapsed = now - parseInt(storedTimestamp);
+      if (timeElapsed > ONE_AND_HALF_HOURS) {
+        clearSearchState();
+      } else {
+        setProgress("Search Completed");
+        setPercentage(100);
+        setZipUrl(storedZipUrl);
+        setLoading(false);
       }
     }
+
+    const storedAddress = localStorage.getItem("searchAddress");
+    const storedChecked = localStorage.getItem("isChecked") === "true";
+    if (storedAddress && user) {
+      setAddress(storedAddress);
+      setIsChecked(storedChecked);
+    }
+
+    const storedSearchId = localStorage.getItem("searchId");
+    if (storedSearchId && storedStatus === "IN_PROGRESS") {
+      checkSearchStatus(storedSearchId, true);
+    }
+
+    const loggedIn = localStorage.getItem("userLoggedIn");
+    if (user && !loggedIn) {
+      localStorage.setItem("userLoggedIn", "true");
+    } else if (!user && loggedIn) {
+      localStorage.removeItem("userLoggedIn");
+      if (storedStatus !== "IN_PROGRESS") clearSearchState();
+    }
+  }, [user, checkSearchStatus]);
+
+  useEffect(() => {
+    if (user?.attributes?.sub) {
+      const groups = user?.signInUserSession?.idToken?.payload["cognito:groups"] || [];
+      setIsAgent(groups.includes("agent"));
+    }
   }, [user]);
-  const handleSearch = async () => {
+
+  const handleSearch = async (e) => {
+    if (e) e.preventDefault();
+    if (loading || !address.trim().length || !isChecked) return;
+
     setLoading(true);
     setProgress("");
     setZipUrl(null);
-    setIsChecked(false);
-    setMessage(
-      "Initializing title search... This process may take a few minutes."
-    );
+    setMessage("Initializing title search... This process may take a few minutes.");
+
     try {
-      handleCreateAuditLog(
-        "SEARCH",
-        {
-          address,
-        },
-        isAgent
-      );
+      localStorage.setItem("searchAddress", address);
+      localStorage.setItem("isChecked", isChecked);
+      localStorage.setItem("searchStatus", "IN_PROGRESS");
+      localStorage.setItem("searchTimestamp", Date.now().toString());
+
+      handleCreateAuditLog("SEARCH", { address }, isAgent);
+
       const response = await axios.post(
-        "https://qwwdyrp4y5gtw2on3t5jd67g5i0leuga.lambda-url.us-east-1.on.aws/",
-        {
-          address: address,
-        }
+        "https://iweevgyflmwhamvgraszfn2xp40wvqza.lambda-url.us-east-1.on.aws/",
+        { address }
       );
 
       const { matched_address, pin_and_parnum, tax_assessment } = response.data;
-      const pin = pin_and_parnum[0];
-      const parnum = pin_and_parnum[1];
+      const [pin, parnum] = pin_and_parnum;
 
       const initiateResponse = await axios.post(
-        "https://hwk77cjbdtmopznce6tneqknvi0rqvta.lambda-url.us-east-1.on.aws/",
-        {
-          mode: "INITIATE_SEARCH",
-          pin,
-          parnum,
-          address: matched_address,
-          tax_assessment,
-        }
+        "https://ffdldf2c4ozijgyvor26zr5qyu0ulsie.lambda-url.us-east-1.on.aws/",
+        { mode: "INITIATE_SEARCH", pin, parnum, address: matched_address, tax_assessment }
       );
 
       const { search_id } = initiateResponse.data;
+      localStorage.setItem("searchId", search_id);
 
       await addToDynamoDB(address, search_id, user?.attributes?.sub);
-
       checkSearchStatus(search_id);
     } catch (error) {
-      console.error("Error during search:", error);
-    }
-  };
-
-  const checkSearchStatus = async (searchId) => {
-    try {
-      const response = await axios.post(
-        "https://hwk77cjbdtmopznce6tneqknvi0rqvta.lambda-url.us-east-1.on.aws/",
-        {
-          mode: "CHECK_STATUS",
-          search_id: searchId,
-        }
-      );
-
-      const { status, status_message, zip_url, percent_completion } =
-        response.data;
-
-      setProgress(status === "SUCCESS" ? "Search Completed" : "Processing...");
-      setZipUrl(zip_url);
-      setPercentage(percent_completion || "100");
-      if (status_message.includes("Initializing title search.")) {
-        setMessage(
-          "Initializing title search... This process may take a few minutes."
-        );
-      } else setMessage(status_message || "Search Complete Successfully");
-
-      if (status === "SUCCESS") {
-        setLoading(false);
-      } else {
-        // If not completed, check again after a delay
-        setTimeout(() => checkSearchStatus(searchId), 5000); // Check again in 5 seconds
-      }
-    } catch (error) {
-      console.error("Error checking status:", error);
+      console.error("Error during search:", error.message);
+      toast.error(error?.response?.data?.message || error.message || "Search failed: Invalid address or server error.");
+      setLoading(false);
+      clearSearchState();
     }
   };
 
@@ -123,42 +178,28 @@ const Search = () => {
       let brokerId = "none";
       let username = "";
 
-      if (
-        user?.signInUserSession?.idToken?.payload?.["cognito:groups"].includes(
-          "agent"
-        )
-      ) {
-        const response = await API.graphql(
-          graphqlOperation(relationshipsByAgentId, { agentId: userId })
-        );
-        const agentDetail = await API.graphql(
-          graphqlOperation(getAgent, { id: userId })
-        );
+      if (user?.signInUserSession?.idToken?.payload?.["cognito:groups"].includes("agent")) {
+        const response = await API.graphql(graphqlOperation(relationshipsByAgentId, { agentId: userId }));
+        const agentDetail = await API.graphql(graphqlOperation(getAgent, { id: userId }));
         username = agentDetail?.data?.getAgent?.name;
-        brokerId =
-          response.data?.relationshipsByAgentId?.items[0]?.brokerId || "";
+        brokerId = response.data?.relationshipsByAgentId?.items[0]?.brokerId || "";
       } else {
-        const brokerDetail = await API.graphql(
-          graphqlOperation(getBroker, { id: userId })
-        );
+        const brokerDetail = await API.graphql(graphqlOperation(getBroker, { id: userId }));
         username = brokerDetail?.data?.getBroker?.name;
       }
 
-      const newEntry = {
-        userId,
-        address,
-        timestamp: new Date().toISOString(),
-        downloadLink: "",
-        status: "In Progress",
-        searchId,
-        brokerId,
-        username,
-      };
-
-      await API.graphql(
-        graphqlOperation(createSearchHistory, { input: newEntry })
-      );
-      console.log("Search entry added to DynamoDB");
+      await API.graphql(graphqlOperation(createSearchHistory, {
+        input: {
+          userId,
+          address,
+          timestamp: new Date().toISOString(),
+          downloadLink: "",
+          status: "In Progress",
+          searchId,
+          brokerId,
+          username,
+        },
+      }));
     } catch (err) {
       console.error("Error adding to DynamoDB:", err);
     }
@@ -166,68 +207,59 @@ const Search = () => {
 
   return (
     <div className="search-main-content">
+      <ToastContainer
+        position="top-center"
+        autoClose={6000}
+        closeOnClick
+        pauseOnHover
+        draggable
+        hideProgressBar={false}
+        theme="colored"
+        limit={2}
+        toastStyle={{
+          borderRadius: "10px",
+          fontSize: "1rem",
+          padding: "12px 20px",
+          maxWidth: "400px",
+          marginTop: "20px",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.15)"
+        }}
+      />
       <div className="search-card">
-        <img src={Logo} className="card-title" />
-
-        <div className="search-field-container">
-          {loading && <img src={Loader} className="search-field-loader" />}
+        <img src={Logo} className="card-title" alt="Title Munke Logo" />
+        <form className="search-field-container" onSubmit={handleSearch}>
+          {loading && <img src={Loader} className="search-field-loader" alt="loading" />}
           <input
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             type="text"
             placeholder="Enter Address..."
             className="search-input"
+            disabled={loading}
           />
-          {!loading && (
-            <>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <input
-                  type={"checkbox"}
-                  value={isChecked}
-                  onChange={(e) => setIsChecked(e.target.checked)}
-                  style={{ width: "18px" }}
-                />
-                <small>
-                  {" "}
-                  Check this box to confirm the address is correct.
-                </small>
-              </div>
-              <button
-                className="search-button"
-                onClick={handleSearch}
-                disabled={loading || !address.trim().length || !isChecked}
-              >
-                Search
-              </button>
-            </>
-          )}
-        </div>
-        {progress && (
-          <p style={{ marginTop: "10px" }}>
-            {progress}{" "}
-            <span style={{ marginLeft: "10px" }}>
-              {percentage ? percentage + "%" : "0%"}
-            </span>
-          </p>
-        )}
-        {loading && message && <p style={{ marginTop: "10px" }}>{message}</p>}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <input
+              type="checkbox"
+              checked={isChecked}
+              onChange={(e) => setIsChecked(e.target.checked)}
+              style={{ width: "18px" }}
+              disabled={loading}
+            />
+            <small> Check this box to confirm the address is correct.</small>
+          </div>
+          <button
+            type="submit"
+            className="search-button"
+            disabled={loading || !address.trim().length || !isChecked}
+          >
+            Search
+          </button>
+        </form>
+        {progress && <p>{progress} {percentage ? percentage + "%" : "0%"}</p>}
+        {loading && message && <p>{message}</p>}
         {zipUrl && (
-          <div className="downloadbtn">
-            <a
-              href={zipUrl}
-              download
-              onClick={() =>
-                handleCreateAuditLog(
-                  "DOWNLOAD",
-                  {
-                    zipUrl,
-                  },
-                  isAgent
-                )
-              }
-            >
-              Download Results
-            </a>
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "10px" }}>
+            <a href={zipUrl} download style={{ marginRight: "10px" }}>Download Results</a>
           </div>
         )}
       </div>

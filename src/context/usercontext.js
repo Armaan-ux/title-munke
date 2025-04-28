@@ -38,7 +38,7 @@ export const UserProvider = ({ children }) => {
         return { user, isResetRequired: true };
       }
 
-      setUser(user);
+      setUser(user); // Set the user state
       setIsAuthenticated(true);
       const userGroups =
         user?.signInUserSession?.idToken?.payload["cognito:groups"] || [];
@@ -47,48 +47,20 @@ export const UserProvider = ({ children }) => {
           graphqlOperation(updateAgent, {
             input: {
               id: user?.attributes?.sub,
-              lastLogin: new Date().toISOString(),
+              // Add other fields as needed
             },
           })
         );
-        const agent = await API.graphql(
-          graphqlOperation(getAgent, { id: user?.attributes?.sub })
-        );
-        if (agent.data.getAgent.status === "UNCONFIRMED") {
-          await API.graphql(
-            graphqlOperation(updateAgent, {
-              input: {
-                id: user?.attributes?.sub,
-                status: "ACTIVE",
-              },
-            })
-          );
-        }
-      }
-      if (userGroups.includes("broker")) {
+      } else if (userGroups.includes("broker")) {
         await API.graphql(
           graphqlOperation(updateBroker, {
             input: {
               id: user?.attributes?.sub,
-              lastLogin: new Date().toISOString(),
+              // Add other fields as needed
             },
           })
         );
-        const broker = await API.graphql(
-          graphqlOperation(getBroker, { id: user?.attributes?.sub })
-        );
-        if (broker.data.getBroker.status === "UNCONFIRMED") {
-          await API.graphql(
-            graphqlOperation(updateBroker, {
-              input: {
-                id: user?.attributes?.sub,
-                status: "ACTIVE",
-              },
-            })
-          );
-        }
-      }
-      if (userGroups.includes("admin")) {
+      } else if (userGroups.includes("admin")) {
         await API.graphql(
           graphqlOperation(updateAdmins, {
             input: {
@@ -111,33 +83,24 @@ export const UserProvider = ({ children }) => {
           );
         }
       }
-
-      return { user, isResetRequired: false };
+      return { user, isResetRequired: false }; // Return the user object
     } catch (error) {
       console.error("Error", error.code);
       if (error.code === "UserNotConfirmedException") {
         console.error("User is not confirmed. Prompt for OTP verification.");
-        return { isResetRequired: true, error: "UserNotConfirmed" };
       }
-      throw error;
+      throw error; // Re-throw to handle in the Login component
     }
   };
 
-  // Method to sign out
   const signOut = async () => {
-    try {
-      Auth.signOut();
-      setUser(null);
-      setIsAuthenticated(false);
-    } catch (error) {
-      console.error(error);
-    }
+    await Auth.signOut();
+    setUser(null);
+    setIsAuthenticated(false);
   };
 
   return (
-    <UserContext.Provider
-      value={{ user, isAuthenticated, signIn, signOut, isLoading }}
-    >
+    <UserContext.Provider value={{ user, signIn, signOut, isAuthenticated, isLoading }}>
       {children}
     </UserContext.Provider>
   );
