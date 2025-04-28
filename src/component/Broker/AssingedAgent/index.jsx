@@ -12,7 +12,8 @@ import { useUser } from "../../../context/usercontext";
 import { fetchAgentsWithSearchCount } from "../../service/broker";
 import "./index.css";
 import { getFormattedDateTime, handleCreateAuditLog } from "../../../utils";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AssginedAgents = () => {
   const { user } = useUser();
@@ -84,11 +85,30 @@ const AssginedAgents = () => {
 
   return (
     <>
+      <ToastContainer
+        position="top-center"
+        autoClose={6000}
+        closeOnClick
+        pauseOnHover
+        draggable
+        hideProgressBar={false}
+        theme="colored"
+        limit={2}
+        toastStyle={{
+          borderRadius: "10px",
+          fontSize: "1rem",
+          padding: "12px 20px",
+          maxWidth: "400px",
+          marginTop: "20px",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+        }}
+      />
       {isOpen && (
         <AddUserModal
           setIsOpen={setIsOpen}
           userType="agent"
           setUser={setAgents}
+          agents={agents} // Pass agents to check for duplicates
         />
       )}
       <div className="main-content" style={{ display: "block" }}>
@@ -97,7 +117,7 @@ const AssginedAgents = () => {
           style={{
             display: "flex",
             justifyContent: "space-between",
-            alignIitems: "center",
+            alignItems: "center",
             marginBottom: "20px",
           }}
         >

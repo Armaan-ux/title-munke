@@ -1,5 +1,5 @@
 import { API } from "aws-amplify";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { listSearchHistories } from "../../../graphql/queries";
 import "./index.css";
 import axios from "axios";
@@ -19,11 +19,11 @@ function History() {
   const [nextToken, setNextToken] = useState(null);
   const [activeTab, setActiveTab] = useState("history");
   const [inProgressSearches, setInProgressSearches] = useState([]);
+  const [sortAsc, setSortAsc] = useState(false);
   const { user } = useUser();
 
-  const fetchSearchHistories = async () => {
+  const fetchSearchHistories = useCallback(async () => {
     if (loading || !hasMore) return;
-
     setLoading(true);
     try {
       const response = await API.graphql({
@@ -34,9 +34,7 @@ function History() {
           nextToken,
         },
       });
-      const { items, nextToken: newNextToken } =
-        response.data.listSearchHistories;
-
+      const { items, nextToken: newNextToken } = response.data.listSearchHistories;
       setSearchHistories((prev) => [...prev, ...items]);
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
@@ -47,10 +45,10 @@ function History() {
       console.error("Error fetching search histories:", error);
     }
     setLoading(false);
-  };
-  const fetchAgentSearchHistories = async () => {
-    if (loading || !hasMore) return;
+  }, [loading, hasMore, nextToken, user]);
 
+  const fetchAgentSearchHistories = useCallback(async () => {
+    if (loading || !hasMore) return;
     setLoading(true);
     try {
       const response = await API.graphql({
@@ -61,9 +59,7 @@ function History() {
           nextToken,
         },
       });
-      const { items, nextToken: newNextToken } =
-        response.data.listSearchHistories;
-
+      const { items, nextToken: newNextToken } = response.data.listSearchHistories;
       setSearchHistories((prev) => [...prev, ...items]);
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
@@ -71,10 +67,11 @@ function History() {
       const inProgress = items.filter((item) => item.status === "In Progress");
       setInProgressSearches((prev) => [...prev, ...inProgress]);
     } catch (error) {
-      console.error("Error fetching search histories:", error);
+      console.error("Error fetching agent search histories:", error);
     }
     setLoading(false);
-  };
+  }, [loading, hasMore, nextToken, user]);
+
   const checkSearchStatus = async (searchId, id) => {
     try {
       const response = await axios.post(
@@ -143,11 +140,19 @@ function History() {
       if (activeTab === "history") fetchSearchHistories();
       else fetchAgentSearchHistories();
     }
-  }, [user, activeTab]);
+  }, [user, activeTab, fetchSearchHistories, fetchAgentSearchHistories]);
+
+  const toggleSort = () => setSortAsc((prev) => !prev);
+
+  const sortedHistories = [...searchHistories].sort((a, b) => {
+    const aTime = new Date(a.createdAt).getTime();
+    const bTime = new Date(b.createdAt).getTime();
+    return sortAsc ? aTime - bTime : bTime - aTime;
+  });
 
   return (
     <div className="history-main-content">
-      <div class="setting-page-title">
+      <div className="setting-page-title">
         <h1>Search History</h1>
       </div>
       <div className="tab-container">
@@ -176,16 +181,18 @@ function History() {
             <tr>
               <th>Search ID</th>
               <th>Status</th>
-              <th>Time</th>
+              <th onClick={toggleSort} style={{ cursor: "pointer", userSelect: "none" }}>
+                Time {sortAsc ? "▲" : "▼"}
+              </th>
               {activeTab === "agents" && <th>Name</th>}
               <th>Download Link</th>
             </tr>
           </thead>
           <tbody>
-            {searchHistories?.map((elem) => (
+            {sortedHistories.map((elem) => (
               <tr key={elem.id} id="broker-row-1">
                 <td>{elem?.searchId}</td>
-                <td> {elem?.status}</td>
+                <td>{elem?.status}</td>
                 <td>{getFormattedDateTime(elem?.createdAt)}</td>
                 {activeTab === "agents" && <td>{elem.username}</td>}
                 <td>
@@ -210,13 +217,10 @@ function History() {
           </tbody>
         </table>
 
-        {searchHistories?.length === 0 && <p>No Records found.</p>}
+        {searchHistories.length === 0 && <p>No Records found.</p>}
         {loading && <p>Loading...</p>}
-        {!hasMore && searchHistories?.length > 0 && (
-          <p>No more data to load.</p>
-        )}
-
-        {searchHistories?.length > 0 && hasMore && !loading && (
+        {!hasMore && searchHistories.length > 0 && <p>No more data to load.</p>}
+        {searchHistories.length > 0 && hasMore && !loading && (
           <button className="loadmore" onClick={fetchSearchHistories}>
             Load More
           </button>

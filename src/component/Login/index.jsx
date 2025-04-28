@@ -1,7 +1,6 @@
 import "./index.css";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import OTP from "../OTP";
 import logo from "../../img/Logo.svg";
 import { useUser } from "../../context/usercontext";
 import ResetPassword from "../ResetPassword";
@@ -17,10 +16,14 @@ function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
-      navigate(
-        "/" + user.signInUserSession.idToken.payload["cognito:groups"][0]
-      );
+    if (
+      user &&
+      user.signInUserSession &&
+      user.signInUserSession.idToken &&
+      user.signInUserSession.idToken.payload &&
+      user.signInUserSession.idToken.payload["cognito:groups"]
+    ) {
+      navigate("/" + user.signInUserSession.idToken.payload["cognito:groups"][0]);
     }
   }, [user, navigate]);
 
@@ -28,36 +31,36 @@ function Login() {
     try {
       setError("");
       setIsChecking(true);
-      const { isResetRequired } = await signIn(username, password);
+      const { isResetRequired, user: signedInUser } = await signIn(username, password);
 
       if (isResetRequired) {
         setIsReset(true);
         return;
       }
 
-      const groups = user.signInUserSession.idToken.payload["cognito:groups"];
-
-      if (groups && groups.includes("admin")) {
-        // Redirect to Admin dashboard
-        navigate("/admin");
-      } else if (groups && groups.includes("agent")) {
-        // Redirect to User dashboard
-        navigate("/agent");
-      } else if (groups && groups.includes("broker")) {
-        // Redirect to User dashboard
-        navigate("/broker");
+      if (
+        signedInUser &&
+        signedInUser.signInUserSession &&
+        signedInUser.signInUserSession.idToken &&
+        signedInUser.signInUserSession.idToken.payload &&
+        signedInUser.signInUserSession.idToken.payload["cognito:groups"]
+      ) {
+        const groups = signedInUser.signInUserSession.idToken.payload["cognito:groups"];
+        if (groups.includes("admin")) {
+          navigate("/admin");
+        } else if (groups.includes("agent")) {
+          navigate("/agent");
+        } else if (groups.includes("broker")) {
+          navigate("/broker");
+        }
+      } else {
+        setError("User groups not available in the response. Please try again.");
       }
     } catch (error) {
       setError(error.message || "Login failed");
     } finally {
       setIsChecking(false);
     }
-  };
-
-  const resetForLogin = () => {
-    setPassword("");
-    setUsername("");
-    setIsReset(false);
   };
 
   if (isReset) return <ResetPassword username={username} password={password} />;
@@ -70,7 +73,7 @@ function Login() {
             <img src={logo} alt="logo" />
           </div>
           <div className="form-group">
-            <label for="username">Email</label>
+            <label htmlFor="username">Email</label>
             <input
               type="text"
               id="username"
@@ -81,7 +84,7 @@ function Login() {
             />
           </div>
           <div className="form-group">
-            <label for="password">Password</label>
+            <label htmlFor="password">Password</label>
             <input
               type="password"
               id="password"
@@ -106,8 +109,8 @@ function Login() {
           </button>
           {error && <div className="error">{error}</div>}
         </form>
-        <div class="back-link">
-          <Link to={"/"}>&larr; Back to Home</Link>
+        <div className="back-link">
+          <Link to={"/"}>← Back to Home</Link>
         </div>
       </div>
     </div>

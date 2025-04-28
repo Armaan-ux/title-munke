@@ -1,5 +1,5 @@
 import { API } from "aws-amplify";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { listSearchHistories } from "../../../graphql/queries";
 import "./index.css";
 import axios from "axios";
@@ -18,9 +18,10 @@ function History() {
   const [hasMore, setHasMore] = useState(true);
   const [nextToken, setNextToken] = useState(null);
   const [inProgressSearches, setInProgressSearches] = useState([]);
+  const [sortAsc, setSortAsc] = useState(false);
   const { user } = useUser();
 
-  const fetchSearchHistories = async () => {
+  const fetchSearchHistories = useCallback(async () => {
     if (loading || !hasMore) return;
 
     setLoading(true);
@@ -28,13 +29,13 @@ function History() {
       const response = await API.graphql({
         query: listSearchHistories,
         variables: {
-          filter: { userId: { eq: user?.attributes?.sub } },
+          filter: { brokerId: { eq: user?.attributes?.sub } },
           limit: FETCH_LIMIT,
           nextToken,
         },
       });
-      const { items, nextToken: newNextToken } =
-        response.data.listSearchHistories;
+
+      const { items, nextToken: newNextToken } = response.data.listSearchHistories;
 
       setSearchHistories((prev) => [...prev, ...items]);
       setNextToken(newNextToken);
@@ -43,10 +44,10 @@ function History() {
       const inProgress = items.filter((item) => item.status === "In Progress");
       setInProgressSearches((prev) => [...prev, ...inProgress]);
     } catch (error) {
-      console.error("Error fetching search histories:", error);
+      console.error("Error fetching agent search histories:", error);
     }
     setLoading(false);
-  };
+  }, [loading, hasMore, nextToken, user]);
 
   const checkSearchStatus = async (searchId, id) => {
     try {
@@ -105,11 +106,19 @@ function History() {
 
   useEffect(() => {
     if (user?.attributes?.sub) fetchSearchHistories();
-  }, [user]);
+  }, [user, fetchSearchHistories]);
+
+  const toggleSort = () => setSortAsc((prev) => !prev);
+
+  const sortedHistories = [...searchHistories].sort((a, b) => {
+    const aTime = new Date(a.createdAt).getTime();
+    const bTime = new Date(b.createdAt).getTime();
+    return sortAsc ? aTime - bTime : bTime - aTime;
+  });
 
   return (
     <div className="history-main-content">
-      <div class="setting-page-title">
+      <div className="setting-page-title">
         <h1>Search History</h1>
       </div>
       <div className="history-card">
@@ -118,15 +127,17 @@ function History() {
             <tr>
               <th>Search ID</th>
               <th>Status</th>
-              <th>Time</th>
+              <th onClick={toggleSort} className="sortable-header">
+                Time <span className="sort-arrow">{sortAsc ? "▲" : "▼"}</span>
+              </th>
               <th>Download Link</th>
             </tr>
           </thead>
           <tbody>
-            {searchHistories?.map((elem) => (
-              <tr key={elem.id} id="broker-row-1">
+            {sortedHistories.map((elem) => (
+              <tr key={elem.id}>
                 <td>{elem?.searchId}</td>
-                <td> {elem?.status}</td>
+                <td>{elem?.status}</td>
                 <td>{getFormattedDateTime(elem?.createdAt)}</td>
                 <td>
                   {elem?.downloadLink ? (
@@ -136,9 +147,7 @@ function History() {
                       onClick={() =>
                         handleCreateAuditLog(
                           "DOWNLOAD",
-                          {
-                            zipUrl: elem.downloadLink,
-                          },
+                          { zipUrl: elem.downloadLink },
                           true
                         )
                       }
@@ -154,11 +163,11 @@ function History() {
           </tbody>
         </table>
 
-        {searchHistories?.length === 0 && <p>No Records found.</p>}
+        {searchHistories.length === 0 && <p>No Records found.</p>}
         {loading && <p>Loading...</p>}
         {!hasMore && <p>No more data to load.</p>}
 
-        {searchHistories?.length > 0 && hasMore && !loading && (
+        {searchHistories.length > 0 && hasMore && !loading && (
           <button className="loadmore" onClick={fetchSearchHistories}>
             Load More
           </button>
