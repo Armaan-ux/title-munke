@@ -22,7 +22,7 @@ const Search = () => {
   const [isAgent, setIsAgent] = useState(false);
   const { user } = useUser();
 
-  const ONE_AND_HALF_HOURS = 1.5 * 60 * 60 * 1000;
+  const ONE_AND_HALF_HOURS = 1.5 * 60 * 60 * 1000; 
 
   const clearSearchState = () => {
     const searchKeys = [
