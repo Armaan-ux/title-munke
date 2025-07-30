@@ -35,7 +35,7 @@ export async function fetchBroker(brokerId) {
 export async function fetchAgentsOfBroker(brokerId) {
   try {
     const response = await API.graphql(
-      graphqlOperation(relationshipsByBrokerId, { brokerId: brokerId })
+      graphqlOperation(relationshipsByBrokerId, { brokerId: brokerId, limit: 1000 })
     );
     if (response.data?.relationshipsByBrokerId.items?.length === 0) return [];
     const agentDetailsQuery = {
