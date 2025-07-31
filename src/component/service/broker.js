@@ -33,6 +33,7 @@ export async function fetchBroker(brokerId) {
 }
 
 export async function fetchAgentsOfBroker(brokerId) {
+  console.log("fetchAgentsOfBroker with limit 1000 for brokerId=", brokerId);
   try {
     const response = await API.graphql(
       graphqlOperation(relationshipsByBrokerId, { brokerId: brokerId, limit: 1000 })
