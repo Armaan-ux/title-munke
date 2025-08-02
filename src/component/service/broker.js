@@ -108,13 +108,13 @@ export async function getBrokerTotalSearchesThisMonth(brokerId) {
   // Construct the query for the agent's search history
   const searchQuery = {
     TableName: "SearchHistory-mxixmn4cbbcgrhwtar46djww4q-master",
-    FilterExpression: "#userId = :agentId AND #ts BETWEEN :start AND :end",
+    FilterExpression: "#brokerId = :brokerId AND #ts BETWEEN :start AND :end",
     ExpressionAttributeNames: {
-      "#userId": "userId",
+      "#brokerId": "brokerId",
       "#ts": "timestamp",
     },
     ExpressionAttributeValues: {
-      ":agentId": brokerId,
+      ":brokerId": brokerId,
       ":start": currentMonthStart.toISOString(),
       ":end": nextMonthStart.toISOString(),
     },
@@ -126,7 +126,7 @@ export async function getBrokerTotalSearchesThisMonth(brokerId) {
   // Return the total searches
   const totalSearches = searchData.Count || 0;
 
-  console.log(`Total searches for agent ${brokerId}:`, totalSearches);
+  console.log(`Total searches for broker ${brokerId}:`, totalSearches);
   return totalSearches;
 }
 
