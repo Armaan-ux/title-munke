@@ -98,3 +98,23 @@
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.sortable-header {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sort-arrow {
+  margin-left: 5px;
+  display: inline-block;
+  width: 1em;
+  text-align: left;
+}
+
+.sort-arrow:empty::after {
+  content: '↕';
+  color: #cccccc;
+}
+
+.sortable-header:hover .sort-arrow:empty::after {
+  color: #333333;
+}

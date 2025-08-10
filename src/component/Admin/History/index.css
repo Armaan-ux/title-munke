@@ -105,4 +105,16 @@
 
 .sort-arrow {
   margin-left: 5px;
+  display: inline-block;
+  width: 1em;
+  text-align: left;
+}
+
+.sort-arrow:empty::after {
+  content: '↕';
+  color: #cccccc;
+}
+
+.sortable-header:hover .sort-arrow:empty::after {
+  color: #333333;
 }
