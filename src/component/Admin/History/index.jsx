@@ -11,15 +11,40 @@ function AllSearchHistory() {
   const [hasMore, setHasMore] = useState(true);
   const [nextToken, setNextToken] = useState(null);
   const [activeTab, setActiveTab] = useState("history");
-  const [sortAsc, setSortAsc] = useState(false);
+  const [sortConfig, setSortConfig] = useState({
+    key: "createdAt",
+    direction: "descending",
+  });
   const { user } = useUser();
 
-  const toggleSort = () => setSortAsc((prev) => !prev);
+  const requestSort = (key) => {
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
+    }
+    setSortConfig({ key, direction });
+  };
 
   const sortedHistories = [...searchHistories].sort((a, b) => {
-   const aTime = new Date(a.createdAt).getTime();
-   const bTime = new Date(b.createdAt).getTime();
-   return sortAsc ? aTime - bTime : bTime - aTime;
+    if (!a.hasOwnProperty(sortConfig.key) || !b.hasOwnProperty(sortConfig.key)) {
+      return 0;
+    }
+
+    let aValue = a[sortConfig.key];
+    let bValue = b[sortConfig.key];
+
+    if (sortConfig.key === "createdAt") {
+      aValue = new Date(aValue).getTime();
+      bValue = new Date(bValue).getTime();
+    }
+
+    if (aValue < bValue) {
+      return sortConfig.direction === "ascending" ? -1 : 1;
+    }
+    if (aValue > bValue) {
+      return sortConfig.direction === "ascending" ? 1 : -1;
+    }
+    return 0;
   });
 
 
@@ -95,6 +120,13 @@ function AllSearchHistory() {
     }
   }, [user, activeTab]);
 
+  const getSortArrow = (key) => {
+    if (sortConfig.key !== key) {
+      return "";
+    }
+    return sortConfig.direction === "ascending" ? "▲" : "▼";
+  };
+
   return (
     <div className="history-main-content">
       <div class="setting-page-title">
@@ -124,14 +156,14 @@ function AllSearchHistory() {
         <table className="history-styled-table table-container">
           <thead>
             <tr>
-              <th onClick={toggleSort} className="sortable-header">
-                  Address <span className="sort-arrow">{sortAsc ? "▲" : "▼"}</span>
+              <th onClick={() => requestSort("address")} className="sortable-header">
+                  Address <span className="sort-arrow">{getSortArrow("address")}</span>
                   </th>
-              <th onClick={toggleSort} className="sortable-header">
-                  Status <span className="sort-arrow">{sortAsc ? "▲" : "▼"}</span>
+              <th onClick={() => requestSort("status")} className="sortable-header">
+                  Status <span className="sort-arrow">{getSortArrow("status")}</span>
               </th>
-              <th onClick={toggleSort} className="sortableHeader">
-                Time <span className="sort-arrow">{sortAsc ? "▲" : "▼"}</span>
+              <th onClick={() => requestSort("createdAt")} className="sortable-header">
+                Time <span className="sort-arrow">{getSortArrow("createdAt")}</span>
               </th>
               <th>Name</th>
               <th>Download Link</th>
