@@ -293,3 +293,12 @@
 .dropdown:hover .dropdown-content {
     display: block;
 }
+
+.sortable-header {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sort-arrow {
+  margin-left: 5px;
+}

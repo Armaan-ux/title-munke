@@ -11,7 +11,17 @@ function AllSearchHistory() {
   const [hasMore, setHasMore] = useState(true);
   const [nextToken, setNextToken] = useState(null);
   const [activeTab, setActiveTab] = useState("history");
+  const [sortAsc, setSortAsc] = useState(false);
   const { user } = useUser();
+
+  const toggleSort = () => setSortAsc((prev) => !prev);
+
+  const sortedHistories = [...searchHistories].sort((a, b) => {
+   const aTime = new Date(a.createdAt).getTime();
+   const bTime = new Date(b.createdAt).getTime();
+   return sortAsc ? aTime - bTime : bTime - aTime;
+  });
+
 
   const fetchSearchHistories = async () => {
     if (loading || !hasMore) return;
@@ -114,17 +124,23 @@ function AllSearchHistory() {
         <table className="history-styled-table table-container">
           <thead>
             <tr>
-              <th>Search ID</th>
-              <th>Status</th>
-              <th>Time</th>
+              <th onClick={toggleSort} className="sortable-header">
+                  Address <span className="sort-arrow">{sortAsc ? "▲" : "▼"}</span>
+                  </th>
+              <th onClick={toggleSort} className="sortable-header">
+                  Status <span className="sort-arrow">{sortAsc ? "▲" : "▼"}</span>
+              </th>
+              <th onClick={toggleSort} className="sortableHeader">
+                Time <span className="sort-arrow">{sortAsc ? "▲" : "▼"}</span>
+              </th>
               <th>Name</th>
               <th>Download Link</th>
             </tr>
           </thead>
           <tbody>
-            {searchHistories?.map((elem) => (
+            {sortedHistories?.map((elem) => (
               <tr key={elem.id} id="broker-row-1">
-                <td>{elem?.searchId}</td>
+                <td>{elem?.address}</td>
                 <td> {elem?.status}</td>
                 <td>{getFormattedDateTime(elem?.createdAt)}</td>
                 <td>{elem.username}</td>

@@ -185,7 +185,7 @@ function History() {
               <th onClick={toggleSort} className="sortable-header">
                   Status <span className="sort-arrow">{sortAsc ? "▲" : "▼"}</span>
               </th>
-              <th onClick={toggleSort} style={{ cursor: "pointer", userSelect: "none" }}>
+              <th onClick={toggleSort} className="sortable-header">
                 Time {sortAsc ? "▲" : "▼"}
               </th>
               {activeTab === "agents" && <th>Name</th>}
