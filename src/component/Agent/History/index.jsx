@@ -125,8 +125,12 @@ function History() {
         <table className="history-styled-table table-container">
           <thead>
             <tr>
-              <th>Search ID</th>
-              <th>Status</th>
+              <th onClick={toggleSort} className="sortable-header">
+                  Address <span className="sort-arrow">{sortAsc ? "▲" : "▼"}</span>
+                  </th>
+              <th onClick={toggleSort} className="sortable-header">
+                  Status <span className="sort-arrow">{sortAsc ? "▲" : "▼"}</span>
+              </th>
               <th onClick={toggleSort} className="sortable-header">
                 Time <span className="sort-arrow">{sortAsc ? "▲" : "▼"}</span>
               </th>
@@ -136,7 +140,7 @@ function History() {
           <tbody>
             {sortedHistories.map((elem) => (
               <tr key={elem.id}>
-                <td>{elem?.searchId}</td>
+                <td>{elem?.address}</td>
                 <td>{elem?.status}</td>
                 <td>{getFormattedDateTime(elem?.createdAt)}</td>
                 <td>
