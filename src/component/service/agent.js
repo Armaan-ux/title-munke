@@ -153,7 +153,9 @@ export async function createAgentForBroker(brokerId, name, email) {
 
     // Step 2: Add Agent Data to DynamoDB
     const agentInput = {
-      id: createUserResponse.User?.Attributes[2]?.Value,
+      id: createUserResponse.User.Attributes.find(
+        (attr) => attr.Name === "sub"
+      ).Value,
       name: name,
       email,
       status: "UNCONFIRMED",
@@ -191,6 +193,32 @@ export async function createAgentForBroker(brokerId, name, email) {
     };
   } catch (error) {
     console.error("Error creating agent for broker:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Reinvites an agent by resending the Cognito invitation email.
+ * This resets the expiration limit on the user's temporary password.
+ * The user must be in an 'UNCONFIRMED' state.
+ *
+ * @param {object} agent - The agent object, must contain an 'email' property.
+ * @returns {Promise<object>} - An object indicating success or failure.
+ */
+export async function reinviteAgent(agent) {
+  try {
+    await cognito
+      .adminCreateUser({
+        UserPoolId: userPoolId,
+        Username: agent.email,
+        MessageAction: "RESEND",
+      })
+      .promise();
+
+    console.log(`Successfully resent invitation to ${agent.email}`);
+    return { success: true, message: "Agent reinvited successfully." };
+  } catch (error) {
+    console.error(`Error reinviting agent ${agent.email}:`, error);
     return { success: false, error: error.message };
   }
 }

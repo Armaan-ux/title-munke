@@ -1,5 +1,5 @@
 import { API } from "aws-amplify";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { listSearchHistories } from "../../../graphql/queries";
 import "./index.css";
 import { useUser } from "../../../context/usercontext";
@@ -48,7 +48,7 @@ function AllSearchHistory() {
   });
 
 
-  const fetchSearchHistories = async () => {
+  const fetchSearchHistories = useCallback(async () => {
     if (loading || !hasMore) return;
 
     setLoading(true);
@@ -76,8 +76,9 @@ function AllSearchHistory() {
     } finally {
       setLoading(false);
     }
-  };
-  const fetchAgentSearchHistories = async () => {
+  }, [loading, hasMore, nextToken]);
+
+  const fetchAgentSearchHistories = useCallback(async () => {
     if (loading || !hasMore) return;
 
     setLoading(true);
@@ -104,7 +105,7 @@ function AllSearchHistory() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [loading, hasMore, nextToken]);
 
   const resetStateOnTabChange = () => {
     setHasMore(true);
@@ -118,7 +119,7 @@ function AllSearchHistory() {
       if (activeTab === "history") fetchSearchHistories();
       else fetchAgentSearchHistories();
     }
-  }, [user, activeTab]);
+  }, [user, activeTab, fetchSearchHistories, fetchAgentSearchHistories]);
 
   const getSortArrow = (key) => {
     if (sortConfig.key !== key) {
@@ -195,7 +196,12 @@ function AllSearchHistory() {
         {!hasMore && <p>No more data to load.</p>}
 
         {searchHistories?.length > 0 && hasMore && !loading && (
-          <button className="loadmore" onClick={fetchSearchHistories}>
+          <button
+            className="loadmore"
+            onClick={
+              activeTab === "history" ? fetchSearchHistories : fetchAgentSearchHistories
+            }
+          >
             Load More
           </button>
         )}

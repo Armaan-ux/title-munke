@@ -257,7 +257,12 @@ function History() {
         {loading && <p>Loading...</p>}
         {!hasMore && searchHistories.length > 0 && <p>No more data to load.</p>}
         {searchHistories.length > 0 && hasMore && !loading && (
-          <button className="loadmore" onClick={fetchSearchHistories}>
+          <button
+            className="loadmore"
+            onClick={
+              activeTab === "history" ? fetchSearchHistories : fetchAgentSearchHistories
+            }
+          >
             Load More
           </button>
         )}

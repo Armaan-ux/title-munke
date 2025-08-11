@@ -1,8 +1,9 @@
 import React from "react";
 import { getFormattedDateTime } from "../../utils";
 import "./AgentList.css";
+import { reinviteAgent } from "../../services/agent";
 
-const AgentList = ({ setIsOpen, data, isAgentListLoading }) => {
+const AgentList = ({ setIsOpen, data, isAgentListLoading, refetchAgentList }) => {
   return (
     <div>
       <button className="open-modal-btn" onClick={() => setIsOpen(true)}>
@@ -27,6 +28,7 @@ const AgentList = ({ setIsOpen, data, isAgentListLoading }) => {
                   <th>last Login</th>
                   <th>Total Searches This Month</th>
                   <th>Status</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -43,6 +45,18 @@ const AgentList = ({ setIsOpen, data, isAgentListLoading }) => {
                       </td>
                       <td>{row.totalSearches}</td>
                       <td>{row.status}</td>
+                      <td>
+                        <button
+                          className="reinvite-btn"
+                          disabled={row.status !== "UNCONFIRMED"}
+                          onClick={async () => {
+                            await reinviteAgent(row);
+                            refetchAgentList();
+                          }}
+                        >
+                          Reinvite
+                        </button>
+                      </td>
                     </tr>
                   ))
                 ) : (

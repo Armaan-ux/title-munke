@@ -39,7 +39,9 @@ export async function createAdminAccount(name, email) {
     console.log("User added to Admin group:", response);
 
     const adminInput = {
-      id: createUserResponse.User?.Attributes[2]?.Value,
+      id: createUserResponse.User.Attributes.find(
+        (attr) => attr.Name === "sub"
+      ).Value,
       name: name,
       email,
       status: "UNCONFIRMED",

@@ -66,6 +66,7 @@ export async function fetchAgentsOfBroker(brokerId) {
         return {
           ...relationship,
           status: agentDetails?.status,
+          email: agentDetails?.email,
           lastLogin: agentDetails.lastLogin,
         };
       }
@@ -158,7 +159,9 @@ export async function createBrokerLogin(name, email) {
 
     // Step 2: Add Agent Data to DynamoDB
     const brokerInput = {
-      id: createUserResponse.User?.Attributes[2]?.Value,
+      id: createUserResponse.User.Attributes.find(
+        (attr) => attr.Name === "sub"
+      ).Value,
       name: name,
       email,
       status: "UNCONFIRMED",
