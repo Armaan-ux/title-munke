@@ -57,7 +57,7 @@
   
   .history-styled-table tbody {
     display: block; /* Allows independent scrolling for tbody */
-    max-height: 700px; /* Matches max height of container */
+    max-height: 360px; /* Should be less than the container's height to account for borders/padding */
     overflow-y: auto; /* Enables scrolling within tbody */
   }
   

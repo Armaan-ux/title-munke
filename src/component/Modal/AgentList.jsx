@@ -8,9 +8,13 @@ const AgentList = ({ setIsOpen, data, isAgentListLoading, refetchAgentList }) =>
 
   const handleReinvite = async (agent) => {
     setReinvitingAgentId(agent.id);
-    await reinviteAgent(agent);
-    refetchAgentList();
-    setReinvitingAgentId(null);
+    try {
+      await reinviteAgent(agent);
+    } catch (error) {
+      console.error("Failed to reinvite agent:", error);
+    } finally {
+      setReinvitingAgentId(null);
+    }
   };
 
   return (
@@ -42,7 +46,11 @@ const AgentList = ({ setIsOpen, data, isAgentListLoading, refetchAgentList }) =>
               </thead>
               <tbody>
                 {isAgentListLoading ? (
-                  <p>Loading Agents....</p>
+                  <tr>
+                    <td colSpan="5" style={{ textAlign: "center" }}>
+                      Loading Agents....
+                    </td>
+                  </tr>
                 ) : data?.length ? (
                   data?.map((row) => (
                     <tr key={row.id}>
@@ -72,7 +80,11 @@ const AgentList = ({ setIsOpen, data, isAgentListLoading, refetchAgentList }) =>
                     </tr>
                   ))
                 ) : (
-                  <p>No records found!</p>
+                  <tr>
+                    <td colSpan="5" style={{ textAlign: "center" }}>
+                      No records found!
+                    </td>
+                  </tr>
                 )}
               </tbody>
             </table>
