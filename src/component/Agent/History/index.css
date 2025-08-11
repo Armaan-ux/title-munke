@@ -26,7 +26,7 @@
   }
 
 .table-container {
-    max-height: 400px; /* Set the maximum height for the table */
+    max-height: 480px; /* Set the maximum height for the table */
     overflow-y: auto; /* Allow vertical scrolling */
     border: 1px solid #ccc;
   }
@@ -57,7 +57,7 @@
   
   .history-styled-table tbody {
     display: block; /* Allows independent scrolling for tbody */
-    max-height: 360px; /* Should be less than the container's height to account for borders/padding */
+    max-height: 440px; /* Should be less than the container's height to account for borders/padding */
     overflow-y: auto; /* Enables scrolling within tbody */
   }
   
