@@ -86,6 +86,39 @@
   .open-modal-btn:hover {
     background-color: #2c3a42;
   }
+
+.reinvite-btn {
+  padding: 5px 10px;
+  background-color: #007a33;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+  min-width: 90px;
+  text-align: center;
+}
+
+.reinvite-btn:hover:not(:disabled) {
+  background-color: #005c22;
+}
+
+.reinvite-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.reinvite-btn.reinviting {
+  cursor: wait;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(0, 122, 51, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(0, 122, 51, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 122, 51, 0); }
+}
   
   /* Scrollbar Styling */
   ::-webkit-scrollbar {

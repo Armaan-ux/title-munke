@@ -1,9 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { getFormattedDateTime } from "../../utils";
 import "./AgentList.css";
 import { reinviteAgent } from "../service/agent";
 
 const AgentList = ({ setIsOpen, data, isAgentListLoading, refetchAgentList }) => {
+  const [reinvitingAgentId, setReinvitingAgentId] = useState(null);
+
+  const handleReinvite = async (agent) => {
+    setReinvitingAgentId(agent.id);
+    await reinviteAgent(agent);
+    refetchAgentList();
+    setReinvitingAgentId(null);
+  };
+
   return (
     <div>
       <button className="open-modal-btn" onClick={() => setIsOpen(true)}>
@@ -47,14 +56,17 @@ const AgentList = ({ setIsOpen, data, isAgentListLoading, refetchAgentList }) =>
                       <td>{row.status}</td>
                       <td>
                         <button
-                          className="reinvite-btn"
-                          disabled={row.status !== "UNCONFIRMED"}
-                          onClick={async () => {
-                            await reinviteAgent(row);
-                            refetchAgentList();
-                          }}
+                          className={`reinvite-btn ${
+                            reinvitingAgentId === row.id ? "reinviting" : ""
+                          }`}
+                          disabled={
+                            row.status !== "UNCONFIRMED" || reinvitingAgentId
+                          }
+                          onClick={() => handleReinvite(row)}
                         >
-                          Reinvite
+                          {reinvitingAgentId === row.id
+                            ? "Sending..."
+                            : "Reinvite"}
                         </button>
                       </td>
                     </tr>
