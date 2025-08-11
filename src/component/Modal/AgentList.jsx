@@ -3,7 +3,7 @@ import { getFormattedDateTime } from "../../utils";
 import "./AgentList.css";
 import { reinviteAgent } from "../service/agent";
 
-const AgentList = ({ setIsOpen, data, isAgentListLoading, refetchAgentList }) => {
+const AgentList = ({ setIsOpen, data, isAgentListLoading }) => {
   const [reinvitingAgentId, setReinvitingAgentId] = useState(null);
 
   const handleReinvite = async (agent) => {

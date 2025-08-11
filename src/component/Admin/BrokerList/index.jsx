@@ -187,11 +187,11 @@ function BorkerList() {
                   <td>{elem.name}</td>
                   <td>{elem.totalSearches}</td>
                   <td>{getFormattedDateTime(elem.lastLogin)}</td>
-
+                  {/* Swapped the below two columns to match the table header */}
+                  <td>{elem.email}</td>
                   <td>
-                    <span class="status active">{elem.status}</span>
+                    <span className="status active">{elem.status}</span>
                   </td>
-                  <td style={{ marginRight: "5px" }}>{elem.email}</td>
                   <td>
                     <div className="dropdown">
                       {elem.status !== "UNCONFIRMED" && (
