@@ -1,7 +1,7 @@
 import React from "react";
 import { getFormattedDateTime } from "../../utils";
 import "./AgentList.css";
-import { reinviteAgent } from "../../services/agent";
+import { reinviteAgent } from "../service/agent";
 
 const AgentList = ({ setIsOpen, data, isAgentListLoading, refetchAgentList }) => {
   return (
