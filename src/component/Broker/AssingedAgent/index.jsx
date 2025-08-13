@@ -4,6 +4,7 @@ import {
   calculateAverage,
   getAgentsTotalSearchesThisMonth,
   getTopPerformerAgent,
+  reinviteAgent,
   inActiveAgent,
   pendingAgentSearch,
   UnassignAgent,
@@ -12,15 +13,16 @@ import { useUser } from "../../../context/usercontext";
 import { fetchAgentsWithSearchCount } from "../../service/broker";
 import "./index.css";
 import { getFormattedDateTime, handleCreateAuditLog } from "../../../utils";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const AssginedAgents = () => {
+const AssignedAgents = () => {
   const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [agents, setAgents] = useState([]);
   const [totalSearchesThisMonth, setTotalSearchesThisMonth] = useState(0);
+  const [reinvitingAgentId, setReinvitingAgentId] = useState(null);
   const [pendingSearch, setPendingSearch] = useState(0);
   const [topPerformer, setTopPerformer] = useState("");
 
@@ -58,7 +60,7 @@ const AssginedAgents = () => {
   const unAssignAgent = async (id, agentId) => {
     const result = await UnassignAgent(id, agentId);
     if (result) {
-      setAgents(agents.filter((elem) => elem.id !== id));
+      setAgents((prevAgents) => prevAgents.filter((elem) => elem.id !== id));
       toast.success("Agent UnAssigned Successfully.");
       handleCreateAuditLog("UNASSIGN", {
         detial: `Unassigned Agent ${agentId}`,
@@ -69,13 +71,11 @@ const AssginedAgents = () => {
   const inActiveAgentStatus = async (id, status) => {
     const result = await inActiveAgent(id, status);
     if (result) {
-      const temp = agents;
-      const indx = temp.findIndex((elem) => elem.agentId === id);
-      temp[indx] = {
-        ...temp[indx],
-        status: (temp[indx].status = status),
-      };
-      setAgents(temp.map((e) => e));
+      setAgents((prevAgents) =>
+        prevAgents.map((agent) =>
+          agent.agentId === id ? { ...agent, status: status } : agent
+        )
+      );
       toast.success(`Agent ${status} Successfully.`);
       handleCreateAuditLog("ACTIVE_STATUS", {
         detial: `Convert Agent ${id} Status to ${status}`,
@@ -83,26 +83,19 @@ const AssginedAgents = () => {
     }
   };
 
+  const handleReinvite = async (agent) => {
+    setReinvitingAgentId(agent.id);
+    const result = await reinviteAgent(agent);
+    if (result.success) {
+      toast.success(result.message);
+    } else {
+      toast.error(result.error || "Failed to reinvite agent.");
+    }
+    setReinvitingAgentId(null);
+  };
+
   return (
     <>
-      <ToastContainer
-        position="top-center"
-        autoClose={6000}
-        closeOnClick
-        pauseOnHover
-        draggable
-        hideProgressBar={false}
-        theme="colored"
-        limit={2}
-        toastStyle={{
-          borderRadius: "10px",
-          fontSize: "1rem",
-          padding: "12px 20px",
-          maxWidth: "400px",
-          marginTop: "20px",
-          boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
-        }}
-      />
       {isOpen && (
         <AddUserModal
           setIsOpen={setIsOpen}
@@ -174,6 +167,7 @@ const AssginedAgents = () => {
                 <th>Searches This Month</th>
                 <th>Last login</th>
                 <th>Actions</th>
+                <th>Reinvite</th>
               </tr>
             </thead>
             <tbody>
@@ -183,51 +177,66 @@ const AssginedAgents = () => {
                 <p style={{ display: "flex" }}>No Records Found.</p>
               ) : (
                 agents?.map((elem) => (
-                  <>
-                    <tr id="broker-row-1">
-                      <td>{elem.agentName}</td>
-                      <td>
-                        <span className="status active">{elem.status}</span>
-                      </td>
-                      <td>{elem.totalSearches}</td>
-                      <td>{getFormattedDateTime(elem.lastLogin)}</td>
-                      <td>
-                        <div className="dropdown">
-                          {elem.status !== "UNCONFIRMED" && (
-                            <>
-                              <button className="btn action-btn">
-                                Actions <i className="fas fa-caret-down"></i>
-                              </button>
+                  <tr key={elem.id} id={`broker-row-${elem.id}`}>
+                    <td>{elem.agentName}</td>
+                    <td>
+                      <span className={`status ${elem.status?.toLowerCase()}`}>
+                        {elem.status}
+                      </span>
+                    </td>
+                    <td>{elem.totalSearches}</td>
+                    <td>{getFormattedDateTime(elem.lastLogin)}</td>
+                    <td>
+                      <div className="dropdown">
+                        {elem.status !== "UNCONFIRMED" && (
+                          <>
+                            <button className="btn action-btn">
+                              Actions <i className="fas fa-caret-down"></i>
+                            </button>
 
-                              <div className="dropdown-content">
-                                <span
-                                  onClick={() =>
-                                    unAssignAgent(elem.id, elem.agentId)
-                                  }
-                                >
-                                  Unassign
-                                </span>
-                                <span
-                                  onClick={() =>
-                                    inActiveAgentStatus(
-                                      elem.agentId,
-                                      elem.status === "INACTIVE"
-                                        ? "ACTIVE"
-                                        : "INACTIVE"
-                                    )
-                                  }
-                                >
-                                  {elem.status === "ACTIVE"
-                                    ? "Inactive"
-                                    : "Active"}
-                                </span>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  </>
+                            <div className="dropdown-content">
+                              <span
+                                onClick={() =>
+                                  unAssignAgent(elem.id, elem.agentId)
+                                }
+                              >
+                                Unassign
+                              </span>
+                              <span
+                                onClick={() =>
+                                  inActiveAgentStatus(
+                                    elem.agentId,
+                                    elem.status === "INACTIVE"
+                                      ? "ACTIVE"
+                                      : "INACTIVE"
+                                  )
+                                }
+                              >
+                                {elem.status === "ACTIVE"
+                                  ? "Inactive"
+                                  : "Active"}
+                              </span>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                    <td>
+                      <button
+                        className={`reinvite-btn ${
+                          reinvitingAgentId === elem.id ? "reinviting" : ""
+                        }`}
+                        disabled={
+                          elem.status !== "UNCONFIRMED" || !!reinvitingAgentId
+                        }
+                        onClick={() => handleReinvite(elem)}
+                      >
+                        {reinvitingAgentId === elem.id
+                          ? "Sending..."
+                          : "Reinvite"}
+                      </button>
+                    </td>
+                  </tr>
                 ))
               )}
             </tbody>
@@ -238,4 +247,4 @@ const AssginedAgents = () => {
   );
 };
 
-export default AssginedAgents;
+export default AssignedAgents;

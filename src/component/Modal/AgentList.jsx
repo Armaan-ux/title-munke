@@ -41,7 +41,7 @@ const AgentList = ({ setIsOpen, data, isAgentListLoading }) => {
                   <th>last Login</th>
                   <th>Total Searches This Month</th>
                   <th>Status</th>
-                  <th>Action</th>
+                  <th>Reinvite</th>
                 </tr>
               </thead>
               <tbody>

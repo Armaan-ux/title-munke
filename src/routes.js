@@ -6,7 +6,7 @@ import BrokerHistory from "./component/Broker/History";
 import BrokerSetting from "./component/Broker/Setting";
 import Broker from "./component/Broker";
 import Search from "./component/Search";
-import AssginedAgents from "./component/Broker/AssingedAgent";
+import AssignedAgents from "./component/Broker/AssingedAgent";
 import BorkerList from "./component/Admin/BrokerList";
 import AllSearchHistory from "./component/Admin/History";
 import AdminSettings from "./component/Admin/Setting";
@@ -36,7 +36,7 @@ export const brokerRoutes = [
   { path: "broker/search", component: Search },
   { path: "broker/history", component: BrokerHistory },
   { path: "broker/setting", component: BrokerSetting },
-  { path: "broker/manage-agents", component: AssginedAgents },
+  { path: "broker/manage-agents", component: AssignedAgents },
   { path: "broker/manage-not-assigned-agents", component: NotAssignedAgents },
   { path: "broker/agent-audit-log", component: AgentAuditLogs },
 ];

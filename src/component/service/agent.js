@@ -258,7 +258,7 @@ export async function assignAgent(agentId, name, brokerId) {
         input: { id: agentId, assigned: true },
       })
     );
-    console.log("Agent Assgined Successfully");
+    console.log("Agent Assigned Successfully");
     return true;
   } catch (err) {
     console.error(err);
