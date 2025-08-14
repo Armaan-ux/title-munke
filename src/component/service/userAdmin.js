@@ -1,68 +1,45 @@
-//import { API } from 'aws-amplify'; // Keep this import for now, but it will be removed soon.
-//import awsExports from '../../aws-exports';
+import { API } from 'aws-amplify';
 
-//const apiName = 'usersAdmin';
-//const path = '/users';
+const apiName = 'usersAdmin';
+const path = '/users';
 
 async function callUserAdminApi(payload, successMessage, errorMessage) {
-//  console.log('awsExports.aws_cloud_logic_custom: ', awsExports.aws_cloud_logic_custom);
-//  console.log('path: ', path);
-//  console.log('path.substring(1): ', path.substring(1));
   try {
-    const apiUrl = 'https://rvz67ef1yc.execute-api.us-east-1.amazonaws.com/master/users';
-//    const apiUrl = `${awsExports.aws_cloud_logic_custom[0].endpoint}/${path.substring(1)}`; // Construct the full API URL
-    console.log('apiUrl: ', apiUrl);
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-//      body: JSON.stringify(payload.body), // Assuming payload.body contains the actual data
-    });
+    // The Amplify API library automatically looks up the endpoint from aws-exports.js
+    // and, most importantly, signs the request with the current user's credentials.
+    const response = await API.post(apiName, path, payload);
     console.log(successMessage, response);
     return response;
   } catch (error) {
-    console.error(errorMessage, error);
+    // Improved error logging to show server-side error messages if available
+    const errorData = error.response ? error.response.data : error;
+    console.error(errorMessage, errorData);
     throw error; // Re-throw to allow calling functions to handle if needed
   }
 }
 
-export async function createAgent(name, email, password, brokerId) {
+// Refactored to a single helper to reduce duplication
+async function createUser(userData) {
   const payload = {
-    body: {
-      name: name,
-      userType: 'agent',
-      email: email,
-      temporaryPassword: password,
-      brokerId: brokerId,
-    },
-  }
-  return callUserAdminApi(payload, 'Successfully created user:', 'Error creating user:');
+    body: userData,
+  };
+  return callUserAdminApi(
+    payload,
+    'Successfully created user:',
+    'Error creating user:'
+  );
+}
+
+export async function createAgent(name, email, password, brokerId) {
+  return createUser({ name, userType: 'agent', email, temporaryPassword: password, brokerId });
 }
 
 export async function createBroker(name, email, password) {
-  const payload = {
-    body: {
-      name: name,
-      userType: 'broker',
-      email: email,
-      temporaryPassword: password,
-    },
-  }
-  return callUserAdminApi(payload, 'Successfully created user:', 'Error creating user:');
+  return createUser({ name, userType: 'broker', email, temporaryPassword: password });
 }
 
 export async function createAdmin(name, email, password) {
-  const payload = {
-    body: {
-      name: name,
-      userType: 'admin',
-      email: email,
-      temporaryPassword: password,
-    },
-  }
-  return callUserAdminApi(payload, 'Successfully created user:', 'Error creating user:');
+  return createUser({ name, userType: 'admin', email, temporaryPassword: password });
 }
 
 export async function reinviteAgent(email) {
@@ -72,5 +49,9 @@ export async function reinviteAgent(email) {
         action: 'reinvite',
       },
     };
-    return callUserAdminApi(payload, 'Success in reinviteUser:', 'Error in reinviteUser:');
+    return callUserAdminApi(
+        payload,
+        'Success in reinviteUser:',
+        'Error in reinviteUser:'
+    );
 }
