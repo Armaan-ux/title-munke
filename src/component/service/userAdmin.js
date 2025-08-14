@@ -14,7 +14,7 @@ async function callUserAdminApi(payload, successMessage, errorMessage) {
   }
 }
 
-async function createAgent(name, email, password, brokerId) {
+export async function createAgent(name, email, password, brokerId) {
   const payload = {
     body: {
       name: name,
@@ -27,7 +27,7 @@ async function createAgent(name, email, password, brokerId) {
   return callUserAdminApi(payload, 'Successfully created user:', 'Error creating user:');
 }
 
-async function createBroker(name, email, password) {
+export async function createBroker(name, email, password) {
   const payload = {
     body: {
       name: name,
@@ -39,7 +39,7 @@ async function createBroker(name, email, password) {
   return callUserAdminApi(payload, 'Successfully created user:', 'Error creating user:');
 }
 
-async function createAdmin(name, email, password) {
+export async function createAdmin(name, email, password) {
   const payload = {
     body: {
       name: name,
@@ -51,7 +51,7 @@ async function createAdmin(name, email, password) {
   return callUserAdminApi(payload, 'Successfully created user:', 'Error creating user:');
 }
 
-async function reinviteAgent(email) {
+export async function reinviteAgent(email) {
     const payload = {
       body: {
         email: email,
