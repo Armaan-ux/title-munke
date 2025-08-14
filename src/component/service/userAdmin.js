@@ -1,6 +1,6 @@
 import { API } from 'aws-amplify';
 
-const apiName = 'userAdmin';
+const apiName = 'usersAdmin';
 const path = '/users';
 
 async function callUserAdminApi(payload, successMessage, errorMessage) {
