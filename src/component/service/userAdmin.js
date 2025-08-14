@@ -1,31 +1,13 @@
-import { API, Amplify } from 'aws-amplify';
+import { Amplify, API } from 'aws-amplify';
 
 const apiName = 'usersAdmin';
-const endpoint = "https://rvz67ef1yc.execute-api.us-east-1.amazonaws.com/master";
 const path = '/users';
-const region = 'us-east-1';
-
-Amplify.configure({
-    API: {
-        endpoints: [
-            {
-                name: apiName,
-                endpoint: endpoint,
-                region: region,
-                custom_header: async () => {
-                    return {
-                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    };
-                }
-            }
-        ]
-    }
-});
 
 async function callUserAdminApi(payload, successMessage, errorMessage) {
   try {
+    // You can inspect the currently loaded Amplify configuration like this:
+    console.log('Current Amplify Config:', Amplify.getConfig());
+
     // The Amplify API library automatically looks up the endpoint from aws-exports.js
     // and, most importantly, signs the request with the current user's credentials.
     const response = await API.post(apiName, path, payload);
