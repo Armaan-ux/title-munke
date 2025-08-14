@@ -1,4 +1,4 @@
-import { API } from 'aws-amplify';
+import { API, Amplify } from 'aws-amplify';
 
 const apiName = 'usersAdmin';
 const endpoint = "https://rvz67ef1yc.execute-api.us-east-1.amazonaws.com/master";
