@@ -1,7 +1,28 @@
 import { API } from 'aws-amplify';
 
 const apiName = 'usersAdmin';
+const endpoint = "https://rvz67ef1yc.execute-api.us-east-1.amazonaws.com/master";
 const path = '/users';
+const region = 'us-east-1';
+
+Amplify.configure({
+    API: {
+        endpoints: [
+            {
+                name: apiName,
+                endpoint: endpoint,
+                region: region,
+                custom_header: async () => {
+                    return {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    };
+                }
+            }
+        ]
+    }
+});
 
 async function callUserAdminApi(payload, successMessage, errorMessage) {
   try {
