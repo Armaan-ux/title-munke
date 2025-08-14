@@ -1,6 +1,6 @@
 import { API } from 'aws-amplify';
 
-const apiName = 'usersAdmin';
+const apiName = 'userAdmin';
 const path = '/users';
 
 async function callUserAdminApi(payload, successMessage, errorMessage) {
@@ -18,7 +18,7 @@ export async function createAgent(name, email, password, brokerId) {
   const payload = {
     body: {
       name: name,
-      userType: 'broker',
+      userType: 'agent',
       email: email,
       temporaryPassword: password,
       brokerId: brokerId,

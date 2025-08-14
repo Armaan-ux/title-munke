@@ -26,7 +26,7 @@
     },
     "categories": {
       "api": {
-        "titlemunke": {}
+        "userAdmin": {}
       },
       "function": {
         "checkUserStatus": {
