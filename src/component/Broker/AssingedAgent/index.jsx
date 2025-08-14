@@ -10,7 +10,7 @@ import {
 } from "../../service/agent";
 import {
     reinviteAgent
-    } from "../service/userAdmin";
+    } from "../../service/userAdmin";
 import { useUser } from "../../../context/usercontext";
 import { fetchAgentsWithSearchCount } from "../../service/broker";
 import "./index.css";
