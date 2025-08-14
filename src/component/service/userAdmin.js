@@ -9,7 +9,7 @@ async function callUserAdminApi(payload, successMessage, errorMessage) {
     console.log(successMessage, response);
     return response;
   } catch (error) {
-    console.error(errorMessage, error.response.data);
+    console.error(errorMessage, error);
     throw error; // Re-throw to allow calling functions to handle if needed
   }
 }
