@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { getFormattedDateTime } from "../../utils";
 import "./AgentList.css";
-import { reinviteAgent } from "../service/agent";
+// import { reinviteAgent } from "../service/agent";
+import { reinviteAgent } from "../service/userAdmin";
 
 const AgentList = ({ setIsOpen, data, isAgentListLoading }) => {
   const [reinvitingAgentId, setReinvitingAgentId] = useState(null);
@@ -9,7 +10,7 @@ const AgentList = ({ setIsOpen, data, isAgentListLoading }) => {
   const handleReinvite = async (agent) => {
     setReinvitingAgentId(agent.id);
     try {
-      await reinviteAgent(agent);
+      await reinviteAgent(agent.email);
     } catch (error) {
       console.error("Failed to reinvite agent:", error);
     } finally {

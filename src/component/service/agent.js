@@ -202,23 +202,23 @@ export async function createAgentForBroker(brokerId, name, email) {
  * This resets the expiration limit on the user's temporary password.
  * The user must be in an 'UNCONFIRMED' state.
  *
- * @param {object} agent - The agent object, must contain an 'email' property.
+ * @param email - The email of the agent to reinvite.
  * @returns {Promise<object>} - An object indicating success or failure.
  */
-export async function reinviteAgent(agent) {
+export async function reinviteAgent(email) {
   try {
     await cognito
       .adminCreateUser({
         UserPoolId: userPoolId,
-        Username: agent.email,
+        Username: email,
         MessageAction: "RESEND",
       })
       .promise();
 
-    console.log(`Successfully resent invitation to ${agent.email}`);
+    console.log(`Successfully resent invitation to ${email}`);
     return { success: true, message: "Agent reinvited successfully." };
   } catch (error) {
-    console.error(`Error reinviting agent ${agent.email}:`, error);
+    console.error(`Error reinviting agent ${email}:`, error);
     return { success: false, error: error.message };
   }
 }

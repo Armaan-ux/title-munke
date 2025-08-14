@@ -1,38 +1,62 @@
 import { API } from 'aws-amplify';
 
-async function createUser(email, password) {
+const apiName = 'usersAdmin';
+const path = '/users';
+
+async function callUserAdminApi(payload, successMessage, errorMessage) {
   try {
-    const apiName = 'usersAdmin'; // The name you gave in 'amplify add api'
-    const path = '/users';
-    const payload = {
-      body: {
-        email: email,
-        temporaryPassword: password,
-      },
-    };
-    // The Amplify API library automatically adds the user's JWT
-    // to the Authorization header for you.
     const response = await API.post(apiName, path, payload);
-    console.log('Successfully created user:', response);
+    console.log(successMessage, response);
+    return response;
   } catch (error) {
-    console.error('Error creating user:', error.response.data);
+    console.error(errorMessage, error.response.data);
+    throw error; // Re-throw to allow calling functions to handle if needed
   }
 }
 
+async function createAgent(name, email, password, brokerId) {
+  const payload = {
+    body: {
+      name: name,
+      userType: 'broker',
+      email: email,
+      temporaryPassword: password,
+      brokerId: brokerId,
+    },
+  }
+  return callUserAdminApi(payload, 'Successfully created user:', 'Error creating user:');
+}
+
+async function createBroker(name, email, password) {
+  const payload = {
+    body: {
+      name: name,
+      userType: 'broker',
+      email: email,
+      temporaryPassword: password,
+    },
+  }
+  return callUserAdminApi(payload, 'Successfully created user:', 'Error creating user:');
+}
+
+async function createAdmin(name, email, password) {
+  const payload = {
+    body: {
+      name: name,
+      userType: 'admin',
+      email: email,
+      temporaryPassword: password,
+    },
+  }
+  return callUserAdminApi(payload, 'Successfully created user:', 'Error creating user:');
+}
+
 async function reinviteAgent(email) {
-  try {
-    const apiName = 'usersAdmin'; // The name you gave in 'amplify add api'
-    const path = '/users';
     const payload = {
       body: {
-        email: email
+        email: email,
+        action: 'reinvite',
       },
     };
-    // The Amplify API library automatically adds the user's JWT
-    // to the Authorization header for you.
-    const response = await API.post(apiName, path, payload);
-    console.log('Successfully created user:', response);
-  } catch (error) {
-    console.error('Error creating user:', error.response.data);
-  }
+    return callUserAdminApi(payload, 'Success in reinviteUser:', 'Error in reinviteUser:');
 }

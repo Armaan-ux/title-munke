@@ -67,7 +67,7 @@ export async function fetchAgentsOfBroker(brokerId) {
           ...relationship,
           status: agentDetails?.status,
           email: agentDetails?.email,
-          lastLogin: agentDetails.lastLogin,
+          lastLogin: agentDetails?.lastLogin,
         };
       }
     );
