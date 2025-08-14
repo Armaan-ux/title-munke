@@ -29,7 +29,12 @@ const awsmobile = {
     },
     "aws_cognito_verification_mechanisms": [
         "EMAIL"
-    ]
+    ],
+    "aws_cloud_logic_custom": [{
+        "name": "usersAdmin",
+        "endpoint": "https://rvz67ef1yc.execute-api.us-east-1.amazonaws.com/master",
+        "region": "us-east-1"
+    }]
 };
 
 
