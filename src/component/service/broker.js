@@ -5,7 +5,7 @@ import {
   listBrokers,
   relationshipsByBrokerId,
 } from "../../graphql/queries";
-import { createBrokerOnCognito } from "userAdmin";
+import { createBrokerOnCognito } from "./userAdmin";
 import { getAgentTotalSearchesThisMonth } from "./agent";
 import AWSExport from "../../aws-exports";
 import { FETCH_LIMIT, generatePassword } from "../../utils";
