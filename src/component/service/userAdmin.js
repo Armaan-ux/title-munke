@@ -31,7 +31,7 @@ export async function createAgent(name, email, brokerId) {
   return createUser({ name, userType: 'agent', email, brokerId });
 }
 
-export async function createBrokerLogin(name, email) {
+export async function createBrokerOnCognito(name, email) {
   return createUser({ name, userType: 'broker', email});
 }
 
