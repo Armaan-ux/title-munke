@@ -134,7 +134,7 @@ export async function getBrokerTotalSearchesThisMonth(brokerId) {
 
 export async function createBrokerLogin(name, email) {
   try {
-     const response = await createBrokerOnCognito(name, email);
+     const createUserResponse = await createBrokerOnCognito(name, email);
 
     // Step 2: Add Agent Data to DynamoDB
     const brokerInput = {
