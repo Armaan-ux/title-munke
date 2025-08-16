@@ -205,24 +205,24 @@ export async function createAgentForBroker(brokerId, name, email) {
  * @param email - The email of the agent to reinvite.
  * @returns {Promise<object>} - An object indicating success or failure.
  */
-export async function reinviteAgent(email) {
-  try {
-    await cognito
-      .adminCreateUser({
-        UserPoolId: userPoolId,
-        Username: email,
-        MessageAction: "RESEND",
-      })
-      .promise();
-
-    console.log(`Successfully resent invitation to ${email}`);
-    return { success: true, message: "Agent reinvited successfully." };
-  } catch (error) {
-    console.error(`Error reinviting agent ${email}:`, error);
-    return { success: false, error: error.message };
-  }
-}
-
+//export async function reinviteAgent(email) {
+//  try {
+//    await cognito
+//      .adminCreateUser({
+//        UserPoolId: userPoolId,
+//        Username: email,
+//        MessageAction: "RESEND",
+//      })
+//      .promise();
+//
+//    console.log(`Successfully resent invitation to ${email}`);
+//    return { success: true, message: "Agent reinvited successfully." };
+//  } catch (error) {
+//    console.error(`Error reinviting agent ${email}:`, error);
+//    return { success: false, error: error.message };
+//  }
+//}
+//
 export async function UnassignAgent(id, agentId) {
   try {
     await API.graphql(graphqlOperation(deleteRelationship, { input: { id } }));

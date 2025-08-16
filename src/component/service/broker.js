@@ -131,31 +131,31 @@ export async function getBrokerTotalSearchesThisMonth(brokerId) {
   return totalSearches;
 }
 
-export async function createBrokerLogin(name, email) {
-  try {
-    let temporaryPassword = generatePassword();
-    console.log("temporaryPassword", temporaryPassword);
-    const createUserResponse = await cognito
-      .adminCreateUser({
-        UserPoolId: userPoolId,
-        Username: email,
-        UserAttributes: [
-          { Name: "email", Value: email },
-          { Name: "email_verified", Value: "true" },
-        ],
-        TemporaryPassword: temporaryPassword,
-      })
-      .promise();
-
-    const response = await cognito
-      .adminAddUserToGroup({
-        UserPoolId: userPoolId,
-        Username: email,
-        GroupName: "broker",
-      })
-      .promise();
-
-    console.log("User added to Broker group:", response);
+//export async function createBrokerLogin(name, email) {
+//  try {
+//    let temporaryPassword = generatePassword();
+//    console.log("temporaryPassword", temporaryPassword);
+//    const createUserResponse = await cognito
+//      .adminCreateUser({
+//        UserPoolId: userPoolId,
+//        Username: email,
+//        UserAttributes: [
+//          { Name: "email", Value: email },
+//          { Name: "email_verified", Value: "true" },
+//        ],
+//        TemporaryPassword: temporaryPassword,
+//      })
+//      .promise();
+//
+//    const response = await cognito
+//      .adminAddUserToGroup({
+//        UserPoolId: userPoolId,
+//        Username: email,
+//        GroupName: "broker",
+//      })
+//      .promise();
+//
+//    console.log("User added to Broker group:", response);
 
     // Step 2: Add Agent Data to DynamoDB
     const brokerInput = {

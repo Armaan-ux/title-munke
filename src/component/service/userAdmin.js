@@ -20,26 +20,23 @@ async function callUserAdminApi(payload, successMessage, errorMessage) {
 
 // Refactored to a single helper to reduce duplication
 async function createUser(userData) {
-  const payload = {
-    body: userData,
-  };
   return callUserAdminApi(
-    payload,
+    { body: userData },
     'Successfully created user:',
     'Error creating user:'
   );
 }
 
-export async function createAgent(name, email, password, brokerId) {
-  return createUser({ name, userType: 'agent', email, temporaryPassword: password, brokerId });
+export async function createAgent(name, email, brokerId) {
+  return createUser({ name, userType: 'agent', email, brokerId });
 }
 
-export async function createBroker(name, email, password) {
-  return createUser({ name, userType: 'broker', email, temporaryPassword: password });
+export async function createBrokerLogin(name, email) {
+  return createUser({ name, userType: 'broker', email});
 }
 
-export async function createAdmin(name, email, password) {
-  return createUser({ name, userType: 'admin', email, temporaryPassword: password });
+export async function createAdmin(name, email) {
+  return createUser({ name, userType: 'admin', email});
 }
 
 export async function reinviteAgent(email) {
