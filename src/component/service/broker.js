@@ -7,18 +7,9 @@ import {
 } from "../../graphql/queries";
 import { createBrokerOnCognito } from "./userAdmin";
 import { getAgentTotalSearchesThisMonth } from "./agent";
-import AWSExport from "../../aws-exports";
 import { FETCH_LIMIT, generatePassword } from "../../utils";
 const AWS = require("aws-sdk");
 
-AWS.config.update({
-  accessKeyId: process.env.REACT_APP_ACCESS_KEY,
-  secretAccessKey: process.env.REACT_APP_SECRET_KEY,
-  region: "us-east-1",
-});
-
-const cognito = new AWS.CognitoIdentityServiceProvider();
-const userPoolId = AWSExport.aws_user_pools_id;
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 export async function fetchBroker(brokerId) {
   try {
