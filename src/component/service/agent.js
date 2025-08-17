@@ -5,9 +5,8 @@ import {
   deleteRelationship,
   updateAgent,
 } from "../../graphql/mutations";
-import AWSExport from "../../aws-exports";
+import { createAgentOnCognito } from "./userAdmin";
 import { fetchBroker } from "./broker";
-import { generatePassword } from "../../utils";
 const AWS = require("aws-sdk");
 
 AWS.config.update({
@@ -16,11 +15,11 @@ AWS.config.update({
   region: "us-east-1",
 });
 
-const cognito = new AWS.CognitoIdentityServiceProvider();
-const userPoolId = AWSExport.aws_user_pools_id;
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 export async function getAgentsTotalSearchesThisMonth(brokerId) {
+  // FIXME: This function requires direct DynamoDB access from the frontend, which is insecure.
+  // It needs to be refactored to call a backend API endpoint.
   const currentMonthStart = new Date();
   currentMonthStart.setDate(1);
   currentMonthStart.setHours(0, 0, 0, 0);
@@ -66,6 +65,7 @@ export async function getAgentsTotalSearchesThisMonth(brokerId) {
   }
 
   console.log("totalSearches", totalSearches);
+  console.warn("getAgentsTotalSearchesThisMonth is not implemented securely and will not work.");
   return { totalSearches };
 }
 
@@ -74,6 +74,8 @@ export function calculateAverage(totalSearches, agentCount) {
 }
 
 export async function getAgentTotalSearchesThisMonth(agentId) {
+  // FIXME: This function requires direct DynamoDB access from the frontend, which is insecure.
+  // It needs to be refactored to call a backend API endpoint.
   // Get the start of the current month
   const currentMonthStart = new Date();
   currentMonthStart.setDate(1);
@@ -105,6 +107,7 @@ export async function getAgentTotalSearchesThisMonth(agentId) {
   const totalSearches = searchData.Count || 0;
 
   console.log(`Total searches for agent ${agentId}:`, totalSearches);
+  console.warn("getAgentTotalSearchesThisMonth is not implemented securely and will not work.");
   return totalSearches;
 }
 
@@ -127,73 +130,21 @@ export const confirmUser = async (username, code) => {
 
 export async function createAgentForBroker(brokerId, name, email) {
   try {
-    let temporaryPassword = generatePassword();
-    console.log("temporaryPassword", temporaryPassword);
-    const createUserResponse = await cognito
-      .adminCreateUser({
-        UserPoolId: userPoolId,
-        Username: email,
-        UserAttributes: [
-          { Name: "email", Value: email },
-          { Name: "email_verified", Value: "true" },
-        ],
-        TemporaryPassword: temporaryPassword,
-      })
-      .promise();
+    // The backend Lambda handles creating the user in Cognito, the agent in DynamoDB,
+    // and the relationship record. This is the secure, modern approach.
+    const response = await createAgentOnCognito(name, email, brokerId);
+    console.log("Agent creation initiated via backend:", response);
 
-    const response = await cognito
-      .adminAddUserToGroup({
-        UserPoolId: userPoolId,
-        Username: email,
-        GroupName: "agent",
-      })
-      .promise();
-
-    console.log("User added to Agent group:", response);
-
-    // Step 2: Add Agent Data to DynamoDB
-    const agentInput = {
-      id: createUserResponse.User.Attributes.find(
-        (attr) => attr.Name === "sub"
-      ).Value,
-      name: name,
-      email,
-      status: "UNCONFIRMED",
-      lastLogin: new Date().toISOString(),
-      assigned: true,
-    };
-
-    const broker = await fetchBroker(brokerId);
-
-    const newAgent = await API.graphql(
-      graphqlOperation(createAgent, { input: agentInput })
-    );
-
-    const agentId = newAgent.data.createAgent.id;
-
-    console.log("Agent created successfully in DynamoDB:", newAgent);
-
-    const relationshipInput = {
-      brokerId: brokerId,
-      agentId: agentId,
-      agentName: name,
-      brokerName: broker.name,
-    };
-
-    const newRelationship = await API.graphql(
-      graphqlOperation(createRelationship, { input: relationshipInput })
-    );
-
-    console.log("Relationship added successfully:", newRelationship);
-
+    // The backend response already indicates success.
     return {
-      newAgent: newAgent.data.createAgent,
+      ...response, // Assuming backend returns { success, message }
       success: true,
       message: "Agent created and linked successfully.",
     };
   } catch (error) {
     console.error("Error creating agent for broker:", error);
-    return { success: false, error: error.message };
+    // The error is already thrown by callUserAdminApi, so we can just re-throw.
+    throw error;
   }
 }
 
@@ -205,24 +156,9 @@ export async function createAgentForBroker(brokerId, name, email) {
  * @param email - The email of the agent to reinvite.
  * @returns {Promise<object>} - An object indicating success or failure.
  */
-//export async function reinviteAgent(email) {
-//  try {
-//    await cognito
-//      .adminCreateUser({
-//        UserPoolId: userPoolId,
-//        Username: email,
-//        MessageAction: "RESEND",
-//      })
-//      .promise();
-//
-//    console.log(`Successfully resent invitation to ${email}`);
-//    return { success: true, message: "Agent reinvited successfully." };
-//  } catch (error) {
-//    console.error(`Error reinviting agent ${email}:`, error);
-//    return { success: false, error: error.message };
-//  }
-//}
-//
+// The reinviteAgent function is correctly implemented in userAdmin.js
+// and should be used from there. This commented-out block is redundant and has been removed.
+
 export async function UnassignAgent(id, agentId) {
   try {
     await API.graphql(graphqlOperation(deleteRelationship, { input: { id } }));
@@ -281,6 +217,8 @@ export async function inActiveAgent(agentId, status) {
 }
 
 export async function pendingAgentSearch(brokerId) {
+  // FIXME: This function requires direct DynamoDB access from the frontend, which is insecure.
+  // It needs to be refactored to call a backend API endpoint.
   const relationshipQuery = {
     TableName: "Relationship-mxixmn4cbbcgrhwtar46djww4q-master",
     IndexName: "brokerIdIndex", // Assuming you have a GSI on brokerId
@@ -316,6 +254,7 @@ export async function pendingAgentSearch(brokerId) {
     const searchData = await dynamoDB.scan(searchQuery).promise();
     pendingSearches += searchData.Count;
   }
+  console.warn("pendingAgentSearch is not implemented securely and will not work.");
   return { pendingSearches };
 }
 
@@ -334,6 +273,8 @@ function findTopSearcher(agentData) {
 }
 
 export const getTopPerformerAgent = async (brokerId) => {
+  // FIXME: This function requires direct DynamoDB access from the frontend, which is insecure.
+  // It needs to be refactored to call a backend API endpoint.
   const relationshipQuery = {
     TableName: "Relationship-mxixmn4cbbcgrhwtar46djww4q-master",
     IndexName: "brokerIdIndex", // Assuming you have a GSI on brokerId
@@ -376,5 +317,6 @@ export const getTopPerformerAgent = async (brokerId) => {
 
   console.log(allSearches);
   const topSearcher = findTopSearcher(allSearches);
+  console.warn("getTopPerformerAgent is not implemented securely and will not work.");
   return `${topSearcher?.agentName || "None"} (${topSearcher?.count || 0})`;
 };
