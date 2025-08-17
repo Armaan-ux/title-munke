@@ -1,6 +1,14 @@
 import { API, graphqlOperation } from "aws-amplify";
 import { createAdmins } from "../../graphql/mutations";
+import AWSExport from "../../aws-exports";
 import { createAdminOnCognito } from "./userAdmin";
+const AWS = require("aws-sdk");
+
+AWS.config.update({
+  accessKeyId: process.env.REACT_APP_ACCESS_KEY,
+  secretAccessKey: process.env.REACT_APP_SECRET_KEY,
+  region: "us-east-1",
+});
 
 export async function createAdminAccount(name, email) {
   try {

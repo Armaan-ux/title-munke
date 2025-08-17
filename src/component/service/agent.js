@@ -5,6 +5,7 @@ import {
   deleteRelationship,
   updateAgent,
 } from "../../graphql/mutations";
+import AWSExport from "../../aws-exports";
 import { createAgentOnCognito } from "./userAdmin";
 import { fetchBroker } from "./broker";
 const AWS = require("aws-sdk");

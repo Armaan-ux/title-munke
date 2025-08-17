@@ -7,8 +7,15 @@ import {
 } from "../../graphql/queries";
 import { createBrokerOnCognito } from "./userAdmin";
 import { getAgentTotalSearchesThisMonth } from "./agent";
+import AWSExport from "../../aws-exports";
 import { FETCH_LIMIT, generatePassword } from "../../utils";
 const AWS = require("aws-sdk");
+
+AWS.config.update({
+  accessKeyId: process.env.REACT_APP_ACCESS_KEY,
+  secretAccessKey: process.env.REACT_APP_SECRET_KEY,
+  region: "us-east-1",
+});
 
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 export async function fetchBroker(brokerId) {
@@ -125,32 +132,29 @@ export async function getBrokerTotalSearchesThisMonth(brokerId) {
 
 export async function createBrokerLogin(name, email) {
   try {
-     const createUserResponse = await createBrokerOnCognito(name, email);
+     const response = await createBrokerOnCognito(name, email);
 
-    // Step 2: Add Agent Data to DynamoDB
-    const brokerInput = {
-      id: createUserResponse.User.Attributes.find(
-        (attr) => attr.Name === "sub"
-      ).Value,
-      name: name,
-      email,
-      status: "UNCONFIRMED",
-      lastLogin: new Date().toISOString(),
-    };
-
-    const newBroker = await API.graphql(
-      graphqlOperation(createBroker, { input: brokerInput })
-    );
-
-    console.log("Broker Created successfully:", newBroker);
-
-    return {
-      newBroker: newBroker?.data?.createBroker,
-      success: true,
-      message: "Broker created and linked successfully.",
-    };
+//    // Step 2: Add Agent Data to DynamoDB
+//    const brokerInput = {
+//      id: createUserResponse.User.Attributes.find(
+//        (attr) => attr.Name === "sub"
+//      ).Value,
+//      name: name,
+//      email,
+//      status: "UNCONFIRMED",
+//      lastLogin: new Date().toISOString(),
+//    };
+//
+//    const newBroker = await API.graphql(
+//      graphqlOperation(createBroker, { input: brokerInput })
+//    );
+//
+//    console.log("Broker Created successfully:", newBroker);
+    // The backend response already indicates success.
+    console.log("Broker creation initiated via backend:", response");
+    return response;
   } catch (error) {
-    console.error("Error creating agent for broker:", error);
+    console.error("Error creating broker:", error);
     throw error;
   }
 }
