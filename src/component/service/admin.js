@@ -4,7 +4,7 @@ import { createAdminOnCognito } from "./userAdmin";
 
 export async function createAdminAccount(name, email) {
   try {
-    createUserResponse = await createAdminOnCognito(name, email);
+    const createUserResponse = await createAdminOnCognito(name, email);
 
     // Step 2: Add admin Data to DynamoDB
     const adminInput = {
