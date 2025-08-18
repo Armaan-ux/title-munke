@@ -29,16 +29,18 @@ function AddUserModal({ setIsOpen, userType, setUser }) {
       e.preventDefault();
       const { name, email } = formData;
       if (userType === "agent") {
-        const { newAgent } = await createAgentForBroker(
+        const response = await createAgentForBroker(
           user?.attributes?.sub,
           name,
           email
         );
-
-        setUser((prev = []) => [
-          ...prev,
-          { ...newAgent, totalSearches: 0, agentName: name },
-        ]);
+        toast.success("Agent Created Successfully.");
+        console.log("response", response);
+        const newAgent = response.user;
+        console.log("newAgent", newAgent);
+        setUser((prev) => [...prev,
+            { ...newAgent, totalSearches: 0, agentName: name }
+            ]);
         toast.success("Agent Created Successfully.");
         const userGroups =
           user?.signInUserSession?.idToken?.payload["cognito:groups"] || [];
@@ -48,12 +50,18 @@ function AddUserModal({ setIsOpen, userType, setUser }) {
           });
         }
       } else if (userType === "broker") {
-        const { newBroker } = await createBrokerLogin(name, email);
+        const response = await createBrokerLogin(name, email);
         toast.success("Broker Created Successfully.");
-        setUser((prev) => [...prev, { ...newBroker }]);
+        console.log("response", response);
+        const newBroker = response.user;
         console.log("newBroker", newBroker);
+        setUser((prev) => [...prev, { ...newBroker }]);
       } else if (userType === "admin") {
-        const { newAdmin } = await createAdminAccount(name, email);
+        const response = await createAdminAccount(name, email);
+        toast.success("Admin Created Successfully.");
+        console.log("response", response);
+        const newAdmin = response.user;
+        console.log("newAdmin", newAdmin);
         setUser((prev) => [...prev, { ...newAdmin }]);
         toast.success("Admin Created Successfully.", newAdmin);
       }

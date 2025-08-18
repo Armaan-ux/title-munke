@@ -3,6 +3,19 @@ import { API } from 'aws-amplify';
 const apiName = 'usersAdmin';
 const path = '/users';
 
+const CONSTANTS = {
+  ACTIONS: {
+    REINVITE: "reinvite",
+    GET_AGENT_SEARCHES: "getAgentSearches",
+    GET_BROKER_SEARCHES: "getBrokerSearches",
+  },
+  USER_TYPES: {
+    AGENT: "agent",
+    BROKER: "broker",
+    ADMIN: "admin",
+  }
+};
+
 async function callUserAdminApi(payload, successMessage, errorMessage) {
   try {
     // The Amplify API library automatically looks up the endpoint from aws-exports.js
@@ -28,27 +41,59 @@ async function createUser(userData) {
 }
 
 export async function createAgentOnCognito(name, email, brokerId) {
-  return createUser({ name, userType: 'agent', email, brokerId });
+  return createUser({ name, userType: CONSTANTS.USER_TYPES.AGENT, email, brokerId });
 }
 
 export async function createBrokerOnCognito(name, email) {
-  return createUser({ name, userType: 'broker', email});
+  return createUser({ name, userType: CONSTANTS.USER_TYPES.BROKER, email});
 }
 
 export async function createAdminOnCognito(name, email) {
-  return createUser({ name, userType: 'admin', email});
+  return createUser({ name, userType: CONSTANTS.USER_TYPES.ADMIN, email});
 }
 
 export async function reinviteAgent(email) {
     const payload = {
       body: {
         email: email,
-        action: 'reinvite',
+        action: CONSTANTS.ACTIONS.REINVITE,
       },
     };
     return callUserAdminApi(
         payload,
         'Success in reinviteUser:',
         'Error in reinviteUser:'
+    );
+}
+
+export async function getAgentsTotalSearches(brokerId, fromDatetime, toDatetime) {
+    const payload = {
+      body: {
+        brokerId: brokerId,
+        action: CONSTANTS.ACTIONS.GET_AGENT_SEARCHES,
+        fromDatetime: fromDatetime,
+        toDatetime: toDatetime,
+      },
+    };
+    return callUserAdminApi(
+        payload,
+        'Success in getAgentsTotalSearches:',
+        'Error in getAgentsTotalSearches:'
+    );
+}
+
+export async function getBrokerTotalSearches(brokerId, fromDatetime, toDatetime) {
+    const payload = {
+      body: {
+        brokerId: brokerId,
+        action: CONSTANTS.ACTIONS.GET_BROKER_SEARCHES,
+        fromDatetime: fromDatetime,
+        toDatetime: toDatetime,
+      },
+    };
+    return callUserAdminApi(
+        payload,
+        'Success in getBrokerTotalSearches:',
+        'Error in getBrokerTotalSearches:'
     );
 }

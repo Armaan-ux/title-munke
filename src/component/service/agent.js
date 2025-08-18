@@ -8,6 +8,7 @@ import {
 import AWSExport from "../../aws-exports";
 import { createAgentOnCognito } from "./userAdmin";
 import { fetchBroker } from "./broker";
+import { getCurrentMonthDateRange } from "../../utils/date";
 const AWS = require("aws-sdk");
 
 AWS.config.update({
@@ -18,58 +19,6 @@ AWS.config.update({
 
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
-export async function getAgentsTotalSearchesThisMonth(brokerId) {
-  // FIXME: This function requires direct DynamoDB access from the frontend, which is insecure.
-  // It needs to be refactored to call a backend API endpoint.
-  const currentMonthStart = new Date();
-  currentMonthStart.setDate(1);
-  currentMonthStart.setHours(0, 0, 0, 0);
-
-  const nextMonthStart = new Date(currentMonthStart);
-  nextMonthStart.setMonth(nextMonthStart.getMonth() + 1);
-
-  const relationshipQuery = {
-    TableName: "Relationship-mxixmn4cbbcgrhwtar46djww4q-master",
-    IndexName: "brokerIdIndex", // Assuming you have a GSI on brokerId
-    KeyConditionExpression: "brokerId = :brokerId",
-    ExpressionAttributeValues: {
-      ":brokerId": brokerId,
-    },
-  };
-
-  const relationshipData = await dynamoDB.query(relationshipQuery).promise();
-  const agentIds = relationshipData.Items.map((item) => item.agentId);
-
-  if (agentIds.length === 0) {
-    return { totalSearches: 0 };
-  }
-
-  let totalSearches = 0;
-
-  for (const agentId of agentIds) {
-    const searchQuery = {
-      TableName: "SearchHistory-mxixmn4cbbcgrhwtar46djww4q-master",
-      FilterExpression: "#userId = :agentId AND #ts BETWEEN :start AND :end",
-      ExpressionAttributeNames: {
-        "#userId": "userId",
-        "#ts": "timestamp",
-      },
-      ExpressionAttributeValues: {
-        ":agentId": agentId,
-        ":start": currentMonthStart.toISOString(),
-        ":end": nextMonthStart.toISOString(),
-      },
-    };
-
-    const searchData = await dynamoDB.scan(searchQuery).promise();
-    totalSearches += searchData.Count;
-  }
-
-  console.log("totalSearches", totalSearches);
-  console.warn("getAgentsTotalSearchesThisMonth is not implemented securely and will not work.");
-  return { totalSearches };
-}
-
 export function calculateAverage(totalSearches, agentCount) {
   return totalSearches / agentCount;
 }
@@ -77,15 +26,7 @@ export function calculateAverage(totalSearches, agentCount) {
 export async function getAgentTotalSearchesThisMonth(agentId) {
   // FIXME: This function requires direct DynamoDB access from the frontend, which is insecure.
   // It needs to be refactored to call a backend API endpoint.
-  // Get the start of the current month
-  const currentMonthStart = new Date();
-  currentMonthStart.setDate(1);
-  currentMonthStart.setHours(0, 0, 0, 0);
-
-  // Get the start of the next month
-  const nextMonthStart = new Date(currentMonthStart);
-  nextMonthStart.setMonth(nextMonthStart.getMonth() + 1);
-
+  const { currentMonthStart, nextMonthStart } = getCurrentMonthDateRange();
   // Construct the query for the agent's search history
   const searchQuery = {
     TableName: "SearchHistory-mxixmn4cbbcgrhwtar46djww4q-master",
@@ -287,12 +228,7 @@ export const getTopPerformerAgent = async (brokerId) => {
 
   const relationshipData = await dynamoDB.query(relationshipQuery).promise();
 
-  const currentMonthStart = new Date();
-  currentMonthStart.setDate(1);
-  currentMonthStart.setHours(0, 0, 0, 0);
-
-  const nextMonthStart = new Date(currentMonthStart);
-  nextMonthStart.setMonth(nextMonthStart.getMonth() + 1);
+  const { currentMonthStart, nextMonthStart } = getCurrentMonthDateRange();
   const allSearches = {};
   for (const agent of relationshipData.Items) {
     const searchQuery = {

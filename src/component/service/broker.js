@@ -5,9 +5,13 @@ import {
   listBrokers,
   relationshipsByBrokerId,
 } from "../../graphql/queries";
-import { createBrokerOnCognito } from "./userAdmin";
+import {
+    createBrokerOnCognito,
+    getBrokerTotalSearches
+} from "./userAdmin";
 import { getAgentTotalSearchesThisMonth } from "./agent";
 import AWSExport from "../../aws-exports";
+import { getCurrentMonthDateRange } from "../../utils/date";
 import { FETCH_LIMIT, generatePassword } from "../../utils";
 const AWS = require("aws-sdk");
 
@@ -94,7 +98,6 @@ export async function fetchAgentsWithSearchCount(brokerId) {
     console.error("Error fetching agents and their search count:", error);
   }
 }
-
 export async function getBrokerTotalSearchesThisMonth(brokerId) {
   // Get the start of the current month
   const currentMonthStart = new Date();
@@ -129,6 +132,10 @@ export async function getBrokerTotalSearchesThisMonth(brokerId) {
   console.log(`Total searches for broker ${brokerId}:`, totalSearches);
   return totalSearches;
 }
+//export async function getBrokerTotalSearchesThisMonth(brokerId) {
+//  const { currentMonthStart, nextMonthStart } = getCurrentMonthDateRange();
+//  return getBrokerTotalSearches(brokerId, currentMonthStart, nextMonthStart);
+//}
 
 export async function createBrokerLogin(name, email) {
   try {
@@ -151,7 +158,7 @@ export async function createBrokerLogin(name, email) {
 //
 //    console.log("Broker Created successfully:", newBroker);
     // The backend response already indicates success.
-    console.log("Broker creation initiated via backend:", response");
+    console.log("Broker creation initiated via backend:", response);
     return response;
   } catch (error) {
     console.error("Error creating broker:", error);

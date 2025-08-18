@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import AddUserModal from "../../Modal/AddUserModal";
 import {
   calculateAverage,
-  getAgentsTotalSearchesThisMonth,
   getTopPerformerAgent,
   inActiveAgent,
   pendingAgentSearch,
   UnassignAgent,
 } from "../../service/agent";
 import {
-    reinviteAgent
+    reinviteAgent,
+    getAgentsTotalSearches,
     } from "../../service/userAdmin";
 import { useUser } from "../../../context/usercontext";
 import { fetchAgentsWithSearchCount } from "../../service/broker";
@@ -32,9 +32,15 @@ const AssignedAgents = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
+        const currentMonthStart = new Date();
+        currentMonthStart.setDate(1);
+        currentMonthStart.setHours(0, 0, 0, 0);
+        const nextMonthStart = new Date(currentMonthStart);
+        nextMonthStart.setMonth(nextMonthStart.getMonth() + 1);
+
         const [totalSearches, agents, pendingSearches, topPerformer] =
           await Promise.all([
-            getAgentsTotalSearchesThisMonth(user.attributes.sub),
+            getAgentsTotalSearches(user.attributes.sub, currentMonthStart, nextMonthStart),
             fetchAgentsWithSearchCount(user.attributes.sub),
             pendingAgentSearch(user.attributes.sub),
             getTopPerformerAgent(user.attributes.sub),
