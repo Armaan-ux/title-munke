@@ -12,8 +12,8 @@ import { getCurrentMonthDateRange } from "../../utils/date";
 const AWS = require("aws-sdk");
 
 AWS.config.update({
-  accessKeyId: process.env.REACT_APP_ACCESS_KEY,
-  secretAccessKey: process.env.REACT_APP_SECRET_KEY,
+  accessKeyId: import.meta.env.VITE_ACCESS_KEY,
+  secretAccessKey: import.meta.env.VITE_SECRET_KEY,
   region: "us-east-1",
 });
 
