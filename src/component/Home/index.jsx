@@ -1,158 +1,400 @@
-import "./index.css";
+// import "./index.css";
 import Logo from "../../img/Logo.svg";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, ArrowUp, ChevronRight, CircleCheck, Dot, MapPin, Star } from "lucide-react";
+import useEmblaCarousel from "embla-carousel-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import Footer from "./footer";
+import { useEffect, useState } from "react";
+import { aboutUsListItems, faq, keyFeatures, previousSearches, testimonials, whyTitleMunke } from "@/utils/constant";
+import Navbar from "./navbar";
+
+
+
+
+const trustedBy = ["mortage-connect.png", "/investors-title.png", "/rhythmic.png", "/catic.png",  "/ltc.png" ]
 
 export default function Home() {
+
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const [emblaRef] = useEmblaCarousel({dragFree: true})
   const navigate = useNavigate();
   function navigateToLogin() {
     navigate("/login");
   }
 
+  useEffect(() => {
+    window.addEventListener('scroll', () => {
+      setShowBackToTop(window.scrollY > 700);
+    });
+    return () => {
+      window.removeEventListener('scroll', () => {});
+    };
+  }, []);
+
   return (
-    <div className="home">
-      <header data-aos="fade-down">
-        <div className="logo-container">
-          <img src={Logo} alt="Title Munke Logo" className="logo" />
-        </div>
-        <div className="nav-buttons">
-          <button onClick={navigateToLogin}>
-            <i className="fa-solid fa-door-open"></i>
-          </button>
-          {/* <button>
-            <i className="fa-solid fa-user-plus"></i>
-          </button>
-          <button>
-            <i className="fa-solid fa-door-open"></i>
-          </button> */}
-        </div>
-      </header>
 
-      <div className="wrapper">
-        <section className="section overview-section" data-aos="fade-up">
-          <h2>About Title Munke</h2>
-          <p>
-            Title Munke transforms the title search process with cutting‑edge
-            AI, providing fast, accurate, and comprehensive reports. Designed
-            for brokers and agents, our service ensures you make informed and
-            secure property decisions.
-          </p>
-        </section>
+    <div>
 
-        <section className="section process-section" data-aos="fade-up">
-          <h2>
-            <i className="fa-solid fa-cogs"></i> How It Works
-          </h2>
-          <div className="process-steps">
-            <div className="process-step" data-aos="zoom-in">
-              <span className="step-number">1</span>
-              <i className="fa-solid fa-location-dot"></i>
-              <h3>Input Details</h3>
-              <p>Enter the property address, PIN, or PARNUM.</p>
-            </div>
-            <div
-              className="process-step"
-              data-aos="zoom-in"
-              data-aos-delay="100"
-            >
-              <span className="step-number">2</span>
-              <i className="fa-solid fa-magnifying-glass"></i>
-              <h3>Automated Search</h3>
-              <p>Our AI scans public records to gather relevant documents.</p>
-            </div>
-            <div
-              className="process-step"
-              data-aos="zoom-in"
-              data-aos-delay="200"
-            >
-              <span className="step-number">3</span>
-              <i className="fa-solid fa-chart-line"></i>
-              <h3>Data Analysis</h3>
-              <p>We interpret key data to generate a comprehensive report.</p>
-            </div>
-            <div
-              className="process-step"
-              data-aos="zoom-in"
-              data-aos-delay="300"
-            >
-              <span className="step-number">4</span>
-              <i className="fa-solid fa-clock"></i>
-              <h3>Instant Delivery</h3>
-              <p>Your title report is delivered in minutes.</p>
-            </div>
-          </div>
-          <div className="view-sample" data-aos="fade-up" data-aos-delay="350">
-            <a
-              href="https://titlemunke-frontend-pdf-file.s3.us-east-1.amazonaws.com/report.pdf"
-              target="_blank"
-            >
-              <i className="fa-solid fa-file-alt"></i> View a Sample Report
-            </a>
-          </div>
-        </section>
-
-        <section className="section key-features" data-aos="fade-up">
-          <h2>Our Key Features</h2>
-          <div className="features-container">
-            <div className="feature">
-              <i className="fa-solid fa-tags"></i>
-              <h3>Transparent Pricing</h3>
-              <p>Honest, upfront fees with no hidden costs.</p>
-            </div>
-            <div className="feature">
-              <i className="fa-solid fa-graduation-cap"></i>
-              <h3>Expert Insights</h3>
-              <p>
-                Guidance from seasoned professionals to simplify complex
-                searches.
-              </p>
-            </div>
-            <div className="feature">
-              <i className="fa-solid fa-bolt"></i>
-              <h3>Rapid Reports</h3>
-              <p>
-                Get detailed, accurate title reports quickly and efficiently.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="section learn-more" data-aos="fade-up">
-          <h2>Why Choose Title Munke?</h2>
-          <div className="content">
-            <h3>Secure Your Investment</h3>
-            <p>
-              Our comprehensive searches uncover all pertinent property details,
-              ensuring you invest with confidence.
-            </p>
-
-            <h3>Clarity &amp; Simplicity</h3>
-            <p>
-              We deliver clear, concise reports that make complex property data
-              easy to understand.
-            </p>
-
-            <h3>Efficiency &amp; Expertise</h3>
-            <p>
-              Leveraging AI and industry experience, we provide swift, reliable
-              results so you can move forward without delay.
-            </p>
-          </div>
-        </section>
-
-        <section className="section contact-section" data-aos="fade-up">
-          <h2>
-            <i className="fa-solid fa-envelope"></i> Contact Us
-          </h2>
-          <p>
-            If you have any questions or need further assistance, our team is
-            here to help you every step of the way.
-          </p>
-          <button onClick={() => navigate("/contactus")}>Get in Touch</button>
-        </section>
+      <div className="bg-primary text-primary-foreground text-center px-2 py-1 " >
+        <p className="flex items-center gap-2 justify-center" >
+          Still doing manual searches? <b> Automate now </b> <ArrowRight className="size-5" />
+        </p>
       </div>
-      <footer className="footer" data-aos="fade-up">
-        <p>&copy; 2025 Title Munke. All rights reserved.</p>
-      </footer>
+
+
+    {/* navbar */}
+    <Navbar />
+
+      {/* hero section */}
+
+      <section className="py-10 lg:py-20 mb-20 bg-[#F5F0EC] px-4" >
+
+        <div className="flex flex-col md:flex-row justify-between *:basis-1/2 items-center max-w-[1280px] mx-auto gap-6 md:gap-0 " >
+
+        <div className="space-y-10" >
+          <h1 className="mb-6 text-h1" >The Smarter Way to Search Property <span className="text-tertiary" > Records </span></h1>
+          <p className="md:mr-20 text-lg lg:text-xl" >AI-powered title searches delivered with speed and accuracy.  Helping brokers and agents make confident decisions. 
+          </p>
+          <div className="space-x-3" >
+            <Button size="lg" variant="outline" >Get Started <ArrowRight /></Button>
+            <Button size="lg" variant="secondary" >Book a Demo <ArrowRight /></Button>
+          </div>
+        </div>
+
+          <img src="/hero.png" className="w-full min-w-0" alt="property search" />
+        </div>
+
+      </section>
+
+      
+
+      {/* About section */}
+      <section className="flex flex-col md:flex-row max-w-[1280px] mx-auto gap-12 items-center mb-20 *:basis-1/2 px-4" >
+
+        <div> 
+          <img src="/house.png" className="w-96" alt="house" />
+        </div>
+
+        <div>
+            <h2 className="mb-8 text-h2 text-secondary" >About <span className="text-tertiary" > Title Munke </span></h2>
+            <p className="text-body text-coffee-light mb-6" >Title Munke transforms the title search process with cutting‑edge AI, providing fast, accurate, and comprehensive reports. Designed for brokers and agents, our service ensures you make informed and secure property decisions.</p>
+            <ul className="text-body space-y-2 md:space-y-4 mb-6" >
+              {
+                aboutUsListItems.map((item, index) => (
+                  <li key={index} className="text-coffee-light text-body flex gap-2" ><CircleCheck className="mt-0.5" />{item}</li>
+                ))
+              }
+            </ul>
+            <Button size="lg" >Request Demo</Button>
+        </div>
+      </section>
+
+
+
+      {/* How it works section */}
+      <section className="px-4" >
+
+        <div className="flex flex-col md:flex-row *:basis-1/2 max-w-[1280px] mx-auto  mb-20 rounded-xl overflow-hidden md:max-h-[480px]" >
+
+              <div className="bg-coffee-bg text-primary-foreground space-y-10 p-5 md:p-10 xl:p-20  max-md:rounded-t-xl" >
+                <h2 className="text-h2" >How It Works</h2>
+                <p className="text-[#E6D5C7] font-normal text-body" >Getting a title report has never been easier. Just enter property details, and our AI instantly scans records, analyzes data, and delivers a complete report within minutes.</p>
+                <Button size="lg" >View a Sample Report <ArrowRight /> </Button>
+              </div>
+
+
+              <div className="bg-[#F5F0EC] p-5 md:p-10 " >
+
+                <div className="flex gap-5 h-full overflow-auto custom-scrollbar" >
+                  <div>
+                    <Button 
+                      variant="outline" 
+                      className="rounded-full bg-transparent outline-primary border-primary border-2 text-primary hover:text-primary"
+                    >
+                      Step 1 <ArrowRight />
+                    </Button>
+                    <div className="border w-0 mx-auto border-dashed border-[#E0C2AA] h-[23rem]" />
+                    <Button 
+                      variant="outline" 
+                      className="rounded-full bg-transparent outline-primary border-primary border-2 text-primary hover:text-primary"
+                    >
+                      Step 2 <ArrowRight />
+                    </Button>
+                    <div className="border w-0 mx-auto border-dashed border-[#E0C2AA] h-[23rem]" />
+                    <Button 
+                      variant="outline" 
+                      className="rounded-full bg-transparent outline-primary border-primary border-2 text-primary hover:text-primary"
+                    >
+                      Step 3 <ArrowRight />
+                    </Button>
+                  </div>
+                  <div className="space-y-10" >
+                    <div>
+                      <img src="/mac-window.png" alt="mac window" className="mx-auto" />
+                      <h3 className="text-2xl font-semibold text-center text-secondary mb-4" >Search</h3>
+                      <p className="text-center text-secondary text-body" >Our AI scans public records to gather relevant documents.</p>
+                    </div>
+                    <div>
+                      <img src="/mac-window.png" alt="mac window" className="mx-auto" />
+                      <h3 className="text-2xl font-semibold text-center text-secondary mb-4" >Search</h3>
+                      <p className="text-center text-secondary text-body" >Our AI scans public records to gather relevant documents.</p>
+                    </div>
+                    <div>
+                      <img src="/mac-window.png" alt="mac window" className="mx-auto" />
+                      <h3 className="text-2xl font-semibold text-center text-secondary mb-4" >Search</h3>
+                      <p className="text-center text-secondary text-body" >Our AI scans public records to gather relevant documents.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+        </div>
+      </section>
+
+
+
+
+      {/* key features */}
+      <section className="max-w-[1280px] mx-auto mb-20 px-4" >
+        <h2 className="text-h2 text-center text-secondary mb-6" >Our <span className="text-tertiary" > Key Features </span></h2>
+        <p className="text-center max-w-3xl mx-auto mb-10 text-body text-coffee-light" >Quickly revisit your recently searched properties in a simple card view. See photos, addresses, and instantly access detailed reports with one click.</p>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-10" >
+            {
+              keyFeatures.map((item, index) => (
+                <div key={index} className="flex flex-col items-center gap-5 p-5 md:p-10 rounded-[20px] shadow-[0px_4px_14px_0px_#D7C4B666]"  >
+                  <img src={item.icon} className="h-auto mb-2" alt={item.title} />
+                    <h3 className="text-2xl font-semibold text-secondary text-center" >{item.title}</h3>
+                    <p className="text-body text-center text-secondary" >{item.description}</p>
+                </div>
+              ))
+            }
+        </div>
+      </section>
+
+
+      {/* Countries Map */}
+      <section className="max-w-[1280px] mx-auto mb-10 px-4" >
+        <h2 className="text-h2 text-center mb-4" >Countries <span className="text-tertiary" > Map </span></h2>
+        <p className="text-center text-[22px] mb-4 text-coffee-light" >Pennsylvania • 67 Counties</p>
+
+        <img src="/map.png" className="mx-auto" alt="map" />
+
+      </section>
+
+      {/* Trusted by Leading Brokers & Agents */}
+      <section className="max-w-[1440px] mx-auto mb-20" >
+        <h4 className="text-center font-bold text-secondary mb-3" >Trusted by Leading Brokers & Agents</h4>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 items-center w-full justify-between" >
+          {
+            trustedBy.map((item, index) => (
+              <img key={index} src={item} className="" alt="trusted by companies" />
+            ))
+          }
+        </div>
+      </section>
+
+
+      {/* Why choose Title Munke? */}
+      <section className="px-4" >
+        <section className="max-w-[1725px] mx-auto mb-20 bg-coffee-bg rounded-[30px]" >
+
+          <div className="max-w-[1280px] mx-auto p-5 lg:p-10 py-10 lg:py-16 text-center" >
+            <h2 className="text-h2 text-center mb-2 text-secondary-foreground" >Why choose Title Munke?</h2>
+            <p className="text-[#D7C4B6] text-center mb-12 text-body" >Quickly revisit your recently searched properties in a simple card view. See photos, addresses</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 " >
+              {
+                whyTitleMunke.map((item, index) => (
+                  <div key={index} className="flex flex-col items-center bg-coffee-dark p-6 sm:p-10 rounded-[30px]"  >
+                      <img src={item.icon} className="mb-6" alt={item.title} />
+                      <h3 className="text-2xl font-semibold mb-2 text-center text-primary-foreground" >{item.title}</h3>
+                      <p className="text-body text-center text-[#D7C4B6]" >{item.description}</p>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </section>
+      </section>
+
+
+
+      {/* Previous Searches */}
+      <section className="max-w-[1280px] mx-auto mb-20 px-4" >
+        <h2 className="text-h2 text-center text-secondary mb-6" >Previous <span className="text-tertiary" > Searches Preview </span></h2>
+        <p className="text-center text-body mb-12 max-w-5xl mx-auto text-coffee-light" >Each report is more than just an address. See ownership history, valuations, tax records, permits, and the original collected documents—all brought together in a clear, interactive breakdown.</p>
+
+        <div className="flex flex-col md:flex-row gap-5 md:gap-6 mb-10" >
+          <div className="" >
+            <img src="/mansion.jpg" alt="mansion" className="mb-3 md:mb-7" />
+            <p className="text-center flex items-center gap-2 md:gap-3 justify-center text-base md:text-xl" ><MapPin className="text-tertiary" />
+             123 Maple Avenue, San Diego, CA
+            </p>
+          </div>
+          <div className="flex flex-col items-center" >
+            <div className="mb-2 max-md:flex *:min-w-0" >
+            <img src="/map-highlight.jpg" alt="map highlight" className="mb-1 md:mb-5" />
+            <img src="/map-field.jpg" alt="map field"  />
+            </div>
+            <p className="text-sm lg:text-base flex justify-between items-center gap-1 md:gap-2 font-semibold text-tertiary" >View more images <ChevronRight size={22} /></p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" >
+          {
+            previousSearches.map((item, index) => (
+              <div key={index} className="flex flex-col items-center gap-4 p-6 py-8 rounded-[20px] shadow-[0px_4px_14px_0px_#D7C4B666]" >
+                <div className="bg-[#F5F0EC] rounded-full size-[68px] grid place-items-center text-center" >
+                  <img src={item.icon}  alt={item.title} />
+                </div>
+                <h3 className="text-xl font-semibold text-secondary text-center" >{item.title}</h3>
+                <p className="text-center text-coffee-light" >{item.description}</p>
+              </div>
+            ))
+          }
+        </div>
+
+      </section>
+
+      {/* Trusted by Professionals */}
+      <section className="px-4" >
+
+      <div className="max-w-[1725px] mx-auto mb-20 bg-coffee-bg rounded-[30px] p-5 md:p-10 xl:p-20 pr-0" >
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4" >
+
+          <div className="relative" >
+            <img src="/quote.svg" alt="quote icon" className="max-w-[40%] md:max-w-[55%] lg:ml-auto mr-20" />
+            <h2 className="text-h2 text-primary-foreground absolute inset-0 z-10 top-[30%] max-w-xs lg:ml-auto" >Trusted by Professionals</h2>
+          </div>
+      
+        <div className="col-span-2" >
+
+          <div ref={emblaRef} className="overflow-hidden mb-8" >
+            <div className="flex gap-8" >
+              {
+                testimonials.map((item, index) => (
+                  <div key={index} className="relative p-8 rounded-[30px] bg-coffee-dark min-w-0 flex-[0_0_75%] md:flex-[0_0_40%]" >
+                    <p className=" text-[#E6D5C7] mb-8" >{item.content}</p>
+                    <p className="text-[#E6D5C7]" >{item.name}</p>
+                    <p className="text-sm text-coffee-bg-foreground" >{item.role}</p>
+                    <img src="/card-corner.png" className="absolute -bottom-[1px] -right-[1px] border-none" alt="card corner" />
+                    <img src={item.image} className="absolute bottom-0 right-0 z-10 border-none" alt="profile" />
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+
+          <div className="flex justify-between max-w-4xl items-center" >
+            <div className="flex gap-3 items-center" >  
+              <p className="text-[58px] text-coffee-bg-foreground font-bold" >4.82</p>
+              <div>
+                <div className="*:fill-yellow-500 *:text-yellow-500 flex gap-1 bg-[#987555] p-1.5 rounded-full" >
+                  <Star size={14} />
+                  <Star size={14} />
+                  <Star size={14} />
+                  <Star size={14} />
+                  <Star size={14} />
+                </div>
+                <p className="text-coffee-bg-foreground text-sm text-center" >2,488 Rating</p>
+              </div>
+
+            </div>
+
+            {/* <div className="flex items-center justify-center " >
+              <Dot />
+              <Dot />
+              <Dot />
+            </div> */}
+          </div>
+
+        </div>
+
+        </div>
+      </div>
+
+      </section>
+
+
+
+      {/* FAQ */}
+      <section className="max-w-[1280px] mx-auto mb-20 px-4" >
+        <h2 className="text-h2 text-center mb-10 text-secondary" >Frequently Asked <span className="text-tertiary" > Questions </span></h2>
+        <Accordion className="max-w-3xl mx-auto space-y-4 mb-4" type="multiple" >
+          {
+            faq.map((item, index) => (
+              <AccordionItem key={index} value={(index + 1)?.toString()} className="border rounded-xl p-2 md:p-4 px-4 md:px-8 last:border-b" >
+                <AccordionTrigger className="text-xl font-bold text-secondary *:text-secondary!" >{item.question}</AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-base text-coffee-light mb-4" >{item.answer}</p>
+                </AccordionContent>
+              </AccordionItem>
+            ))
+          }
+        </Accordion>
+      </section>
+
+      {/* Request a Demo */}
+      <section className="px-4" >
+
+        <div className="max-w-[1725px] mx-auto mb-10 bg-coffee-bg rounded-[30px] p-5 md:p-10" >
+            <h2 className="text-h2 mb-3 md:mb-6 text-center text-primary-foreground" >Request a Demo</h2>
+            <p className="text-[#BEA998] text-body text-center max-w-2xl mx-auto mb-6 md:mb-10" >Discover how our solution works for your needs. Fill in your details to schedule a personalized demo and explore the features firsthand.</p>
+            <form action="" className="max-w-xl mx-auto" >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 *:!rounded-[8px] *:placeholder:text-coffee-bg-foreground *:h-12 *:!border-[#977466] *:text-white" >
+                <Input className="" placeholder="Name" label="Name" required />
+                {/* <Input className="" placeholder="State" label="State" required /> */}
+                <Select>
+                  <SelectTrigger className="w-full !h-12 data-[placeholder]:!text-coffee-bg-foreground [&_svg]:!text-coffee-bg-foreground">
+                    <SelectValue placeholder="State" className="" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="light">Light</SelectItem>
+                    <SelectItem value="dark">Dark</SelectItem>
+                    <SelectItem value="system">System</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input className="" placeholder="Email" label="Email" type="email" required />
+                <Input className="" placeholder="Country" label="Country" type="text" required />
+                <Textarea className="sm:col-span-2 placeholder:!text-[#A78B7F] placeholder:italic" placeholder="Enter additional info here..." label="Message" required />
+              </div>
+              <div className="flex justify-center" >
+                <Button size="lg"  className="text-tertiary bg-coffee-bg-foreground hover:bg-coffee-bg-foreground/90" >Submit <ArrowRight /></Button>
+              </div>
+            </form>
+        </div>
+      </section>
+
+
+
+      <Footer />
+
+
+
+      <div 
+        className={`fixed bottom-2 right-2 z-10 flex items-center gap-2 p-3 text-secondary pt-8 hover:opacity-100 ${showBackToTop ? 'opacity-40': 'opacity-0'} transition-all `} 
+      >
+        <p className="hidden md:block" >Back to top</p>
+        <Button 
+          size="icon" 
+          className="size-10"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          
+         >
+          <ArrowUp />
+        </Button>
+      </div>
+
     </div>
   );
 }
