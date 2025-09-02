@@ -20,7 +20,8 @@ function App() {
   const { isLoading } = useUser();
 
   if (isLoading) {
-    return <Loader />;
+    // return <Loader />;
+    return null
   }
 
   return (

@@ -9,7 +9,7 @@ export default function Footer() {
 
     <div className="flex flex-col lg:flex-row gap-6 max-w-[1280px] mx-auto p-4 md:p-10" >
 
-    <div className="flex gap-6" >
+    <div className="flex gap-6 max-w-[25rem] w-full"   >
       <div>
         <img src="/Logo.svg" alt="title munke" className="" />
       </div>
@@ -30,8 +30,10 @@ export default function Footer() {
         <div>
             <div className="p-6 mb-4 bg-white rounded-[20px] space-y-4 " >
                 <p className="text-[22px] text-secondary" >Let's Get Start</p>
-                <Button size="lg" className="w-full" >Book a Demo  <ArrowRight /></Button>
-                <Button size="lg" variant="secondary" className="w-full" >Login <ArrowRight /></Button>
+                <Button size="lg" className="w-full" >Request a Demo  <ArrowRight /></Button>
+                <Link to="/login" >
+                    <Button size="lg" variant="secondary" className="w-full" >Login <ArrowRight /></Button>
+                </Link>
             </div>
             <div className="pl-6" >
                 <p className="text-[22px] text-secondary mb-4" >Get in Touch</p>

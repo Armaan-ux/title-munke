@@ -1,9 +1,10 @@
 export const navItems = [
   { name: "Home", path: "/" },
-  { name: "About Us", path: "/about" },
-  { name: "How It Works", path: "/how-it-works" },
-  { name: "Counties", path: "/counties" },
-  { name: "Previous Searches", path: "/previous-search" },
+  { name: "About Us", path: "about" },
+  { name: "How It Works", path: "how-it-works" },
+  { name: "Real Report Preview", path: "report-preview" },
+  { name: "Counties", path: "counties" },
+  // { name: "Previous Searches", path: "previous-searches" },
 ]
 
 export const whyTitleMunke = [
@@ -63,23 +64,23 @@ export const keyFeatures = [
 export const previousSearches = [
   {
     icon: "/profile-reverse.svg",
-    title: "Ownership History",
-    description: "Track changes in ownership with detailed historical records."
+    title: "Ownership",
+    description: "John Marks"
   },
   {
     icon: "/circle-split.svg",
-    title: "Valuation & Comparisons",
-    description: "See current market value and compare with nearby properties."
+    title: "Parcel",
+    description: "#123-343-2324"
   },
   {
     icon: "/desk-paper.svg",
     title: "Tax Records",
-    description: "Transparent tax history and pending dues."
+    description: "$4,250 (Paid through 2023"
   },
   {
     icon: "/receipt.svg",
-    title: "Permits & Legal Docs",
-    description: "Access collected permits, deeds, and original PDFs."
+    title: "Permits",
+    description: "2 Active Permits"
   },
 ]
 
@@ -136,9 +137,10 @@ export const testimonials = [
 ]
 
 export const aboutUsListItems = [
-  "Faster turnaround than competitors with AI automation.",
-  "More accurate reports using advanced data validation.",
-  "Comprehensive coverage: property, ownership & more.",
-  "Dedicated support for brokers and agents.",
-  "Transparent pricing with no hidden fees."
+  "First-of-its-kind in Pennsylvania — pioneering AI-driven title reports in a historically manual industry.",
+  "10x faster turnaround than traditional searches — reports delivered in minutes, not days.",
+  "Superior accuracy with advanced AI validation that catches what humans often miss.",
+  "Full-spectrum coverage — property history, ownership chains, liens, easements, and more in one clear report.",
+  "Tailored for professionals — built specifically for brokers, agents, and investors who need speed and certainty.",
+  "Transparent pricing model — no hidden fees, just predictable costs you can count on."
 ]

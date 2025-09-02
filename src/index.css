@@ -326,3 +326,7 @@ h1, h2, h3, h4, h5, h6 {
 .text-body{
   @apply text-base lg:text-lg tracking-wider leading-loose
 }
+
+.county-svg path:hover:not(.skip){
+    fill: #DEC593;
+}
