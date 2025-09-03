@@ -43,7 +43,8 @@ export default function Navbar() {
     }, [lastScrollY]);
 
     return (
-      <header className={`shadow-md sticky top-0 z-50 bg-white transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
+      <header className={`shadow-md sticky top-0 z-50 bg-white transition-transform duration-300`}>
+      {/* <header className={`shadow-md sticky top-0 z-50 bg-white transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}> */}
         <nav className="flex justify-between items-center gap-4 md:gap-12 max-w-[1280px] mx-auto px-4">
           <img src="/src/img/Logo.svg" alt="logo" className="w-16 md:w-20 h-auto" />
           

@@ -79,6 +79,7 @@ function Login() {
               id="username"
               name="username"
               value={username}
+              style={{border: "1px solid gray", borderRadius: "5px"}}
               required
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -90,6 +91,7 @@ function Login() {
               id="password"
               name="password"
               value={password}
+              style={{border: "1px solid gray", borderRadius: "5px"}}
               required
               onChange={(e) => setPassword(e.target.value)}
             />

@@ -82,6 +82,7 @@ export default function Home() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         viewport={{ once: true, amount: 0.3 }} 
         className="py-10 lg:py-20 mb-20 bg-[#F5F0EC] px-4" 
+        id="home"
       >
 
         <div className="flex flex-col md:flex-row justify-between *:basis-1/2 items-center max-w-[1280px] mx-auto gap-6 md:gap-0 " >
@@ -405,7 +406,7 @@ export default function Home() {
             <p className="text-[#BEA998] text-body text-center max-w-2xl mx-auto mb-6 md:mb-10" >Discover how our solution works for your needs. Fill in your details to schedule a personalized demo and explore the features firsthand.</p>
             <form action="" className="max-w-xl mx-auto" >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 *:!rounded-[8px] *:placeholder:text-coffee-bg-foreground *:h-12 *:!border-[#977466] *:text-white" >
-                <Input className="" placeholder="Name" label="Name" required />
+                <Input className="bg-transparent" placeholder="Name" label="Name" required />
                 {/* <Input className="" placeholder="State" label="State" required /> */}
                 <Select>
                   <SelectTrigger className="w-full !h-12 data-[placeholder]:!text-coffee-bg-foreground [&_svg]:!text-coffee-bg-foreground">
@@ -417,8 +418,8 @@ export default function Home() {
                     <SelectItem value="system">System</SelectItem>
                   </SelectContent>
                 </Select>
-                <Input className="" placeholder="Email" label="Email" type="email" required />
-                <Input className="" placeholder="Country" label="Country" type="text" required />
+                <Input className="bg-transparent" placeholder="Email" label="Email" type="email" required />
+                <Input className="bg-transparent" placeholder="Country" label="Country" type="text" required />
                 <Textarea className="sm:col-span-2 placeholder:!text-[#A78B7F] placeholder:italic" placeholder="Enter additional info here..." label="Message" required />
               </div>
               <div className="flex justify-center" >
