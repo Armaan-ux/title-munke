@@ -5,7 +5,7 @@ function Agent() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate("/agent/search");
+    navigate("/agent/dashboard");
   }, []);
   return null;
 }

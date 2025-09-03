@@ -3,7 +3,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-
 @custom-variant dark (&:is(.dark *));
 
 /* body {
@@ -31,7 +30,6 @@ a{
   margin-left: 5px;
 } */
 
-
 /* website colours */
 /* 
 #550000
@@ -45,7 +43,6 @@ a{
 
 #F5F0EC
 */
-
 
 @theme inline {
 
@@ -294,7 +291,6 @@ h1, h2, h3, h4, h5, h6 {
   @apply font-pt-serif;
 }
 
-
 .custom-scrollbar::-webkit-scrollbar {
   width: 12px;
   background-color: white;
@@ -329,4 +325,23 @@ h1, h2, h3, h4, h5, h6 {
 
 .county-svg path:hover:not(.skip){
     fill: #DEC593;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+th:first-child {
+  border-top-left-radius: 10px; /* Adjust as needed */
+  border-bottom-left-radius: 10px; /* Adjust as needed */
+}
+
+th:last-child {
+  border-top-right-radius: 10px; /* Adjust as needed */
+  border-bottom-right-radius: 10px; /* Adjust as needed */
 }

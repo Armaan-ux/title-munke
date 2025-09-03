@@ -3,14 +3,13 @@ import axios from "axios";
 import Logo from "../../img/Logo.svg";
 import { API, graphqlOperation } from "aws-amplify";
 import { createSearchHistory } from "../../graphql/mutations";
-import "./index.css";
 import { useUser } from "../../context/usercontext";
 import { handleCreateAuditLog } from "../../utils";
 import { getAgent, getBroker, relationshipsByAgentId } from "../../graphql/queries";
 import Loader from "../../img/loader.gif";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import { MapPin, SearchCheck, Search as SearchIcon } from "lucide-react";
+import { FileSearch2, Logs, MapPin, SearchCheck, Search as SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -24,8 +23,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import History from "./History";
 
-const Search = () => {
+const Dashboard = () => {
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState("");
@@ -219,29 +219,6 @@ const Search = () => {
     }
   };
 
-  const dummyData = [
-    {
-      id: 1,
-      address: "123 Main St, San Diego, CA",
-      status: "In Progress",
-      createdAt: "2023-03-01T00:00:00.000Z",
-      downloadLink: "https://www.google.com",
-    },
-    {
-      id: 2,
-      address: "123 Main St, San Diego, CA",
-      status: "In Progress",
-      createdAt: "2023-03-01T00:00:00.000Z",
-      downloadLink: "https://www.google.com",
-    },
-    {
-      id: 3,
-      address: "123 Main St, San Diego, CA",
-      status: "In Progress",
-      createdAt: "2023-03-01T00:00:00.000Z",
-      downloadLink: "https://www.google.com",
-    },
-  ];
 
   return (
     <div className="my-4" >
@@ -253,35 +230,61 @@ const Search = () => {
               <p className="mb-4 text-secondary" > Total Searches</p>
               <p className="text-4xl font-semibold text-tertiary" >23</p>
             </div>
-            <div>
-              <SearchCheck className="text-tertiary" />
+            <div className="bg-white rounded-full p-3.5" >
+              <FileSearch2 className="text-tertiary" />
             </div>
           </div>
           <div className="p-5 flex justify-between items-end " >
             <div>
-              <p className="mb-4 text-secondary" > Total Searches</p>
+              <p className="mb-4 text-secondary" > Audit Logs</p>
               <p className="text-4xl font-semibold text-tertiary" >23</p>
             </div>
-            <div>
-              <SearchCheck className="text-tertiary" />
+            <div className="bg-white rounded-full p-3.5" >
+              <Logs className="text-tertiary" />
             </div>
           </div>
         </div>
 
 
         {/* Search */}
-        <div className="p-6 rounded-xl bg-[#F5F0EC] mb-4" >
-          <div className="relative mb-6" >
+        <form className="p-6 rounded-xl bg-[#F5F0EC] mb-4" onSubmit={handleSearch} >
+          <div className="relative mb-6"  >
             <MapPin className="text-[#5D4135] absolute top-5 left-5" />
-            <Input className="border-none bg-white h-16 px-14 pr-56 py-8 !rounded-[20px] text-xl placeholder:text-primary text-tertiary" placeholder="Enter Address here..." />
-            <Button variant="secondary" className="absolute top-2.5 right-3.5 max-w-[12rem] w-full rounded-lg" size="lg" >Search <SearchIcon /> </Button>
+
+            <Input 
+                className="border-none bg-white h-16 px-14 pr-56 py-8 !rounded-[20px] text-xl placeholder:text-primary text-tertiary " 
+                placeholder="Enter Address here..." 
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                disabled={loading}
+                />
+            <Button 
+                variant="secondary" 
+                type="submit"
+                className="absolute top-2.5 right-3.5 max-w-[12rem] w-full rounded-lg" 
+                size="lg" 
+                disabled={loading || !address.trim().length || !isChecked}
+            > Search <SearchIcon /> 
+            </Button>
           </div>
           <div className="flex gap-3 items-center mb-6 pl-4" >
-
-            <Checkbox id="checkbox" className="bg-white size-5 cursor-pointer" />
+            <Checkbox 
+                id="checkbox" 
+                className="bg-white size-5 cursor-pointer" 
+                checked={isChecked}
+                onCheckedChange={(e) => setIsChecked(e)}
+                disabled={loading}
+            />
             <Label htmlFor="checkbox" className="mb-0 text-base font-normal" >Check this box to confirm the address is correct.</Label>
           </div>
-        </div>
+            {progress && <p>{progress} {percentage ? percentage + "%" : "0%"}</p>}
+            {loading && message && <p>{message}</p>}
+            {zipUrl && (
+            <div style={{ display: "flex", justifyContent: "center", marginTop: "10px" }}>
+             <a href={zipUrl} download style={{ marginRight: "10px" }}>Download Results</a>
+            </div>
+        )}
+        </form>
 
 
         <div className="bg-[#F5F0EC] p-6 rounded-2xl " >
@@ -290,9 +293,8 @@ const Search = () => {
             <Button variant="outline" > View More </Button>
           </div>
 
-
-          {/* Search History Table */}
-          <div className="bg-white !p-4 rounded-xl" >
+            <History />
+          {/* <div className="bg-white !p-4 rounded-xl" >
 
             <Table className=""  >
               <TableHeader className="bg-[#F5F0EC]" >
@@ -320,15 +322,9 @@ const Search = () => {
                     </TableRow>
                   ))
                 }
-                {/* <TableRow>
-                  <TableCell className="font-medium">INV001</TableCell>
-                  <TableCell>Paid</TableCell>
-                  <TableCell>Credit Card</TableCell>
-                  <TableCell className="text-right">$250.00</TableCell>
-                </TableRow> */}
               </TableBody>
             </Table>
-          </div>
+          </div> */}
 
 
 
@@ -396,4 +392,4 @@ const Search = () => {
   );
 };
 
-export default Search;
+export default Dashboard;

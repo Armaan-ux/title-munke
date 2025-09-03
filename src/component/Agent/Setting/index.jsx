@@ -1,6 +1,9 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Auth } from "aws-amplify";
 import React, { useState } from "react";
-import "./index.css";
+// import "./index.css";
 
 const Setting = () => {
   const [newpassword, setNewpassword] = useState("");
@@ -36,71 +39,70 @@ const Setting = () => {
     newpassword !== confirmPassword;
 
   return (
-    <div class="setting-main-content">
-      <div class="setting-page-title">
-        <h1>Settings</h1>
-      </div>
-      <div className="password-card">
-        <h3>Update Password</h3>
-        <form>
-          <div className="form-group">
-            <label htmlFor="current-password" className="form-label">
+    <div class="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
+      <div className="bg-white rounded-xl p-8">
+        <p className="text-xl font-medium mb-8" >Update Password</p>
+        <form className="space-y-10 max-w-lg w-full" >
+          <div>
+            <Label htmlFor="current-password" className="">
               Current Password
-            </label>
-            <input
+            </Label>
+            <Input
               type="password"
               id="current-password"
               name="current-password"
               placeholder="Current password"
-              className="form-input"
+              className="!text-xl !font-bold placeholder:text-base placeholder:font-normal"
               value={oldPassword}
               onChange={(e) => setOldPassword(e.target.value)}
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="new-password" className="form-label">
+          <div>
+            <Label htmlFor="new-password" className="">
               New Password
-            </label>
-            <input
+            </Label>
+            <Input
               type="password"
               id="new-password"
               name="new-password"
               placeholder="New password"
-              className="form-input"
+              className="!text-xl !font-bold placeholder:text-base placeholder:font-normal"
               value={newpassword}
               onChange={(e) => setNewpassword(e.target.value)}
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="confirm-password" className="form-label">
+          <div>
+            <Label htmlFor="confirm-password" className="">
               Confirm New Password
-            </label>
-            <input
+            </Label>
+            <Input
               type="password"
               id="confirm-password"
               name="confirm-password"
               placeholder="Confirm new password"
-              className="form-input"
+              className="!text-xl !font-bold placeholder:text-base placeholder:font-normal"
               value={confirmPassword}
               onChange={(e) => setConfirmpassword(e.target.value)}
             />
           </div>
 
-          <button
+          <Button
             type="button"
             onClick={() => updatePassword()}
             disabled={isDisabled}
-            className="change-password-button"
+            variant="secondary"
+            className="w-full"
+            size="lg"
           >
             Change Password
-          </button>
+          </Button>
           {isError && (
-            <small className="error-state">Error in updating password</small>
+            <small className="text-red-600">Error in updating password</small>
           )}
           {isSuccess && (
-            <small className="success-state">
+            <small className="text-green-600">
               Password Changed Successfully!
             </small>
           )}

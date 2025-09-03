@@ -14,6 +14,8 @@ import ManageAdmins from "./component/Admin/ManageAdmins";
 import NotAssignedAgents from "./component/Broker/NotAssignedAgents";
 import AgentAuditLogs from "./component/Broker/AuditLogs";
 import AdminAuditLogs from "./component/Admin/ManageAuditLogs";
+import Dashboard from "./component/Agent/dashboard";
+import AuditLogs from "./component/Agent/audit-logs";
 
 export const adminRoutes = [
   { path: "admin", component: Admin },
@@ -26,8 +28,8 @@ export const adminRoutes = [
 
 export const agentRoutes = [
   { path: "agent", component: Agent },
-  { path: "agent/search", component: Search },
-  { path: "agent/history", component: AgentHistory },
+  { path: "agent/dashboard", component: Dashboard },
+  { path: "agent/audit-logs", component: AuditLogs },
   { path: "agent/setting", component: AgentSetting },
 ];
 

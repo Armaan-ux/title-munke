@@ -11,6 +11,15 @@ import {
   handleCreateAuditLog,
   INTERVALTIME,
 } from "../../../utils";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 function History() {
   const [searchHistories, setSearchHistories] = useState([]);
@@ -149,67 +158,124 @@ function History() {
   };
 
   return (
-    <div className="history-main-content">
-      <div className="setting-page-title">
-        <h1>Search History</h1>
-      </div>
-      <div className="history-card">
-        <table className="history-styled-table table-container">
-          <thead>
-            <tr>
-              <th onClick={() => requestSort("address")} className="sortable-header">
-                  Address <span className="sort-arrow">{getSortArrow("address")}</span>
-                  </th>
-              <th onClick={() => requestSort("status")} className="sortable-header">
-                  Status <span className="sort-arrow">{getSortArrow("status")}</span>
-              </th>
-              <th onClick={() => requestSort("createdAt")} className="sortable-header">
-                Time <span className="sort-arrow">{getSortArrow("createdAt")}</span>
-              </th>
-              <th>Download Link</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedHistories.map((elem) => (
-              <tr key={elem.id}>
-                <td>{elem?.address}</td>
-                <td>{elem?.status}</td>
-                <td>{getFormattedDateTime(elem?.createdAt)}</td>
-                <td>
-                  {elem?.downloadLink ? (
-                    <a
-                      href={elem.downloadLink}
-                      download
-                      onClick={() =>
-                        handleCreateAuditLog(
-                          "DOWNLOAD",
-                          { zipUrl: elem.downloadLink },
-                          true
-                        )
-                      }
-                    >
-                      Click to Download
-                    </a>
-                  ) : (
-                    ""
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
 
-        {searchHistories.length === 0 && <p>No Records found.</p>}
-        {loading && <p>Loading...</p>}
-        {!hasMore && <p>No more data to load.</p>}
 
-        {searchHistories.length > 0 && hasMore && !loading && (
-          <button className="loadmore" onClick={fetchSearchHistories}>
-            Load More
-          </button>
-        )}
-      </div>
-    </div>
+      
+        <div className="bg-white !p-4 rounded-xl" >
+
+            <Table className=""  >
+              <TableHeader className="bg-[#F5F0EC]" >
+                <TableRow>
+                  <TableHead className="w-[100px]">Sr. No.</TableHead>
+                  <TableHead>Address</TableHead>
+                  <TableHead>Date / Time</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Download Link</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {
+                  sortedHistories?.length === 0 ?
+                  <TableRow >
+                    <TableCell colspan={5} className="font-medium text-center py-10">No Records found.</TableCell>
+                  </TableRow>
+                  :
+                  sortedHistories?.map((item, index) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="font-medium">{index + 1}</TableCell>
+                      <TableCell>{item.address}</TableCell>
+                      <TableCell>{getFormattedDateTime(item?.createdAt)}</TableCell>
+                      <TableCell>{item.status}</TableCell>
+                      <TableCell>{}</TableCell>
+                      <TableCell className="text-right">
+                        {/* <a href={item.downloadLink} download>Download</a> */}
+                          {item?.downloadLink ? (
+                          <a
+                            href={item.downloadLink}
+                              download
+                                onClick={() =>
+                                  handleCreateAuditLog(
+                                    "DOWNLOAD",
+                                    { zipUrl: item.downloadLink },
+                                    true
+                                  )
+                                }
+                            >
+                                Click to Download
+                              </a>
+                            ) : (
+                              ""
+                            )}
+                          </TableCell>
+                    </TableRow>
+                  ))
+                }
+
+              </TableBody>
+            </Table>
+          </div>
+     
+    // <div className="history-main-content">
+    //   <div className="setting-page-title">
+    //     <h1>Search History</h1>
+    //   </div>
+    //   <div className="history-card">
+    //     <table className="history-styled-table table-container">
+    //       <thead>
+    //         <tr>
+    //           <th onClick={() => requestSort("address")} className="sortable-header">
+    //               Address <span className="sort-arrow">{getSortArrow("address")}</span>
+    //               </th>
+    //           <th onClick={() => requestSort("status")} className="sortable-header">
+    //               Status <span className="sort-arrow">{getSortArrow("status")}</span>
+    //           </th>
+    //           <th onClick={() => requestSort("createdAt")} className="sortable-header">
+    //             Time <span className="sort-arrow">{getSortArrow("createdAt")}</span>
+    //           </th>
+    //           <th>Download Link</th>
+    //         </tr>
+    //       </thead>
+    //       <tbody>
+    //         {sortedHistories.map((elem) => (
+    //           <tr key={elem.id}>
+    //             <td>{elem?.address}</td>
+    //             <td>{elem?.status}</td>
+    //             <td>{getFormattedDateTime(elem?.createdAt)}</td>
+    //             <td>
+    //               {elem?.downloadLink ? (
+    //                 <a
+    //                   href={elem.downloadLink}
+    //                   download
+    //                   onClick={() =>
+    //                     handleCreateAuditLog(
+    //                       "DOWNLOAD",
+    //                       { zipUrl: elem.downloadLink },
+    //                       true
+    //                     )
+    //                   }
+    //                 >
+    //                   Click to Download
+    //                 </a>
+    //               ) : (
+    //                 ""
+    //               )}
+    //             </td>
+    //           </tr>
+    //         ))}
+    //       </tbody>
+    //     </table>
+
+    //     {searchHistories.length === 0 && <p>No Records found.</p>}
+    //     {loading && <p>Loading...</p>}
+    //     {!hasMore && <p>No more data to load.</p>}
+
+    //     {searchHistories.length > 0 && hasMore && !loading && (
+    //       <button className="loadmore" onClick={fetchSearchHistories}>
+    //         Load More
+    //       </button>
+    //     )}
+    //   </div>
+    // </div>
   );
 }
 

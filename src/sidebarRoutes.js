@@ -1,20 +1,41 @@
+import { LayoutDashboard, Logs, Settings } from "lucide-react";
+
 export const routes = {
   agent: [
+    // {
+    //   link: "/agent/search",
+    //   name: "Search",
+    //   class: "fas fa-search",
+    // },
+
+    // {
+    //   link: "/agent/history",
+    //   name: "View Search History",
+    //   class: "fas fa-history",
+    // },
+    // {
+    //   link: "/agent/setting",
+    //   name: "Setting",
+    //   class: "fas fa-cog",
+    // },
     {
-      link: "/agent/search",
-      name: "Search",
+      link: "/agent/dashboard",
+      name: "Dashboard",
       class: "fas fa-search",
+      icon: LayoutDashboard
     },
 
     {
-      link: "/agent/history",
-      name: "View Search History",
+      link: "/agent/audit-logs",
+      name: "Audit Logs",
       class: "fas fa-history",
+      icon: Logs
     },
     {
       link: "/agent/setting",
-      name: "Setting",
+      name: "Settings",
       class: "fas fa-cog",
+      icon: Settings
     },
   ],
   admin: [

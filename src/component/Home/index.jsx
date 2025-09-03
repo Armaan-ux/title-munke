@@ -145,7 +145,7 @@ export default function Home() {
 
 
       {/* How it works section */}
-      <section className="px-4 scroll-mt-20 relative" id="how-it-works" >
+      <section className="px-4 scroll-mt-20 relative mb-20 lg:mb-42" id="how-it-works" >
 
         <div className="flex flex-col md:flex-row *:basis-1/2 items-start max-w-[1280px] mx-auto mb-20 rounded-xl max-h-full" >
 
