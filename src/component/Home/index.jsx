@@ -46,6 +46,13 @@ export default function Home() {
     navigate("/login");
   }
 
+    const scrollToSection = (id) => {
+      const section = document.getElementById(id);
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    };
+
   useEffect(() => {
     window.addEventListener('scroll', () => {
       setShowBackToTop(window.scrollY > 700);
@@ -95,7 +102,7 @@ export default function Home() {
             <Link to="/login" >
               <Button size="lg" variant="outline" >Get Started <ArrowRight /></Button>
             </Link>
-            <Button size="lg" variant="secondary" >Request a Demo <ArrowRight /></Button>
+            <Button size="lg" variant="secondary" onClick={() => scrollToSection("request-demo")} >Request a Demo <ArrowRight /></Button>
           </div>
         </div>
 
@@ -138,7 +145,7 @@ export default function Home() {
             <div className="space-x-3" >
 
             <Button size="lg" variant="outline" className="text-primary border-primary outline-primary" >View More</Button>
-            <Button size="lg" >Request a Demo</Button>
+            <Button size="lg" onClick={() => scrollToSection("request-demo")} >Request a Demo</Button>
             </div>
         </motion.div>
       </section>
@@ -260,7 +267,7 @@ export default function Home() {
                    initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
-                    viewport={{ once: true }}
+                    viewport={{ once: true, amount: 0.5 }}
                   key={index} className="flex flex-col items-center bg-coffee-dark p-6 sm:p-10 rounded-[30px]"  >
                       <img src={item.icon} className="mb-6" alt={item.title} />
                       <h3 className="text-2xl font-semibold mb-2 text-center text-primary-foreground" >{item.title}</h3>
@@ -386,7 +393,7 @@ export default function Home() {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
-                    viewport={{ once: true }}
+                    viewport={{ once: true, amount: 0.5 }}
                   className="flex flex-col items-center gap-5 p-5 md:p-10 rounded-[20px] shadow-[0px_4px_14px_0px_#D7C4B666] hover:shadow-[0px_28px_34px_0px_#D7C4B666] transition-shadow"  >
                   <img src={item.icon} className="h-auto mb-2" alt={item.title} />
                     <h3 className="text-2xl font-semibold text-secondary text-center" >{item.title}</h3>
