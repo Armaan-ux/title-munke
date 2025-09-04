@@ -5,7 +5,7 @@ function Broker() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate("/broker/search");
+    navigate("/broker/dashboard");
   }, []);
   return null;
 }

@@ -4,7 +4,7 @@ import { routes } from "@/sidebarRoutes";
 import { useLocation } from "react-router-dom";
 
 export default function AppHeader() {
-    const { user, signOut } = useUser();
+    const { user } = useUser();
   
     const location = useLocation()
   
@@ -18,7 +18,7 @@ export default function AppHeader() {
     <div className="border rounded-xl px-4 lg:px-6 py-3 bg-white flex justify-between gap-4 items-center w-full text-secondary">
         <div className="flex items-center gap-2" >
             <SidebarTrigger />
-            <p>{headerTitle}</p>
+            <p>{headerTitle || ''}</p>
         </div>
 
         <div className="flex items-center gap-3">

@@ -123,8 +123,8 @@ function BorkerList() {
       {isAgentCreationModalOpen && (
         <AddAgentByAdminModal setIsOpen={setIsAgentCreationModalOpen} />
       )}
-      <div class="main-content">
-        <div class="page-title">
+      <div className="main-content">
+        <div className="page-title">
           <h1>Broker Performance Overview</h1>
           <div className="action-buttons">
             <button
@@ -146,30 +146,30 @@ function BorkerList() {
           </div>
         </div>
 
-        <div class="grid-container">
-          <div class="stat-card">
+        <div className="grid-container">
+          <div className="stat-card">
             <h3>Total Brokers</h3>
-            <p class="stat-number">
+            <p className="stat-number">
               {loading ? "loading..." : totalBrokerCount}
             </p>
           </div>
-          <div class="stat-card">
+          <div className="stat-card">
             <h3>Active Brokers</h3>
-            <p class="stat-number">
+            <p className="stat-number">
               {loading ? "loading..." : totalActiveBrokerCount}
             </p>
           </div>
-          <div class="stat-card">
+          <div className="stat-card">
             <h3>Total Searches This Month</h3>
-            <p class="stat-number">
+            <p className="stat-number">
               {loading ? "loading..." : totalBrokerSearchThisMonthCount}
             </p>
           </div>
         </div>
 
-        <div class="broker-list-card">
+        <div className="broker-list-card">
           <h3>Brokers Performance</h3>
-          <table class="broker-list-styled-table table-container">
+          <table className="broker-list-styled-table table-container">
             <thead>
               <tr>
                 <th>Broker Name</th>
@@ -183,7 +183,7 @@ function BorkerList() {
             </thead>
             <tbody>
               {brokers.map((elem) => (
-                <tr key={elem.id} class="dropdown-btn">
+                <tr key={elem.id} className="dropdown-btn">
                   <td>{elem.name}</td>
                   <td>{elem.totalSearches}</td>
                   <td>{getFormattedDateTime(elem.lastLogin)}</td>

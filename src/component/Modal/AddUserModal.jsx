@@ -6,8 +6,19 @@ import { toast } from "react-toastify";
 import { createBrokerLogin } from "../service/broker";
 import { createAdminAccount } from "../service/admin";
 import { handleCreateAuditLog } from "../../utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
-function AddUserModal({ setIsOpen, userType, setUser }) {
+function AddUserModal({ isOpen, setIsOpen, userType, setUser }) {
   const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -75,30 +86,33 @@ function AddUserModal({ setIsOpen, userType, setUser }) {
   };
 
   return (
-    <div>
-      <button onClick={() => setIsOpen(true)} className="open-modal-btn">
-        Open Modal
-      </button>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
 
-      <div className="modal-overlay">
-        <div className="modal-content">
-          <h2>{userType} Registration</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label>Name</label>
-              <input
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="text-lg font-semibold capitalize !font-poppins"  >
+              {userType} Registration
+          </DialogTitle>
+        </DialogHeader>
+      <div >
+          <form onSubmit={handleSubmit} className="space-y-6" >
+            <div >
+              <Label className="text-base " >Name</Label>
+              <Input
                 type="text"
                 name="name"
+                className="bg-transparent"
                 value={formData.name}
                 onChange={handleChange}
                 required
               />
             </div>
-            <div className="form-group">
-              <label>Email</label>
-              <input
+            <div>
+              <Label className="text-base " >Email</Label>
+              <Input
                 type="email"
                 name="email"
+                className="bg-transparent"
                 value={formData.email}
                 onChange={handleChange}
                 required
@@ -114,26 +128,31 @@ function AddUserModal({ setIsOpen, userType, setUser }) {
                 required
               />
             </div> */}
-            <div className="modal-actions">
-              <button
+            <div className="flex justify-end gap-2">
+              <Button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="cancel-btn"
+                className="text-secondary"
+                variant="ghost"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
                 disabled={loading || !formData.email || !formData.name}
-                className="submit-btn"
+                // className="submit-btn"
+                variant="secondary"
               >
                 {loading ? "Processing..." : "Submit"}
-              </button>
+              </Button>
             </div>
           </form>
-        </div>
+
       </div>
-    </div>
+
+      </DialogContent>
+
+    </Dialog>
   );
 }
 

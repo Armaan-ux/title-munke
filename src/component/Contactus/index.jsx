@@ -99,13 +99,13 @@ function ContactUs() {
               "Sending mail.."
             ) : (
               <span>
-                <i class="fa-solid fa-paper-plane"></i>Send Message
+                <i className="fa-solid fa-paper-plane"></i>Send Message
               </span>
             )}
           </button>
           {error && <div className="error">{error}</div>}
         </form>
-        <div class="back-link">
+        <div className="back-link">
           <Link to={"/"}>&larr; Back to Home</Link>
         </div>
       </div>

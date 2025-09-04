@@ -36,8 +36,8 @@ const Setting = () => {
     newpassword !== confirmPassword;
 
   return (
-    <div class="setting-main-content">
-      <div class="setting-page-title">
+    <div className="setting-main-content">
+      <div className="setting-page-title">
         <h1>Settings</h1>
       </div>
       <div className="password-card">

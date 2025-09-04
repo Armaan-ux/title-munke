@@ -1,5 +1,3 @@
-
-
 import {
   getFormattedDateTime,
 } from "@/utils";
@@ -38,7 +36,7 @@ const dummyData = [
 
 export default function AuditLogs() {
     return (
-       <div class="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
+       <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
       
         <div className="bg-white !p-4 rounded-xl" >
 
@@ -56,7 +54,7 @@ export default function AuditLogs() {
                 {
                   dummyData?.length === 0 ?
                   <TableRow >
-                    <TableCell colspan={5} className="font-medium text-center py-10">No Records found.</TableCell>
+                    <TableCell colSpan={5} className="font-medium text-center py-10">No Records found.</TableCell>
                   </TableRow>
                   :
                   dummyData?.map((item, index) => (

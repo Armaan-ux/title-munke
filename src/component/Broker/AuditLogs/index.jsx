@@ -56,7 +56,7 @@ function AuditLogs() {
 
   return (
     <div className="history-main-content">
-      <div class="setting-page-title">
+      <div className="setting-page-title">
         <h1>Agent Audit Logs</h1>
       </div>
       <div className="history-card">

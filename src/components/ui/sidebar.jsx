@@ -242,7 +242,7 @@ function SidebarTrigger({
       {...props}>
       {/* <PanelLeftIcon /> */}
       <svg className="size-[19px]" width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3.5 5.25H17.5M3.5 10.5H12.25M3.5 15.75H7.875" stroke="#3D2014" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M3.5 5.25H17.5M3.5 10.5H12.25M3.5 15.75H7.875" stroke="#3D2014" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
 
       <span className="sr-only">Toggle Sidebar</span>

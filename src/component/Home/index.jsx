@@ -64,9 +64,9 @@ export default function Home() {
         // whileInView={{ opacity: 1, y: 0 }}
         // transition={{ duration: 0.6, ease: "easeOut" }}
         // viewport={{ once: true, amount: 0.3 }}
-        className="bg-primary text-primary-foreground text-center px-2 py-1 " >
-        <p className="flex items-center gap-2 justify-center" >
-          Still doing manual searches? <b> Automate now </b> <ArrowRight className="size-5" />
+        className=" flex items-center justify-center text-base bg-primary text-primary-foreground text-center px-2 py-1 " >
+        <p className="" >
+          Still doing manual searches? <Link to="/login" className="inline-flex items-center gap-2" > <b> Automate now </b> <ArrowRight className="size-5" /> </Link>
         </p>
       </div>
 
@@ -453,28 +453,97 @@ export default function Home() {
 
       {/* Report Dialog */}
       <Dialog open={openReportDialog} onOpenChange={setOpenReportDialog}>
-        <DialogContent className="!max-w-4xl w-full max-h-[90vh] flex flex-col !px-2" >
+        <DialogContent className="!max-w-5xl w-full max-h-[90vh] flex flex-col !px-2 border-8 border-[#EADDD0] rounded-4xl" >
           <DialogHeader className="px-5" >
-            <div className="flex items-center justify-center py-2 pb-4  border-b-[1px] border-[#E8D0A7]" >
+            <div className="flex items-center justify-center pb-4  border-b-[1px] border-[#E8D0A7]" >
               <img src="/Logo.svg" className="w-16 absolute left-6" alt="Title Munke Logo" />
               <h4 className="text-center text-[28px] font-semibold"  >Sample Report Breakdown</h4>
             </div>
             </DialogHeader>
 
-            <div className="grid grid-cols-2 gap-10 h-full overflow-auto px-5" >
+            <div className="grid grid-cols-2 gap-8 h-full overflow-auto px-5" >
               <div className="space-y-6" >
                 <img src="/report-map.jpg" alt="map highlight" className="mb-1 md:mb-5" />
-                <img src="/report-mansion.jpg" alt="mansion" className="mb-1 md:mb-5" />
-                <ListForReport />
-                <ListForReport />
-                <ListForReport />
+                <img src="/report-mansion.jpg" alt="mansion" className="mb-1 md:mb-12" />
+                <ListForReport 
+                  title="Easements / Restrictions"
+                  items={[
+                    { label: "", value: "Utility access easement (2020)" },
+                    { label: "Drainage restriction (2019)", value: "" },
+                    { label: "Why it matters:", value: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque in tyreyu maximus augue." },
+                  ]}
+                  />
+                <ListForReport
+                  title="Civil Records Check"
+                  items={[
+                    { label: "", value: "No judgments or liens found " },
+                    { label: "Drainage restriction (2019)", value: "" },
+                    { label: "Why it matters:", value: "Lorem ipsum dolor sit amet, consectetut." },
+                  ]}
+                 />
               </div>
               <div className="space-y-6" >
-                <ListForReport />
-                <ListForReport />
-                <ListForReport />
-                <ListForReport />
-                <ListForReport />
+                <ListForReport
+                  
+                title={ "Property Information"}
+                items = {[
+                      { label: "Address", value: "1457 Elmwood Avenue, Springfield, IL 62704" },
+                      { label: "Parcel Identifier", value: "09-23-456-001" },
+                      { label: "Jurisdiction", value: "Sangamon County" },
+                      {
+                        label: "Why it matters",
+                        value:
+                          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque in maximu.",
+                      },
+                    ]}
+  
+                 />
+                <ListForReport
+                  title= {"Current Owner & Deed"}
+                  items= {[
+                    { label: "Owner", value: "Greenfield Holdings LLC" },
+                    { label: "Deed recorded", value: "2022" },
+                    {
+                      label: "Why it matters",
+                      value:
+                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque in maximus",
+                    },
+                  ]}
+                
+                />
+                <ListForReport
+                 title= {"Mortgages"}
+                    items= {[
+                      { value: <span><strong>$325,000</strong>, First National Bank</span> },
+                      { value: <span><strong>$780,500</strong>, Springfield Trust Bank</span> },
+                      {
+                        label: "Why it matters",
+                        value:
+                          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque in maximus",
+                      },
+                    ]}
+                  />
+                <ListForReport
+                  title={"Legal Description"}
+                  items= {[
+                    { value: "Full metes-and-bounds description text here..." },
+                    {
+                      label: "Why it matters",
+                      value:
+                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque in maximus augue.",
+                    },
+                  ]}
+                 />
+                <ListForReport
+                  title= {"All Source Documents Collected"}
+                  items= {[
+                    { value: "Deeds, Mortgages, Easements, Legal Docs" },
+                    {
+                      label: "Why it matters",
+                      value: "Lorem ipsum dolor sit amet, consectetur.",
+                    },
+                  ]}
+                 />
               </div>
             </div>
             {/* <DialogTitle className="text-center text-[28px]" >Sample Report Breakdown</DialogTitle>
@@ -495,14 +564,22 @@ export default function Home() {
   );
 }
 
-function ListForReport(){
+function ListForReport({title, items}){
   return(
     <div>
-      <p className="text-[22px] mb-2 font-semibold text-secondary " >Easements / Restrictions</p>
+      <p className="text-[22px] mb-2 font-semibold text-secondary " >{title}</p>
        <ul className="space-y-1 md:space-y-2 !list-disc list-outside *:ml-5 *:text-secondary" >
+        {
+          items.map(item => (
+            
+            <li>
+                {item.label && <strong>{item.label}</strong> } 
+                {item.value && <span>{item.value}</span>}
+              </li>
+          ))
+        }
        <li className="font-semibold" >Utility access easement (2020)</li>
        <li className="font-semibold" >Drainage restriction (2019)</li>
-       <li><span className="font-semibold" > Why it matters: </span> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque in tyreyu maximus augue.</li>
       </ul>
     </div>
     

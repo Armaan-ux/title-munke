@@ -1,16 +1,15 @@
 import { API } from "aws-amplify";
 import { useState, useEffect, useCallback } from "react";
-import { listSearchHistories } from "../../../graphql/queries";
-import "./index.css";
+import { listSearchHistories } from "@/graphql/queries";
 import axios from "axios";
-import { updateSearchHistory } from "../../../graphql/mutations";
-import { useUser } from "../../../context/usercontext";
+import { updateSearchHistory } from "@/graphql/mutations";
+import { useUser } from "@/context/usercontext";
 import {
   FETCH_LIMIT,
   getFormattedDateTime,
   handleCreateAuditLog,
   INTERVALTIME,
-} from "../../../utils";
+} from "@/utils";
 import {
   Table,
   TableBody,

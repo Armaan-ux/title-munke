@@ -1,9 +1,21 @@
 import { API } from "aws-amplify";
 import { useState, useEffect, useCallback } from "react";
-import { listSearchHistories } from "../../../graphql/queries";
-import "./index.css";
-import { useUser } from "../../../context/usercontext";
-import { FETCH_LIMIT, getFormattedDateTime } from "../../../utils";
+import { listSearchHistories } from "@/graphql/queries";
+// import "./index.css";
+import { useUser } from "@/context/usercontext";
+import { FETCH_LIMIT, getFormattedDateTime } from "@/utils";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { ChevronDown, ChevronsUpDown, ChevronUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
 
 function AllSearchHistory() {
   const [searchHistories, setSearchHistories] = useState([]);
@@ -121,15 +133,130 @@ function AllSearchHistory() {
     }
   }, [user, activeTab, fetchSearchHistories, fetchAgentSearchHistories]);
 
-  const getSortArrow = (key) => {
-    if (sortConfig.key !== key) {
-      return "";
-    }
-    return sortConfig.direction === "ascending" ? "▲" : "▼";
-  };
+
+const getSortArrow = (key) => {
+  if (sortConfig.key !== key) {
+    // Not the active column → show neutral icon
+    return <ChevronsUpDown className="text-muted-tertiary" size={18} />;
+  }
+
+  // Active column → show up or down depending on direction
+  return sortConfig.direction === "ascending" ? (
+    <ChevronUp className="text-tertiary" size={18} />
+  ) : (
+    <ChevronDown className="text-tertiary" size={18} />
+  );
+};
+
+  
 
   return (
-    <div className="history-main-content">
+    <>
+    <div className="bg-[#F5F0EC] rounded-lg text-secondary" >
+
+
+              <div className="space-x-3 mb-4" >
+                <button 
+                    className={` ${activeTab === "history" ? "bg-tertiary text-white" : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] " } transition-all  rounded-full px-10 py-3 `}
+                        onClick={() => {
+                            resetStateOnTabChange();
+                            setActiveTab("history");
+                        }}
+                 >Brokers
+                </button>
+                <button
+                   className={` ${activeTab === "agents" ? "bg-tertiary text-white" : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] " } transition-all  rounded-full px-10 py-3 `}
+                      onClick={() => {
+                            resetStateOnTabChange();
+                            setActiveTab("agents");
+                        }}
+                >Agents
+                </button>
+            </div>
+
+
+            <div className="bg-white !p-4 rounded-xl" >
+
+            <Table className=""  >
+              <TableHeader className="bg-[#F5F0EC]" >
+                <TableRow>
+                  <TableHead className="w-[100px]">Sr. No.</TableHead>
+                  <TableHead onClick={() => requestSort("address")} > 
+                    <p className="flex items-center gap-2" >
+                      Address <span>{getSortArrow("address")}</span>
+                    </p>
+                  </TableHead>
+                  <TableHead onClick={() => requestSort("createdAt")} >
+                     <p className="flex items-center gap-2" >
+                      Date / Time <span>{getSortArrow("createdAt")}</span>
+                    </p>
+                  </TableHead>
+                  <TableHead onClick={() => requestSort("status")} >
+                    <p className="flex items-center gap-2" >
+                      Status <span>{getSortArrow("status")}</span>
+                    </p>
+                    </TableHead>
+                  <TableHead>Name </TableHead>
+                  <TableHead>Download Link</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {
+                  (sortedHistories?.length === 0 && !loading) ?
+                  <TableRow >
+                    <TableCell colSpan={6} className="font-medium text-center py-10">No Records found.</TableCell>
+                  </TableRow>
+                  :
+                  sortedHistories?.map((item, index) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="font-medium">{index + 1}</TableCell>
+                      <TableCell>{item.address}</TableCell>
+                      <TableCell>{getFormattedDateTime(item?.createdAt)}</TableCell>
+                      <TableCell>{item.status}</TableCell>
+                      <TableCell>{item.username}</TableCell>
+                      <TableCell className="text-right">
+                           {item?.downloadLink ? (
+                              <a href={item.downloadLink} download>
+                                Click to Download
+                              </a>
+                            ) : (
+                              ""
+                            )}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                }
+
+              </TableBody>
+            </Table>
+
+            {/* {searchHistories?.length === 0 && <p>No Records found.</p>} */}
+            <div className="text-center space-y-2 my-4" >
+
+              {loading && <p>Loading...</p>}
+              {!hasMore && <p>No more data to load.</p>}
+
+              {searchHistories?.length > 0 && hasMore && !loading && (
+                <div className="flex justify-center" >
+                <Button
+                  // className="loadmore"
+                  size="sm"
+                  onClick={
+                    activeTab === "history" ? fetchSearchHistories : fetchAgentSearchHistories
+                  }
+                >
+                  Load More
+                </Button>
+                </div>
+              )}
+            </div>
+          </div>
+
+    </div>
+
+
+
+    {/* <div className="history-main-content">
       <div className="setting-page-title">
         <h1>Search History</h1>
       </div>
@@ -206,7 +333,9 @@ function AllSearchHistory() {
           </button>
         )}
       </div>
-    </div>
+    </div> */}
+
+    </>
   );
 }
 
