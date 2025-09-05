@@ -378,7 +378,7 @@ const itemVariants = (isEven) => ({
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
           viewport={{ once: true, amount: 0.3 }}
-          className={`flex flex-col max-h-[70vh] md:flex-row py-20 rounded-4xl   p-10 *:basis-1/2 gap-8 justify-center items-center sticky bg-[#F5F0EC] top-[12%] md:top-[15%] ${sampleReportItems.length === index + 1  ? "mb-20":"mb-44"  }`} 
+          className={`flex flex-col max-h-[70vh] overflow-hidden md:flex-row py-20 rounded-4xl   p-10 *:basis-1/2 gap-8 justify-center items-center sticky bg-[#F5F0EC] top-[12%] md:top-[15%] ${sampleReportItems.length === index + 1  ? "mb-20":"mb-44"  }`} 
           key={index} 
           >
           <div >
