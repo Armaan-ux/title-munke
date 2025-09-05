@@ -345,6 +345,29 @@ function AdminBrokersList(){
                           <TableCell>{item.status}</TableCell>
                           <TableCell>
                             active/inactive
+
+                             <div className="dropdown">
+                              {item.status !== "UNCONFIRMED" && (
+                                <>
+                                  <Button size="sm" variant="ghost" onClick={() => handleBrokerStatus(item)} >
+                                    {item.status === "ACTIVE" ? "InActive" : "Active"}
+                                  </Button>
+                                  {/* <button className="btn action-btn">
+                                    Actions <i className="fas fa-caret-down"></i>
+                                  </button>
+
+                                  <div className="dropdown-content">
+                                    <span
+                                      onClick={() => {
+                                        handleBrokerStatus(item);
+                                      }}
+                                    >
+                                      {item.status === "ACTIVE" ? "InActive" : "Active"}
+                                    </span>
+                                  </div> */}
+                                </>
+                              )}
+                            </div>
                             {/* <div className="space-x-1" >
                                 <Button variant="ghost" size="icon" ><Pencil /></Button>
                                 <Button variant="ghost" size="icon" ><Trash2 /></Button>

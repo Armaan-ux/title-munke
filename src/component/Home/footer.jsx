@@ -4,6 +4,14 @@ import { ArrowRight, Mail, Minus } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Footer() {
+
+    const scrollToSection = (id) => {
+      const section = document.getElementById(id);
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    };
+
   return (
     <footer className=" bg-gradient-to-b from-[#FFFFFF] to-[#FFF8EB]" >
 
@@ -16,11 +24,11 @@ export default function Footer() {
 
       <div className="max-w-[14rem] w-full mt-6" >
         <p className="mb-4 text-secondary text-[22px]" >Quick Links</p>
-        <ul className="space-y-3 sm:space-y-5 *:text-[#554536] *:flex *:items-center *:gap-3" >
-            <li><Minus /><Link className="text-body" >Home</Link></li>
-            <li><Minus /><Link className="text-body" >How It Works</Link></li>
-            <li><Minus /><Link className="text-body" >Counties</Link></li>
-            <li><Minus /><Link className="text-body" >Sample Report</Link></li>
+        <ul className="space-y-3 sm:space-y-5 *:text-[#554536] *:hover:text-tertiary transition-all group *:flex *:items-center *:cursor-pointer *:gap-3" >
+            <li><Minus /><p onClick={() => scrollToSection("home")} className="text-body hover:ml-1 transition-all " >Home</p></li>
+            <li><Minus /><p onClick={() => scrollToSection("how-it-works")} className="text-body hover:ml-1 transition-all " >How It Works</p></li>
+            <li><Minus /><p onClick={() => scrollToSection("counties")} className="text-body hover:ml-1 transition-all " >Counties</p></li>
+            <li><Minus /><p onClick={() => scrollToSection("report-preview")} className="text-body hover:ml-1 transition-all " >Sample Report</p></li>
         </ul>
       </div>
     </div>

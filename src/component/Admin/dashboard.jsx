@@ -1,5 +1,5 @@
 
-import { FileSearch2, Logs, UserRound, UserRoundCheck, UserRoundX } from "lucide-react";
+import { BookUser, FileSearch2, HatGlasses, Logs, Map, UserRound, UserRoundCheck, UserRoundX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import History from "@/component/common/history";
 import Search from "@/component/common/search";
@@ -46,7 +46,7 @@ const AdminDashboard = () => {
               <p className="text-4xl font-semibold text-tertiary" >0</p>
             </div>
             <div className="bg-white rounded-full p-3.5" >
-              <UserRoundCheck className="text-tertiary" />
+              <HatGlasses className="text-tertiary" />
             </div>
           </div>
           <div className="p-5 flex justify-between items-end " >
@@ -55,7 +55,7 @@ const AdminDashboard = () => {
               <p className="text-4xl font-semibold text-tertiary" >0</p>
             </div>
             <div className="bg-white rounded-full p-3.5" >
-              <UserRoundX className="text-tertiary" />
+              <Map className="text-tertiary" />
             </div>
           </div>
           <div className="p-5 flex justify-between items-end " >
@@ -64,7 +64,7 @@ const AdminDashboard = () => {
               <p className="text-4xl font-semibold text-tertiary" >0</p>
             </div>
             <div className="bg-white rounded-full p-3.5" >
-              <UserRoundX className="text-tertiary" />
+              <BookUser className="text-tertiary" />
             </div>
           </div>
         </div>

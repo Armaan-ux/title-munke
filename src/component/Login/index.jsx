@@ -73,13 +73,13 @@ function Login() {
 
   return (
     <div className="grid items-center place-items-center h-dvh w-full overflow-auto py-10 px-4 bg-secondary">
-      <img src="/login-bg.jpg" className="w-full h-full object-cover absolute inset-0 -z-10" alt="login background" />
+      <img src="/login-bg.jpg" className="w-full h-full object-cover absolute inset-0 " alt="login background" />
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         // exit={{ opacity: 0, y: 5 }}
         transition={{ duration: 0.5 }}
-        className="border rounded-4xl  p-4 px-5 md:px-10 max-w-md w-full bg-white" 
+        className="border rounded-4xl  p-4 px-5 md:px-10 max-w-md w-full bg-white relative z-10" 
       >
           <div className="text-center mb-6 text-secondary" >
             <img className="mx-auto w-24 md:w-32 mb-2" src="/Logo.svg" alt="logo" />

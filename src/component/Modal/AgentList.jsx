@@ -56,12 +56,12 @@ const AgentList = ({isOpen, setIsOpen, data, isAgentListLoading }) => {
                     {
                       isAgentListLoading ?
                       <TableRow >
-                        <TableCell colSpan={8} className="font-medium text-center py-10">Loading...</TableCell>
+                        <TableCell colSpan={6} className="font-medium text-center py-10">Loading...</TableCell>
                       </TableRow>
                       :
                       data?.length === 0 ?
                       <TableRow >
-                        <TableCell colSpan={8} className="font-medium text-center py-10">No Records found.</TableCell>
+                        <TableCell colSpan={6} className="font-medium text-center py-10">No Records found.</TableCell>
                       </TableRow>
                       :
                       data?.map((item, index) => (

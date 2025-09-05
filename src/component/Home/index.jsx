@@ -2,7 +2,7 @@
 import Logo from "../../img/Logo.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowUp, ChevronRight, CircleCheck, Dot, MapPin, Star } from "lucide-react";
+import { ArrowRight, ArrowUp, ChevronRight, CircleCheck, Dot, Download, MapPin, Star } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import {
   Accordion,
@@ -15,10 +15,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Footer from "./footer";
 import { useEffect, useState } from "react";
-import { aboutUsListItems, faq, howItWorksSteps, keyFeatures, previousSearches, testimonials, whyTitleMunke } from "@/utils/constant";
+import { aboutUsListItems, faq, howItWorksSteps, keyFeatures, pennsylvaniaCities, previousSearches, testimonials, trustedBy, whyTitleMunke } from "@/utils/constant";
 import Navbar from "./navbar";
 import CountiesMapSvg from "./counties-map-svg";
-import {motion} from "motion/react";
+import {motion, useTransform} from "motion/react";
 import {
   Dialog,
   DialogContent,
@@ -28,12 +28,100 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { cn } from "@/lib/utils";
 
 
 
-
-const trustedBy = ["mortage-connect.png", "/investors-title.png", "/rhythmic.png", "/catic.png",  "/ltc.png" ]
-
+const sampleReportItems = [
+  {
+    id: 1,
+    img: "/test-doc.png",
+   title:"Easements / Restrictions",
+    content: [
+                    { label: "", value: "Utility access easement (2020)" },
+                    { label: "Drainage restriction (2019)", value: "" },
+                    { label: "Why it matters:", value: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque in tyreyu maximus augue." },
+                  ]
+  },
+  {
+    id: 2,
+    img: "/test-doc.png",
+    title:"Civil Records Check",
+    content:[
+                    { label: "", value: "No judgments or liens found " },
+                    { label: "Drainage restriction (2019)", value: "" },
+                    { label: "Why it matters:", value: "Lorem ipsum dolor sit amet, consectetut." },
+                  ]
+  },
+  {
+    id: 3,
+    img: "/test-doc.png",
+    title:"Property Information",
+    content: [
+                      { label: "Address", value: "1457 Elmwood Avenue, Springfield, IL 62704" },
+                      { label: "Parcel Identifier", value: "09-23-456-001" },
+                      { label: "Jurisdiction", value: "Sangamon County" },
+                      {
+                        label: "Why it matters",
+                        value:
+                          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque in maximu.",
+                      },
+                    ]
+  },
+  {
+    id: 4,
+    img: "/test-doc.png",
+    title:"Current Owner & Deed",
+    content: [
+                    { label: "Owner", value: "Greenfield Holdings LLC" },
+                    { label: "Deed recorded", value: "2022" },
+                    {
+                      label: "Why it matters",
+                      value:
+                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque in maximus",
+                    },
+                  ]
+  },
+  {
+    id: 5,
+    img: "/test-doc.png",
+    title:"Mortgages",
+    content: [
+                      { value: <span><strong>$325,000</strong>, First National Bank</span> },
+                      { value: <span><strong>$780,500</strong>, Springfield Trust Bank</span> },
+                      {
+                        label: "Why it matters",
+                        value:
+                          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque in maximus",
+                      },
+                    ]
+  },
+  {
+    id: 6,
+    img: "/test-doc.png",
+    title:"Legal Description",
+    content: [
+                    { value: "Full metes-and-bounds description text here..." },
+                    {
+                      label: "Why it matters",
+                      value:
+                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque in maximus augue.",
+                    },
+                  ]
+  },
+  {
+    id: 7,
+    img: "/test-doc.png",
+    title:"All Source Documents Collected",
+    content: [
+                    { value: "Deeds, Mortgages, Easements, Legal Docs" },
+                    {
+                      label: "Why it matters",
+                      value: "Lorem ipsum dolor sit amet, consectetur.",
+                    },
+                  ]
+  },
+]
 
 export default function Home() {
 
@@ -82,10 +170,14 @@ const itemVariants = (isEven) => ({
     };
   }, []);
 
+
+
+
   return (
 
     <div>
-
+      
+      {/* Announcement */}
       <div 
         className=" flex items-center justify-center text-base bg-primary text-primary-foreground text-center px-2 py-1 " >
         <p className="" >
@@ -94,8 +186,8 @@ const itemVariants = (isEven) => ({
       </div>
 
 
-    {/* navbar */}
-    <Navbar />
+      {/* navbar */}
+      <Navbar />
 
       {/* hero section */}
 
@@ -104,7 +196,7 @@ const itemVariants = (isEven) => ({
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
         viewport={{ once: true, amount: 0.3 }} 
-        className="py-10 lg:py-20 mb-20  px-4 relative" 
+        className="py-10 lg:py-20 xl:py-32 mb-20  px-4 relative" 
         id="home"
       >
         <img src="/hero-bg.png" className="absolute top-0 left-0 w-full h-full -z-10" alt="hero" />
@@ -170,7 +262,7 @@ const itemVariants = (isEven) => ({
 
 
       {/* How it works section */}
-      <section className="px-4 scroll-mt-20 relative mb-20 lg:mb-42" id="how-it-works" >
+      <section className="px-4 scroll-mt-20 relative mb-20 lg:mb-32" id="how-it-works" >
 
         <div className="flex flex-col md:flex-row *:basis-1/2 items-start max-w-[1280px] mx-auto mb-20 rounded-xl max-h-full" >
 
@@ -186,10 +278,10 @@ const itemVariants = (isEven) => ({
                 howItWorksSteps.map((item, index) => {
                   return (
                   <motion.div 
-                  // initial={{ opacity: 0 }}          // start hidden + pushed down
-                  // whileInView={{ opacity: 1 }}       // animate when in view
-                  // viewport={{  amount: 0.3 }}   // trigger once when 30% visible
-                  // transition={{ duration: 0.5, delay: index * 0.2 }} // stagger per step
+          initial={{ opacity: 0, y: 0 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      viewport={{ once: true, amount: 0.6 }}
                     key={index}
                     className="bg-[#F5F0EC] p-5 md:p-10 sticky top-[10%] md:top-[25%] rounded-r-xl" 
                   >
@@ -226,7 +318,7 @@ const itemVariants = (isEven) => ({
       </section>
 
       {/* Previous Searches */}
-      <section className="max-w-[1280px] mx-auto mb-20 px-4 scroll-mt-20" id="report-preview" >
+      {/* <section className="max-w-[1280px] mx-auto mb-20 px-4 scroll-mt-20" id="report-preview" >
         <h2 className="text-h2 text-center text-secondary mb-6" >Sample <span className="text-tertiary" > Report </span></h2>
         <p className="text-center text-body mb-12 max-w-5xl mx-auto text-coffee-light" >Each report is more than just an address. See ownership history, valuations, tax records, permits, and the original collected documents—all brought together in a clear, interactive breakdown.</p>
 
@@ -270,6 +362,48 @@ const itemVariants = (isEven) => ({
           <Button className="hover:scale-105" size="lg" onClick={() => setOpenReportDialog(true)} >View Full Report <ArrowRight /></Button>
         </div>
 
+      </section> */}
+
+
+
+      <section  className="max-w-[1280px] mx-auto mb-10 px-4 space-y-10 scroll-mt-20 py-20" id="report-preview"   >
+          <h2 className="text-h2 mb-12 text-center text-secondary"  >Sample Report </h2>
+
+        
+          {
+            sampleReportItems.map((item, index) => (
+
+          <motion.div 
+          initial={{ opacity: 0, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          viewport={{ once: true, amount: 0.3 }}
+          className={`flex flex-col max-h-[70vh] md:flex-row py-20 rounded-4xl   p-10 *:basis-1/2 gap-8 justify-center items-center sticky bg-[#F5F0EC] top-[12%] md:top-[15%] ${sampleReportItems.length === index + 1  ? "mb-20":"mb-44"  }`} 
+          key={index} 
+          >
+          <div >
+            <img src={item.img} className="w-full max-w-[80%] mx-auto" alt="mansion" />
+          </div>
+            <div>
+              <ListForReport
+                titleClass="md:text-3xl mb-8"
+                listClass="md:text-lg"
+                title={item.title}
+                items={item.content}
+              />
+
+            </div>
+          </motion.div>
+          ))
+          }
+          <div className="flex justify-center w-full" >
+            <Link to="/public/pdf/report.pdf" target="_blank" download>
+            <Button
+              className="hover:scale-105"
+              size="lg"
+              >Download Sample Report <Download /></Button>
+            </Link>
+          </div>
       </section>
 
 
@@ -288,7 +422,8 @@ const itemVariants = (isEven) => ({
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
                     viewport={{ once: true, amount: 0.4 }}
-                  key={index} className="flex flex-col items-center bg-coffee-dark p-6 sm:p-10 rounded-[30px]"  >
+                    key={index} 
+                    className="flex flex-col items-center hover:bg-coffee-dark/70 transition-all duration-500 bg-coffee-dark p-6 sm:p-10 rounded-[30px]"  >
                       <img src={item.icon} className="mb-6" alt={item.title} />
                       <h3 className="text-2xl font-semibold mb-2 text-center text-primary-foreground" >{item.title}</h3>
                       <p className="text-body text-center text-[#D7C4B6]" >{item.description}</p>
@@ -337,12 +472,12 @@ const itemVariants = (isEven) => ({
 
           {
             faq.map((item, index) => (
-             <motion.div key={index} variants={itemVariants(index % 2 === 0)}>
+             <motion.div key={index} variants={itemVariants(index % 2 === 0)} className="hover:scale-105 transition-all duration-500" >
               <AccordionItem
                 value={(index + 1).toString()}
-                className="border rounded-xl p-2 md:p-4 px-4 md:px-8 last:border-b"
+                className="border rounded-xl p-2 md:p-4 px-4 md:px-8 last:border-b "
               >
-                <AccordionTrigger className="text-xl font-bold text-secondary *:text-secondary!">
+                <AccordionTrigger className="text-xl font-bold text-secondary *:text-secondary! ">
                   {item.question}
                 </AccordionTrigger>
                 <AccordionContent>
@@ -477,16 +612,19 @@ const itemVariants = (isEven) => ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 *:!rounded-[8px] *:placeholder:text-coffee-bg-foreground *:h-12 *:!border-[#977466] *:text-white" >
                 <Input className="bg-transparent" placeholder="Name" label="Name" required />
                 {/* <Input className="" placeholder="State" label="State" required /> */}
-                <Select>
+                {/* <Select>
                   <SelectTrigger className="w-full !h-12 data-[placeholder]:!text-coffee-bg-foreground [&_svg]:!text-coffee-bg-foreground">
                     <SelectValue placeholder="State" className="" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="light">Light</SelectItem>
-                    <SelectItem value="dark">Dark</SelectItem>
-                    <SelectItem value="system">System</SelectItem>
+                    {
+                      pennsylvaniaCities.map((item, index) => (
+                        <SelectItem key={index} value={item}>{item}</SelectItem>
+                      ))
+                    }
                   </SelectContent>
-                </Select>
+                </Select> */}
+                <Input className="bg-transparent" placeholder="State" label="State" type="text" required />
                 <Input className="bg-transparent" placeholder="Email" label="Email" type="email" required />
                 <Input className="bg-transparent" placeholder="Country" label="Country" type="text" required />
                 <Textarea className="sm:col-span-2 placeholder:!text-[#A78B7F] placeholder:italic" placeholder="Enter additional info here..." label="Message" required />
@@ -502,7 +640,7 @@ const itemVariants = (isEven) => ({
       <Footer />
 
 
-
+      {/* Back to Top */}
       <div 
         className={`fixed bottom-2 right-2 z-10 flex items-center gap-2 p-3 text-secondary pt-8 hover:opacity-100 ${showBackToTop ? 'opacity-40': 'opacity-0'} transition-all `} 
       >
@@ -638,22 +776,20 @@ const itemVariants = (isEven) => ({
   );
 }
 
-function ListForReport({title, items}){
+function ListForReport({title, items, titleClass, listClass}){
   return(
     <div>
-      <p className="text-lg md:text-[22px] mb-2 font-semibold text-secondary " >{title}</p>
+      <p className={cn("text-lg md:text-[22px] mb-2 font-semibold text-secondary ", titleClass)} >{title}</p>
        <ul className="space-y-1 md:space-y-2 !list-disc list-outside *:ml-5 *:text-secondary" >
         {
           items.map((item, index) => (
             
-            <li key={index} >
+            <li key={index} className={cn(listClass)} >
                 {item.label && <strong>{item.label}</strong> } 
                 {item.value && <span>{item.value}</span>}
             </li>
           ))
         }
-       <li className="font-semibold" >Utility access easement (2020)</li>
-       <li className="font-semibold" >Drainage restriction (2019)</li>
       </ul>
     </div>
     
