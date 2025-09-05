@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Footer from "./footer";
 import { useEffect, useState } from "react";
-import { aboutUsListItems, faq, keyFeatures, previousSearches, testimonials, whyTitleMunke } from "@/utils/constant";
+import { aboutUsListItems, faq, howItWorksSteps, keyFeatures, previousSearches, testimonials, whyTitleMunke } from "@/utils/constant";
 import Navbar from "./navbar";
 import CountiesMapSvg from "./counties-map-svg";
 import {motion} from "motion/react";
@@ -46,6 +46,26 @@ export default function Home() {
     navigate("/login");
   }
 
+  
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2, // delay between each FAQ item
+    },
+  },
+};
+
+const itemVariants = (isEven) => ({
+  hidden: { opacity: 0, x: isEven ? -50 : 50 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
+});
+
     const scrollToSection = (id) => {
       const section = document.getElementById(id);
       if (section) {
@@ -67,10 +87,6 @@ export default function Home() {
     <div>
 
       <div 
-        // initial={{ opacity: 0, y: -20 }}
-        // whileInView={{ opacity: 1, y: 0 }}
-        // transition={{ duration: 0.6, ease: "easeOut" }}
-        // viewport={{ once: true, amount: 0.3 }}
         className=" flex items-center justify-center text-base bg-primary text-primary-foreground text-center px-2 py-1 " >
         <p className="" >
           Still doing manual searches? <Link to="/login" className="inline-flex items-center gap-2" > <b> Automate now </b> <ArrowRight className="size-5" /> </Link>
@@ -88,21 +104,22 @@ export default function Home() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
         viewport={{ once: true, amount: 0.3 }} 
-        className="py-10 lg:py-20 mb-20 bg-[#F5F0EC] px-4" 
+        className="py-10 lg:py-20 mb-20  px-4 relative" 
         id="home"
       >
+        <img src="/hero-bg.png" className="absolute top-0 left-0 w-full h-full -z-10" alt="hero" />
 
         <div className="flex flex-col md:flex-row justify-between *:basis-1/2 items-center max-w-[1280px] mx-auto gap-6 md:gap-0 " >
 
         <div className="space-y-10" >
           <h1 className="mb-6 text-h1" >The Smarter Way to Search Property <span className="text-tertiary" > Records </span></h1>
-          <p className="md:mr-20 text-lg lg:text-xl" >AI-powered title searches delivered with speed and accuracy.  Helping brokers and agents make confident decisions. 
+          <p className="md:mr-20 text-lg lg:text-xl text-secondary" >AI-powered title searches delivered with speed and accuracy.  Helping brokers and agents make confident decisions. 
           </p>
           <div className="space-x-3" >
             <Link to="/login" >
-              <Button size="lg" variant="outline" >Get Started <ArrowRight /></Button>
+              <Button className="hover:scale-105" size="lg" variant="outline" >Get Started <ArrowRight /></Button>
             </Link>
-            <Button size="lg" variant="secondary" onClick={() => scrollToSection("request-demo")} >Request a Demo <ArrowRight /></Button>
+            <Button className="hover:scale-105" size="lg" variant="secondary" onClick={() => scrollToSection("request-demo")} >Request a Demo <ArrowRight /></Button>
           </div>
         </div>
 
@@ -144,8 +161,8 @@ export default function Home() {
             </ul>
             <div className="space-x-3" >
 
-            <Button size="lg" variant="outline" className="text-primary border-primary outline-primary" >View More</Button>
-            <Button size="lg" onClick={() => scrollToSection("request-demo")} >Request a Demo</Button>
+            <Button size="lg" variant="outline" className="text-primary border-primary outline-primary hover:scale-105" >View More</Button>
+            <Button size="lg" className="hover:scale-105" onClick={() => scrollToSection("request-demo")} >Request a Demo</Button>
             </div>
         </motion.div>
       </section>
@@ -157,23 +174,24 @@ export default function Home() {
 
         <div className="flex flex-col md:flex-row *:basis-1/2 items-start max-w-[1280px] mx-auto mb-20 rounded-xl max-h-full" >
 
-              <div className="bg-coffee-bg text-primary-foreground space-y-10 p-5 md:p-10 xl:p-20 rounded-l-xl  max-md:rounded-t-xl sticky top-[25%]" >
+              <div className="bg-coffee-bg text-primary-foreground space-y-10 p-5 md:p-10 xl:p-20 rounded-l-xl  max-md:rounded-t-xl sticky top-[10%] md:top-[25%]" >
                 <h2 className="text-h2" >How It Works</h2>
                 <p className="text-[#E6D5C7] font-normal text-body" >Getting a title report has never been easier. Just enter property details, and our AI instantly scans records, analyzes data, and delivers a complete report within minutes.</p>
-                <Button size="lg" onClick={() => setOpenReportDialog(true)} >View a Sample Report <ArrowRight /> </Button>
+                <Button size="lg" onClick={() => setOpenReportDialog(true)} className="hover:scale-105" >View a Sample Report <ArrowRight /> </Button>
               </div>
 
 
               <div>
               {
-                [1, 2, 3].map((item, index) => {
+                howItWorksSteps.map((item, index) => {
                   return (
                   <motion.div 
                   // initial={{ opacity: 0 }}          // start hidden + pushed down
                   // whileInView={{ opacity: 1 }}       // animate when in view
                   // viewport={{  amount: 0.3 }}   // trigger once when 30% visible
                   // transition={{ duration: 0.5, delay: index * 0.2 }} // stagger per step
-                className="bg-[#F5F0EC] p-5 md:p-10 sticky top-[25%] rounded-r-xl" 
+                    key={index}
+                    className="bg-[#F5F0EC] p-5 md:p-10 sticky top-[10%] md:top-[25%] rounded-r-xl" 
                   >
 
                 <div className="flex gap-5 " >
@@ -182,7 +200,7 @@ export default function Home() {
                       variant="outline" 
                       className="rounded-full bg-transparent outline-primary border-primary border-2 text-primary hover:text-primary"
                     >
-                      Step {item} <ArrowRight />
+                      Step {index + 1} <ArrowRight />
                     </Button>
                     <div className="border w-0 mx-auto border-dashed border-[#E0C2AA] h-[22rem]" />
                   </div>
@@ -190,8 +208,8 @@ export default function Home() {
                   <div className="space-y-10" >
                     <div>
                       <img src="/mac-window.png" alt="mac window" className="mx-auto" />
-                      <h3 className="text-2xl font-semibold text-center text-secondary mb-4" >Search</h3>
-                      <p className="text-center text-secondary text-body" >Our AI scans public records to gather relevant documents.</p>
+                      <h3 className="text-2xl font-semibold text-center text-secondary mb-4" >{item.title}</h3>
+                      <p className="text-center text-secondary text-body" >{item.description}</p>
                     </div>
                   </div>
              
@@ -208,8 +226,8 @@ export default function Home() {
       </section>
 
       {/* Previous Searches */}
-      <section className="max-w-[1280px] mx-auto mb-20 px-4 scroll-mt-20" id="previous-searches" >
-        <h2 className="text-h2 text-center text-secondary mb-6" >Previous <span className="text-tertiary" > Searches Preview </span></h2>
+      <section className="max-w-[1280px] mx-auto mb-20 px-4 scroll-mt-20" id="report-preview" >
+        <h2 className="text-h2 text-center text-secondary mb-6" >Sample <span className="text-tertiary" > Report </span></h2>
         <p className="text-center text-body mb-12 max-w-5xl mx-auto text-coffee-light" >Each report is more than just an address. See ownership history, valuations, tax records, permits, and the original collected documents—all brought together in a clear, interactive breakdown.</p>
 
         <div className="flex flex-col md:flex-row gap-5 md:gap-6 mb-10" >
@@ -224,11 +242,13 @@ export default function Home() {
             <img src="/map-highlight.jpg" alt="map highlight" className="mb-1 md:mb-5" />
             <img src="/map-field.jpg" alt="map field"  />
             </div>
-            <p className="text-sm lg:text-base flex justify-between items-center gap-1 md:gap-2 font-semibold text-tertiary" >View more images <ChevronRight size={22} /></p>
+            <button>
+              <p className="text-sm lg:text-base flex justify-between items-center gap-1 md:gap-2 font-semibold text-tertiary" >View more images <ChevronRight size={22} /></p>
+            </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" >
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6" >
           {
             previousSearches.map((item, index) => (
               <motion.div 
@@ -236,7 +256,7 @@ export default function Home() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
                     viewport={{ once: true }}
-              key={index} className="flex flex-col items-center gap-4 p-6 py-8 rounded-[20px] shadow-[0px_4px_14px_0px_#D7C4B666]" >
+              key={index} className="flex flex-col items-center gap-4 p-3 md:p-6 py-8 rounded-[20px] shadow-[0px_4px_14px_0px_#D7C4B666]" >
                 <div className="bg-[#F5F0EC] rounded-full size-[68px] grid place-items-center text-center" >
                   <img src={item.icon}  alt={item.title} />
                 </div>
@@ -247,7 +267,7 @@ export default function Home() {
           }
         </div>
         <div className="flex justify-center my-10 w-full" >
-          <Button size="lg" onClick={() => setOpenReportDialog(true)} >View Full Report <ArrowRight /></Button>
+          <Button className="hover:scale-105" size="lg" onClick={() => setOpenReportDialog(true)} >View Full Report <ArrowRight /></Button>
         </div>
 
       </section>
@@ -267,7 +287,7 @@ export default function Home() {
                    initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
-                    viewport={{ once: true, amount: 0.5 }}
+                    viewport={{ once: true, amount: 0.4 }}
                   key={index} className="flex flex-col items-center bg-coffee-dark p-6 sm:p-10 rounded-[30px]"  >
                       <img src={item.icon} className="mb-6" alt={item.title} />
                       <h3 className="text-2xl font-semibold mb-2 text-center text-primary-foreground" >{item.title}</h3>
@@ -306,17 +326,36 @@ export default function Home() {
       {/* FAQ */}
       <section className="max-w-[1280px] mx-auto mb-20 px-4" >
         <h2 className="text-h2 text-center mb-10 text-secondary" >Frequently Asked <span className="text-tertiary" > Questions </span></h2>
-        <Accordion className="max-w-3xl mx-auto space-y-4 mb-4" type="multiple" >
+        <Accordion className="max-w-3xl mx-auto  mb-4" type="multiple" >
+      <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.2 }}
+          className="space-y-2 md:space-y-4"
+        >
+
           {
             faq.map((item, index) => (
-              <AccordionItem key={index} value={(index + 1)?.toString()} className="border rounded-xl p-2 md:p-4 px-4 md:px-8 last:border-b" >
-                <AccordionTrigger className="text-xl font-bold text-secondary *:text-secondary!" >{item.question}</AccordionTrigger>
+             <motion.div key={index} variants={itemVariants(index % 2 === 0)}>
+              <AccordionItem
+                value={(index + 1).toString()}
+                className="border rounded-xl p-2 md:p-4 px-4 md:px-8 last:border-b"
+              >
+                <AccordionTrigger className="text-xl font-bold text-secondary *:text-secondary!">
+                  {item.question}
+                </AccordionTrigger>
                 <AccordionContent>
-                  <p className="text-base text-coffee-light mb-4" >{item.answer}</p>
+                  <div className="text-base text-coffee-light space-y-2">
+                    {item.answer}
+                  </div>
                 </AccordionContent>
               </AccordionItem>
+            </motion.div>
             ))
           }
+        </motion.div>
+
         </Accordion>
       </section>
 
@@ -335,19 +374,42 @@ export default function Home() {
         <div className="col-span-2" >
 
           <div ref={emblaRef} className="overflow-hidden mb-8" >
-            <div className="flex gap-8" >
+            <motion.div 
+                variants={{
+                    hidden: { opacity: 0 },
+                    show: {
+                      opacity: 1,
+                      transition: { staggerChildren: 0.25 },
+                    },
+                  }}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, amount: 0.2 }}
+                className="flex gap-4 md:gap-8"
+            >
               {
                 testimonials.map((item, index) => (
-                  <div key={index} className="relative p-8 rounded-[30px] bg-coffee-dark min-w-0 flex-[0_0_75%] md:flex-[0_0_40%]" >
+                  <motion.div 
+                    variants={{
+                        hidden: { opacity: 0, y: 40 },
+                        show: {
+                          opacity: 1,
+                          y: 0,
+                          transition: { duration: 0.6, ease: "easeOut" },
+                        },
+                      }}
+                    key={index} 
+                    className="relative p-4 md:p-8 rounded-[30px] bg-coffee-dark min-w-0 flex-[0_0_75%] md:flex-[0_0_40%]" 
+                    >
                     <p className=" text-[#E6D5C7] mb-8" >{item.content}</p>
                     <p className="text-[#E6D5C7]" >{item.name}</p>
                     <p className="text-sm text-coffee-bg-foreground" >{item.role}</p>
                     <img src="/card-corner.png" className="absolute -bottom-[1px] -right-[1px] border-none" alt="card corner" />
                     <img src={item.image} className="absolute bottom-0 right-0 z-10 border-none" alt="profile" />
-                  </div>
+                  </motion.div>
                 ))
               }
-            </div>
+            </motion.div>
           </div>
 
           {/* <div className="flex justify-between max-w-4xl items-center" >
@@ -393,7 +455,7 @@ export default function Home() {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
-                    viewport={{ once: true, amount: 0.5 }}
+                    viewport={{ once: true, amount: 0.4 }}
                   className="flex flex-col items-center gap-5 p-5 md:p-10 rounded-[20px] shadow-[0px_4px_14px_0px_#D7C4B666] hover:shadow-[0px_28px_34px_0px_#D7C4B666] transition-shadow"  >
                   <img src={item.icon} className="h-auto mb-2" alt={item.title} />
                     <h3 className="text-2xl font-semibold text-secondary text-center" >{item.title}</h3>
@@ -430,7 +492,7 @@ export default function Home() {
                 <Textarea className="sm:col-span-2 placeholder:!text-[#A78B7F] placeholder:italic" placeholder="Enter additional info here..." label="Message" required />
               </div>
               <div className="flex justify-center" >
-                <Button size="lg"  className="text-tertiary bg-coffee-bg-foreground hover:bg-coffee-bg-foreground/90" >Submit <ArrowRight /></Button>
+                <Button size="lg"  className="text-tertiary bg-coffee-bg-foreground hover:bg-coffee-bg-foreground/90 hover:scale-105" >Submit <ArrowRight /></Button>
               </div>
             </form>
         </div>
@@ -461,17 +523,22 @@ export default function Home() {
       {/* Report Dialog */}
       <Dialog open={openReportDialog} onOpenChange={setOpenReportDialog}>
         <DialogContent className="!max-w-5xl w-full max-h-[90vh] flex flex-col !px-2 border-8 border-[#EADDD0] rounded-4xl" >
-          <DialogHeader className="px-5" >
+          <DialogHeader className="px-3 md:px-5" >
             <div className="flex items-center justify-center pb-4  border-b-[1px] border-[#E8D0A7]" >
-              <img src="/Logo.svg" className="w-16 absolute left-6" alt="Title Munke Logo" />
-              <h4 className="text-center text-[28px] font-semibold"  >Sample Report Breakdown</h4>
+              <img src="/Logo.svg" className="w-14 md:w-16 absolute left-4 md:left-6 mr-8" alt="Title Munke Logo" />
+              <DialogTitle className="text-center text-lg md:text-[28px] font-semibold" >
+
+              {/* <h4 className="text-center text-lg md:text-[28px] font-semibold"  >
+                </h4> */}
+                Sample Report Breakdown
+              </DialogTitle>
             </div>
             </DialogHeader>
 
-            <div className="grid grid-cols-2 gap-8 h-full overflow-auto px-5" >
+            <div className="grid sm:grid-cols-2 gap-8 h-full overflow-auto px-3 md:px-5" >
               <div className="space-y-6" >
-                <img src="/report-map.jpg" alt="map highlight" className="mb-1 md:mb-5" />
-                <img src="/report-mansion.jpg" alt="mansion" className="mb-1 md:mb-12" />
+                <img src="/report-map.jpg" alt="map highlight" className="max-md:w-full  md:mb-5" />
+                <img src="/report-mansion.jpg" alt="mansion" className="max-md:w-full  md:mb-12" />
                 <ListForReport 
                   title="Easements / Restrictions"
                   items={[
@@ -560,8 +627,8 @@ export default function Home() {
             </DialogDescription> */}
             <DialogFooter>
               <div className="mt-1 flex justify-center gap-4 w-full" >
-                <Button size="lg" >Download Now</Button>
-                <Button variant="outline" className="outline-primary border-primary text-primary" size="lg" onClick={() => setOpenReportDialog(false)}  >Close</Button>
+                <Button className="hover:scale-105" size="lg" >Download Now</Button>
+                <Button variant="outline" className="outline-primary border-primary text-primary hover:scale-105 " size="lg" onClick={() => setOpenReportDialog(false)}  >Close</Button>
               </div>
             </DialogFooter>
         </DialogContent>
@@ -574,15 +641,15 @@ export default function Home() {
 function ListForReport({title, items}){
   return(
     <div>
-      <p className="text-[22px] mb-2 font-semibold text-secondary " >{title}</p>
+      <p className="text-lg md:text-[22px] mb-2 font-semibold text-secondary " >{title}</p>
        <ul className="space-y-1 md:space-y-2 !list-disc list-outside *:ml-5 *:text-secondary" >
         {
-          items.map(item => (
+          items.map((item, index) => (
             
-            <li>
+            <li key={index} >
                 {item.label && <strong>{item.label}</strong> } 
                 {item.value && <span>{item.value}</span>}
-              </li>
+            </li>
           ))
         }
        <li className="font-semibold" >Utility access easement (2020)</li>

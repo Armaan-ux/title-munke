@@ -19,7 +19,6 @@ const ManageAdmins = () => {
     };
     getAdmins();
   }, []);
-  console.log(admins);
   return (
     <>
       {isOpen && (

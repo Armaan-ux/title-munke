@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Minus } from "lucide-react";
+import { ArrowRight, Mail, Minus } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Footer() {
@@ -20,7 +20,7 @@ export default function Footer() {
             <li><Minus /><Link className="text-body" >Home</Link></li>
             <li><Minus /><Link className="text-body" >How It Works</Link></li>
             <li><Minus /><Link className="text-body" >Counties</Link></li>
-            <li><Minus /><Link className="text-body" >Previous Searches</Link></li>
+            <li><Minus /><Link className="text-body" >Sample Report</Link></li>
         </ul>
       </div>
     </div>
@@ -30,25 +30,25 @@ export default function Footer() {
         <div>
             <div className="p-6 mb-4 bg-white rounded-[20px] space-y-4 " >
                 <p className="text-[22px] text-secondary" >Let's Get Start</p>
-                <Button size="lg" className="w-full" >Request a Demo  <ArrowRight /></Button>
+                <Button size="lg" className="w-full hover:scale-105" >Request a Demo  <ArrowRight /></Button>
                 <Link to="/login" >
-                    <Button size="lg" variant="secondary" className="w-full" >Login <ArrowRight /></Button>
+                    <Button size="lg" variant="secondary" className="w-full hover:scale-105" >Login <ArrowRight /></Button>
                 </Link>
             </div>
             <div className="pl-6" >
                 <p className="text-[22px] text-secondary mb-4" >Get in Touch</p>
                 <div className="flex justify-between *:-m-3 *:box-content" >
-                    <Link>
-                        <img src="/facebook.svg" alt="facebook" />
+                    <Link to="mailto:info@titlemunke.com" target="_blank" className="!-m-0.5 hover:scale-110 transition-all flex-none p-2.5 h-fit bg-secondary text-white  rounded-full" >
+                        <Mail size={19} className="text-white/70" />
                     </Link>
-                    <Link>
-                        <img src="/x.svg" alt="facebook" />
+                    <Link to="https://x.com/TitleMunke" target="_blank" className="hover:scale-110 transition-all" >
+                        <img src="/x.svg" alt="x twitter" />
                     </Link>
-                    <Link>
+                    <Link to="https://www.instagram.com/titlemunke" target="_blank" className="hover:scale-110 transition-all" >
                         <img src="/instagram.svg" alt="facebook" />
                     </Link>
-                    <Link>
-                        <img src="/linkedin.svg" alt="facebook" />
+                    <Link to="https://www.linkedin.com/company/titlemunke" target="_blank" className="hover:scale-110 transition-all" >
+                        <img src="/linkedin.svg" alt="linkedin" />
                     </Link>
                 </div>
             </div>
@@ -58,7 +58,7 @@ export default function Footer() {
             <p className="text-secondary text-[22px] font-medium" >Subscribe to Newsletter</p>
             <p className="text-secondary text-body leading-loose" >Enter your email address to register to our newsletter subscription</p>
             <Input placeholder="Enter email" label="Email" type="email" className="h-12 !rounded-[10px] !border-[#E4D8C2] " required />
-            <Button size="lg" className="w-full" >Subscribe <ArrowRight /></Button>              
+            <Button  size="lg" className="w-full hover:scale-105" >Subscribe <ArrowRight /></Button>              
         </div>
 
     </div>

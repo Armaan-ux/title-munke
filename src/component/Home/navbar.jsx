@@ -4,6 +4,7 @@ import { ArrowRight, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetFooter,
@@ -11,11 +12,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { useState, useEffect } from "react";
 
 export default function Navbar() {
-    const [isVisible, setIsVisible] = useState(true);
-    const [lastScrollY, setLastScrollY] = useState(0);
 
     const scrollToSection = (id) => {
       const section = document.getElementById(id);
@@ -24,29 +22,12 @@ export default function Navbar() {
       }
     };
 
-    useEffect(() => {
-      const handleScroll = () => {
-        const currentScrollY = window.scrollY;
-        
-        if (currentScrollY > lastScrollY && currentScrollY > 50) {
-          // Scrolling down and past 50px
-          setIsVisible(false);
-        } else {
-          // Scrolling up or near top
-          setIsVisible(true);
-        }
-        setLastScrollY(currentScrollY);
-      };
-
-      window.addEventListener('scroll', handleScroll);
-      return () => window.removeEventListener('scroll', handleScroll);
-    }, [lastScrollY]);
 
     return (
       <header className={`shadow-md sticky top-0 z-50 bg-white transition-transform duration-300`}>
       {/* <header className={`shadow-md sticky top-0 z-50 bg-white transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}> */}
         <nav className="flex justify-between items-center gap-4 md:gap-12 max-w-[1280px] mx-auto px-4">
-          <img src="/src/img/Logo.svg" alt="logo" className="w-16 md:w-20 h-auto" />
+          <img src="/Logo.svg" alt="logo" className="w-16 md:w-20 h-auto" />
           
           <div className="hidden lg:flex justify-end flex-1 gap-6 xl:gap-12 max-w-[60rem]">
             <ul className="flex items-center gap-2 justify-between flex-1">
@@ -54,7 +35,7 @@ export default function Navbar() {
                 <li 
                   onClick={() => scrollToSection(item.path)} 
                   key={item.name} 
-                  className="text-[#554536] text-lg cursor-pointer"
+                  className="text-[#554536] hover:text-tertiary transition-all text-lg cursor-pointer"
                 >
                   {item.name}
                 </li>
@@ -62,9 +43,9 @@ export default function Navbar() {
             </ul>
             
             <div className="flex items-center gap-4">
-              <Button size="lg" onClick={() => scrollToSection("request-demo")}  >Request a Demo</Button>
+              <Button className="hover:scale-105" size="lg" onClick={() => scrollToSection("request-demo")}  >Request a Demo</Button>
               <Link to="/login" >
-                <Button size="lg" variant="secondary">Login <ArrowRight /></Button>
+                <Button className="hover:scale-105"  size="lg" variant="secondary">Login <ArrowRight /></Button>
               </Link>
             </div>
           </div>
@@ -80,8 +61,10 @@ export default function Navbar() {
                   <SheetDescription>
                     <ul className="my-8 space-y-5">
                       {navItems.map((item) => (
-                        <li key={item.name}>
-                          <Link to={item.path} className="text-[#554536] text-lg">{item.name}</Link>
+                        <li key={item.name} className="text-[#554536] text-lg" onClick={() => {scrollToSection(item.path)}} >
+                          <SheetClose>
+                          {item.name}
+                        </SheetClose>
                         </li>
                       ))}
                     </ul>
@@ -91,7 +74,7 @@ export default function Navbar() {
                   <div className="flex flex-col gap-3">
                     <Button size="lg" onClick={() => scrollToSection("request-demo")} >Request a Demo</Button>
                     <Link to="/login" >
-                      <Button size="lg" variant="secondary">Login <ArrowRight /></Button>
+                      <Button size="lg" variant="secondary" className="w-full" >Login <ArrowRight /></Button>
                     </Link>
                   </div>
                 </SheetFooter>

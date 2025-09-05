@@ -1,10 +1,20 @@
 import React, { useState } from "react";
 import { getFormattedDateTime } from "../../utils";
-import "./AgentList.css";
 // import { reinviteAgent } from "../service/agent";
 import { reinviteAgent } from "../service/userAdmin";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
+import { DialogTitle } from "@radix-ui/react-dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Button } from "@/components/ui/button";
 
-const AgentList = ({ setIsOpen, data, isAgentListLoading }) => {
+const AgentList = ({isOpen, setIsOpen, data, isAgentListLoading }) => {
   const [reinvitingAgentId, setReinvitingAgentId] = useState(null);
 
   const handleReinvite = async (agent) => {
@@ -19,26 +29,74 @@ const AgentList = ({ setIsOpen, data, isAgentListLoading }) => {
   };
 
   return (
-    <div>
-      <button className="open-modal-btn" onClick={() => setIsOpen(true)}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      {/* <button className="open-modal-btn" onClick={() => setIsOpen(true)}>
         Open Modal
-      </button>
+      </button> */}
 
-      <div className="agent-list-modal">
-        <div className="agent-list-modal-content">
-          <div className="modal-header">
-            <h2>Agents</h2>
-            <span className="close" onClick={() => setIsOpen(false)}>
-              &times;
-            </span>
-          </div>
+      <DialogContent className="!max-w-5xl w-full"  >
+        <DialogHeader>
+          <DialogTitle className="text-lg font-semibold capitalize !font-poppins" >
+            Agents
+          </DialogTitle>
+        </DialogHeader>
 
-          <div className="table-container">
+            <Table className=""  >
+                  <TableHeader className="bg-[#F5F0EC]" >
+                    <TableRow>
+                      <TableHead className="w-[100px]">Sr. No.</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Last Login</TableHead>
+                      <TableHead>Total Searches This Month</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Reinvite</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {
+                      isAgentListLoading ?
+                      <TableRow >
+                        <TableCell colSpan={8} className="font-medium text-center py-10">Loading...</TableCell>
+                      </TableRow>
+                      :
+                      data?.length === 0 ?
+                      <TableRow >
+                        <TableCell colSpan={8} className="font-medium text-center py-10">No Records found.</TableCell>
+                      </TableRow>
+                      :
+                      data?.map((item, index) => (
+                        <TableRow key={item.id}>
+                          <TableCell className="font-medium">{index + 1}</TableCell>
+                          <TableCell>{item.agentName}</TableCell>
+                          <TableCell> {item.lastLogin
+                          ? getFormattedDateTime(item.lastLogin)
+                          : ""}</TableCell>
+                          <TableCell>{item.totalSearches}</TableCell>
+                          <TableCell>{item.status}</TableCell>
+                          <TableCell>
+                           <Button
+                              className={``}
+                              disabled={item.status !== "UNCONFIRMED" || reinvitingAgentId}
+                              onClick={() => handleReinvite(item)}
+                            >
+                              {reinvitingAgentId === item.id
+                                ? "Sending..."
+                                : "Reinvite"}
+                          </Button>
+                          </TableCell>
+
+                        </TableRow> 
+                      ))
+                    }
+    
+                  </TableBody>
+                </Table>
+
+          {/* <div>
             <table>
               <thead>
                 <tr>
                   <th>Name</th>
-                  {/* <th>Email</th> */}
                   <th>last Login</th>
                   <th>Total Searches This Month</th>
                   <th>Status</th>
@@ -89,10 +147,11 @@ const AgentList = ({ setIsOpen, data, isAgentListLoading }) => {
                 )}
               </tbody>
             </table>
-          </div>
-        </div>
-      </div>
-    </div>
+          </div> */}
+       
+
+      </DialogContent>
+    </Dialog>
   );
 };
 

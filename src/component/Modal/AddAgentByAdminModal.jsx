@@ -1,10 +1,20 @@
 import { useEffect, useState } from "react";
-import "./AddUserModal.css";
 import { toast } from "react-toastify";
 import { fetchActiveBrokers } from "../service/broker";
 import { createAgentForBroker } from "../service/agent";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
-function AddAgentByAdminModal({ setIsOpen }) {
+function AddAgentByAdminModal({ isOpen, setIsOpen }) {
   const [brokers, setBrokers] = useState([]);
   const [selectedBroker, setSelectedBroker] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -47,78 +57,105 @@ function AddAgentByAdminModal({ setIsOpen }) {
   }, []);
 
   return (
-    <div>
-      <button onClick={() => setIsOpen(true)} className="open-modal-btn">
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      {/* <button onClick={() => setIsOpen(true)} className="open-modal-btn">
         Open Modal
-      </button>
+      </button> */}
 
-      <div className="modal-overlay">
-        <div className="modal-content">
-          <h2>Agent Registration</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label>Name</label>
-              <input
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="text-lg font-semibold capitalize !font-poppins"  >
+              Agent Registration
+          </DialogTitle>
+        </DialogHeader>
+        <div>
+          <form onSubmit={handleSubmit} className="space-y-6" >
+            <div >
+              <Label>Name</Label>
+              <Input
                 type="text"
                 name="name"
+                className="bg-transparent"
                 value={formData.name}
                 onChange={handleChange}
                 required
               />
             </div>
-            <div className="form-group">
-              <label>Email</label>
-              <input
+            <div >
+              <Label>Email</Label>
+              <Input
                 type="email"
                 name="email"
+                className="bg-transparent"
                 value={formData.email}
                 onChange={handleChange}
                 required
               />
             </div>
-            <div className="form-group">
-              <label>Broker list</label>
+            <div>
+              <Label>Broker list</Label>
               {isLoading ? (
                 <p>Loading brokers...</p>
               ) : (
-                <select
-                  name="role"
-                  value={formData.role}
-                  onChange={(e) => setSelectedBroker(e.target.value)}
-                  required
-                >
-                  <option value="">None</option>
-                  {brokers?.map((elem) => (
-                    <option value={elem.id}>{elem.email}</option>
-                  ))}
-                </select>
+
+                  <Select 
+                    value={formData.role} 
+                    onValueChange={(value) => setSelectedBroker(value)}  
+                    required
+                  >
+                  <SelectTrigger className="w-full !h-12 border-[#BEA999] rounded-lg">
+                    <SelectValue placeholder="Select Broker" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {
+                      brokers.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.email}
+                        </SelectItem>
+                      ))
+                    }
+                  </SelectContent>
+                </Select>
+
+                // <select
+                //   name="role"
+                //   value={formData.role}
+                //   onChange={(e) => setSelectedBroker(e.target.value)}
+                //   required
+                // >
+                //   <option value="">None</option>
+                //   {brokers?.map((elem) => (
+                //     <option value={elem.id}>{elem.email}</option>
+                //   ))}
+                // </select>
               )}
             </div>
-            <div className="modal-actions">
-              <button
+            <div className="flex justify-end gap-2">
+              <Button
                 type="button"
+                className="text-secondary"
+                variant="ghost"
                 onClick={() => setIsOpen(false)}
-                className="cancel-btn"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 disabled={
                   !formData.email ||
                   !formData.name ||
                   !selectedBroker ||
                   isCreating
                 }
+                variant="secondary"
                 type="submit"
-                className="submit-btn"
               >
                 {isCreating ? "Processing..." : "Submit"}
-              </button>
+              </Button>
             </div>
           </form>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 

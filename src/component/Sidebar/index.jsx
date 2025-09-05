@@ -76,10 +76,10 @@ function AppSidebar() {
 
           <SidebarMenu>
             <SidebarMenuItem>
-             <SidebarMenuButton onClick={signOut} className="h-12 w-full group/btn flex justify-between items-center gap-2 p-3 px-5 h-14 bg-white text-secondary rounded-full text-sm hover:bg-[#e7dcd3] hover:shadow-sm transition-all cursor-pointer" >
+             <SidebarMenuButton onClick={signOut} className=" w-full group/btn flex justify-between items-center gap-2 p-3 px-5 h-14 bg-white text-secondary rounded-full text-sm hover:bg-[#e7dcd3] hover:shadow-sm transition-all cursor-pointer" >
                 {/* <button  className="" >
                 </button> */}
-                  <span className="inline-flex gap-4 items-center" >
+                  <span className="inline-flex text-base gap-4 items-center" >
                   <LogOut size={16} />
                     Logout
                   </span>

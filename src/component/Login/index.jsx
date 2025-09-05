@@ -72,7 +72,7 @@ function Login() {
   if (isReset) return <ResetPassword username={username} password={password} />;
 
   return (
-    <div className="grid items-center place-items-center h-dvh w-full overflow-auto py-10 px-4">
+    <div className="grid items-center place-items-center h-dvh w-full overflow-auto py-10 px-4 bg-secondary">
       <img src="/login-bg.jpg" className="w-full h-full object-cover absolute inset-0 -z-10" alt="login background" />
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
