@@ -35,7 +35,7 @@ import { cn } from "@/lib/utils";
 const sampleReportItems = [
   {
     id: 1,
-    img: "/test-doc.png",
+    img: "/deed-granting-easement.png",
    title:"Easements / Restrictions",
     content: [
                     { label: "", value: "Utility access easement (2020)" },
@@ -45,7 +45,7 @@ const sampleReportItems = [
   },
   {
     id: 2,
-    img: "/test-doc.png",
+    img: "/civil-check.png",
     title:"Civil Records Check",
     content:[
                     { label: "", value: "No judgments or liens found " },
@@ -55,7 +55,7 @@ const sampleReportItems = [
   },
   {
     id: 3,
-    img: "/test-doc.png",
+    img: "/property-info.png",
     title:"Property Information",
     content: [
                       { label: "Address", value: "1457 Elmwood Avenue, Springfield, IL 62704" },
@@ -70,7 +70,7 @@ const sampleReportItems = [
   },
   {
     id: 4,
-    img: "/test-doc.png",
+    img: "/deed.png",
     title:"Current Owner & Deed",
     content: [
                     { label: "Owner", value: "Greenfield Holdings LLC" },
@@ -84,7 +84,7 @@ const sampleReportItems = [
   },
   {
     id: 5,
-    img: "/test-doc.png",
+    img: "/mortage.png",
     title:"Mortgages",
     content: [
                       { value: <span><strong>$325,000</strong>, First National Bank</span> },
@@ -98,7 +98,7 @@ const sampleReportItems = [
   },
   {
     id: 6,
-    img: "/test-doc.png",
+    img: "/legal.png",
     title:"Legal Description",
     content: [
                     { value: "Full metes-and-bounds description text here..." },
@@ -111,7 +111,7 @@ const sampleReportItems = [
   },
   {
     id: 7,
-    img: "/test-doc.png",
+    img: "/source.png",
     title:"All Source Documents Collected",
     content: [
                     { value: "Deeds, Mortgages, Easements, Legal Docs" },
