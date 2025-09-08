@@ -1,6 +1,7 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useUser } from "@/context/usercontext";
 import { routes } from "@/sidebarRoutes";
+import { ShieldUser } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 export default function AppHeader() {
@@ -21,9 +22,10 @@ export default function AppHeader() {
             <p>{headerTitle || ''}</p>
         </div>
 
-        <div className="flex items-center gap-3">
-            <img src="/dummy-profile.png" alt="profile" className="w-11" />
-            <p>William Col</p>
+        <div className="flex items-center gap-2">
+            {/* <img src="/dummy-profile.png" alt="profile" className="w-11" /> */}
+            <ShieldUser />
+            <p>Logged In</p>
         </div>
     </div>
   );
