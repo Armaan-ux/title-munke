@@ -226,11 +226,11 @@ export default function Home() {
                   key={index}
                   className="bg-[#F5F0EC] p-5 md:p-10 sticky top-[10%] md:top-[25%] rounded-r-xl"
                 >
-                  <div className="flex gap-5 ">
+                  <div className="flex gap-2 md:gap-5 ">
                     <div>
                       <Button
                         variant="outline"
-                        className="rounded-full bg-transparent outline-primary border-primary border-2 text-primary hover:text-primary"
+                        className="rounded-full bg-transparent outline-primary border-primary border-2 text-primary hover:text-primary text-sm md:text-base"
                       >
                         Step {index + 1} <ArrowRight />
                       </Button>
@@ -266,7 +266,7 @@ export default function Home() {
 
         
 
-          <motion.div 
+      <motion.div 
             // initial={{ opacity: 0, y: 0 }}
             // whileInView={{ opacity: 1, y: 0 }}
             // transition={{ duration: 0.6, ease: "easeOut" }}
@@ -284,7 +284,7 @@ export default function Home() {
             <div className="space-y-44 " >
                 {
                   sampleReportItems.map((item, index) => (
-                <div className="sticky z-20 top-[10%] md:top-[15%] bg-[#F5F0EC] p-0 sm:p-5  flex" >  
+                <div className="sticky z-20 min-h-[60vh] md:min-h-[80vh] top-[10%] md:top-[15%] bg-[#F5F0EC] p-0 sm:p-5  flex" >  
 
                   <img
                     src={item.img}
