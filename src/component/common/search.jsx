@@ -210,7 +210,7 @@ export default function Search(){
   };
 
     return(
-        <form className="p-10 rounded-xl bg-[#F5F0EC]  mb-4" onSubmit={handleSearch} >
+        <form className="p-10 border-2 border-dashed border-primary rounded-xl bg-[#F5F0EC]  mb-4" onSubmit={handleSearch} >
           <div className="relative mb-10"  >
             <MapPin size={28} className="text-[#5D4135] absolute top-6 left-5" />
 
