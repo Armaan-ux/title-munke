@@ -43,10 +43,10 @@ export default function Footer() {
                     <Button size="lg" variant="secondary" className="w-full hover:scale-105" >Login <ArrowRight /></Button>
                 </Link>
             </div>
-            <div className="pl-6" >
+            <div className="max-md:p-6 pl-6" >
                 <p className="text-[22px] text-secondary mb-4" >Get in Touch</p>
-                <div className="flex justify-between *:-m-3 *:box-content" >
-                    <Link to="mailto:info@titlemunke.com" target="_blank" className="!-m-0.5 hover:scale-110 transition-all flex-none p-2.5 h-fit bg-secondary text-white  rounded-full" >
+                <div className="flex justify-between  sm:*:-m-3 *:box-content" >
+                    <Link to="mailto:info@titlemunke.com" target="_blank" className="!m-2.5 sm:!-m-0.5 hover:scale-110 transition-all flex-none p-2.5 h-fit bg-secondary text-white  rounded-full" >
                         <Mail size={19} className="text-white/70" />
                     </Link>
                     <Link to="https://x.com/TitleMunke" target="_blank" className="hover:scale-110 transition-all" >

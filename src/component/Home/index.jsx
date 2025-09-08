@@ -65,6 +65,8 @@ export default function Home() {
   return (
     <div>
       {/* Announcement */}
+
+      
       <div className=" flex items-center justify-center text-base bg-primary text-primary-foreground text-center px-2 py-1 ">
         <p className="">
           Still doing manual searches?{" "}
@@ -85,7 +87,7 @@ export default function Home() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
         viewport={{ once: true, amount: 0.3 }}
-        className="py-10 lg:py-20 xl:py-32 mb-20  px-4 relative"
+        className="py-10 lg:py-20 xl:py-32 mb-16 md:mb-20  px-4 relative"
         id="home"
       >
         <img
@@ -129,10 +131,11 @@ export default function Home() {
         </div>
       </motion.section>
 
+
       {/* About section */}
       <section
         id="about"
-        className="flex flex-col md:flex-row max-w-[1280px] mx-auto gap-10 items-center mb-42 *:basis-1/2 px-4 scroll-mt-20 "
+        className="flex flex-col md:flex-row max-w-[1280px] mx-auto gap-10 items-center mb-20 md:mb-42 *:basis-1/2 px-4 scroll-mt-20 "
       >
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -310,8 +313,9 @@ export default function Home() {
 
 
       {/* Why choose Title Munke? */}
-      <section className="px-4">
-        <section className="max-w-[1725px] mx-auto mb-20 bg-coffee-bg rounded-[30px]">
+
+        <section className="px-4">
+        <div className="max-w-[1725px] mx-auto mb-20 bg-coffee-bg rounded-[30px]">
           <div className="max-w-[1280px] mx-auto p-5 lg:p-10 py-10 lg:py-16 text-center">
             <h2 className="text-h2 text-center mb-2 text-secondary-foreground">
               Why choose Title Munke?
@@ -321,17 +325,23 @@ export default function Home() {
               view. See photos, addresses
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 ">
+              
               {whyTitleMunke.map((item, index) => (
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                     key={index}
+                  initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{
                     duration: 0.5,
-                    delay: index * 0.1,
-                    ease: "linear",
+                    delay: index * 0.2,
+                    ease: "easeOut",
                   }}
-                  viewport={{ once: true, amount: 0.2 }}
-                  key={index}
+                  viewport={{ once: true }}
+                >
+
+
+                <div
+             
                   className="flex flex-col items-center hover:bg-coffee-dark/70 transition-all duration-500 bg-coffee-dark p-6 sm:p-10 rounded-[30px]"
                 >
                   <img src={item.icon} className="mb-6" alt={item.title} />
@@ -341,12 +351,15 @@ export default function Home() {
                   <p className="text-body text-center text-[#D7C4B6]">
                     {item.description}
                   </p>
+                </div>
                 </motion.div>
+
               ))}
             </div>
           </div>
-        </section>
+        </div>
       </section>
+
 
       {/* Counties Map */}
       <section
@@ -392,7 +405,7 @@ export default function Home() {
                     hidden: { opacity: 0 },
                     show: {
                       opacity: 1,
-                      transition: { staggerChildren: 0.25 },
+                      transition: { staggerChildren: 0.2 },
                     },
                   }}
                   initial="hidden"
@@ -411,6 +424,9 @@ export default function Home() {
                       transition: { duration: 0.4, ease: "easeOut" },
                     },
                   }}
+              >
+              <div
+
                 className="hover:scale-105 transition-all duration-500"
               >
                 <AccordionItem
@@ -426,6 +442,7 @@ export default function Home() {
                     </div>
                   </AccordionContent>
                 </AccordionItem>
+              </div>
               </motion.div>
             ))}
           </motion.div>
