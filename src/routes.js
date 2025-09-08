@@ -29,9 +29,9 @@ import Users from "./component/Admin/users";
 
 export const adminRoutes = [
   { path: "admin", component: Admin },
-  { path: "admin/dashboard", component: AdminDashboard },
-  { path: "admin/demo-requests", component: DemoRequests },
+  // { path: "admin/dashboard", component: AdminDashboard },
   { path: "admin/users", component: Users },
+  { path: "admin/demo-requests", component: DemoRequests },
   { path: "admin/audit-logs", component: AdminAuditLogs },
   { path: "admin/settings", component: AdminSettings },
   // { path: "admin/brokers", component: BorkerList },

@@ -208,36 +208,43 @@ export const howItWorksSteps = [
   {
     icon: "/profile-reverse.svg",
     title: "Enter the Property",
+    img: "/Illustrations/Design 1.png",
     description: "Start by typing in the property address, parcel number, or PIN."
   },
   {
     icon: "/circle-split.svg",
     title: "We Search the Records",
+    img: "/Illustrations/Design 2.png",
     description: "Our system instantly searches the county’s official records database, collecting all documents tied to the property."
   },
   {
     icon: "/desk-paper.svg",
     title: "We Pull the Full History",
+    img: "/Illustrations/Design 3.png",
     description: "If those documents reference earlier records, we automatically find and include them—so nothing important gets missed."
   },
   {
     icon: "/receipt.svg",
     title: "AI Reads the Documents",
+    img: "/Illustrations/Design 4.png",
     description: "Advanced AI scans every deed, mortgage, lien, and easement, carefully reviewing decades of history in minutes."
   },
   {
     icon: "/receipt.svg",
     title: "Clear, Easy-to-Read Report",
+    img: "/Illustrations/Design 5.png",
     description: "You receive a simple, professional PDF that summarizes ownership, mortgages, liens, and other critical details."
   },
   {
     icon: "/receipt.svg",
     title: "Source Documents Included",
+    img: "/Illustrations/Design 6.png",
     description: "All original documents collected along the way are provided with your report for full transparency."
   },
   {
     icon: "/receipt.svg",
     title: "Visuals That Help",
+    img: "/Illustrations/Design 7.png",
     description: "Each report includes property views like GIS maps and Street View images, giving you context beyond the paperwork."
   },
 ]
@@ -299,4 +306,142 @@ export const pennsylvaniaCities = [
   "Wilkes-Barre",
   "Williamsport",
   "York"
+];
+
+
+export const sampleReportItems = [
+  {
+    id: 1,
+    img: "/sample-report/2041 Sample Report_page.jpg",
+    title: "Property Information",
+    content: [
+      { label: "Address: ", value: "2041 Lawfer Avenue, Allentown, PA 18104" },
+      {
+        label: "Parcel Identifier: ",
+        value: "PIN 548788191866-1, Block 12, Lot 019 ",
+      },
+      {
+        label: "Why it matters: ",
+        value:
+          "Ensures searches and filings are tied to the exact parcel, avoiding errors with nearby or similarly named properties.",
+      },
+    ],
+  },
+  {
+    id: 2,
+    img: "/sample-report/Easement_page.jpg",
+    title: "Easements / Restrictions",
+    content: [
+      {
+        label: "Drainage easement (2009): ",
+        value:
+          "Grants South Whitehall Township rights for stormwater drainage across the property.",
+      },
+      {
+        label: "Prior transit right-of-way (2006): ",
+        value:
+          " Property remains subject to easement rights tied to the former Lehigh Valley Transit Company corridor (Instrument #7384411).",
+      },
+      {
+        label: "Why it matters: ",
+        value:
+          "Easements and restrictions dictate how the property can be used, where improvements may be built, and ensure access rights remain enforceable.",
+      },
+    ],
+  },
+  {
+    id: 3,
+    img: "/sample-report/Civil Record Search.png",
+    title: "Civil Records Check",
+    content: [
+      { label: "No judgments or liens found: ", value: "Search results for Lawfer Associates LP show a clear record." },
+      { label: "Why it matters: ", value: "Confirms there are no active legal claims or creditor judgments tied to the property or current owner." },
+      { label: "Jurisdiction: ", value: "Sangamon County" },
+
+    ],
+  },
+  {
+    id: 4,
+    img: "/sample-report/Deed.jpg",
+    title: "Current Owner & Deed",
+    content: [
+      { label: "Owner: ", value: "Lawfer Associates, LP" },
+      { label: "Deed recorded: ", value: "November 24, 2008 (Instrument #7507233), transferred from Carova Acquisitions LP." },
+      {
+        label: "Why it matters: ",
+        value:
+          "Establishes current legal ownership and confirms the deed recording in county records.",
+      },
+    ],
+  },
+  {
+    id: 5,
+    img: "/sample-report/Mortgage _ Security Instrument.jpg",
+    title: "Mortgages",
+    content: [
+      {
+        label: "$200,000 – Fox Chase Bank: ",
+        value: "(Open-End Mortgage, recorded October 23, 2015, Instrument #2015031806)",
+      },
+      {
+        label: "Assignment of Rents – Fox Chase Bank: ",
+        value: "(recorded October 23, 2015, Instrument #2015031807).",
+      },
+      {
+        label: "Why it matters: ",
+        value:
+          "The open-end mortgage secures ongoing credit obligations, while the Assignment of Rents gives the lender rights to rental income if the borrower defaults",
+      },
+    ],
+  },
+  {
+    id: 6,
+    img: "sample-report/Legal Description.jpg",
+    title: "Legal Description",
+    content: [
+      { label: "Metes-and-bounds: ", value: "Begins at a point 98 feet east of South Fairview Avenue, extending 29.5 feet to center line, north 216 feet to South Fairview, then south and east along adjoining property lines. " },
+      {
+        label: "Lots 89 and 90, Block CC: ",
+        value:
+          "Frontage totaling 130.14 feet on Fairview Avenue, extending back to the abandoned Lehigh Valley Transit Company right-of-way.",
+      },
+      {
+        label: "Why it matters: ",
+        value:
+          "Provides the exact surveyed boundaries that define the property, critical for development, sales, and preventing encroachment disputes.",
+      },
+    ],
+  },
+  {
+    id: 7,
+    img: "sample-report/Plat Map (Subdivision Plan).jpg",
+    title: "All Source Documents Collected",
+    content: [
+      { label: "Deeds:", value: "Current deed, prior deeds, and transfer records confirming ownership history." },
+      {
+        label: "Mortgages & Assignments: ",
+        value: "Open, satisfied, and released mortgages; assignments of rents and security agreements.",
+      },
+      {
+        label: "Easements & Restrictions: ",
+        value: "Recorded easements, right-of-ways, covenants, and subdivision plans.",
+      },
+      {
+        label: "Liens & Judgments: ",
+        value: "Civil court searches for active or prior liens, judgments, and claims.",
+      },
+      {
+        label: "Legal Descriptions & Plats: ",
+        value: "Full metes-and-bounds descriptions, subdivision maps, and boundary surveys.",
+      },
+      {
+        label: "Miscellaneous Filings: ",
+        value: "Tax transfer receipts, UCC filings, releases, and any other relevant county records.",
+      },
+      {
+        label: "Why it matters: ",
+        value: "A full title search compiles all recorded documents tied to the property, giving a comprehensive view of ownership, financial obligations, and land use restrictions.",
+      },
+    ],
+  },
 ];

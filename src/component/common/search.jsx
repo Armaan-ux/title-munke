@@ -210,12 +210,12 @@ export default function Search(){
   };
 
     return(
-        <form className="p-6 rounded-xl bg-[#F5F0EC] mb-4" onSubmit={handleSearch} >
-          <div className="relative mb-6"  >
-            <MapPin className="text-[#5D4135] absolute top-5 left-5" />
+        <form className="p-10 rounded-xl bg-[#F5F0EC]  mb-4" onSubmit={handleSearch} >
+          <div className="relative mb-10"  >
+            <MapPin size={28} className="text-[#5D4135] absolute top-6 left-5" />
 
             <Input 
-                className="border-none bg-white h-16 px-14 pr-56 py-8 !rounded-[20px] text-xl placeholder:text-primary text-tertiary " 
+                className="border border-[#ebd0bb] bg-white h-[75px] px-16 pr-56 py-8 !rounded-[20px] !text-xl placeholder:text-primary text-tertiary " 
                 placeholder="Enter Address here..." 
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
@@ -224,7 +224,7 @@ export default function Search(){
             <Button 
                 variant="secondary" 
                 type="submit"
-                className="absolute top-2.5 right-3.5 max-w-[12rem] w-full rounded-lg" 
+                className="absolute top-2.5 right-3.5 h-[54px] max-w-[12rem] w-full rounded-lg" 
                 size="lg" 
                 disabled={loading || !address.trim().length || !isChecked}
             > Search <SearchIcon /> 

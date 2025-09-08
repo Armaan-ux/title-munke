@@ -1,16 +1,10 @@
-// import "./index.css";
-import Logo from "../../img/Logo.svg";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
   ArrowUp,
-  ChevronRight,
   CircleCheck,
-  Dot,
   Download,
-  MapPin,
-  Star,
 } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import {
@@ -21,13 +15,6 @@ import {
 } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import Footer from "./footer";
 import { useEffect, useState } from "react";
 import {
@@ -35,190 +22,29 @@ import {
   faq,
   howItWorksSteps,
   keyFeatures,
-  pennsylvaniaCities,
-  previousSearches,
+  sampleReportItems,
   testimonials,
   trustedBy,
   whyTitleMunke,
 } from "@/utils/constant";
 import Navbar from "./navbar";
 import CountiesMapSvg from "./counties-map-svg";
-import { motion, useTransform } from "motion/react";
+import { motion } from "motion/react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
-const sampleReportItems = [
-  {
-    id: 1,
-    img: "/sample-report/2041 Sample Report_page.jpg",
-    title: "Property Information",
-    content: [
-      { label: "Address", value: "2041 Lawfer Avenue, Allentown, PA 18104" },
-      {
-        label: "Parcel Identifier",
-        value: "PIN 548788191866-1, Block 12, Lot 019 ",
-      },
-      {
-        label: "Why it matters",
-        value:
-          "Ensures searches and filings are tied to the exact parcel, avoiding errors with nearby or similarly named properties.",
-      },
-    ],
-  },
-  {
-    id: 2,
-    img: "/sample-report/Easement_page.jpg",
-    title: "Easements / Restrictions",
-    content: [
-      {
-        label: "Drainage easement (2009) -",
-        value:
-          "Grants South Whitehall Township rights for stormwater drainage across the property.",
-      },
-      {
-        label: "Prior transit right-of-way (2006)",
-        value:
-          " Property remains subject to easement rights tied to the former Lehigh Valley Transit Company corridor (Instrument #7384411).",
-      },
-      {
-        label: "Why it matters:",
-        value:
-          "Easements and restrictions dictate how the property can be used, where improvements may be built, and ensure access rights remain enforceable.",
-      },
-    ],
-  },
-  {
-    id: 3,
-    img: "/sample-report/Civil Record Search.png",
-    title: "Civil Records Check",
-    content: [
-      { label: "No judgments or liens found -", value: "Search results for Lawfer Associates LP show a clear record." },
-      { label: "Why it matters: ", value: "Confirms there are no active legal claims or creditor judgments tied to the property or current owner." },
-      { label: "Jurisdiction", value: "Sangamon County" },
 
-    ],
-  },
-  {
-    id: 4,
-    img: "/sample-report/Deed.jpg",
-    title: "Current Owner & Deed",
-    content: [
-      { label: "Owner:", value: "Lawfer Associates, LP" },
-      { label: "Deed recorded: ", value: "November 24, 2008 (Instrument #7507233), transferred from Carova Acquisitions LP." },
-      {
-        label: "Why it matters",
-        value:
-          "Establishes current legal ownership and confirms the deed recording in county records.",
-      },
-    ],
-  },
-  {
-    id: 5,
-    img: "/sample-report/Mortgage _ Security Instrument.jpg",
-    title: "Mortgages",
-    content: [
-      {
-        label: "$200,000 – Fox Chase Bank",
-        value: "(Open-End Mortgage, recorded October 23, 2015, Instrument #2015031806)",
-      },
-      {
-        label: "Assignment of Rents – Fox Chase Bank",
-        value: "(recorded October 23, 2015, Instrument #2015031807).",
-      },
-      {
-        label: "Why it matters",
-        value:
-          "The open-end mortgage secures ongoing credit obligations, while the Assignment of Rents gives the lender rights to rental income if the borrower defaults",
-      },
-    ],
-  },
-  {
-    id: 6,
-    img: "sample-report/Legal Description.jpg",
-    title: "Legal Description",
-    content: [
-      { label: "Metes-and-bounds:", value: "Begins at a point 98 feet east of South Fairview Avenue, extending 29.5 feet to center line, north 216 feet to South Fairview, then south and east along adjoining property lines. " },
-      {
-        label: "Lots 89 and 90, Block CC –",
-        value:
-          "Frontage totaling 130.14 feet on Fairview Avenue, extending back to the abandoned Lehigh Valley Transit Company right-of-way.",
-      },
-      {
-        label: "Why it matters:",
-        value:
-          "Provides the exact surveyed boundaries that define the property, critical for development, sales, and preventing encroachment disputes.",
-      },
-    ],
-  },
-  {
-    id: 7,
-    img: "sample-report/Plat Map (Subdivision Plan).jpg",
-    title: "All Source Documents Collected ( Plat Map (Subdivision Plan).pdf, Various document example 1, Various document example 2, Various document example 3, Assignment of Rents",
-    content: [
-      { label: "Deeds:", value: "Current deed, prior deeds, and transfer records confirming ownership history." },
-      {
-        label: "Mortgages & Assignments –",
-        value: "Open, satisfied, and released mortgages; assignments of rents and security agreements.",
-      },
-      {
-        label: "Easements & Restrictions -",
-        value: "Recorded easements, right-of-ways, covenants, and subdivision plans.",
-      },
-      {
-        label: "Liens & Judgments –",
-        value: "Civil court searches for active or prior liens, judgments, and claims.",
-      },
-      {
-        label: "Legal Descriptions & Plats -",
-        value: "Full metes-and-bounds descriptions, subdivision maps, and boundary surveys.",
-      },
-      {
-        label: "Miscellaneous Filings -",
-        value: "Tax transfer receipts, UCC filings, releases, and any other relevant county records.",
-      },
-      {
-        label: "Why it matters:",
-        value: "A full title search compiles all recorded documents tied to the property, giving a comprehensive view of ownership, financial obligations, and land use restrictions.",
-      },
-    ],
-  },
-];
 
 export default function Home() {
   const [openReportDialog, setOpenReportDialog] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [emblaRef] = useEmblaCarousel({ dragFree: true });
-  const navigate = useNavigate();
-  function navigateToLogin() {
-    navigate("/login");
-  }
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2, // delay between each FAQ item
-      },
-    },
-  };
-
-  const itemVariants = (isEven) => ({
-    hidden: { opacity: 0, x: isEven ? -50 : 50 },
-    show: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
-    },
-  });
 
   const scrollToSection = (id) => {
     const section = document.getElementById(id);
@@ -411,9 +237,9 @@ export default function Home() {
                     <div className="space-y-10">
                       <div>
                         <img
-                          src="/mac-window.png"
-                          alt="mac window"
-                          className="mx-auto"
+                          src={item.img}
+                          alt={item.title}
+                          className="mx-auto max-w-[14rem] mb-5"
                         />
                         <h3 className="text-2xl font-semibold text-center text-secondary mb-4">
                           {item.title}
@@ -429,97 +255,59 @@ export default function Home() {
             })}
           </div>
         </div>
-      </section>
+      </section> 
 
-      {/* Previous Searches */}
-      {/* <section className="max-w-[1280px] mx-auto mb-20 px-4 scroll-mt-20" id="report-preview" >
-        <h2 className="text-h2 text-center text-secondary mb-6" >Sample <span className="text-tertiary" > Report </span></h2>
-        <p className="text-center text-body mb-12 max-w-5xl mx-auto text-coffee-light" >Each report is more than just an address. See ownership history, valuations, tax records, permits, and the original collected documents—all brought together in a clear, interactive breakdown.</p>
-
-        <div className="flex flex-col md:flex-row gap-5 md:gap-6 mb-10" >
-          <div className="" >
-            <img src="/mansion.jpg" alt="mansion" className="mb-3 md:mb-7" />
-            <p className="text-center flex items-center gap-2 md:gap-3 justify-center text-base md:text-xl" ><MapPin className="text-tertiary" />
-             123 Maple Avenue, San Diego, CA
-            </p>
-          </div>
-          <div className="flex flex-col items-center" >
-            <div className="mb-2 max-md:flex *:min-w-0" >
-            <img src="/map-highlight.jpg" alt="map highlight" className="mb-1 md:mb-5" />
-            <img src="/map-field.jpg" alt="map field"  />
-            </div>
-            <button>
-              <p className="text-sm lg:text-base flex justify-between items-center gap-1 md:gap-2 font-semibold text-tertiary" >View more images <ChevronRight size={22} /></p>
-            </button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6" >
-          {
-            previousSearches.map((item, index) => (
-              <motion.div 
-               initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
-                    viewport={{ once: true }}
-              key={index} className="flex flex-col items-center gap-4 p-3 md:p-6 py-8 rounded-[20px] shadow-[0px_4px_14px_0px_#D7C4B666]" >
-                <div className="bg-[#F5F0EC] rounded-full size-[68px] grid place-items-center text-center" >
-                  <img src={item.icon}  alt={item.title} />
-                </div>
-                <h3 className="text-xl font-semibold text-secondary text-center" >{item.title}</h3>
-                <p className="text-center text-coffee-light" >{item.description}</p>
-              </motion.div>
-            ))
-          }
-        </div>
-        <div className="flex justify-center my-10 w-full" >
-          <Button className="hover:scale-105" size="lg" onClick={() => setOpenReportDialog(true)} >View Full Report <ArrowRight /></Button>
-        </div>
-
-      </section> */}
-
-
-
-      <section  className="max-w-[1280px] mx-auto mb-10 px-4 space-y-10 scroll-mt-20 py-20" id="report-preview"   >
+      {/* Sample Report  */}
+      <section  className="max-w-[1280px] mx-auto mb-10 px-4 space-y-10 scroll-mt-20 py-10 md:py-20" id="report-preview"   >
           <h2 className="text-h2 mb-12 text-center text-secondary"  >Sample Report </h2>
 
         
-          {
-            sampleReportItems.map((item, index) => (
 
           <motion.div 
-          initial={{ opacity: 0, y: 0 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          viewport={{ once: true, amount: 0.3 }}
-          className={`flex flex-col max-h-[70vh] overflow-hidden md:flex-row py-20 rounded-4xl   p-10 *:basis-1/2 gap-8 justify-center items-center sticky bg-[#F5F0EC] top-[12%] md:top-[15%] ${sampleReportItems.length === index + 1  ? "mb-20":"mb-44"  }`} 
-          key={index} 
-          >
-            <div>
+            // initial={{ opacity: 0, y: 0 }}
+            // whileInView={{ opacity: 1, y: 0 }}
+            // transition={{ duration: 0.6, ease: "easeOut" }}
+            // viewport={{ once: true, amount: 0.3 }}
+            className={`flex flex-col lg:flex-row py-20 rounded-4xl  p-4 md:p-10 *:basis-1/2 gap-8 justify-center items-start  bg-[#F5F0EC] `} 
+            // key={index} 
+            >
+            <div className="lg:sticky top-[15%] " >
               <img
-                src={item.img}
-                className="w-full max-w-[80%] mx-auto"
-                alt="mansion"
-              />
+                src="/sample-report/2041 Sample Report_page.jpg"
+                className="w-full md:max-w-[80%] mx-auto"
+                alt="final sample report"
+                />
             </div>
-            <div>
-              <ListForReport
-                titleClass="md:text-3xl mb-8"
-                listClass="md:text-lg"
-                title={item.title}
-                items={item.content}
-              />
+            <div className="space-y-44 " >
+                {
+                  sampleReportItems.map((item, index) => (
+                <div className="sticky z-20 top-[10%] md:top-[15%] bg-[#F5F0EC] p-0 sm:p-5  flex" >  
+
+                  <img
+                    src={item.img}
+                    className="absolute top-0 left-0 w-full h-full -z-10  opacity-20 blur-[1px] " 
+                    alt="final sample report"
+                />
+                <ListForReport
+                  titleClass="md:text-2xl mb-8"
+                  listClass="md:text-base"
+                  title={item.title}
+                  items={item.content}
+                  containerClass="mx-auto bg-gradient-to-b from-transparent via-white to-transparent px-4 md:px-[42px] py-12 last:pb-0 md:py-[120px] rounded-[10px]"
+                  />
+                </div>
+            ))}
             </div>
           </motion.div>
-        ))}
         <div className="flex justify-center w-full">
-          <Link to="/public/pdf/report.pdf" target="_blank" download>
+          <Link to="/public/Sample Docs.zip" target="_blank" download>
             <Button className="hover:scale-105" size="lg">
               Download Sample Report <Download />
             </Button>
           </Link>
         </div>
       </section>
+
 
       {/* Why choose Title Munke? */}
       <section className="px-4">
@@ -540,9 +328,9 @@ export default function Home() {
                   transition={{
                     duration: 0.5,
                     delay: index * 0.1,
-                    ease: "easeOut",
+                    ease: "linear",
                   }}
-                  viewport={{ once: true, amount: 0.4 }}
+                  viewport={{ once: true, amount: 0.2 }}
                   key={index}
                   className="flex flex-col items-center hover:bg-coffee-dark/70 transition-all duration-500 bg-coffee-dark p-6 sm:p-10 rounded-[30px]"
                 >
@@ -600,16 +388,29 @@ export default function Home() {
         </h2>
         <Accordion className="max-w-3xl mx-auto  mb-4" type="multiple">
           <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.2 }}
+                  variants={{
+                    hidden: { opacity: 0 },
+                    show: {
+                      opacity: 1,
+                      transition: { staggerChildren: 0.25 },
+                    },
+                  }}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true, amount: 0.2 }}
             className="space-y-2 md:space-y-4"
           >
             {faq.map((item, index) => (
               <motion.div
                 key={index}
-                variants={itemVariants(index % 2 === 0)}
+                variants={{
+                    hidden: { opacity: 0, x: index % 2 === 0 ? -20 : 20 },
+                    show: {
+                      opacity: 1,
+                      x: 0,
+                      transition: { duration: 0.4, ease: "easeOut" },
+                    },
+                  }}
                 className="hover:scale-105 transition-all duration-500"
               >
                 <AccordionItem
@@ -676,17 +477,17 @@ export default function Home() {
                     >
                       <p className=" text-[#E6D5C7] mb-8">{item.content}</p>
                       <p className="text-[#E6D5C7]">{item.name}</p>
-                      <p className="text-sm text-coffee-bg-foreground">
+                      {/* <p className="text-sm text-coffee-bg-foreground">
                         {item.role}
-                      </p>
+                      </p> */}
                       <img
                         src="/card-corner.png"
                         className="absolute -bottom-[1px] -right-[1px] border-none"
                         alt="card corner"
                       />
                       <img
-                        src={item.image}
-                        className="absolute bottom-0 right-0 z-10 border-none"
+                        src={"/user-placeholder.png"}
+                        className="absolute bottom-0 right-0 z-10 size-14 rounded-full  border-none"
                         alt="profile"
                       />
                     </motion.div>
@@ -694,28 +495,6 @@ export default function Home() {
                 </motion.div>
               </div>
 
-              {/* <div className="flex justify-between max-w-4xl items-center" >
-            <div className="flex gap-3 items-center" >  
-              <p className="text-[58px] text-coffee-bg-foreground font-bold" >4.82</p>
-              <div>
-                <div className="*:fill-yellow-500 *:text-yellow-500 flex gap-1 bg-[#987555] p-1.5 rounded-full" >
-                  <Star size={14} />
-                  <Star size={14} />
-                  <Star size={14} />
-                  <Star size={14} />
-                  <Star size={14} />
-                </div>
-                <p className="text-coffee-bg-foreground text-sm text-center" >2,488 Rating</p>
-              </div>
-
-            </div>
-
-            <div className="flex items-center justify-center " >
-              <Dot />
-              <Dot />
-              <Dot />
-            </div>
-          </div> */}
             </div>
           </div>
         </div>
@@ -828,6 +607,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Footer */}
       <Footer />
 
       {/* Back to Top */}
@@ -1002,9 +782,9 @@ export default function Home() {
   );
 }
 
-function ListForReport({ title, items, titleClass, listClass }) {
+function ListForReport({ title, items, titleClass, listClass, containerClass }) {
   return (
-    <div>
+    <div className={cn(containerClass)} >
       <p
         className={cn(
           "text-lg md:text-[22px] mb-2 font-semibold text-secondary ",

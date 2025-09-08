@@ -39,23 +39,23 @@ export const routes = {
     },
   ],
   admin: [
+    // {
+    //   link: "/admin/dashboard",
+    //   name: "Dashboard",
+    //   class: "fas fa-person",
+    //   icon: LayoutDashboard
+    // },
     {
-      link: "/admin/dashboard",
-      name: "Dashboard",
+      link: "/admin/users",
+      name: "Users",
       class: "fas fa-person",
-      icon: LayoutDashboard
+      icon: UserRound
     },
     {
       link: "/admin/demo-requests",
       name: "Demo Requests",
       class: "fas fa-person",
       icon: BookUser
-    },
-    {
-      link: "/admin/users",
-      name: "Users",
-      class: "fas fa-person",
-      icon: UserRound
     },
     {
       link: "/admin/audit-logs",

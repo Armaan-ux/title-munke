@@ -345,3 +345,10 @@ th:last-child {
   border-top-right-radius: 10px; /* Adjust as needed */
   border-bottom-right-radius: 10px; /* Adjust as needed */
 }
+
+.test{
+    margin: auto;
+    background: linear-gradient(transparent, #ffffff, transparent);
+    padding: 120px 42px;
+    border-radius: 10px;
+}
