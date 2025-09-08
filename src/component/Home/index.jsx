@@ -312,6 +312,53 @@ export default function Home() {
       </section>
 
 
+      {/* v2 */}
+      {/* <section  className="max-w-[1440px] mx-auto mb-10 px-4 space-y-10 scroll-mt-20 py-10 md:py-20" id="report-preview"   >
+          <h2 className="text-h2 mb-12 text-center text-secondary"  >Sample Report </h2>
+
+      
+      <motion.div 
+            className={`flex flex-col lg:flex-row py-20 rounded-4xl  p-4 md:p-10 gap-8 justify-center items-start  bg-[#F5F0EC] `} 
+            >
+            <div className="lg:sticky top-[16%] basis-[35%]" >
+              <img
+                src="/sample-report/2041 Sample Report_page.jpg"
+                className="w-full "
+                alt="final sample report"
+                />
+            </div>
+            <div className="space-y-44 basis-[65%] " >
+                {
+                  sampleReportItems.map((item, index) => (
+                <div className=" sticky z-20 h-full top-[8%] md:top-[12%] last:mb-6 last:pb-0 bg-[#F5F0EC] min-h-[90vh] md:min-h-[80vh] flex flex-col-reverse md:flex-row gap-4 items-center p-4" >  
+
+                  <img
+                    src={item.img}
+                    className=" min-w-0  object-contain max-w-xs mx-auto basis-[40%]" 
+                    alt="final sample report"
+                />
+                <ListForReport
+                  titleClass="md:text-2xl mb-8"
+                  listClass="md:text-base"
+                  title={item.title}
+                  items={item.content}
+                  containerClass="mx-auto basis-[60%] px-4  last:pb-0  rounded-[10px]"
+                  />
+                </div>
+            ))}
+            </div>
+          </motion.div>
+        <div className="flex justify-center w-full">
+          <Link to="/public/Sample Docs.zip" target="_blank" download>
+            <Button className="hover:scale-105" size="lg">
+              Download Sample Report <Download />
+            </Button>
+          </Link>
+        </div>
+
+      </section> */}
+
+
       {/* Why choose Title Munke? */}
 
         <section className="px-4">
