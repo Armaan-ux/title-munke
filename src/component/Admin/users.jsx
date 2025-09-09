@@ -14,11 +14,19 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button";
-import { EyeIcon, Pencil, PlusCircle, Trash2 } from "lucide-react";
+import { EyeIcon, Pencil, PencilLine, PlusCircle, Trash2 } from "lucide-react";
 import AddUserModal from "../Modal/AddUserModal";
 import AgentList from "../Modal/AgentList";
 import AddAgentByAdminModal from "../Modal/AddAgentByAdminModal";
 import { Switch } from "@/components/ui/switch";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 
 const userTypes = [
@@ -405,7 +413,7 @@ function AdminBrokersList(){
                       <TableHead>Last Login</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Status</TableHead>
-                      {/* <TableHead>Action</TableHead> */}
+                      <TableHead>Action</TableHead>
                       <TableHead>Agent List</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -423,23 +431,32 @@ function AdminBrokersList(){
                           <TableCell>{item.totalSearches}</TableCell>
                           <TableCell>{getFormattedDateTime(item.lastLogin)}</TableCell>
                           <TableCell>{item.email}</TableCell>
-                          {/* <TableCell>{item.status}</TableCell> */}
+                          <TableCell>{item.status}</TableCell>
                           <TableCell>
 
                              <div >
                               {item.status !== "UNCONFIRMED" && (
                                 <>
-                                  <button 
+                                  {/* <button 
                                     size="sm" 
-                                    // variant="ghost" 
                                     onClick={() => handleBrokerStatus(item)} 
                                     className={`
-                                      rounded-lg px-4 py-2 w-full transition-all cursor-pointer
+                                      rounded-lg px-4 py-2 w-full transition-all cursor-pointer text-sm
                                       ${item.status === "ACTIVE" ? "bg-green-100 text-green-700 hover:bg-green-200" : "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"}
                                       `}
                                   >
-                                    {item.status === "ACTIVE" ? "InActive" : "Active"}
-                                  </button>
+                                    {item.status === "ACTIVE" ? "Inactive" : "Active"}
+                                  </button> */}
+
+                                  
+                            <DropdownMenu>
+                              <DropdownMenuTrigger>
+                                <Button size="icon" className="text-sm" variant="ghost" > <PencilLine /></Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => handleBrokerStatus(item)}>{item.status === "ACTIVE" ? "Inactive" : "Active"}</DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                                   {/* <button className="btn action-btn">
                                     Actions <i className="fas fa-caret-down"></i>
                                   </button>
