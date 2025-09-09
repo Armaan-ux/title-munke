@@ -29,7 +29,7 @@ const BrokerDashboard = () => {
     <div className="my-4" >
 
         {/* cards */}
-        <div className="flex *:basis-1/3 gap-5 *:rounded-2xl *:bg-[#F5F0EC] mb-4" >
+        <div className="grid grid-cols-2 md:grid-cols-3  gap-5 *:rounded-2xl *:bg-[#F5F0EC] mb-4" >
           <div className="p-5 flex justify-between items-end " >
             <div>
               <p className="mb-4 text-secondary" > Total Agents</p>

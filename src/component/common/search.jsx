@@ -210,12 +210,13 @@ export default function Search(){
   };
 
     return(
-        <form className="p-10 border-2 border-dashed border-primary rounded-xl bg-[#F5F0EC]  mb-4" onSubmit={handleSearch} >
-          <div className="relative mb-10"  >
+        <form className="p-4 md:p-10  rounded-xl bg-[#F5F0EC]  mb-4 flex flex-col items-center" onSubmit={handleSearch} >
+          <img  src="/Logo.svg" className="w-36 md:w-48 mb-8" alt="Title Munke Logo" />
+          <div className="relative mb-10 max-w-[60rem] w-full"  >
             <MapPin size={28} className="text-[#5D4135] absolute top-6 left-5" />
 
             <Input 
-                className="border border-[#ebd0bb] bg-white h-[75px] px-16 pr-56 py-8 !rounded-[20px] !text-xl placeholder:text-primary text-tertiary " 
+                className="border-none w-full bg-white h-[75px] px-12 md:px-16 pr-12 md:pr-56 py-8 !rounded-[20px] !text-xl placeholder:text-primary text-tertiary shadow-lg" 
                 placeholder="Enter Address here..." 
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
@@ -224,10 +225,13 @@ export default function Search(){
             <Button 
                 variant="secondary" 
                 type="submit"
-                className="absolute top-2.5 right-3.5 h-[54px] max-w-[12rem] w-full rounded-lg" 
+                // className="absolute top-2.5 right-3.5 h-[54px] max-w-[12rem] w-full rounded-lg" 
+                className="absolute top-2.5 right-3.5 h-[54px] max-w-[12rem] min-w-[3.5rem] rounded-lg" 
                 size="lg" 
                 disabled={loading || !address.trim().length || !isChecked}
-            > Search <SearchIcon /> 
+            > 
+            {/* Search  */}
+            <SearchIcon className="size-6" /> 
             </Button>
           </div>
           <div className="flex gap-3 items-center mb-6 pl-4" >
