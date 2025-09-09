@@ -168,22 +168,22 @@ function Agents(){
     setReinvitingAgentId(null);
   };
 
-  const agentss = [
-    {
-        "__typename": "Relationship",
-        "updatedAt": "2025-08-29T14:32:09.376Z",
-        "brokerName": "Ravinder",
-        "createdAt": "2025-08-29T14:32:09.376Z",
-        "agentId": "d4185428-80e1-70e7-7507-11778d708c04",
-        "id": "d4185428-80e1-70e7-7507-11778d708c04",
-        "agentName": "RS",
-        "brokerId": "a4a894b8-5061-7039-6b23-f37722d94011",
-        "status": "ACTIVE",
-        "email": "Ravinsandhu2@gmail.com",
-        "lastLogin": "2025-08-29T14:46:37.414Z",
-        "totalSearches": 0
-    }
-]
+//   const agentss = [
+//     {
+//         "__typename": "Relationship",
+//         "updatedAt": "2025-08-29T14:32:09.376Z",
+//         "brokerName": "Ravinder",
+//         "createdAt": "2025-08-29T14:32:09.376Z",
+//         "agentId": "d4185428-80e1-70e7-7507-11778d708c04",
+//         "id": "d4185428-80e1-70e7-7507-11778d708c04",
+//         "agentName": "RS",
+//         "brokerId": "a4a894b8-5061-7039-6b23-f37722d94011",
+//         "status": "ACTIVE",
+//         "email": "Ravinsandhu2@gmail.com",
+//         "lastLogin": "2025-08-29T14:46:37.414Z",
+//         "totalSearches": 0
+//     }
+// ]
 
   return (
     <>
@@ -226,12 +226,12 @@ function Agents(){
               </TableHeader>
               <TableBody>
                 {
-                  agentss?.length === 0 ?
+                  agents?.length === 0 ?
                   <TableRow >
                     <TableCell colSpan={8} className="font-medium text-center py-10">No Records found.</TableCell>
                   </TableRow>
                   :
-                  agentss?.map((item, index) => (
+                  agents?.map((item, index) => (
                     <TableRow key={item.id}>
                       <TableCell className="font-medium">{index + 1}</TableCell>
                       <TableCell>{item.agentName}</TableCell>
