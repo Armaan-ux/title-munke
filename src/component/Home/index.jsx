@@ -342,7 +342,7 @@ export default function Home() {
           ))
           }
           <div className="flex justify-center w-full" >
-            <Link to="/public/Sample Docs.zip" target="_blank" download>
+            <Link to="/Sample Docs.zip" target="_blank" download>
             <Button
               className="hover:scale-105"
               size="lg"
