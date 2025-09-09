@@ -311,7 +311,7 @@ export default function Home() {
         </div>
       </section> */}
 
-      <section  className="max-w-[1280px] mx-auto mb-10 px-4 space-y-10 scroll-mt-20 py-20" id="report-preview"   >
+      <section  className="max-w-[1280px] mx-auto mb-10 px-4 space-y-10 scroll-mt-20" id="report-preview"   >
           <h2 className="text-h2 mb-12 text-center text-secondary"  >Sample Report </h2>
 
         
@@ -319,15 +319,15 @@ export default function Home() {
             sampleReportItems.map((item, index) => (
 
           <motion.div 
-          initial={{ opacity: 0, y: 0 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          viewport={{ once: true, amount: 0.3 }}
-          className={`flex flex-col max-h-[70vh] overflow-hidden md:flex-row py-20 rounded-4xl   p-10 *:basis-1/2 gap-8 justify-center items-center sticky bg-[#F5F0EC] top-[12%] md:top-[15%] ${sampleReportItems.length === index + 1  ? "mb-20":"mb-44"  }`} 
-          key={index} 
+            // initial={{ opacity: 0, y: 0 }}
+            // whileInView={{ opacity: 1, y: 0 }}
+            // transition={{ duration: 0.6, ease: "easeOut" }}
+            // viewport={{ once: true, amount: 0.3 }}
+            className={`flex flex-col md:max-h-[70vh] overflow-hidden md:flex-row  md:py-20 rounded-4xl  p-5 md:p-10 md:*:basis-1/2 gap-8 justify-center items-center md:sticky bg-[#F5F0EC] top-[12%] md:top-[15%] ${sampleReportItems.length === index + 1  ? "mb-5 md:mb-20":"mb-10 md:mb-44"  }`} 
+            key={index} 
           > 
           <div className="py-2 h-full" >
-            <img src={item.img} className=" max-w-[70%] mx-auto min-w-0" alt="mansion" />
+            <img src={item.img} className=" sm:max-w-[70%] mx-auto min-w-0" alt="mansion" />
           </div>
             <div>
               <ListForReport
@@ -342,7 +342,7 @@ export default function Home() {
           ))
           }
           <div className="flex justify-center w-full" >
-            <Link to="/public/pdf/report.pdf" target="_blank" download>
+            <Link to="/public/Sample Docs.zip" target="_blank" download>
             <Button
               className="hover:scale-105"
               size="lg"
@@ -763,102 +763,34 @@ export default function Home() {
                 className="max-md:w-full  md:mb-12"
               />
               <ListForReport
-                title="Easements / Restrictions"
-                items={[
-                  { label: "", value: "Utility access easement (2020)" },
-                  { label: "Drainage restriction (2019)", value: "" },
-                  {
-                    label: "Why it matters:",
-                    value:
-                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque in tyreyu maximus augue.",
-                  },
-                ]}
+                title={sampleReportItems[0].title}
+                items={sampleReportItems[0].content}
               />
               <ListForReport
-                title="Civil Records Check"
-                items={[
-                  { label: "", value: "No judgments or liens found " },
-                  { label: "Drainage restriction (2019)", value: "" },
-                  {
-                    label: "Why it matters:",
-                    value: "Lorem ipsum dolor sit amet, consectetut.",
-                  },
-                ]}
+                title={sampleReportItems[1].title}
+                items={sampleReportItems[1].content}
+              />
+              <ListForReport
+                title={sampleReportItems[2].title}
+                items={sampleReportItems[2].content}
               />
             </div>
             <div className="space-y-6">
               <ListForReport
-                title={"Property Information"}
-                items={[
-                  {
-                    label: "Address",
-                    value: "1457 Elmwood Avenue, Springfield, IL 62704",
-                  },
-                  { label: "Parcel Identifier", value: "09-23-456-001" },
-                  { label: "Jurisdiction", value: "Sangamon County" },
-                  {
-                    label: "Why it matters",
-                    value:
-                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque in maximu.",
-                  },
-                ]}
+                title={sampleReportItems[3].title}
+                items={sampleReportItems[3].content}
               />
               <ListForReport
-                title={"Current Owner & Deed"}
-                items={[
-                  { label: "Owner", value: "Greenfield Holdings LLC" },
-                  { label: "Deed recorded", value: "2022" },
-                  {
-                    label: "Why it matters",
-                    value:
-                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque in maximus",
-                  },
-                ]}
+                title={sampleReportItems[4].title}
+                items={sampleReportItems[4].content}
               />
               <ListForReport
-                title={"Mortgages"}
-                items={[
-                  {
-                    value: (
-                      <span>
-                        <strong>$325,000</strong>, First National Bank
-                      </span>
-                    ),
-                  },
-                  {
-                    value: (
-                      <span>
-                        <strong>$780,500</strong>, Springfield Trust Bank
-                      </span>
-                    ),
-                  },
-                  {
-                    label: "Why it matters",
-                    value:
-                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque in maximus",
-                  },
-                ]}
+                title={sampleReportItems[5].title}
+                items={sampleReportItems[5].content}
               />
               <ListForReport
-                title={"Legal Description"}
-                items={[
-                  { value: "Full metes-and-bounds description text here..." },
-                  {
-                    label: "Why it matters",
-                    value:
-                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque in maximus augue.",
-                  },
-                ]}
-              />
-              <ListForReport
-                title={"All Source Documents Collected"}
-                items={[
-                  { value: "Deeds, Mortgages, Easements, Legal Docs" },
-                  {
-                    label: "Why it matters",
-                    value: "Lorem ipsum dolor sit amet, consectetur.",
-                  },
-                ]}
+                title={sampleReportItems[6].title}
+                items={sampleReportItems[6].content}
               />
             </div>
           </div>
