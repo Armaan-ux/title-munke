@@ -311,7 +311,7 @@ export default function Home() {
         </div>
       </section> */}
 
-      <section  className="max-w-[1280px] mx-auto mb-10 px-4 space-y-10 scroll-mt-20" id="report-preview"   >
+      <section  className="max-w-[1280px] mx-auto mb-10 md:mb-28 px-4 space-y-10 scroll-mt-20" id="report-preview"   >
           <h2 className="text-h2 mb-12 text-center text-secondary"  >Sample Report </h2>
 
         
