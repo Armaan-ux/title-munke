@@ -261,7 +261,7 @@ export default function Home() {
       </section> 
 
       {/* Sample Report  */}
-      <section  className="max-w-[1280px] mx-auto mb-10 px-4 space-y-10 scroll-mt-20 py-10 md:py-20" id="report-preview"   >
+      {/* <section  className="max-w-[1280px] mx-auto mb-10 px-4 space-y-10 scroll-mt-20 py-10 md:py-20" id="report-preview"   >
           <h2 className="text-h2 mb-12 text-center text-secondary"  >Sample Report </h2>
 
         
@@ -309,6 +309,46 @@ export default function Home() {
             </Button>
           </Link>
         </div>
+      </section> */}
+
+      <section  className="max-w-[1280px] mx-auto mb-10 px-4 space-y-10 scroll-mt-20 py-20" id="report-preview"   >
+          <h2 className="text-h2 mb-12 text-center text-secondary"  >Sample Report </h2>
+
+        
+          {
+            sampleReportItems.map((item, index) => (
+
+          <motion.div 
+          initial={{ opacity: 0, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          viewport={{ once: true, amount: 0.3 }}
+          className={`flex flex-col max-h-[70vh] overflow-hidden md:flex-row py-20 rounded-4xl   p-10 *:basis-1/2 gap-8 justify-center items-center sticky bg-[#F5F0EC] top-[12%] md:top-[15%] ${sampleReportItems.length === index + 1  ? "mb-20":"mb-44"  }`} 
+          key={index} 
+          > 
+          <div className="py-2 h-full" >
+            <img src={item.img} className=" max-w-[70%] mx-auto min-w-0" alt="mansion" />
+          </div>
+            <div>
+              <ListForReport
+                titleClass="md:text-3xl mb-8"
+                listClass="md:text-lg"
+                title={item.title}
+                items={item.content}
+              />
+
+            </div>
+          </motion.div>
+          ))
+          }
+          <div className="flex justify-center w-full" >
+            <Link to="/public/pdf/report.pdf" target="_blank" download>
+            <Button
+              className="hover:scale-105"
+              size="lg"
+              >Download Sample Report <Download /></Button>
+            </Link>
+          </div>
       </section>
 
 
@@ -425,16 +465,18 @@ export default function Home() {
       </section>
 
       {/* Trusted by Leading Brokers & Agents */}
-      <section className="max-w-[1440px] mx-auto mb-20">
+      <section className="max-w-[1440px] mx-auto mb-20 lg:mb-36">
         <h4 className="text-center font-bold text-secondary mb-3">
           Trusted by Leading Brokers & Agents
         </h4>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 items-center w-full justify-between">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 items-center w-full justify-between place-items-center">
           {trustedBy.map((item, index) => (
             <img
               key={index}
               src={item}
-              className=""
+              className="w-24 sm:w-36 object-contain"
+              // width={150}
+              // height={150}
               alt="trusted by companies"
             />
           ))}

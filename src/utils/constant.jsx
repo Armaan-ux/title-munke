@@ -7,7 +7,8 @@ export const navItems = [
   // { name: "Previous Searches", path: "previous-searches" },
 ]
 
-export const trustedBy = ["mortage-connect.png", "/investors-title.png", "/rhythmic.png", "/catic.png",  "/ltc.png" ]
+// export const trustedBy = ["mortage-connect.png", "/investors-title.png", "/rhythmic.png", "/catic.png",  "/ltc.png" ]
+export const trustedBy = ["/partners/Lawfer Associates.jpg", "/partners/remax-logo-og.jpg", "/partners/Ajax Management.jpg", "/partners/Carova Acquisitions Logo Example.jpg" ]
 
 export const whyTitleMunke = [
   {

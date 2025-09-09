@@ -245,7 +245,7 @@ export default function Search(){
             {loading && message && <p>{message}</p>}
             {zipUrl && (
                   <a href={zipUrl} download >
-                    <Button  className="text-sm" size="sm"   >
+                    <Button  className="text-sm" size="sm" type="button"  >
                       Download Results <Download />
                     </Button>
                   </a>
