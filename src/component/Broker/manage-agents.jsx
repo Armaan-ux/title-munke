@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import AddUserModal from "@/component/Modal/AddUserModal";
 import {
+  assignAgent,
   calculateAverage,
   getTopPerformerAgent,
   inActiveAgent,
@@ -26,9 +27,64 @@ import {
 } from "@/components/ui/table"
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Plus, PlusCircle, Search } from "lucide-react";
+import { ChevronDownIcon, PencilLine, Plus, PlusCircle, Search } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { API } from "aws-amplify";
+import { listAgents } from "@/graphql/queries";
 
-const ManageAgents = () => {
+const agentTypes = [
+    {
+        name: "Agents",
+        id: "agents" 
+    },
+    {
+        name: "Unassigned Agents",
+        id: "unassigned-agents"
+    },
+    // {
+    //     name: "Agent",
+    //     id: "agent" 
+    // }
+]
+
+
+export default function ManageAgents(){
+  const [activeTab, setActiveTab] = useState(agentTypes[0]);
+  return (
+    
+        <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
+
+          <div className="space-x-3 mb-4" >
+            {
+                agentTypes.map((item, index) => (
+                        <button 
+                            className={` ${activeTab.id === item.id ? "bg-tertiary text-white" : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] " } transition-all  rounded-full px-10 py-3 `}
+                            onClick={() => setActiveTab(item)}
+                         >{item.name}
+                        </button>
+                ))
+            }
+            </div>
+
+          
+             
+               {activeTab.id === "agents" && <Agents />}
+               {activeTab.id === "unassigned-agents" && <UnassignedAgents />}
+               
+             
+         
+        </div>
+  )
+}
+
+function Agents(){
   const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -112,10 +168,25 @@ const ManageAgents = () => {
     setReinvitingAgentId(null);
   };
 
+  const agentss = [
+    {
+        "__typename": "Relationship",
+        "updatedAt": "2025-08-29T14:32:09.376Z",
+        "brokerName": "Ravinder",
+        "createdAt": "2025-08-29T14:32:09.376Z",
+        "agentId": "d4185428-80e1-70e7-7507-11778d708c04",
+        "id": "d4185428-80e1-70e7-7507-11778d708c04",
+        "agentName": "RS",
+        "brokerId": "a4a894b8-5061-7039-6b23-f37722d94011",
+        "status": "ACTIVE",
+        "email": "Ravinsandhu2@gmail.com",
+        "lastLogin": "2025-08-29T14:46:37.414Z",
+        "totalSearches": 0
+    }
+]
+
   return (
     <>
-      {/* {isOpen && (
-    )} */}
     <AddUserModal
         isOpen={isOpen}
         setIsOpen={setIsOpen}
@@ -123,9 +194,9 @@ const ManageAgents = () => {
         setUser={setAgents}
         agents={agents} // Pass agents to check for duplicates
     />
-    <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
+    {/* <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary"> */}
 
-        <div className="flex justify-between items-center gap-4 my-4" >
+        {/* <div className="flex justify-between items-center gap-4 my-4" >
             <div className="flex gap-3 items-center" >
                 <p className="font-medium text-lg" >All Agents</p>
                 <div className="relative" >
@@ -136,7 +207,7 @@ const ManageAgents = () => {
             <Button variant="secondary" onClick={() => setIsOpen(true)} >
                 <PlusCircle /> Add User 
             </Button>
-        </div>
+        </div> */}
       
         <div className="bg-white !p-4 rounded-xl" >
 
@@ -150,16 +221,17 @@ const ManageAgents = () => {
                   <TableHead>Status</TableHead>
                   <TableHead>Reinvite</TableHead>
                   <TableHead>Action</TableHead>
+                  <TableHead>Delete</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {
-                  agents?.length === 0 ?
+                  agentss?.length === 0 ?
                   <TableRow >
-                    <TableCell colSpan={7} className="font-medium text-center py-10">No Records found.</TableCell>
+                    <TableCell colSpan={8} className="font-medium text-center py-10">No Records found.</TableCell>
                   </TableRow>
                   :
-                  agents?.map((item, index) => (
+                  agentss?.map((item, index) => (
                     <TableRow key={item.id}>
                       <TableCell className="font-medium">{index + 1}</TableCell>
                       <TableCell>{item.agentName}</TableCell>
@@ -167,20 +239,35 @@ const ManageAgents = () => {
                       <TableCell>{getFormattedDateTime(item.lastLogin)}</TableCell>
                       <TableCell>{item.status}</TableCell>
                       <TableCell>
-                        <button
-                            className={`reinvite-btn ${
-                            reinvitingAgentId === item.id ? "reinviting" : ""}`}
+                        <Button
+                            className={` text-sm`}
                             disabled={item.status !== "UNCONFIRMED" || !!reinvitingAgentId}
                             onClick={() => handleReinvite(item)}
+                            variant="outline"
+                            size='sm'
                           >
                             {reinvitingAgentId === item.id ? "Sending..." : "Reinvite"}
-                        </button>
+                        </Button>
                       </TableCell>
                       <TableCell>
                         <div className="dropdown">
                         {item.status !== "UNCONFIRMED" && (
                           <>
-                            <button className="btn action-btn">
+
+                            <DropdownMenu>
+                              <DropdownMenuTrigger>
+                                <Button size="icon" className="text-sm" variant="ghost" > <PencilLine /></Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => unAssignAgent(item.id, item.agentId)}>Unassign</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => inActiveAgentStatus(item.agentId, item.status === "INACTIVE" ? "ACTIVE" : "INACTIVE")}>
+                                  {item.status === "ACTIVE" ? "Inactive" : "Active"}
+                                  </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+
+
+                            {/* <button className="btn action-btn">
                               Actions <i className="fas fa-caret-down"></i>
                             </button>
 
@@ -206,10 +293,13 @@ const ManageAgents = () => {
                                   ? "Inactive"
                                   : "Active"}
                               </span>
-                            </div>
+                            </div> */}
                           </>
                         )}
                       </div>
+                      </TableCell>
+                      <TableCell>
+                          <Button variant="destructive" size="sm" className="text-sm" >Delete</Button>
                       </TableCell>
                     </TableRow> 
                   ))
@@ -219,97 +309,107 @@ const ManageAgents = () => {
             </Table>
         </div>
      
-    </div>
-      {/* <div className="main-content" style={{ display: "block" }}>
-
-        <div className="assigned-agent-card" style={{ width: "98%" }}>
-          <h3>Assigned Agents</h3>
-          <table className="assigned-agent-styled-table table-container">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Status</th>
-                <th>Searches This Month</th>
-                <th>Last login</th>
-                <th>Actions</th>
-                <th>Reinvite</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <p style={{ display: "flex" }}>Loading.....</p>
-              ) : agents?.length === 0 ? (
-                <p style={{ display: "flex" }}>No Records Found.</p>
-              ) : (
-                agents?.map((elem) => (
-                  <tr key={elem.id} id={`broker-row-${elem.id}`}>
-                    <td>{elem.agentName}</td>
-                    <td>
-                      <span className={`status ${elem.status?.toLowerCase()}`}>
-                        {elem.status}
-                      </span>
-                    </td>
-                    <td>{elem.totalSearches}</td>
-                    <td>{getFormattedDateTime(elem.lastLogin)}</td>
-                    <td>
-                      <div className="dropdown">
-                        {elem.status !== "UNCONFIRMED" && (
-                          <>
-                            <button className="btn action-btn">
-                              Actions <i className="fas fa-caret-down"></i>
-                            </button>
-
-                            <div className="dropdown-content">
-                              <span
-                                onClick={() =>
-                                  unAssignAgent(elem.id, elem.agentId)
-                                }
-                              >
-                                Unassign
-                              </span>
-                              <span
-                                onClick={() =>
-                                  inActiveAgentStatus(
-                                    elem.agentId,
-                                    elem.status === "INACTIVE"
-                                      ? "ACTIVE"
-                                      : "INACTIVE"
-                                  )
-                                }
-                              >
-                                {elem.status === "ACTIVE"
-                                  ? "Inactive"
-                                  : "Active"}
-                              </span>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                    <td>
-                      <button
-                        className={`reinvite-btn ${
-                          reinvitingAgentId === elem.id ? "reinviting" : ""
-                        }`}
-                        disabled={
-                          elem.status !== "UNCONFIRMED" || !!reinvitingAgentId
-                        }
-                        onClick={() => handleReinvite(elem)}
-                      >
-                        {reinvitingAgentId === elem.id
-                          ? "Sending..."
-                          : "Reinvite"}
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div> */}
+    {/* </div> */}
     </>
   );
 };
 
-export default ManageAgents;
+
+function UnassignedAgents(){
+
+    const { user } = useUser();
+    const [isOpen, setIsOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [agents, setAgents] = useState([]);
+  
+    const handleAssignAgent = async (id, name) => {
+      const result = await assignAgent(id, name, user?.attributes?.sub);
+      if (result) {
+        setAgents(agents.filter((elem) => elem.id !== id));
+        toast.success("Agent Assigned Successfully.");
+        handleCreateAuditLog("ASSIGN", {
+          detial: `Assigned Agent ${id}`,
+        });
+      }
+    };
+  
+    useEffect(() => {
+      const fetchNotAssignedAgents = async () => {
+        try {
+          setIsLoading(true);
+          const response = await API.graphql({
+            query: listAgents,
+            variables: {
+              filter: { assigned: { eq: false } },
+            },
+          });
+          const { items } = response.data.listAgents;
+          setAgents(items);
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchNotAssignedAgents();
+    }, []);
+  return (
+   <>
+     <div className="bg-white !p-4 rounded-xl"  >
+
+                  <Table className=""  >
+                        <TableHeader className="bg-[#F5F0EC]" >
+                          <TableRow>
+                            <TableHead className="w-[100px]">Sr. No.</TableHead>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Action</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody >
+                          {
+                            isLoading ?
+                            <TableRow >
+                              <TableCell colSpan={5} className="font-medium text-center py-10">Loading...</TableCell>
+                            </TableRow>
+                            :
+                            agents?.length === 0 ?
+                            <TableRow >
+                              <TableCell colSpan={5} className="font-medium text-center py-10">No Records found.</TableCell>
+                            </TableRow>
+                            :
+                            agents?.map((item, index) => (
+                              <TableRow key={item.id} >
+                                <TableCell className="font-medium">{index + 1}</TableCell>
+                                <TableCell>{item.name}</TableCell>
+                                <TableCell> {item.email}</TableCell>
+                                <TableCell>{item.status}</TableCell>
+                                <TableCell>
+                                 <Button
+                                    size="sm"
+                                    className={`text-sm`}
+                                    onClick={() => handleAssignAgent(item.id, item.name)}
+                                  >
+                                   Assign
+                                </Button>
+                                </TableCell>
+                               
+                              </TableRow> 
+                            ))
+                          }
+          
+                        </TableBody>
+                      </Table>
+
+       
+      </div>
+   </>
+
+  )
+}
+
+// export default ManageAgents;
+
+
+

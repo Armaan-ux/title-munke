@@ -43,29 +43,30 @@ const AgentList = ({isOpen, setIsOpen, data, isAgentListLoading }) => {
 
             <Table className=""  >
                   <TableHeader className="bg-[#F5F0EC]" >
-                    <TableRow>
+                    <TableRow className="*:!p-2 *:text-sm" >
                       <TableHead className="w-[100px]">Sr. No.</TableHead>
                       <TableHead>Name</TableHead>
                       <TableHead>Last Login</TableHead>
-                      <TableHead>Total Searches This Month</TableHead>
+                      <TableHead>Searches This Month</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Reinvite</TableHead>
+                      <TableHead>Action</TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody>
+                  <TableBody className="" >
                     {
                       isAgentListLoading ?
                       <TableRow >
-                        <TableCell colSpan={6} className="font-medium text-center py-10">Loading...</TableCell>
+                        <TableCell colSpan={7} className="font-medium text-center py-10">Loading...</TableCell>
                       </TableRow>
                       :
                       data?.length === 0 ?
                       <TableRow >
-                        <TableCell colSpan={6} className="font-medium text-center py-10">No Records found.</TableCell>
+                        <TableCell colSpan={7} className="font-medium text-center py-10">No Records found.</TableCell>
                       </TableRow>
                       :
                       data?.map((item, index) => (
-                        <TableRow key={item.id}>
+                        <TableRow key={item.id} className="*:!p-2 *:text-sm" >
                           <TableCell className="font-medium">{index + 1}</TableCell>
                           <TableCell>{item.agentName}</TableCell>
                           <TableCell> {item.lastLogin
@@ -75,7 +76,8 @@ const AgentList = ({isOpen, setIsOpen, data, isAgentListLoading }) => {
                           <TableCell>{item.status}</TableCell>
                           <TableCell>
                            <Button
-                              className={``}
+                              size="sm"
+                              className={`text-sm`}
                               disabled={item.status !== "UNCONFIRMED" || reinvitingAgentId}
                               onClick={() => handleReinvite(item)}
                             >
@@ -83,6 +85,9 @@ const AgentList = ({isOpen, setIsOpen, data, isAgentListLoading }) => {
                                 ? "Sending..."
                                 : "Reinvite"}
                           </Button>
+                          </TableCell>
+                          <TableCell>
+                                <Button variant="destructive" size="sm" className="text-sm" >Delete</Button>
                           </TableCell>
 
                         </TableRow> 

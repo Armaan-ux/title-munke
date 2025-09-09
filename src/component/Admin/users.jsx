@@ -18,6 +18,7 @@ import { EyeIcon, Pencil, PlusCircle, Trash2 } from "lucide-react";
 import AddUserModal from "../Modal/AddUserModal";
 import AgentList from "../Modal/AgentList";
 import AddAgentByAdminModal from "../Modal/AddAgentByAdminModal";
+import { Switch } from "@/components/ui/switch";
 
 
 const userTypes = [
@@ -235,6 +236,86 @@ function AdminBrokersList(){
         setIsAgentListLoading(false);
       }
     };
+
+    // const brokerss = [
+    //     {
+    //         "__typename": "Broker",
+    //         "updatedAt": "2025-08-22T00:38:03.976Z",
+    //         "status": "ACTIVE",
+    //         "createdAt": "2025-07-24T18:22:35.029Z",
+    //         "email": "avneet.grewal@gmail.com",
+    //         "id": "f4b8e4b8-4011-700f-1631-9a708d668bc2",
+    //         "name": "testbrokem",
+    //         "lastLogin": "2025-07-24T18:22:34.785Z",
+    //         "totalSearches": 0
+    //     },
+    //     {
+    //         "__typename": "Broker",
+    //         "updatedAt": "2025-07-24T18:19:30.132Z",
+    //         "status": "ACTIVE",
+    //         "createdAt": "2025-07-17T22:55:25.210Z",
+    //         "email": "ASP203@miami.edu",
+    //         "id": "045884f8-0091-70c9-e5b0-95e2456b45ac",
+    //         "name": "Armaan Test",
+    //         "lastLogin": "2025-07-17T22:55:25.066Z",
+    //         "totalSearches": 0
+    //     },
+    //     {
+    //         "__typename": "Broker",
+    //         "updatedAt": "2025-07-17T23:03:16.922Z",
+    //         "status": "INACTIVE",
+    //         "createdAt": "2025-02-19T22:05:52.759Z",
+    //         "email": "russells@lafayette.edu",
+    //         "id": "4498f4a8-e021-7094-f9aa-82e79ab259b6",
+    //         "name": "TESTbroker",
+    //         "lastLogin": "2025-02-19T22:07:25.842Z",
+    //         "totalSearches": 0
+    //     },
+    //     {
+    //         "__typename": "Broker",
+    //         "updatedAt": "2025-09-08T16:30:11.067Z",
+    //         "status": "ACTIVE",
+    //         "createdAt": "2025-02-07T15:26:10.282Z",
+    //         "email": "russells1927@gmail.com",
+    //         "id": "345874b8-4031-70c1-96c5-53b13ca4756f",
+    //         "name": "Testing Broker",
+    //         "lastLogin": "2025-09-08T15:35:42.131Z",
+    //         "totalSearches": 5
+    //     },
+    //     {
+    //         "__typename": "Broker",
+    //         "updatedAt": "2025-09-09T06:48:05.622Z",
+    //         "status": "ACTIVE",
+    //         "createdAt": "2025-08-28T16:08:18.257Z",
+    //         "email": "ravinder@creativebuffer.com",
+    //         "id": "a4a894b8-5061-7039-6b23-f37722d94011",
+    //         "name": "Ravinder",
+    //         "lastLogin": "2025-09-09T06:47:17.120Z",
+    //         "totalSearches": 0
+    //     },
+    //     {
+    //         "__typename": "Broker",
+    //         "updatedAt": "2025-08-07T15:57:10.545Z",
+    //         "status": "ACTIVE",
+    //         "createdAt": "2025-07-17T22:53:55.151Z",
+    //         "email": "david@lehighvalleyhomes.com",
+    //         "id": "c4886438-60e1-70af-2e27-73dfbf6bf2aa",
+    //         "name": "Dave Coleman",
+    //         "lastLogin": "2025-07-17T22:53:54.598Z",
+    //         "totalSearches": 0
+    //     },
+    //     {
+    //         "__typename": "Broker",
+    //         "updatedAt": "2025-08-26T19:21:31.913Z",
+    //         "status": "ACTIVE",
+    //         "createdAt": "2025-08-16T12:26:58.051Z",
+    //         "email": "ben+broker11@navi-fi.com",
+    //         "id": "c4d8d4d8-00e1-70e5-fa66-578e2798e1bd",
+    //         "name": "ben+broker11",
+    //         "lastLogin": "2025-08-26T19:21:35.018Z",
+    //         "totalSearches": 0
+    //     }
+    // ]
   
 
 
@@ -324,7 +405,7 @@ function AdminBrokersList(){
                       <TableHead>Last Login</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Action</TableHead>
+                      {/* <TableHead>Action</TableHead> */}
                       <TableHead>Agent List</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -342,16 +423,23 @@ function AdminBrokersList(){
                           <TableCell>{item.totalSearches}</TableCell>
                           <TableCell>{getFormattedDateTime(item.lastLogin)}</TableCell>
                           <TableCell>{item.email}</TableCell>
-                          <TableCell>{item.status}</TableCell>
+                          {/* <TableCell>{item.status}</TableCell> */}
                           <TableCell>
-                            active/inactive
 
-                             <div className="dropdown">
+                             <div >
                               {item.status !== "UNCONFIRMED" && (
                                 <>
-                                  <Button size="sm" variant="ghost" onClick={() => handleBrokerStatus(item)} >
+                                  <button 
+                                    size="sm" 
+                                    // variant="ghost" 
+                                    onClick={() => handleBrokerStatus(item)} 
+                                    className={`
+                                      rounded-lg px-4 py-2 w-full transition-all cursor-pointer
+                                      ${item.status === "ACTIVE" ? "bg-green-100 text-green-700 hover:bg-green-200" : "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"}
+                                      `}
+                                  >
                                     {item.status === "ACTIVE" ? "InActive" : "Active"}
-                                  </Button>
+                                  </button>
                                   {/* <button className="btn action-btn">
                                     Actions <i className="fas fa-caret-down"></i>
                                   </button>
