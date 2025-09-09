@@ -250,7 +250,7 @@ const getSortArrow = (key) => {
                     </p>
                     </TableHead>
                   {activeTab === "agents" && <TableHead>Name </TableHead>}
-                  <TableHead>Download Link</TableHead>
+                  <TableHead >Download Link</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -267,7 +267,7 @@ const getSortArrow = (key) => {
                       <TableCell>{getFormattedDateTime(item?.createdAt)}</TableCell>
                       <TableCell>{item.status}</TableCell>
                      {activeTab === "agents" && <TableCell>{item.username}</TableCell>}
-                      <TableCell className="text-right">
+                      <TableCell>
 
                             {item?.downloadLink ? (
                                 <a
