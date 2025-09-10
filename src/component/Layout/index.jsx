@@ -9,7 +9,7 @@ function Layout() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="flex-1 p-4 min-w-0" >
+      <main className="flex-1 md:pl-0 p-4 min-w-0" >
         <AppHeader />
           <Outlet />
       </main>
