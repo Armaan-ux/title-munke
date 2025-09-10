@@ -264,6 +264,7 @@ function AdminBrokersList(){
           // isOpen={true}
           setIsOpen={setIsAgentListOpen}
           isAgentListLoading={isAgentListLoading}
+          onListRefresh={refreshCurrentAgentList}
         />
       
 
@@ -274,7 +275,11 @@ function AdminBrokersList(){
           setUser={setBrokers}
         />
       
-      <AddAgentByAdminModal isOpen={isAgentCreationModalOpen} setIsOpen={setIsAgentCreationModalOpen} brokers={activeBrokers} />
+      <AddAgentByAdminModal 
+        isOpen={isAgentCreationModalOpen} 
+        setIsOpen={setIsAgentCreationModalOpen} 
+        brokers={activeBrokers} 
+      />
       
       <div>
 
