@@ -231,7 +231,7 @@ const getSortArrow = (key) => {
             </Table>
 
             {/* {searchHistories?.length === 0 && <p>No Records found.</p>} */}
-            <div className="text-center space-y-2 my-4" >
+            <div className="text-center space-y-2 my-4 text-muted-foreground" >
 
               {loading && <p>Loading...</p>}
               {!hasMore && <p>No more data to load.</p>}
