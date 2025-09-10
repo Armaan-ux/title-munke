@@ -261,55 +261,7 @@ export default function Home() {
       </section> 
 
       {/* Sample Report  */}
-      {/* <section  className="max-w-[1280px] mx-auto mb-10 px-4 space-y-10 scroll-mt-20 py-10 md:py-20" id="report-preview"   >
-          <h2 className="text-h2 mb-12 text-center text-secondary"  >Sample Report </h2>
 
-        
-
-      <motion.div 
-            // initial={{ opacity: 0, y: 0 }}
-            // whileInView={{ opacity: 1, y: 0 }}
-            // transition={{ duration: 0.6, ease: "easeOut" }}
-            // viewport={{ once: true, amount: 0.3 }}
-            className={`flex flex-col lg:flex-row py-20 rounded-4xl  p-4 md:p-10 *:basis-1/2 gap-8 justify-center items-start  bg-[#F5F0EC] `} 
-            // key={index} 
-            >
-            <div className="lg:sticky top-[15%] " >
-              <img
-                src="/sample-report/2041 Sample Report_page.jpg"
-                className="w-full md:max-w-[80%] mx-auto"
-                alt="final sample report"
-                />
-            </div>
-            <div className="space-y-44 " >
-                {
-                  sampleReportItems.map((item, index) => (
-                <div className="sticky z-20 min-h-[60vh] md:min-h-[80vh] top-[10%] md:top-[15%] bg-[#F5F0EC] p-0 sm:p-5  flex" >  
-
-                  <img
-                    src={item.img}
-                    className="absolute top-0 left-0 w-full h-full -z-10  opacity-20 blur-[1px] " 
-                    alt="final sample report"
-                />
-                <ListForReport
-                  titleClass="md:text-2xl mb-8"
-                  listClass="md:text-base"
-                  title={item.title}
-                  items={item.content}
-                  containerClass="mx-auto bg-gradient-to-b from-transparent via-white to-transparent px-4 md:px-[42px] py-12 last:pb-0 md:py-[120px] rounded-[10px]"
-                  />
-                </div>
-            ))}
-            </div>
-          </motion.div>
-        <div className="flex justify-center w-full">
-          <Link to="/public/Sample Docs.zip" target="_blank" download>
-            <Button className="hover:scale-105" size="lg">
-              Download Sample Report <Download />
-            </Button>
-          </Link>
-        </div>
-      </section> */}
 
       <section  className="max-w-[1280px] mx-auto mb-10 md:mb-28 px-4 space-y-10 scroll-mt-20" id="report-preview"   >
           <h2 className="text-h2 mb-12 text-center text-secondary"  >Sample Report </h2>
@@ -317,27 +269,23 @@ export default function Home() {
         
           {
             sampleReportItems.map((item, index) => (
-
           <motion.div 
-            // initial={{ opacity: 0, y: 0 }}
-            // whileInView={{ opacity: 1, y: 0 }}
-            // transition={{ duration: 0.6, ease: "easeOut" }}
-            // viewport={{ once: true, amount: 0.3 }}
-            className={`flex flex-col md:max-h-[70vh] overflow-hidden md:flex-row  md:py-20 rounded-4xl  p-5 md:p-10 md:*:basis-1/2 gap-8 justify-center items-center md:sticky bg-[#F5F0EC] top-[12%] md:top-[15%] ${sampleReportItems.length === index + 1  ? "mb-5 md:mb-20":"mb-10 md:mb-44"  }`} 
+
+            className={`flex flex-col max-sm:min-h-[calc(100vh-90px)] md:max-h-[70vh] overflow-hidden sm:flex-row  md:py-20 rounded-4xl  p-5 md:p-10 gap-4 md:gap-8 sm:justify-center items-center sticky bg-[#F5F0EC] top-[10%] md:top-[15%] ${sampleReportItems.length === index + 1  ? "mb-20":"mb-20 md:mb-44"  }`} 
             key={index} 
           > 
-          <div className="py-2 h-full" >
-            <img src={item.img} className=" sm:max-w-[70%] mx-auto min-w-0" alt="mansion" />
+          <div className="py-2 sm:basis-[40%] md:basis-1/2" >
+            <img src={item.img} className="max-w-[11rem]  sm:max-w-[60%] mx-auto min-w-0" alt="documents" />
           </div>
-            <div>
-              <ListForReport
-                titleClass="md:text-3xl mb-8"
-                listClass="md:text-lg"
-                title={item.title}
-                items={item.content}
-              />
+          <div className="sm:basis-[60%] md:basis-1/2" >
+            <ListForReport
+              titleClass="lg:text-3xl mb-3 md:mb-8"
+              listClass="lg:text-lg"
+              title={item.title}
+              items={item.content}
+            />
 
-            </div>
+          </div>
           </motion.div>
           ))
           }
@@ -350,53 +298,6 @@ export default function Home() {
             </Link>
           </div>
       </section>
-
-
-      {/* v2 */}
-      {/* <section  className="max-w-[1440px] mx-auto mb-10 px-4 space-y-10 scroll-mt-20 py-10 md:py-20" id="report-preview"   >
-          <h2 className="text-h2 mb-12 text-center text-secondary"  >Sample Report </h2>
-
-      
-      <motion.div 
-            className={`flex flex-col lg:flex-row py-20 rounded-4xl  p-4 md:p-10 gap-8 justify-center items-start  bg-[#F5F0EC] `} 
-            >
-            <div className="lg:sticky top-[16%] basis-[35%]" >
-              <img
-                src="/sample-report/2041 Sample Report_page.jpg"
-                className="w-full "
-                alt="final sample report"
-                />
-            </div>
-            <div className="space-y-44 basis-[65%] " >
-                {
-                  sampleReportItems.map((item, index) => (
-                <div className=" sticky z-20 h-full top-[8%] md:top-[12%] last:mb-6 last:pb-0 bg-[#F5F0EC] min-h-[90vh] md:min-h-[80vh] flex flex-col-reverse md:flex-row gap-4 items-center p-4" >  
-
-                  <img
-                    src={item.img}
-                    className=" min-w-0  object-contain max-w-xs mx-auto basis-[40%]" 
-                    alt="final sample report"
-                />
-                <ListForReport
-                  titleClass="md:text-2xl mb-8"
-                  listClass="md:text-base"
-                  title={item.title}
-                  items={item.content}
-                  containerClass="mx-auto basis-[60%] px-4  last:pb-0  rounded-[10px]"
-                  />
-                </div>
-            ))}
-            </div>
-          </motion.div>
-        <div className="flex justify-center w-full">
-          <Link to="/public/Sample Docs.zip" target="_blank" download>
-            <Button className="hover:scale-105" size="lg">
-              Download Sample Report <Download />
-            </Button>
-          </Link>
-        </div>
-
-      </section> */}
 
 
       {/* Why choose Title Munke? */}
