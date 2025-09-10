@@ -272,11 +272,11 @@ function Agents(){
                 {
                   loading?
                   <TableRow >
-                    <TableCell colSpan={8} className="font-medium text-center py-10">Loading...</TableCell>
+                    <TableCell colSpan={8} className="font-medium text-center py-10 text-muted-foreground">Loading...</TableCell>
                   </TableRow> :
                   filteredAgents?.length === 0 ?
                   <TableRow >
-                    <TableCell colSpan={8} className="font-medium text-center py-10">No Records found.</TableCell>
+                    <TableCell colSpan={8} className="font-medium text-center py-10 text-muted-foreground">No Records found.</TableCell>
                   </TableRow>
                   :
                   filteredAgents?.map((item, index) => (
@@ -459,12 +459,12 @@ function UnassignedAgents(){
                           {
                             isLoading ?
                             <TableRow >
-                              <TableCell colSpan={6} className="font-medium text-center py-10">Loading...</TableCell>
+                              <TableCell colSpan={6} className="font-medium text-center py-10 text-muted-foreground">Loading...</TableCell>
                             </TableRow>
                             :
                             filteredAgents?.length === 0 ?
                             <TableRow >
-                              <TableCell colSpan={6} className="font-medium text-center py-10">No Records found.</TableCell>
+                              <TableCell colSpan={6} className="font-medium text-center py-10 text-muted-foreground">No Records found.</TableCell>
                             </TableRow>
                             :
                             filteredAgents?.map((item, index) => (

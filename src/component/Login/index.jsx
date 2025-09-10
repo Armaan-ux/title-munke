@@ -7,7 +7,7 @@ import ResetPassword from "../ResetPassword";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ChevronLeft } from "lucide-react";
+import { ArrowRight, ChevronLeft, Loader } from "lucide-react";
 import { motion } from "motion/react";
 
 
@@ -124,8 +124,8 @@ function Login() {
             variant="secondary"
             size="lg"
           >
-            {isChecking ? "Signing in.." : "Login"}
-            <ArrowRight />
+            Login
+            {isChecking ? <Loader className="animate-spin" /> : <ArrowRight />}
           </Button>
           {error && <div className="text-red-500 text-center text-sm font-medium">{error}</div>}
              

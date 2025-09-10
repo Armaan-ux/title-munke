@@ -2,7 +2,7 @@ import { API } from "aws-amplify";
 import { useState, useEffect } from "react";
 import { listAdmins } from "@/graphql/queries";
 // import "./index.css";
-import { FETCH_LIMIT, getFormattedDateTime } from "@/utils";
+import { getFormattedDateTime } from "@/utils";
 import { fetchAgentsWithSearchCount } from "@/component/service/broker";
 import {
   Table,
@@ -21,8 +21,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { toast } from "react-toastify";
@@ -119,7 +117,7 @@ function Admins(){
                     {
                       admins?.length === 0 ?
                       <TableRow >
-                        <TableCell colSpan={5} className="font-medium text-center py-10">No Records found.</TableCell>
+                        <TableCell colSpan={5} className="font-medium text-center py-10 text-muted-foreground">No Records found.</TableCell>
                       </TableRow>
                       :
                       admins?.map((item, index) => (
@@ -128,27 +126,12 @@ function Admins(){
                           <TableCell>{item.name}</TableCell>
                           <TableCell>{item.email}</TableCell>
                           <TableCell>{item.status}</TableCell>
-                          {/* <TableCell>
-                            <div className="space-x-1" >
-                                <Button variant="ghost" size="icon" ><Pencil /></Button>
-                                <Button variant="ghost" size="icon" ><Trash2 /></Button>
-                            </div>
-                          </TableCell> */}
                         </TableRow> 
                       ))
                     }
     
                   </TableBody>
                 </Table>
-
-                
-                {/* {!hasMore && <p>No more data to load.</p>}
-                {logs?.length > 0 && hasMore && !loading && (
-                    <button className="loadmore" onClick={fetchLogs}>
-                        Load More
-                    </button>
-                )} */}
-
 
               </div>
   )
@@ -325,7 +308,7 @@ function AdminBrokersList(){
                     {
                       brokers?.length === 0 && !isBrokerListLoading ?
                       <TableRow >
-                        <TableCell colSpan={8} className="font-medium text-center py-10">No Records found.</TableCell>
+                        <TableCell colSpan={8} className="font-medium text-center py-10 text-muted-foreground">No Records found.</TableCell>
                       </TableRow>
                       :
                       brokers?.map((item, index) => (
@@ -369,7 +352,7 @@ function AdminBrokersList(){
                 </Table>
 
                 
-          <div className="text-center flex flex-col gap-4 my-4" >
+          <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground" >
 
           {isBrokerListLoading && <p>Loading...</p>}
           {!hasMore && <p>No more data to load.</p>}

@@ -105,7 +105,7 @@ function AuditLogs() {
                     {
                       (logs?.length === 0 && !loading) ?
                       <TableRow >
-                        <TableCell colSpan={5} className="font-medium text-center py-10">No Records found.</TableCell>
+                        <TableCell colSpan={5} className="font-medium text-center py-10 text-muted-foreground">No Records found.</TableCell>
                       </TableRow>
                       :
                       logs?.map((item, index) => (
@@ -122,7 +122,7 @@ function AuditLogs() {
                   </TableBody>
                 </Table>
 
-                    <div className="text-center space-y-2 my-4" >
+                    <div className="text-center space-y-2 my-4 text-muted-foreground" >
 
                     {loading && <p>Loading...</p>}
                     {!hasMore && <p>No more data to load.</p>}

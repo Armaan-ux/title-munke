@@ -86,102 +86,100 @@ const AgentList = ({isOpen, setIsOpen, data, isAgentListLoading, onListRefresh }
         Open Modal
       </button> */}
 
-      <DialogContent className="!max-w-5xl w-full"  >
-        <DialogHeader>
+      <DialogContent className="!max-w-5xl w-full max-h-[90vh] flex flex-col"  >
+        <DialogHeader className="flex flex-row justify-between h-fit" >
           <DialogTitle className="text-lg font-semibold capitalize !font-poppins" >
             Agents
           </DialogTitle>
+            <div className="flex items-center gap-2 justify-end mr-10" >
+              <Checkbox
+                id="show-deleted-checkbox"
+                className="border-2 size-5 cursor-pointer"
+                checked={showDeleted}
+                onCheckedChange={(value) => setShowDeleted(value)}
+                disabled={isAgentListLoading}
+              />
+              <Label  htmlFor="show-deleted-checkbox" className="text-sm mb-0" >Show Deleted</Label>
+            </div>
         </DialogHeader>
 
-          <div>
-              <div className="flex items-center gap-2 justify-end" >
-                <Checkbox
-                  id="show-deleted-checkbox"
-                  className="border-2 size-5 cursor-pointer"
-                  checked={showDeleted}
-                  onCheckedChange={(value) => setShowDeleted(value)}
-                  disabled={isAgentListLoading}
-                />
-                <Label  htmlFor="show-deleted-checkbox" className="text-sm mb-0" >Show Deleted</Label>
-              </div>
-            </div>
 
-            <Table className=""  >
-                  <TableHeader className="bg-[#F5F0EC]" >
-                    <TableRow className="*:!p-2 *:text-sm" >
-                      <TableHead className="w-[100px]">Sr. No.</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Last Login</TableHead>
-                      <TableHead>Searches This Month</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Reinvite</TableHead>
-                      <TableHead>Action</TableHead>
+          <Table className=""  >
+                <TableHeader className="bg-[#F5F0EC]" >
+                  <TableRow className="*:!p-2 *:text-sm" >
+                    <TableHead className="w-[100px]">Sr. No.</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Last Login</TableHead>
+                    <TableHead>Searches This Month</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Reinvite</TableHead>
+                    <TableHead>Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody className="" >
+                  {
+                    isAgentListLoading ?
+                    <TableRow >
+                      <TableCell colSpan={7} className="font-medium text-center py-10 text-muted-foreground">Loading...</TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody className="" >
-                    {
-                      isAgentListLoading ?
-                      <TableRow >
-                        <TableCell colSpan={7} className="font-medium text-center py-10">Loading...</TableCell>
-                      </TableRow>
-                      :
-                      filteredData?.length === 0 ?
-                      <TableRow >
-                        <TableCell colSpan={7} className="font-medium text-center py-10">No Records found.</TableCell>
-                      </TableRow>
-                      :
-                      filteredData?.map((item, index) => (
-                        <TableRow key={item.id} className="*:!p-2 *:text-sm" >
-                          <TableCell className="font-medium">{index + 1}</TableCell>
-                          <TableCell>{item.agentName}</TableCell>
-                          <TableCell> {item.lastLogin
-                          ? getFormattedDateTime(item.lastLogin)
-                          : ""}</TableCell>
-                          <TableCell>{item.totalSearches}</TableCell>
-                          <TableCell>{item.status}</TableCell>
-                          <TableCell>
-                           <Button
-                              size="sm"
-                              className={`text-sm`}
-                              disabled={item.status !== "UNCONFIRMED" || reinvitingAgentId}
-                              onClick={() => handleReinvite(item)}
-                            >
-                              {reinvitingAgentId === item.id
-                                ? "Sending..."
-                                : "Reinvite"}
-                          </Button>
-                          </TableCell>
-                          <TableCell>
-                                {/* <Button variant="destructive" size="sm" className="text-sm" >Delete</Button> */}
-                          {item.status === CONSTANTS.USER_STATUS.DELETED ? (
-                          <Button
-                            className="text-sm"
-                            size="sm"
-                            disabled={undeletingAgentId === item.id || reinvitingAgentId || deletingAgentId}
-                            onClick={() => handleUndelete(item)}
-                          >
-                            {undeletingAgentId === item.id ? "Restoring..." : "Undelete"}
-                          </Button>
-                        ) : (
+                    :
+                    filteredData?.length === 0 ?
+                    <TableRow >
+                      <TableCell colSpan={7} className="font-medium text-center py-10 text-muted-foreground">No Records found.</TableCell>
+                    </TableRow>
+                    :
+                    filteredData?.map((item, index) => (
+                      <TableRow key={item.id} className="*:!p-2 *:text-sm" >
+                        <TableCell className="font-medium">{index + 1}</TableCell>
+                        <TableCell>{item.agentName}</TableCell>
+                        <TableCell> {item.lastLogin
+                        ? getFormattedDateTime(item.lastLogin)
+                        : ""}</TableCell>
+                        <TableCell>{item.totalSearches}</TableCell>
+                        <TableCell>{item.status}</TableCell>
+                        <TableCell>
                           <Button
                             size="sm"
-                            className="text-sm"
-                            disabled={deletingAgentId === item.id || reinvitingAgentId || undeletingAgentId}
-                            onClick={() => handleDelete(item)}
-                            variant="destructive"
+                            className={`text-sm`}
+                            disabled={item.status !== "UNCONFIRMED" || reinvitingAgentId}
+                            onClick={() => handleReinvite(item)}
                           >
-                            {deletingAgentId === item.id ? "Deleting..." : "Delete"}
-                          </Button>
-                        )}
-                          </TableCell>
+                            {reinvitingAgentId === item.id
+                              ? "Sending..."
+                              : "Reinvite"}
+                        </Button>
+                        </TableCell>
+                        <TableCell>
+                              {/* <Button variant="destructive" size="sm" className="text-sm" >Delete</Button> */}
+                        {item.status === CONSTANTS.USER_STATUS.DELETED ? (
+                        <Button
+                          className="text-sm"
+                          size="sm"
+                          disabled={undeletingAgentId === item.id || reinvitingAgentId || deletingAgentId}
+                          onClick={() => handleUndelete(item)}
+                        >
+                          {undeletingAgentId === item.id ? "Restoring..." : "Undelete"}
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          className="text-sm"
+                          disabled={deletingAgentId === item.id || reinvitingAgentId || undeletingAgentId}
+                          onClick={() => handleDelete(item)}
+                          variant="destructive"
+                        >
+                          {deletingAgentId === item.id ? "Deleting..." : "Delete"}
+                        </Button>
+                      )}
+                        </TableCell>
 
-                        </TableRow> 
-                      ))
-                    }
-    
-                  </TableBody>
-                </Table>
-       
+                      </TableRow> 
+                    ))
+                  }
+  
+                </TableBody>
+          </Table>
+      
 
       </DialogContent>
     </Dialog>
