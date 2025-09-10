@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { fetchActiveBrokers } from "../service/broker";
+// import { fetchActiveBrokers } from "../service/broker";
 import { createAgentForBroker } from "../service/agent";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -14,10 +14,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-function AddAgentByAdminModal({ isOpen, setIsOpen }) {
-  const [brokers, setBrokers] = useState([]);
+function AddAgentByAdminModal({ isOpen, setIsOpen, brokers }) {
   const [selectedBroker, setSelectedBroker] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -47,15 +45,6 @@ function AddAgentByAdminModal({ isOpen, setIsOpen }) {
       setIsCreating(false);
     }
   };
-
-  useEffect(() => {
-    setIsLoading(true);
-    fetchActiveBrokers()
-      .then((item) => setBrokers(item))
-      .catch((err) => console.error(err))
-      .finally(() => setIsLoading(false));
-  }, []);
-
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       {/* <button onClick={() => setIsOpen(true)} className="open-modal-btn">
@@ -94,41 +83,26 @@ function AddAgentByAdminModal({ isOpen, setIsOpen }) {
             </div>
             <div>
               <Label>Broker list</Label>
-              {isLoading ? (
-                <p>Loading brokers...</p>
-              ) : (
-
-                  <Select 
-                    value={formData.role} 
-                    onValueChange={(value) => setSelectedBroker(value)}  
-                    required
-                  >
-                  <SelectTrigger className="w-full !h-12 border-[#BEA999] rounded-lg">
-                    <SelectValue placeholder="Select Broker" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {
-                      brokers.map((item) => (
-                        <SelectItem key={item.id} value={item.id}>
-                          {item.email}
-                        </SelectItem>
-                      ))
-                    }
-                  </SelectContent>
-                </Select>
-
-                // <select
-                //   name="role"
-                //   value={formData.role}
-                //   onChange={(e) => setSelectedBroker(e.target.value)}
-                //   required
-                // >
-                //   <option value="">None</option>
-                //   {brokers?.map((elem) => (
-                //     <option value={elem.id}>{elem.email}</option>
-                //   ))}
-                // </select>
-              )}
+ 
+              <Select 
+                value={formData.role} 
+                onValueChange={(value) => setSelectedBroker(value)}  
+                required
+              >
+              <SelectTrigger className="w-full !h-12 border-[#BEA999] rounded-lg">
+                <SelectValue placeholder="Select Broker" />
+              </SelectTrigger>
+              <SelectContent>
+                {
+                  brokers.map((item) => (
+                    <SelectItem key={item.id} value={item.id}>
+                      {item.email}
+                    </SelectItem>
+                  ))
+                }
+              </SelectContent>
+            </Select>
+            
             </div>
             <div className="flex justify-end gap-2">
               <Button

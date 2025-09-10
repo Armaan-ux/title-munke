@@ -1,15 +1,22 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AddUserModal from "../../Modal/AddUserModal";
 import {
   calculateAverage,
-  getTopPerformerAgent,
-  inActiveAgent,
-  pendingAgentSearch,
-  UnassignAgent,
+  // getTopPerformerAgent,
+  // inActiveAgent,
+  // pendingAgentSearch,
+  // UnassignAgent,
 } from "../../service/agent";
 import {
     reinviteAgent,
     getAgentsTotalSearches,
+    CONSTANTS,
+    updateAgentStatus,
+    getPendingAgentSearches,
+    undeleteUser,
+    deleteUser,
+    UnassignAgent,
+    getTopPerformerAgent,
     } from "../../service/userAdmin";
 import { useUser } from "../../../context/usercontext";
 import { fetchAgentsWithSearchCount } from "../../service/broker";
@@ -25,11 +32,15 @@ const AssignedAgents = () => {
   const [agents, setAgents] = useState([]);
   const [totalSearchesThisMonth, setTotalSearchesThisMonth] = useState(0);
   const [reinvitingAgentId, setReinvitingAgentId] = useState(null);
+  const [deletingAgentId, setDeletingAgentId] = useState(null);
+  const [undeletingAgentId, setUndeletingAgentId] = useState(null);
+  const [showDeleted, setShowDeleted] = useState(false);
+  const [filteredAgents, setFilteredAgents] = useState([]);
   const [pendingSearch, setPendingSearch] = useState(0);
   const [topPerformer, setTopPerformer] = useState("");
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = useCallback(async () => {
+    if (user?.attributes?.sub) {
       setLoading(true);
       try {
         const currentMonthStart = new Date();
@@ -38,46 +49,65 @@ const AssignedAgents = () => {
         const nextMonthStart = new Date(currentMonthStart);
         nextMonthStart.setMonth(nextMonthStart.getMonth() + 1);
 
-        const [totalSearches, agents, pendingSearches, topPerformer] =
+        const [totalSearches, agents, pendingSearches, topPerformerObj] =
           await Promise.all([
             getAgentsTotalSearches(user.attributes.sub, currentMonthStart, nextMonthStart),
             fetchAgentsWithSearchCount(user.attributes.sub),
-            pendingAgentSearch(user.attributes.sub),
+            getPendingAgentSearches(user.attributes.sub),
             getTopPerformerAgent(user.attributes.sub),
           ]);
 
+        let topPerformerText = "No Top Performer";
+        const performer = topPerformerObj?.topPerformer;
+
+        if (performer) {
+          topPerformerText = `${performer.agentName || "None"} (${
+            performer.searchCount || 0
+          })`;
+        }
         setTotalSearchesThisMonth(totalSearches.totalSearches);
         setAgents(agents);
         setPendingSearch(pendingSearches.pendingSearches);
-        setTopPerformer(topPerformer);
+        setTopPerformer(topPerformerText);
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
         setLoading(false);
       }
-    };
+    }
+  }, [user]);
 
+  useEffect(() => {
     if (user?.attributes?.sub) {
       fetchData();
       const interval = setInterval(fetchData, 1800000);
 
       return () => clearInterval(interval);
     }
-  }, [user]);
+  }, [user, fetchData]);
 
-  const unAssignAgent = async (id, agentId) => {
-    const result = await UnassignAgent(id, agentId);
+  useEffect(() => {
+    if (agents) {
+      const filtered = showDeleted
+        ? agents
+        : agents.filter((agent) => agent.status !== CONSTANTS.USER_STATUS.DELETED);
+      setFilteredAgents(filtered);
+    }
+  }, [agents, showDeleted]);
+
+  const unAssignAgent = async (agentId) => {
+    const result = await UnassignAgent(agentId);
     if (result) {
-      setAgents((prevAgents) => prevAgents.filter((elem) => elem.id !== id));
+      setAgents((prevAgents) => prevAgents.filter((elem) => elem.agentId !== agentId));
       toast.success("Agent UnAssigned Successfully.");
       handleCreateAuditLog("UNASSIGN", {
-        detial: `Unassigned Agent ${agentId}`,
+        detail: `Unassigned Agent ${agentId}`,
       });
     }
   };
 
-  const inActiveAgentStatus = async (id, status) => {
-    const result = await inActiveAgent(id, status);
+  const toggleAgentStatus = async (id, status) => {
+    const result = await updateAgentStatus(id, status);
     if (result) {
       setAgents((prevAgents) =>
         prevAgents.map((agent) =>
@@ -86,7 +116,7 @@ const AssignedAgents = () => {
       );
       toast.success(`Agent ${status} Successfully.`);
       handleCreateAuditLog("ACTIVE_STATUS", {
-        detial: `Convert Agent ${id} Status to ${status}`,
+        detail: `Convert Agent ${id} Status to ${status}`,
       });
     }
   };
@@ -101,6 +131,39 @@ const AssignedAgents = () => {
     }
     setReinvitingAgentId(null);
   };
+
+  const handleDelete = async (agent) => {
+    if (window.confirm(`Are you sure you want to delete agent ${agent.agentName}? This is a soft delete.`)) {
+      setDeletingAgentId(agent.id);
+      try {
+        await deleteUser(agent.id, agent.email, CONSTANTS.USER_TYPES.AGENT);
+        toast.success(`Agent ${agent.agentName} has been deleted.`);
+        fetchData();
+      } catch (error) {
+        console.error("Failed to delete agent:", error);
+        toast.error(`Failed to delete agent. ${error?.response?.data?.message || ""}`);
+      } finally {
+        setDeletingAgentId(null);
+      }
+    }
+  };
+
+  const handleUndelete = async (agent) => {
+    if (window.confirm(`Are you sure you want to restore agent ${agent.agentName}?`)) {
+      setUndeletingAgentId(agent.id);
+      try {
+        await undeleteUser(agent.id, agent.email, CONSTANTS.USER_TYPES.AGENT);
+        toast.success(`Agent ${agent.agentName} has been restored.`);
+        fetchData();
+      } catch (error) {
+        console.error("Failed to restore agent:", error);
+        toast.error(`Failed to restore agent. ${error?.response?.data?.message || ""}`);
+      } finally {
+        setUndeletingAgentId(null);
+      }
+    }
+  };
+
 
   return (
     <>
@@ -212,7 +275,7 @@ const AssignedAgents = () => {
                               </span>
                               <span
                                 onClick={() =>
-                                  inActiveAgentStatus(
+                                  toggleAgentStatus(
                                     elem.agentId,
                                     elem.status === "INACTIVE"
                                       ? "ACTIVE"

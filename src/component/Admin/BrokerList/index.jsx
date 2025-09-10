@@ -4,15 +4,17 @@ import AddAgentByAdminModal from "../../Modal/AddAgentByAdminModal";
 import AddUserModal from "../../Modal/AddUserModal";
 import AgentList from "../../Modal/AgentList";
 import {
-  activeBroker,
+  // activeBroker,
   fetchAgentsWithSearchCount,
-  fetchBrokersWithSearchCount,
-  fetchTotalActiveBrokers,
-  fetchTotalBrokers,
-  fetchTotalBrokerSearchesThisMonth,
-  inActiveBroker,
+  // fetchBrokersWithSearchCount,
+  // fetchTotalActiveBrokers,
+  // fetchTotalBrokers,
+  // fetchTotalBrokerSearchesThisMonth,
+  // inActiveBroker,
 } from "../../service/broker";
 import "./index.css";
+import { getActiveBrokers, getBrokersWithSearchCount, getTotalBrokers, getTotalBrokerSearchesThisMonth, updateBrokerStatus } from "@/component/service/userAdmin";
+import { toast } from "react-toastify";
 function BorkerList() {
   const [isBrokerListLoading, setIsBrokerListLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -20,10 +22,14 @@ function BorkerList() {
     useState(false);
   const [isAgentListOpen, setIsAgentListOpen] = useState(false);
   const [isAgentListLoading, setIsAgentListLoading] = useState(false);
+  // State to track which broker's status is currently being updated
+  const [updatingStatusId, setUpdatingStatusId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [currentBrokerId, setCurrentBrokerId] = useState(null);
   const [brokers, setBrokers] = useState([]);
   const [agentList, setAgentList] = useState([]);
+  const [activeBrokers, setActiveBrokers] = useState([]);
   const [nextToken, setNextToken] = useState(null);
   const [totalBrokerCount, setTotalBrokerCount] = useState(0);
   const [totalActiveBrokerCount, setTotalActiveBrokerCount] = useState(0);
@@ -34,13 +40,13 @@ function BorkerList() {
     const getBroker = async () => {
       try {
         setLoading(true);
-        const totalBroker = await fetchTotalBrokers();
-        const totalActiveBroker = await fetchTotalActiveBrokers();
-        setTotalBrokerSearchThisMonthCount(
-          await fetchTotalBrokerSearchesThisMonth()
-        );
-        setTotalBrokerCount(totalBroker?.length);
-        setTotalActiveBrokerCount(totalActiveBroker?.length);
+        const totalBrokerDict = await getTotalBrokers();
+        const ActiveBrokers = await getActiveBrokers();
+        const TotalBrokerSearchesThisMonthDict = await getTotalBrokerSearchesThisMonth();
+        setTotalBrokerSearchThisMonthCount( TotalBrokerSearchesThisMonthDict.totalSearches );
+        setTotalBrokerCount(totalBrokerDict?.totalBrokers);
+        setTotalActiveBrokerCount(ActiveBrokers?.length);
+        setActiveBrokers(ActiveBrokers); // Store the fetched active brokers in state
       } catch (err) {
         console.error("Error", err);
       } finally {
@@ -63,7 +69,7 @@ function BorkerList() {
 
     setIsBrokerListLoading(true);
     try {
-      const response = await fetchBrokersWithSearchCount(nextToken);
+      const response = await getBrokersWithSearchCount(nextToken);
       const { updatedBrokers, nextToken: newNextToken } = response;
 
       setBrokers((prev) => [...prev, ...updatedBrokers]);
@@ -76,22 +82,44 @@ function BorkerList() {
   };
 
   const handleBrokerStatus = async (elem) => {
-    if (elem.status === "ACTIVE") {
-      await inActiveBroker(elem.id);
-      const temp = brokers;
-      const indx = temp.findIndex((e) => e.id === elem.id);
-      temp[indx].status = "INACTIVE";
-      setBrokers(temp.map((elem) => elem));
-    } else if (elem.status === "INACTIVE") {
-      await activeBroker(elem.id);
-      const temp = brokers;
-      const indx = temp.findIndex((e) => e.id === elem.id);
-      temp[indx].status = "ACTIVE";
-      setBrokers(temp.map((elem) => elem));
+      const { id: brokerId, status: currentStatus } = elem;
+      const newStatus = currentStatus === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+      try {
+          setUpdatingStatusId(brokerId);
+          await updateBrokerStatus(brokerId, newStatus);
+          setBrokers((currentBrokers) =>
+            currentBrokers.map((broker) =>
+                broker.id === brokerId
+                  ? { ...broker, status: newStatus } // Create a new object for the updated item
+                  : broker // Return all other items as they are
+            )
+          );
+      } catch (error) {
+        // Use the specific error message from the backend if available
+        const errorMessage = error.response?.data?.message || "Failed to update broker status";
+        console.error("Failed to update broker status:", error);
+        toast.error(errorMessage);
+      } finally {
+        setUpdatingStatusId(null);
+      }
+  };
+
+  const refreshCurrentAgentList = async () => {
+    if (!currentBrokerId) return;
+
+    setIsAgentListLoading(true);
+    try {
+      const response = await fetchAgentsWithSearchCount(currentBrokerId);
+      setAgentList(response);
+    } catch (err) {
+      console.error("Failed to refresh agent list:", err);
+    } finally {
+      setIsAgentListLoading(false);
     }
   };
 
   const handleFetchAgentListForBroker = async (brokerId) => {
+    setCurrentBrokerId(brokerId);
     try {
       setIsAgentListLoading(true);
       setIsAgentListOpen(true);
@@ -103,6 +131,7 @@ function BorkerList() {
       setIsAgentListLoading(false);
     }
   };
+
 
   return (
     <>

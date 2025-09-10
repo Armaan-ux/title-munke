@@ -32,7 +32,7 @@ const awsmobile = {
     ],
     "aws_cloud_logic_custom": [{
         "name": "usersAdmin",
-        "endpoint": "https://rvz67ef1yc.execute-api.us-east-1.amazonaws.com/master",
+        "endpoint": "https://nz8vshfeah.execute-api.us-east-1.amazonaws.com/master",
         "region": "us-east-1"
     }]
 };

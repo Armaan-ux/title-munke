@@ -1,10 +1,10 @@
-import { API } from "aws-amplify";
 import { useState, useEffect } from "react";
 import { listAuditLogs } from "../../../graphql/queries";
 import "./index.css";
 import { useUser } from "../../../context/usercontext";
-import { FETCH_LIMIT, getFormattedDateTime } from "../../../utils";
-import { fetchAgentsOfBroker } from "../../service/broker";
+import { getFormattedDateTime } from "../../../utils";
+// import { fetchAgentsOfBroker } from "../../service/broker";
+import { getBrokerAgentsDetails } from "@/component/service/userAdmin";
 
 function AuditLogs() {
   const [logs, setLogs] = useState([]);
@@ -18,24 +18,16 @@ function AuditLogs() {
 
     setLoading(true);
     try {
-      const agentsData = await fetchAgentsOfBroker(user?.attributes?.sub);
+      const agentsData = await getBrokerAgentsDetails(user?.attributes?.sub);
       if (agentsData.length === 0) {
         setLoading(false);
         return;
       }
-      debugger;
-      const response = await API.graphql({
-        query: listAuditLogs,
-        variables: {
-          filter: {
-            // isAgent: { eq: true },
-            or: agentsData.map((elem) => ({ userId: { eq: elem.agentId } })),
-          },
-          limit: FETCH_LIMIT,
-          nextToken,
-        },
+      const response = await listAuditLogs({
+          userIds: agentsData.map((elem) => elem.agentId),
+          nextToken: nextToken
       });
-      const { items, nextToken: newNextToken } = response.data.listAuditLogs;
+      const { items, nextToken: newNextToken } = response;
 
       setLogs((prev) => [...prev, ...items]);
       setNextToken(newNextToken);

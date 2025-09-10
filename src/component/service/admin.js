@@ -1,41 +1,20 @@
-import { API, graphqlOperation } from "aws-amplify";
-import { createAdmins } from "../../graphql/mutations";
-import AWSExport from "../../aws-exports";
 import { createAdminOnCognito } from "./userAdmin";
-const AWS = require("aws-sdk");
-
-AWS.config.update({
-  accessKeyId: import.meta.env.VITE_ACCESS_KEY,
-  secretAccessKey: import.meta.env.VITE_SECRET_KEY,
-  region: "us-east-1",
-});
 
 export async function createAdminAccount(name, email) {
   try {
-    const createUserResponse = await createAdminOnCognito(name, email);
-
-    // Step 2: Add admin Data to DynamoDB
-    const adminInput = {
-      id: createUserResponse.User.Attributes.find(
-        (attr) => attr.Name === "sub"
-      ).Value,
-      name: name,
-      email,
-      status: "UNCONFIRMED",
-      lastLogin: new Date().toISOString(),
-    };
-
-    const newAdmin = await API.graphql(
-      graphqlOperation(createAdmins, { input: adminInput })
-    );
-    console.log("Admin Created successfully:", newAdmin);
+    // The backend Lambda now handles creating the user in Cognito and the admin record in DynamoDB.
+    // This frontend function just needs to call the centralized backend action.
+    const response = await createAdminOnCognito(name, email);
+    console.log("Admin creation initiated via backend:", response);
+    // The backend response already indicates success. We can pass it through or augment it.
     return {
-      newAdmin: newAdmin?.data?.createAdmins,
+      ...response,
       success: true,
       message: "Admin created and linked successfully.",
     };
   } catch (error) {
     console.error("Error creating Admin:", error);
+    // The error is already thrown by the underlying callUserAdminApi, so we can just re-throw.
     throw error;
   }
 }

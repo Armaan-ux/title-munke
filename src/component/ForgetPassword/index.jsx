@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import ResetPassword from "../ResetPassword";
-import { forgotPassword } from "../service/auth";
+import { forgotPassword } from "@/component/service/userAdmin";
 import logo from "../../img/Logo.svg";
 import "./index.css";
 import ResetPasswordWithOTP from "../OTP";

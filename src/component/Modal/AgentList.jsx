@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getFormattedDateTime } from "../../utils";
 // import { reinviteAgent } from "../service/agent";
-import { reinviteAgent } from "../service/userAdmin";
+import { CONSTANTS, deleteUser, reinviteAgent, undeleteUser } from "../service/userAdmin";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import {
@@ -13,9 +13,17 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { toast } from "react-toastify";
+import { Checkbox } from "@/components/ui/checkbox";
 
-const AgentList = ({isOpen, setIsOpen, data, isAgentListLoading }) => {
+const AgentList = ({isOpen, setIsOpen, data, isAgentListLoading, onListRefresh }) => {
   const [reinvitingAgentId, setReinvitingAgentId] = useState(null);
+  const [deletingAgentId, setDeletingAgentId] = useState(null);
+  const [undeletingAgentId, setUndeletingAgentId] = useState(null);
+  // The checkbox is unchecked by default, showing only non-deleted users.
+  const [showDeleted, setShowDeleted] = useState(false);
+  const [filteredData, setFilteredData] = useState([]);
 
   const handleReinvite = async (agent) => {
     setReinvitingAgentId(agent.id);
@@ -28,6 +36,50 @@ const AgentList = ({isOpen, setIsOpen, data, isAgentListLoading }) => {
     }
   };
 
+  const handleDelete = async (agent) => {
+    if (window.confirm(`Are you sure you want to delete agent ${agent.agentName}? This is a soft delete.`)) {
+      setDeletingAgentId(agent.id);
+      try {
+        await deleteUser(agent.id, agent.email, CONSTANTS.USER_TYPES.AGENT);
+        toast.success(`Agent ${agent.agentName} has been deleted.`);
+        // Call the refresh function passed from the parent component.
+        if (onListRefresh) onListRefresh();
+      } catch (error) {
+        console.error("Failed to delete agent:", error);
+        toast.error(`Failed to delete agent. ${error?.response?.data?.message || ""}`);
+      } finally {
+        setDeletingAgentId(null);
+      }
+    }
+  };
+
+  const handleUndelete = async (agent) => {
+    if (window.confirm(`Are you sure you want to restore agent ${agent.agentName}?`)) {
+      setUndeletingAgentId(agent.id);
+      try {
+        await undeleteUser(agent.id, agent.email, CONSTANTS.USER_TYPES.AGENT);
+        toast.success(`Agent ${agent.agentName} has been restored.`);
+        // Call the refresh function passed from the parent component.
+        if (onListRefresh) onListRefresh();
+      } catch (error) {
+        console.error("Failed to restore agent:", error);
+        toast.error(`Failed to restore agent. ${error?.response?.data?.message || ""}`);
+      } finally {
+        setUndeletingAgentId(null);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (data) {
+      const filtered = showDeleted
+        ? data
+        : data.filter(
+            (agent) => agent.status !== CONSTANTS.USER_STATUS.DELETED
+          );
+      setFilteredData(filtered);
+    }
+  }, [data, showDeleted]);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       {/* <button className="open-modal-btn" onClick={() => setIsOpen(true)}>
@@ -40,6 +92,19 @@ const AgentList = ({isOpen, setIsOpen, data, isAgentListLoading }) => {
             Agents
           </DialogTitle>
         </DialogHeader>
+
+          <div>
+              <div className="flex items-center gap-2 justify-end" >
+                <Checkbox
+                  id="show-deleted-checkbox"
+                  className="border-2 size-5 cursor-pointer"
+                  checked={showDeleted}
+                  onCheckedChange={(value) => setShowDeleted(value)}
+                  disabled={isAgentListLoading}
+                />
+                <Label  htmlFor="show-deleted-checkbox" className="text-sm mb-0" >Show Deleted</Label>
+              </div>
+            </div>
 
             <Table className=""  >
                   <TableHeader className="bg-[#F5F0EC]" >
@@ -60,12 +125,12 @@ const AgentList = ({isOpen, setIsOpen, data, isAgentListLoading }) => {
                         <TableCell colSpan={7} className="font-medium text-center py-10">Loading...</TableCell>
                       </TableRow>
                       :
-                      data?.length === 0 ?
+                      filteredData?.length === 0 ?
                       <TableRow >
                         <TableCell colSpan={7} className="font-medium text-center py-10">No Records found.</TableCell>
                       </TableRow>
                       :
-                      data?.map((item, index) => (
+                      filteredData?.map((item, index) => (
                         <TableRow key={item.id} className="*:!p-2 *:text-sm" >
                           <TableCell className="font-medium">{index + 1}</TableCell>
                           <TableCell>{item.agentName}</TableCell>
@@ -87,7 +152,27 @@ const AgentList = ({isOpen, setIsOpen, data, isAgentListLoading }) => {
                           </Button>
                           </TableCell>
                           <TableCell>
-                                <Button variant="destructive" size="sm" className="text-sm" >Delete</Button>
+                                {/* <Button variant="destructive" size="sm" className="text-sm" >Delete</Button> */}
+                          {item.status === CONSTANTS.USER_STATUS.DELETED ? (
+                          <Button
+                            className="text-sm"
+                            size="sm"
+                            disabled={undeletingAgentId === item.id || reinvitingAgentId || deletingAgentId}
+                            onClick={() => handleUndelete(item)}
+                          >
+                            {undeletingAgentId === item.id ? "Restoring..." : "Undelete"}
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            className="text-sm"
+                            disabled={deletingAgentId === item.id || reinvitingAgentId || undeletingAgentId}
+                            onClick={() => handleDelete(item)}
+                            variant="destructive"
+                          >
+                            {deletingAgentId === item.id ? "Deleting..." : "Delete"}
+                          </Button>
+                        )}
                           </TableCell>
 
                         </TableRow> 
@@ -96,63 +181,6 @@ const AgentList = ({isOpen, setIsOpen, data, isAgentListLoading }) => {
     
                   </TableBody>
                 </Table>
-
-          {/* <div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>last Login</th>
-                  <th>Total Searches This Month</th>
-                  <th>Status</th>
-                  <th>Reinvite</th>
-                </tr>
-              </thead>
-              <tbody>
-                {isAgentListLoading ? (
-                  <tr>
-                    <td colSpan="5" style={{ textAlign: "center" }}>
-                      Loading Agents....
-                    </td>
-                  </tr>
-                ) : data?.length ? (
-                  data?.map((row) => (
-                    <tr key={row.id}>
-                      <td>{row.agentName}</td>
-                      <td>
-                        {row.lastLogin
-                          ? getFormattedDateTime(row.lastLogin)
-                          : ""}
-                      </td>
-                      <td>{row.totalSearches}</td>
-                      <td>{row.status}</td>
-                      <td>
-                        <button
-                          className={`reinvite-btn ${
-                            reinvitingAgentId === row.id ? "reinviting" : ""
-                          }`}
-                          disabled={
-                            row.status !== "UNCONFIRMED" || reinvitingAgentId
-                          }
-                          onClick={() => handleReinvite(row)}
-                        >
-                          {reinvitingAgentId === row.id
-                            ? "Sending..."
-                            : "Reinvite"}
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="5" style={{ textAlign: "center" }}>
-                      No records found!
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div> */}
        
 
       </DialogContent>

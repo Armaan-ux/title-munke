@@ -1,7 +1,11 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { API, Auth, graphqlOperation } from "aws-amplify";
-import { getAdmins, getAgent, getBroker } from "../graphql/queries";
-import { updateAdmins, updateAgent, updateBroker } from "../graphql/mutations";
+import { Auth } from "aws-amplify";
+import {
+    getAdminDetails,
+    updateAdmin,
+    updateAgent,
+    updateBroker,
+} from "../component/service/userAdmin";
 
 const UserContext = createContext();
 
@@ -40,48 +44,22 @@ export const UserProvider = ({ children }) => {
 
       setUser(user); // Set the user state
       setIsAuthenticated(true);
-      const userGroups =
-        user?.signInUserSession?.idToken?.payload["cognito:groups"] || [];
+      const userGroups = user?.signInUserSession?.idToken?.payload["cognito:groups"] || [];
+      const userId = user?.attributes?.sub;
+      let input = {
+          id: user?.attributes?.sub,
+          lastLogin: new Date().toISOString(),
+      };
       if (userGroups.includes("agent")) {
-        await API.graphql(
-          graphqlOperation(updateAgent, {
-            input: {
-              id: user?.attributes?.sub,
-              // Add other fields as needed
-            },
-          })
-        );
+          updateAgent(userId, input);
       } else if (userGroups.includes("broker")) {
-        await API.graphql(
-          graphqlOperation(updateBroker, {
-            input: {
-              id: user?.attributes?.sub,
-              // Add other fields as needed
-            },
-          })
-        );
+          updateBroker(userId, input);
       } else if (userGroups.includes("admin")) {
-        await API.graphql(
-          graphqlOperation(updateAdmins, {
-            input: {
-              id: user?.attributes?.sub,
-              lastLogin: new Date().toISOString(),
-            },
-          })
-        );
-        const admin = await API.graphql(
-          graphqlOperation(getAdmins, { id: user?.attributes?.sub })
-        );
-        if (admin.data.getAdmins.status === "UNCONFIRMED") {
-          await API.graphql(
-            graphqlOperation(updateAdmins, {
-              input: {
-                id: user?.attributes?.sub,
-                status: "ACTIVE",
-              },
-            })
-          );
+        const admin = await getAdminDetails(userId);
+        if (admin.status === "UNCONFIRMED") {
+          input["status"] = "ACTIVE";
         }
+        await updateAdmin(userId, input);
       }
       return { user, isResetRequired: false }; // Return the user object
     } catch (error) {

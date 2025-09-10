@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import AddUserModal from "../../Modal/AddUserModal";
 import "./index.css";
-import { resendOTP } from "../../service/auth";
+// import { resendOTP } from "../../service/auth";
 import { listAdmins } from "../../../graphql/queries";
 import { API } from "aws-amplify";
 

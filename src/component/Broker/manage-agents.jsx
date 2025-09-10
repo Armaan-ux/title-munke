@@ -1,16 +1,25 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AddUserModal from "@/component/Modal/AddUserModal";
 import {
-  assignAgent,
-  calculateAverage,
-  getTopPerformerAgent,
-  inActiveAgent,
-  pendingAgentSearch,
-  UnassignAgent,
+  // assignAgent,
+  // calculateAverage,
+  // getTopPerformerAgent,
+  // inActiveAgent,
+  // pendingAgentSearch,
+  // UnassignAgent,
 } from "@/component/service/agent";
 import {
     reinviteAgent,
     getAgentsTotalSearches,
+    deleteUser,
+    CONSTANTS,
+    undeleteUser,
+    updateAgentStatus,
+    getPendingAgentSearches,
+    UnassignAgent,
+    assignAgent,
+    getTopPerformerAgent,
+    getUnassignedAgents,
     } from "@/component/service/userAdmin";
 import { useUser } from "@/context/usercontext";
 import { fetchAgentsWithSearchCount } from "@/component/service/broker";
@@ -38,6 +47,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { API } from "aws-amplify";
 import { listAgents } from "@/graphql/queries";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 const agentTypes = [
     {
@@ -91,11 +102,15 @@ function Agents(){
   const [agents, setAgents] = useState([]);
   const [totalSearchesThisMonth, setTotalSearchesThisMonth] = useState(0);
   const [reinvitingAgentId, setReinvitingAgentId] = useState(null);
+  const [deletingAgentId, setDeletingAgentId] = useState(null);
+  const [undeletingAgentId, setUndeletingAgentId] = useState(null);
+  const [showDeleted, setShowDeleted] = useState(false);
+  const [filteredAgents, setFilteredAgents] = useState([]);
   const [pendingSearch, setPendingSearch] = useState(0);
   const [topPerformer, setTopPerformer] = useState("");
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = useCallback(async () => {
+    if (user?.attributes?.sub) {
       setLoading(true);
       try {
         const currentMonthStart = new Date();
@@ -104,46 +119,65 @@ function Agents(){
         const nextMonthStart = new Date(currentMonthStart);
         nextMonthStart.setMonth(nextMonthStart.getMonth() + 1);
 
-        const [totalSearches, agents, pendingSearches, topPerformer] =
+        const [totalSearches, agents, pendingSearches, topPerformerObj] =
           await Promise.all([
             getAgentsTotalSearches(user.attributes.sub, currentMonthStart, nextMonthStart),
             fetchAgentsWithSearchCount(user.attributes.sub),
-            pendingAgentSearch(user.attributes.sub),
+            getPendingAgentSearches(user.attributes.sub),
             getTopPerformerAgent(user.attributes.sub),
           ]);
 
+        let topPerformerText = "No Top Performer";
+        const performer = topPerformerObj?.topPerformer;
+
+        if (performer) {
+          topPerformerText = `${performer.agentName || "None"} (${
+            performer.searchCount || 0
+          })`;
+        }
         setTotalSearchesThisMonth(totalSearches.totalSearches);
         setAgents(agents);
         setPendingSearch(pendingSearches.pendingSearches);
-        setTopPerformer(topPerformer);
+        setTopPerformer(topPerformerText);
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
         setLoading(false);
       }
-    };
+    }
+  }, [user]);
 
+  useEffect(() => {
     if (user?.attributes?.sub) {
       fetchData();
       const interval = setInterval(fetchData, 1800000);
 
       return () => clearInterval(interval);
     }
-  }, [user]);
+  }, [user, fetchData]);
 
-  const unAssignAgent = async (id, agentId) => {
-    const result = await UnassignAgent(id, agentId);
+  useEffect(() => {
+    if (agents) {
+      const filtered = showDeleted
+        ? agents
+        : agents.filter((agent) => agent.status !== CONSTANTS.USER_STATUS.DELETED);
+      setFilteredAgents(filtered);
+    }
+  }, [agents, showDeleted]);
+
+  const unAssignAgent = async (agentId) => {
+    const result = await UnassignAgent(agentId);
     if (result) {
-      setAgents((prevAgents) => prevAgents.filter((elem) => elem.id !== id));
+      setAgents((prevAgents) => prevAgents.filter((elem) => elem.agentId !== agentId));
       toast.success("Agent UnAssigned Successfully.");
       handleCreateAuditLog("UNASSIGN", {
-        detial: `Unassigned Agent ${agentId}`,
+        detail: `Unassigned Agent ${agentId}`,
       });
     }
   };
 
-  const inActiveAgentStatus = async (id, status) => {
-    const result = await inActiveAgent(id, status);
+  const toggleAgentStatus = async (id, status) => {
+    const result = await updateAgentStatus(id, status);
     if (result) {
       setAgents((prevAgents) =>
         prevAgents.map((agent) =>
@@ -152,7 +186,7 @@ function Agents(){
       );
       toast.success(`Agent ${status} Successfully.`);
       handleCreateAuditLog("ACTIVE_STATUS", {
-        detial: `Convert Agent ${id} Status to ${status}`,
+        detail: `Convert Agent ${id} Status to ${status}`,
       });
     }
   };
@@ -168,22 +202,37 @@ function Agents(){
     setReinvitingAgentId(null);
   };
 
-//   const agentss = [
-//     {
-//         "__typename": "Relationship",
-//         "updatedAt": "2025-08-29T14:32:09.376Z",
-//         "brokerName": "Ravinder",
-//         "createdAt": "2025-08-29T14:32:09.376Z",
-//         "agentId": "d4185428-80e1-70e7-7507-11778d708c04",
-//         "id": "d4185428-80e1-70e7-7507-11778d708c04",
-//         "agentName": "RS",
-//         "brokerId": "a4a894b8-5061-7039-6b23-f37722d94011",
-//         "status": "ACTIVE",
-//         "email": "Ravinsandhu2@gmail.com",
-//         "lastLogin": "2025-08-29T14:46:37.414Z",
-//         "totalSearches": 0
-//     }
-// ]
+  const handleDelete = async (agent) => {
+    if (window.confirm(`Are you sure you want to delete agent ${agent.agentName}? This is a soft delete.`)) {
+      setDeletingAgentId(agent.id);
+      try {
+        await deleteUser(agent.id, agent.email, CONSTANTS.USER_TYPES.AGENT);
+        toast.success(`Agent ${agent.agentName} has been deleted.`);
+        fetchData();
+      } catch (error) {
+        console.error("Failed to delete agent:", error);
+        toast.error(`Failed to delete agent. ${error?.response?.data?.message || ""}`);
+      } finally {
+        setDeletingAgentId(null);
+      }
+    }
+  };
+
+  const handleUndelete = async (agent) => {
+    if (window.confirm(`Are you sure you want to restore agent ${agent.agentName}?`)) {
+      setUndeletingAgentId(agent.id);
+      try {
+        await undeleteUser(agent.id, agent.email, CONSTANTS.USER_TYPES.AGENT);
+        toast.success(`Agent ${agent.agentName} has been restored.`);
+        fetchData();
+      } catch (error) {
+        console.error("Failed to restore agent:", error);
+        toast.error(`Failed to restore agent. ${error?.response?.data?.message || ""}`);
+      } finally {
+        setUndeletingAgentId(null);
+      }
+    }
+  };
 
   return (
     <>
@@ -194,20 +243,15 @@ function Agents(){
         setUser={setAgents}
         agents={agents} // Pass agents to check for duplicates
     />
-    {/* <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary"> */}
-
-        {/* <div className="flex justify-between items-center gap-4 my-4" >
-            <div className="flex gap-3 items-center" >
-                <p className="font-medium text-lg" >All Agents</p>
-                <div className="relative" >
-                    <Input className="pr-10 placeholder:text-[#E2DEDC] bg-white border-none" placeholder="Search" />
-                    <Search className="absolute right-3 top-3 text-[#D7C4B6]" size={18} />
-                </div>
-            </div>
-            <Button variant="secondary" onClick={() => setIsOpen(true)} >
-                <PlusCircle /> Add User 
-            </Button>
-        </div> */}
+         <div className="flex items-center gap-2 justify-end mb-3" >
+          <Checkbox
+            id="show-deleted-checkbox"
+            className="border-2 size-5 cursor-pointer bg-white"
+            checked={showDeleted}
+            onCheckedChange={(value) => setShowDeleted(value)}
+          />
+          <Label htmlFor="show-deleted-checkbox" className="text-sm mb-0" >Show Deleted</Label>
+        </div>
       
         <div className="bg-white !p-4 rounded-xl" >
 
@@ -226,12 +270,16 @@ function Agents(){
               </TableHeader>
               <TableBody>
                 {
-                  agents?.length === 0 ?
+                  loading?
+                  <TableRow >
+                    <TableCell colSpan={8} className="font-medium text-center py-10">Loading...</TableCell>
+                  </TableRow> :
+                  filteredAgents?.length === 0 ?
                   <TableRow >
                     <TableCell colSpan={8} className="font-medium text-center py-10">No Records found.</TableCell>
                   </TableRow>
                   :
-                  agents?.map((item, index) => (
+                  filteredAgents?.map((item, index) => (
                     <TableRow key={item.id}>
                       <TableCell className="font-medium">{index + 1}</TableCell>
                       <TableCell>{item.agentName}</TableCell>
@@ -260,46 +308,36 @@ function Agents(){
                               </DropdownMenuTrigger>
                               <DropdownMenuContent>
                                 <DropdownMenuItem onClick={() => unAssignAgent(item.id, item.agentId)}>Unassign</DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => inActiveAgentStatus(item.agentId, item.status === "INACTIVE" ? "ACTIVE" : "INACTIVE")}>
+                                <DropdownMenuItem onClick={() => toggleAgentStatus(item.agentId, item.status === "INACTIVE" ? "ACTIVE" : "INACTIVE")}>
                                   {item.status === "ACTIVE" ? "Inactive" : "Active"}
                                   </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
-
-
-                            {/* <button className="btn action-btn">
-                              Actions <i className="fas fa-caret-down"></i>
-                            </button>
-
-                            <div className="dropdown-content">
-                              <span
-                                onClick={() =>
-                                  unAssignAgent(item.id, item.agentId)
-                                }
-                              >
-                                Unassign
-                              </span>
-                              <span
-                                onClick={() =>
-                                  inActiveAgentStatus(
-                                    item.agentId,
-                                    item.status === "INACTIVE"
-                                      ? "ACTIVE"
-                                      : "INACTIVE"
-                                  )
-                                }
-                              >
-                                {item.status === "ACTIVE"
-                                  ? "Inactive"
-                                  : "Active"}
-                              </span>
-                            </div> */}
                           </>
                         )}
                       </div>
                       </TableCell>
                       <TableCell>
-                          <Button variant="destructive" size="sm" className="text-sm" >Delete</Button>
+                        {item.status === CONSTANTS.USER_STATUS.DELETED ? (
+                          <Button
+                            className="text-sm"
+                            size="sm"
+                            disabled={undeletingAgentId === item.id || reinvitingAgentId || deletingAgentId}
+                            onClick={() => handleUndelete(item)}
+                          >
+                            {undeletingAgentId === item.id ? "Restoring..." : "Undelete"}
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            className="text-sm"
+                            variant="destructive"
+                            disabled={deletingAgentId === item.id || reinvitingAgentId || undeletingAgentId}
+                            onClick={() => handleDelete(item)}
+                          >
+                            {deletingAgentId === item.id ? "Deleting..." : "Delete"}
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow> 
                   ))
@@ -317,45 +355,94 @@ function Agents(){
 
 function UnassignedAgents(){
 
-    const { user } = useUser();
-    const [isOpen, setIsOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [agents, setAgents] = useState([]);
-  
-    const handleAssignAgent = async (id, name) => {
-      const result = await assignAgent(id, name, user?.attributes?.sub);
+  const { user } = useUser();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [agents, setAgents] = useState([]);
+  const [showDeleted, setShowDeleted] = useState(false);
+  const [filteredAgents, setFilteredAgents] = useState([]);
+
+  const handleAssignAgent = async (id, name) => {
+    const result = await assignAgent(id, name, user?.attributes?.sub);
+    if (result) {
+      setAgents((prevAgents) => prevAgents.filter((elem) => elem.id !== id));
+      toast.success("Agent Assigned Successfully.");
+      handleCreateAuditLog("ASSIGN", {
+        detail: `Assigned Agent ${id}`,
+      });
+    }
+  };
+
+  const handleDeleteAgent = async (id, name, email) => {
+    if (window.confirm(`Are you sure you want to delete agent: ${name}?`)) {
+      const result = await deleteUser(id, email, CONSTANTS.USER_TYPES.AGENT);
       if (result) {
-        setAgents(agents.filter((elem) => elem.id !== id));
-        toast.success("Agent Assigned Successfully.");
-        handleCreateAuditLog("ASSIGN", {
-          detial: `Assigned Agent ${id}`,
+        setAgents((prevAgents) =>
+          prevAgents.map((agent) =>
+            agent.id === id ? { ...agent, status: result.status } : agent
+          )
+        );
+        toast.success("Agent Deleted Successfully.");
+        handleCreateAuditLog("DELETE", {
+          detail: `Deleted Agent ${name} (${id})`,
         });
       }
+    }
+  };
+
+  const handleUndeleteAgent = async (id, name, email) => {
+    if (window.confirm(`Are you sure you want to restore agent: ${name}?`)) {
+      const result = await undeleteUser(id, email, CONSTANTS.USER_TYPES.AGENT);
+      if (result) {
+        setAgents((prevAgents) =>
+          prevAgents.map((agent) =>
+            agent.id === id ? { ...agent, status: result.status } : agent
+          )
+        );
+        toast.success("Agent Restored Successfully.");
+        handleCreateAuditLog("RESTORE", {
+          detail: `Restored Agent ${name} (${id})`,
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    const fetchNotAssignedAgents = async () => {
+      try {
+        setIsLoading(true);
+        const items = await getUnassignedAgents();
+        setAgents(items);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
     };
-  
-    useEffect(() => {
-      const fetchNotAssignedAgents = async () => {
-        try {
-          setIsLoading(true);
-          const response = await API.graphql({
-            query: listAgents,
-            variables: {
-              filter: { assigned: { eq: false } },
-            },
-          });
-          const { items } = response.data.listAgents;
-          setAgents(items);
-        } catch (err) {
-          console.error(err);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      fetchNotAssignedAgents();
-    }, []);
+    fetchNotAssignedAgents();
+  }, []);
+
+  useEffect(() => {
+    if (agents) {
+      const filtered = showDeleted
+        ? agents
+        : agents.filter((agent) => agent.status !== "DELETED");
+      setFilteredAgents(filtered);
+    }
+  }, [agents, showDeleted]);
   return (
    <>
+       <div className="flex items-center gap-2 justify-end mb-3" >
+                <Checkbox
+                  id="show-deleted-checkbox"
+                  className="border-2 size-5 cursor-pointer bg-white"
+                  checked={showDeleted}
+                  onCheckedChange={(value) => setShowDeleted(value)}
+                />
+                <Label htmlFor="show-deleted-checkbox" className="text-sm mb-0" >Show Deleted</Label>
+              </div>
      <div className="bg-white !p-4 rounded-xl"  >
+
 
                   <Table className=""  >
                         <TableHeader className="bg-[#F5F0EC]" >
@@ -364,22 +451,23 @@ function UnassignedAgents(){
                             <TableHead>Name</TableHead>
                             <TableHead>Email</TableHead>
                             <TableHead>Status</TableHead>
-                            <TableHead>Action</TableHead>
+                            <TableHead>Assign</TableHead>
+                            <TableHead>Delete</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody >
                           {
                             isLoading ?
                             <TableRow >
-                              <TableCell colSpan={5} className="font-medium text-center py-10">Loading...</TableCell>
+                              <TableCell colSpan={6} className="font-medium text-center py-10">Loading...</TableCell>
                             </TableRow>
                             :
-                            agents?.length === 0 ?
+                            filteredAgents?.length === 0 ?
                             <TableRow >
-                              <TableCell colSpan={5} className="font-medium text-center py-10">No Records found.</TableCell>
+                              <TableCell colSpan={6} className="font-medium text-center py-10">No Records found.</TableCell>
                             </TableRow>
                             :
-                            agents?.map((item, index) => (
+                            filteredAgents?.map((item, index) => (
                               <TableRow key={item.id} >
                                 <TableCell className="font-medium">{index + 1}</TableCell>
                                 <TableCell>{item.name}</TableCell>
@@ -393,6 +481,26 @@ function UnassignedAgents(){
                                   >
                                    Assign
                                 </Button>
+                                </TableCell>
+                                <TableCell>
+                                    {item.status === CONSTANTS.USER_STATUS.DELETED ? (
+                                      <Button
+                                        onClick={() => handleUndeleteAgent(item.id, item.name, item.email)}
+                                        className="text-sm"
+                                        size="sm"
+                                      >
+                                        Undelete
+                                      </Button>
+                                    ) : (
+                                      <Button
+                                        onClick={() => handleDeleteAgent(item.id, item.name, item.email)}
+                                        className="text-sm"
+                                        size="sm"
+                                        variant="destructive"
+                                      >
+                                        Delete
+                                      </Button>
+                                    )}
                                 </TableCell>
                                
                               </TableRow> 
