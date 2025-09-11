@@ -18,8 +18,9 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 if (!("aws_cloud_logic_custom" in awsconfig)) {
   awsconfig["aws_cloud_logic_custom"] = [{
     "name": "usersAdmin",
-    "endpoint": "https://rvz67ef1yc.execute-api.us-east-1.amazonaws.com/master",
-    "region": "us-east-1"
+    "endpoint": "https://nz8vshfeah.execute-api.us-east-1.amazonaws.com/master",
+    "region": "us-east-1",
+    "authorizationType": "AMAZON_COGNITO_USER_POOLS",
   }];
 }
 console.log('awsconfig:', awsconfig);

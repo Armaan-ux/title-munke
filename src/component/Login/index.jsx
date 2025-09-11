@@ -33,8 +33,9 @@ function Login() {
     }
   }, [user, navigate]);
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
     try {
+      e.preventDefault();
       setError("");
       setIsChecking(true);
       const { isResetRequired, user: signedInUser } = await signIn(username, password);
