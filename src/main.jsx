@@ -4,7 +4,7 @@ import "./index.css";
 import App from "./App";
 import { UserProvider } from "./context/usercontext";
 import { Amplify, Auth } from "aws-amplify";
-import awsconfig from "./aws-exports.js";
+import awsconfig from "./aws-exports";
 import { ToastContainer } from "react-toastify";
 // import { Buffer } from 'buffer'
 // import process from 'process/browser'
@@ -15,7 +15,7 @@ import { ToastContainer } from "react-toastify";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-console.log('awsconfig:', awsconfig);
+console.log('awsconfig --> ', awsconfig);
 if (!("aws_cloud_logic_custom" in awsconfig)) {
   awsconfig["aws_cloud_logic_custom"] = [{
     "name": "usersAdmin",
@@ -25,7 +25,6 @@ if (!("aws_cloud_logic_custom" in awsconfig)) {
   }];
 }
 Amplify.configure(awsconfig);
-Auth.configure(awsconfig)
 root.render(
   <>
     <UserProvider>
