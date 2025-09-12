@@ -12,7 +12,7 @@
       "AmplifyAppId": "d24q6s3jfagfag"
     }
   },
-  "main": {
+  "master": {
     "awscloudformation": {
       "AuthRoleName": "amplify-titlemunke-master-89007-authRole",
       "UnauthRoleArn": "arn:aws:iam::010928219538:role/amplify-titlemunke-master-89007-unauthRole",
