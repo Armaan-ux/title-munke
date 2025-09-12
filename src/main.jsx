@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { UserProvider } from "./context/usercontext";
-import { Amplify } from "aws-amplify";
+import { Amplify, Auth } from "aws-amplify";
 import awsconfig from "./aws-exports.js";
 import { ToastContainer } from "react-toastify";
 // import { Buffer } from 'buffer'
@@ -25,6 +25,7 @@ if (!("aws_cloud_logic_custom" in awsconfig)) {
   }];
 }
 Amplify.configure(awsconfig);
+Auth.configure(awsconfig)
 root.render(
   <>
     <UserProvider>
