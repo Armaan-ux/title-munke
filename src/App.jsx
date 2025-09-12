@@ -14,10 +14,11 @@ import { useUser } from "./context/usercontext";
 import ForgetPassword from "./component/ForgetPassword";
 import Home from "./component/Home";
 import ContactUs from "./component/Contactus";
+import awsconfig from "./aws-exports";
 
 function App() {
   const { isLoading } = useUser();
-
+  console.log('config --- ', awsconfig);
   if (isLoading) {
     // return <Loader />;
     return null
