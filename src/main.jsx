@@ -4,9 +4,9 @@ import "./index.css";
 import App from "./App";
 import { UserProvider } from "./context/usercontext";
 import { Amplify } from "aws-amplify";
-import awsconfig from "./aws-exports";
+// import awsconfig from "./aws-exports";
 import { ToastContainer } from "react-toastify";
-import { awsmobile } from "./aws-config";
+import { awsmobile as awsconfig } from "./aws-config";
 // import { Buffer } from 'buffer'
 // import process from 'process/browser'
 
@@ -17,7 +17,6 @@ import { awsmobile } from "./aws-config";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 console.log('awsconfig -', awsconfig);
-console.log('awsmobile -', awsmobile);
 if (!("aws_cloud_logic_custom" in awsconfig)) {
   awsconfig["aws_cloud_logic_custom"] = [{
     "name": "usersAdmin",
