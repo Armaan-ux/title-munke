@@ -1,0 +1,114 @@
+.contactus-main {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    background:
+    linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)),
+    url('../../img/palm_trees_background.jpg')
+      no-repeat center center fixed;
+  background-size: cover;
+  }
+
+/* contactus container */
+.contactus-container {
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+    border: 2px solid #2F3628;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .contactus-container textarea{
+    width: 100%;
+    height: 80px;
+  }
+  /* Form styles */
+  .contactus-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #2F3628;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  /* label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 18px !important;
+    color: #333;
+  } */
+  
+  /* input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+  } */
+  
+  .contactusBtn {
+    width: 50%;
+    padding: 10px;
+    background-color: #008F39;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 117px;
+    transition: background-color 0.3s ease;
+  }
+
+  .contactusBtn:disabled{
+    cursor: not-allowed;
+    background-color: #008F39;
+  }
+  
+  .contactusBtn svg{
+    margin-right: 6px;
+  }
+  .contactus-logo{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .contactus-logo img{
+    width: 180px !important;
+  }
+
+  .forgot-password {
+    display: block;
+    text-align: right;
+    color: #2F3628;
+    text-decoration: none;
+    font-size: 14px;
+    margin-top: 5px;
+  }
+  
+  .forgot-password:hover {
+    text-decoration: underline;
+  }
+
+  .back-link {
+    text-align: center;
+    margin-top: 20px;
+  }
+  .back-link a {
+    color: #008F39;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .back-link a:hover {
+    text-decoration: underline;
+  }
