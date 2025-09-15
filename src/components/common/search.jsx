@@ -5,14 +5,13 @@ import { createSearchHistory } from "@/graphql/mutations";
 import { useUser } from "@/context/usercontext";
 import { handleCreateAuditLog } from "@/utils";
 import { getAgent, getBroker, relationshipsByAgentId } from "@/graphql/queries";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import { Download, FileSearch2, Logs, MapPin, SearchCheck, Search as SearchIcon } from "lucide-react";
+import { Download, MapPin, Search as SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import History from "@/component/common/history";
 
 
 export default function Search(){

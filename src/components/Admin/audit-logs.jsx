@@ -4,7 +4,6 @@ import { listAuditLogs } from "@/graphql/queries";
 // import "./index.css";
 import { useUser } from "@/context/usercontext";
 import { FETCH_LIMIT, getFormattedDateTime } from "@/utils";
-// import { fetchAgentsOfBroker } from "@/component/service/broker";
 import {
   Table,
   TableBody,

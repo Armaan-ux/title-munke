@@ -5,7 +5,7 @@ import {
     updateAdmin,
     updateAgent,
     updateBroker,
-} from "../component/service/userAdmin";
+} from "../components/service/userAdmin";
 
 const UserContext = createContext();
 

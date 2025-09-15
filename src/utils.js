@@ -1,6 +1,6 @@
 import { Auth } from "aws-amplify";
 import { format, toZonedTime } from "date-fns-tz";
-import { createAuditLog } from "./component/service/userAdmin";
+import { createAuditLog } from "./components/service/userAdmin";
 
 export const INTERVALTIME = 300000;
 export const FETCH_LIMIT = 100;

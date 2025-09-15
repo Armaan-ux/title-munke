@@ -1,7 +1,5 @@
-// import "./index.css";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../../img/Logo.svg";
 import { useUser } from "../../context/usercontext";
 import ResetPassword from "../ResetPassword";
 import { Input } from "@/components/ui/input";
@@ -131,6 +129,10 @@ function Login() {
           {error && <div className="text-red-500 text-center text-sm font-medium">{error}</div>}
              
         </form>
+        {/* <div className="text-center my-4 text-sm" >
+            <span>Don't have an account? </span>
+            <Link to="/register" className="text-secondary" >Register Now</Link>
+        </div> */}
         <div className="flex justify-center my-4 mt-6 text-secondary group" >
           <Link to={"/"} className="inline-flex items-center gap-2" >
               <ChevronLeft size={20} className="group-hover:mr-2 transition-all" /> Back to Home

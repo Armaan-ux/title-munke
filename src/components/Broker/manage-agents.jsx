@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import AddUserModal from "@/component/Modal/AddUserModal";
+import AddUserModal from "@/components/Modal/AddUserModal";
 import {
   // assignAgent,
   // calculateAverage,
@@ -7,7 +7,7 @@ import {
   // inActiveAgent,
   // pendingAgentSearch,
   // UnassignAgent,
-} from "@/component/service/agent";
+} from "@/components/service/agent";
 import {
     reinviteAgent,
     getAgentsTotalSearches,
@@ -20,9 +20,9 @@ import {
     assignAgent,
     getTopPerformerAgent,
     getUnassignedAgents,
-    } from "@/component/service/userAdmin";
+    } from "@/components/service/userAdmin";
 import { useUser } from "@/context/usercontext";
-import { fetchAgentsWithSearchCount } from "@/component/service/broker";
+import { fetchAgentsWithSearchCount } from "@/components/service/broker";
 import { getFormattedDateTime, handleCreateAuditLog } from "@/utils";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

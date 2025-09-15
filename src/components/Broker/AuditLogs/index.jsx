@@ -4,7 +4,7 @@ import "./index.css";
 import { useUser } from "../../../context/usercontext";
 import { getFormattedDateTime } from "../../../utils";
 // import { fetchAgentsOfBroker } from "../../service/broker";
-import { getBrokerAgentsDetails } from "@/component/service/userAdmin";
+import { getBrokerAgentsDetails } from "@/components/service/userAdmin";
 
 function AuditLogs() {
   const [logs, setLogs] = useState([]);

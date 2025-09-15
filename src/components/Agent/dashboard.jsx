@@ -1,8 +1,8 @@
 
 import { FileSearch2, Logs } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import History from "@/component/common/history";
-import Search from "@/component/common/search";
+import History from "@/components/common/history";
+import Search from "@/components/common/search";
 
 const BrokerDashboard = () => {
 

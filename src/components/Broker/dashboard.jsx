@@ -2,7 +2,7 @@
 import { FileSearch2, Logs, UserRound, UserRoundCheck, UserRoundX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import BrokerHistory from "./broker-history";
-import Search from "@/component/common/search";
+import Search from "@/components/common/search";
 import { useEffect, useState } from "react";
 import { useUser } from "@/context/usercontext";
 import { fetchAgentsWithSearchCount } from "../service/broker";

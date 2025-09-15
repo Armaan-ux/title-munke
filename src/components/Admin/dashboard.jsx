@@ -1,11 +1,7 @@
 
-import { BookUser, FileSearch2, HatGlasses, Logs, Map, UserRound, UserRoundCheck, UserRoundX } from "lucide-react";
+import { BookUser, HatGlasses, Map, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import History from "@/component/common/history";
-import Search from "@/component/common/search";
-import { useEffect, useState } from "react";
-import { useUser } from "@/context/usercontext";
-import { fetchAgentsWithSearchCount } from "../service/broker";
+import Search from "@/components/common/search";
 import AllSearchHistory from "./all-history";
 
 const AdminDashboard = () => {

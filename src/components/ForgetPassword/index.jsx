@@ -1,15 +1,11 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import ResetPassword from "../ResetPassword";
-import { forgotPassword } from "@/component/service/userAdmin";
-import logo from "../../img/Logo.svg";
-import "./index.css";
+import { forgotPassword } from "@/components/service/userAdmin";
 import ResetPasswordWithOTP from "../OTP";
 import {motion} from "motion/react"
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
 
 function ForgetPassword() {
   const [username, setUsername] = useState("");

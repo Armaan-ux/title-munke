@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { listAdmins } from "@/graphql/queries";
 // import "./index.css";
 import { getFormattedDateTime } from "@/utils";
-import { fetchAgentsWithSearchCount } from "@/component/service/broker";
+import { fetchAgentsWithSearchCount } from "@/components/service/broker";
 import {
   Table,
   TableBody,

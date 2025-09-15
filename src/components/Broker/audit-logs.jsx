@@ -3,7 +3,6 @@ import { listAuditLogs } from "@/graphql/queries";
 // import "./index.css";
 import { useUser } from "@/context/usercontext";
 import { getFormattedDateTime } from "@/utils";
-// import { fetchAgentsOfBroker } from "@/component/service/broker";
 import {
   Table,
   TableBody,
@@ -12,7 +11,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-// import { Button } from "@/components/ui/button";
 import { getBrokerAgentsDetails } from "../service/userAdmin";
 
 function AuditLogs() {

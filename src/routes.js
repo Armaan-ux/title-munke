@@ -1,31 +1,19 @@
-import Admin from "./component/Admin";
-import Agent from "./component/Agent";
-// import AgentHistory from "./component/Agent/History";
-import AgentSetting from "./component/Agent/settings";
-// import BrokerHistory from "./component/Broker/History";
-// import BrokerSetting from "./component/Broker/Setting";
-import Broker from "./component/Broker";
-// import Search from "./component/Search";
-// import AssignedAgents from "./component/Broker/AssingedAgent";
-import BorkerList from "./component/Admin/BrokerList";
-import AllSearchHistory from "./component/Admin/History";
-import AdminSettings from "./component/Admin/admin-settings";
-import ManageAdmins from "./component/Admin/ManageAdmins";
-// import NotAssignedAgents from "./component/Broker/NotAssignedAgents";
-// import AgentAuditLogs from "./component/Broker/AuditLogs";
-import AdminAuditLogs from "./component/Admin/audit-logs";
-// import Dashboard from "./component/Agent/dashboard";
-import AuditLogs from "./component/Agent/audit-logs";
-import BrokerSettings from "./component/Broker/settings";
-import BrokerDashboard from "./component/Broker/dashboard";
-import AgentDashboard from "./component/Agent/dashboard";
-import ManageAgents from "./component/Broker/manage-agents";
+import Admin from "./components/Admin";
+import Agent from "./components/Agent";
+import AgentSetting from "./components/Agent/settings";
+import Broker from "./components/Broker";
+import AdminSettings from "./components/Admin/admin-settings";
+import AdminAuditLogs from "./components/Admin/audit-logs";
+import AuditLogs from "./components/Agent/audit-logs";
+import BrokerSettings from "./components/Broker/settings";
+import BrokerDashboard from "./components/Broker/dashboard";
+import AgentDashboard from "./components/Agent/dashboard";
+import ManageAgents from "./components/Broker/manage-agents";
 
 
-import AuditLogsForBroker from "./component/Broker/audit-logs";
-import AdminDashboard from "./component/Admin/dashboard";
-import DemoRequests from "./component/Admin/demo-requests";
-import Users from "./component/Admin/users";
+import AuditLogsForBroker from "./components/Broker/audit-logs";
+import DemoRequests from "./components/Admin/demo-requests";
+import Users from "./components/Admin/users";
 
 export const adminRoutes = [
   { path: "admin", component: Admin },

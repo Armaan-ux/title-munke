@@ -13,7 +13,7 @@ import {
   // inActiveBroker,
 } from "../../service/broker";
 import "./index.css";
-import { getActiveBrokers, getBrokersWithSearchCount, getTotalBrokers, getTotalBrokerSearchesThisMonth, updateBrokerStatus } from "@/component/service/userAdmin";
+import { getActiveBrokers, getBrokersWithSearchCount, getTotalBrokers, getTotalBrokerSearchesThisMonth, updateBrokerStatus } from "@/components/service/userAdmin";
 import { toast } from "react-toastify";
 function BorkerList() {
   const [isBrokerListLoading, setIsBrokerListLoading] = useState(false);
