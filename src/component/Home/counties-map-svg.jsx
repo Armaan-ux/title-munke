@@ -16,7 +16,7 @@ export default function CountiesMapSvg() {
       const name = path.getAttribute('data-name');
       if (name) {
         const rect = path.getBoundingClientRect();
-        console.log('rect ', rect)
+        // console.log('rect ', rect)
         setTooltip({
           visible: true,
           x: rect.left + rect.width / 2, // Center horizontally
