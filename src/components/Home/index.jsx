@@ -104,7 +104,7 @@ export default function Home() {
             </h1>
             <p className="md:mr-20 text-lg lg:text-xl text-secondary">
               AI-powered title searches delivered with speed and accuracy.
-              Helping brokers and agents make confident decisions.
+              Helping brokers and agents make confident decisions. Hello World
             </p>
             <div className="space-x-3">
               <Link to="/login">
