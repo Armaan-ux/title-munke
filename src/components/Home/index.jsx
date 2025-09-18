@@ -109,7 +109,7 @@ export default function Home() {
             <div className="space-x-3">
               <Link to="/login">
                 <Button className="hover:scale-105" size="lg" variant="outline">
-                  Get Started <ArrowRight />
+                  Get Started Now <ArrowRight />
                 </Button>
               </Link>
               <Button
