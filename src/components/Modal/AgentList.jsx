@@ -16,6 +16,17 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 const AgentList = ({isOpen, setIsOpen, data, isAgentListLoading, onListRefresh }) => {
   const [reinvitingAgentId, setReinvitingAgentId] = useState(null);
@@ -138,16 +149,42 @@ const AgentList = ({isOpen, setIsOpen, data, isAgentListLoading, onListRefresh }
                         <TableCell>{item.totalSearches}</TableCell>
                         <TableCell>{item.status}</TableCell>
                         <TableCell>
-                          <Button
-                            size="sm"
-                            className={`text-sm`}
-                            disabled={item.status !== "UNCONFIRMED" || reinvitingAgentId}
-                            onClick={() => handleReinvite(item)}
-                          >
-                            {reinvitingAgentId === item.id
-                              ? "Sending..."
-                              : "Reinvite"}
-                        </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger disabled={item.status !== "UNCONFIRMED" || reinvitingAgentId} >
+                              <Button
+                                  size="sm"
+                                  className={`text-sm`}
+                                  disabled={item.status !== "UNCONFIRMED" || reinvitingAgentId}
+                                  // onClick={() => handleReinvite(item)}
+                                >
+                                  Reinvite
+                                  {/* {reinvitingAgentId === item.id
+                                    ? "Sending..."
+                                    : "Reinvite"} */}
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle className="!font-poppins font-medium" >Are you absolutely sure?</AlertDialogTitle>
+                                {/* <AlertDialogDescription>
+                                  This action cannot be undone. This will permanently delete your account
+                                  and remove your data from our servers.
+                                </AlertDialogDescription> */}
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction asChild onClick={() => handleReinvite(item)} variant="secondary"  >
+                                  <Button>
+
+                                  {reinvitingAgentId === item.id
+                                    ? "Sending..."
+                                    : "Continue"}
+                                    </Button>
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                          
                         </TableCell>
                         <TableCell>
                               {/* <Button variant="destructive" size="sm" className="text-sm" >Delete</Button> */}
