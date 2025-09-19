@@ -1,7 +1,8 @@
 import { API } from 'aws-amplify';
 
 const apiName = 'usersAdmin';
-const path = '/users';
+const userPath = '/users';
+const forgotPasswordPath = '/forgot-password';
 
 export const CONSTANTS = { // should always be copied from title-munke-serverless code
   ACTIONS: {
@@ -58,7 +59,7 @@ export const CONSTANTS = { // should always be copied from title-munke-serverles
   }
 };
 
-async function callUserAdminApi(payload, successMessage, errorMessage) {
+async function callUserAdminApi(payload, successMessage, errorMessage, path = userPath) {
   try {
     // The Amplify API library automatically looks up the endpoint from aws-exports.js
     // and, most importantly, signs the request with the current user's credentials.
@@ -114,11 +115,14 @@ export async function forgotPassword(email) {
         email: email,
         action: CONSTANTS.ACTIONS.FORGOT_PASSWORD,
       },
+      headers: {Authorization: "", "Content-Type": ""},
     };
+
     return callUserAdminApi(
         payload,
         'Success in forgotPassword:',
-        'Error in forgotPassword:'
+        'Error in forgotPassword:',
+        forgotPasswordPath
     );
 }
 

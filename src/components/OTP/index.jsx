@@ -4,6 +4,9 @@ import { toast } from "react-toastify";
 import { resetPassword } from "../service/auth";
 import logo from "../../img/Logo.svg";
 import "./index.css";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 
 function ResetPasswordWithOTP({ username }) {
   const [newPassword, setNewPassword] = useState("");
@@ -22,16 +25,15 @@ function ResetPasswordWithOTP({ username }) {
   };
 
   return (
-    <div className="main">
-      <div className="login-container">
-        <form className="login-form">
-          <div className="login-logo">
-            <img src={logo} />
-            {/* <h2>Title Munke</h2> */}
+    <div className="z-10">
+      <div className="">
+          <div className="text-center mb-6 text-secondary" >
+            <img className="mx-auto w-24 md:w-32 mb-2" src="/Logo.svg" alt="logo" />
           </div>
-          <div className="form-group">
-            <label for="password">Reset Password</label>
-            <input
+        <form className="space-y-4">
+          <div>
+            <Label for="password" className="text-base" >Reset Password</Label>
+            <Input
               type="password"
               id="password"
               name="password"
@@ -40,9 +42,9 @@ function ResetPasswordWithOTP({ username }) {
               onChange={(e) => setNewPassword(e.target.value)}
             />
           </div>
-          <div className="form-group">
-            <label for="password">OTP</label>
-            <input
+          <div>
+            <Label for="password" className="text-base" >OTP</Label>
+            <Input
               type="text"
               id="otp"
               name="otp"
@@ -51,14 +53,17 @@ function ResetPasswordWithOTP({ username }) {
               onChange={(e) => setOTP(e.target.value)}
             />
           </div>
-          <button
+          <Button
             onClick={() => handlePasswordReset()}
-            className="loginBtn"
             disabled={!otp.length || !newPassword.length}
             type="button"
-          >
+            className="w-full"
+            size="lg"
+            variant="secondary"
+            >
+
             Reset
-          </button>
+          </Button>
           {error && <div className="error">{error}</div>}
         </form>
       </div>
