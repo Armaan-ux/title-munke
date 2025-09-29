@@ -15,7 +15,8 @@ function ResetPassword({ username, password }) {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handlePasswordReset = async () => {
+  const handlePasswordReset = async (e) => {
+    e.preventDefault();
     try {
       setLoading(true);
       const user = await Auth.signIn(username, password);
@@ -52,11 +53,11 @@ function ResetPassword({ username, password }) {
         transition={{ duration: 0.5 }}
         className="border rounded-4xl py-8 md:py-12 px-5 md:px-10 max-w-md w-full bg-white relative z-10"  >
 
-        <form className="space-y-6 text-secondary " >
+        <form className="space-y-6 text-secondary " onSubmit={e => handlePasswordReset(e)}  >
           <div className="login-logo">
             <img src="/Logo.svg" alt="logo" className="mx-auto w-24 md:w-32 mb-2" />
           </div>
-          <div className="form-group">
+          <div>
             <Label for="password" className="text-sm" >Reset Password</Label>
             <Input
               type="password"
@@ -68,11 +69,11 @@ function ResetPassword({ username, password }) {
             />
           </div>
           <Button
+            // type="button"
             className="w-full"
             variant="secondary"
             size="lg"
-            onClick={() => handlePasswordReset()}
-            type="button"
+            // onClick={() => }
           >
             {loading ? "Processing..." : "Reset"}
           </Button>
