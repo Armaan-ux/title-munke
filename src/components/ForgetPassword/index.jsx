@@ -49,7 +49,7 @@ function ForgetPassword() {
         </div>
         <form className="space-y-8 text-secondary">
           <div>
-            <Label htmlFor="passwrod" className="text-sm" >Enter Email</Label>
+            <Label htmlFor="pasword" className="text-sm" >Enter Email</Label>
             <Input
               type="text"
               id="password"
