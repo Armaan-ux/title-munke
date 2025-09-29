@@ -11,7 +11,7 @@ const BrokerDashboard = () => {
     <div className="my-4" >
 
         {/* cards */}
-        <div className="flex *:basis-1/2 gap-5 *:rounded-2xl *:bg-[#F5F0EC] mb-4" >
+        {/* <div className="flex *:basis-1/2 gap-5 *:rounded-2xl *:bg-[#F5F0EC] mb-4" >
           <div className="p-5 flex justify-between items-end " >
             <div>
               <p className="mb-4 text-secondary" > Total Searches</p>
@@ -30,7 +30,7 @@ const BrokerDashboard = () => {
               <Logs className="text-tertiary" />
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Search */}
         <Search />
