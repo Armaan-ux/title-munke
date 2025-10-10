@@ -5,6 +5,15 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, ChevronLeft, Loader } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+const ROLES = ["individual", "agent", "broker"];
 
 export default function Register(){
 
@@ -49,6 +58,22 @@ export default function Register(){
             <p className="text-[#554536]" >Please enter your details to register</p>
           </div>
         <form className="space-y-4 text-secondary" onSubmit={handleSubmit} >
+          <div>
+            <div>
+              <Select>
+                  <SelectTrigger className="w-full !h-12 data-[placeholder]:!text-coffee-bg-foreground [&_svg]:!text-coffee-bg-foreground">
+                    <SelectValue placeholder="State" className="" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {
+                      ROLES.map((item, index) => (
+                        <SelectItem key={index} value={item}>{item}</SelectItem>
+                      ))
+                    }
+                  </SelectContent>
+                </Select>
+            </div>
+          </div>
           <div>
             <Label htmlFor="email" className="text-sm" >Email</Label>
             <Input
