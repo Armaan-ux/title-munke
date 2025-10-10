@@ -375,7 +375,7 @@ export default function Home() {
             <img
               key={index}
               src={item}
-              className="w-24 sm:w-36 object-contain"
+              className="w-24 sm:w-28 object-contain"
               // width={150}
               // height={150}
               alt="trusted by companies"

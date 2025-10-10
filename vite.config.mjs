@@ -5,7 +5,8 @@ import react from '@vitejs/plugin-react'
 // import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
 import commonjs from 'vite-plugin-commonjs'
 import tailwindcss from '@tailwindcss/vite'
-
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 
 export default defineConfig({
   plugins: [
@@ -40,4 +41,4 @@ export default defineConfig({
     //   ],
     },
   },
-})
+});

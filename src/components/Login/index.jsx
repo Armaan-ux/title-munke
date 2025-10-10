@@ -31,9 +31,9 @@ function Login() {
     }
   }, [user, navigate]);
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
     try {
-      // e.preventDefault();
+      e.preventDefault();
       setError("");
       setIsChecking(true);
       const { isResetRequired, user: signedInUser } = await signIn(username, password);
@@ -85,7 +85,7 @@ function Login() {
             <p className="text-[26px] font-semibold" >Welcome Back</p>
             <p className="text-[#554536]" >Please enter your details to login</p>
           </div>
-        <form className="space-y-4 text-secondary">
+        <form className="space-y-4 text-secondary" onSubmit={e => handleLogin(e)}>
           <div>
             <Label htmlFor="username" className="text-sm" >Email</Label>
             <Input
@@ -117,8 +117,7 @@ function Login() {
           </div>
           <Button
             disabled={isChecking || !username || !password}
-            onClick={() => handleLogin()}
-            type="button"
+            // type="button"
             className="w-full"
             variant="secondary"
             size="lg"

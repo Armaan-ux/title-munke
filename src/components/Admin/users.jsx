@@ -24,7 +24,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { toast } from "react-toastify";
-import { getActiveBrokers, getBrokersWithSearchCount, getTotalBrokers, getTotalBrokerSearchesThisMonth, updateBrokerStatus } from "../service/userAdmin";
+import { CONSTANTS, deleteUser, getActiveBrokers, getBrokersWithSearchCount, getTotalBrokers, getTotalBrokerSearchesThisMonth, updateBrokerStatus } from "../service/userAdmin";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 
 const userTypes = [
@@ -158,8 +169,9 @@ function AdminBrokersList(){
   const [totalActiveBrokerCount, setTotalActiveBrokerCount] = useState(0);
   const [totalBrokerSearchThisMonthCount, setTotalBrokerSearchThisMonthCount] =
     useState(0);
+  const [deletingBrokerId, setDeletingBrokerId] = useState(null);
+    
 
-  useEffect(() => {
     const getBroker = async () => {
       try {
         setLoading(true);
@@ -176,6 +188,7 @@ function AdminBrokersList(){
         setLoading(false);
       }
     };
+  useEffect(() => {
 
     getBroker();
     const interval = setInterval(getBroker, 1800000);
@@ -253,6 +266,25 @@ function AdminBrokersList(){
     } finally {
       setIsAgentListLoading(false);
     }
+  };
+
+
+    const handleDelete = async (broker) => {
+    // if (window.confirm(`Are you sure you want to delete agent ${broker.agentName}? This is a soft delete.`)) {
+    // }
+      setDeletingBrokerId(broker.id);
+      try {
+        await deleteUser(broker.id, broker.email, CONSTANTS.USER_TYPES.BROKER);
+        toast.success(`Broker ${broker.name} has been deleted.`);
+        // Call the refresh function passed from the parent component.
+        // if (onListRefresh) onListRefresh();
+        getBroker()
+      } catch (error) {
+        console.error("Failed to delete broker:", error);
+        toast.error(`Failed to delete broker. ${error?.response?.data?.message || ""}`);
+      } finally {
+        setDeletingBrokerId(null);
+      }
   };
 
   return(
@@ -337,6 +369,25 @@ function AdminBrokersList(){
                               </DropdownMenuTrigger>
                               <DropdownMenuContent>
                                 <DropdownMenuItem onClick={() => handleBrokerStatus(item)}>{item.status === "ACTIVE" ? "Inactive" : "Active"}</DropdownMenuItem>
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                  <AlertDialog  >
+                                    <AlertDialogTrigger >
+                                      Delete
+                                    </AlertDialogTrigger>
+
+                                    <AlertDialogContent>
+                                      <AlertDialogHeader>
+                                        <AlertDialogTitle className="!font-poppins font-medium" >Are you absolutely sure?</AlertDialogTitle>
+                                       
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction disabled={deletingBrokerId === item.id} onClick={async () => await handleDelete(item) } >Continue</AlertDialogAction>
+                                      </AlertDialogFooter>
+                                    </AlertDialogContent>
+
+                                  </AlertDialog>
+                                </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
                                 </>
