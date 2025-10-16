@@ -19,6 +19,8 @@ export default function Register(){
 
     const [error, setError] = useState("");
     const [formData, setFormData] = useState({
+        name: "",
+        role: "",
         email: "",
         password: "",
         confirmPassword: "",
@@ -60,19 +62,32 @@ export default function Register(){
         <form className="space-y-4 text-secondary" onSubmit={handleSubmit} >
           <div>
             <div>
+              <Label htmlFor="role" className="text-sm" >Select Role</Label>
               <Select>
-                  <SelectTrigger className="w-full !h-12 data-[placeholder]:!text-coffee-bg-foreground [&_svg]:!text-coffee-bg-foreground">
-                    <SelectValue placeholder="State" className="" />
+                  <SelectTrigger className="w-full !h-12 capitalize data-[placeholder]:!text-secondary [&_svg]:!text-secondary">
+                    <SelectValue placeholder="Role" className="text-secondary " />
                   </SelectTrigger>
                   <SelectContent>
                     {
                       ROLES.map((item, index) => (
-                        <SelectItem key={index} value={item}>{item}</SelectItem>
+                        <SelectItem className="capitalize" key={index} value={item}>{item}</SelectItem>
                       ))
                     }
                   </SelectContent>
                 </Select>
             </div>
+          </div>
+          <div>
+            <Label htmlFor="name" className="text-sm" >Name</Label>
+            <Input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              className="bg-transparent"
+              required
+              onChange={(e) => handleChange(e)}
+            />
           </div>
           <div>
             <Label htmlFor="email" className="text-sm" >Email</Label>
