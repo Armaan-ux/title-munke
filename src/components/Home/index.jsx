@@ -574,6 +574,13 @@ export default function Home() {
                     }
                   </SelectContent>
                 </Select> */}
+                <Input
+                  className="bg-transparent"
+                  placeholder="Email / Phone"
+                  label="Email / Phone"
+                  type="text"
+                  required
+                />
               <Input
                 className="bg-transparent"
                 placeholder="State"
@@ -583,15 +590,8 @@ export default function Home() {
               />
               <Input
                 className="bg-transparent"
-                placeholder="Email"
-                label="Email"
-                type="email"
-                required
-              />
-              <Input
-                className="bg-transparent"
-                placeholder="Country"
-                label="Country"
+                placeholder="County"
+                label="County"
                 type="text"
                 required
               />
