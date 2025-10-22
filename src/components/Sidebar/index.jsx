@@ -14,15 +14,14 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { ChevronRight, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 function AppSidebar() {
-  const { user, signOut } = useUser();
-
-  const location = useLocation()
+  const { user, signOut, setMemberModal } = useUser();
+  const location = useLocation();
 
   const userGroups =
     user?.signInUserSession?.idToken?.payload["cognito:groups"];
@@ -30,15 +29,20 @@ function AppSidebar() {
 
   const roleRoutes = routes[userRole] || [];
 
+  const memberHandler = () => {
+    setMemberModal(true);
+  };
+
   return (
-
-
-      <Sidebar className="" variant="floating" collapsible="icon" >
-        
+    <Sidebar className="" variant="floating" collapsible="icon">
       {/* Header */}
       <SidebarHeader>
         <div>
-            <img src="/Logo.svg" className="w-28 mx-auto" alt="Title Munke Logo" />
+          <img
+            src="/Logo.svg"
+            className="w-28 mx-auto"
+            alt="Title Munke Logo"
+          />
         </div>
       </SidebarHeader>
 
@@ -46,24 +50,28 @@ function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu >
-              {
-                roleRoutes.map((item) => (
-                   <SidebarMenuItem key={item.link} >
-                    <SidebarMenuButton asChild  className="text-secondary h-12" isActive={location.pathname.startsWith(item.link)} >
-                      <NavLink 
-                        to={item.link} 
-                        className={cn("!text-base", ({isActive}) => (isActive ? "bg-secondary" : ""))}  
-                        // className={({ isActive }) => (isActive ? "active" : "")}
-                      >
-                        <item.icon className="mr-2" />
-                         {/* <i style={{ marginRight: "4px" }} className={item.class}></i> */}
-                        <span>{item.name}</span>
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))
-              }
+            <SidebarMenu>
+              {roleRoutes.map((item) => (
+                <SidebarMenuItem key={item.link}>
+                  <SidebarMenuButton
+                    asChild
+                    className="text-secondary h-12"
+                    isActive={location.pathname.startsWith(item.link)}
+                  >
+                    <NavLink
+                      to={item.link}
+                      className={cn("!text-base", ({ isActive }) =>
+                        isActive ? "bg-secondary" : ""
+                      )}
+                      // className={({ isActive }) => (isActive ? "active" : "")}
+                    >
+                      <item.icon className="mr-2" />
+                      {/* <i style={{ marginRight: "4px" }} className={item.class}></i> */}
+                      <span>{item.name}</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -71,32 +79,39 @@ function AppSidebar() {
 
       {/* Footer */}
       <SidebarFooter>
-
-
-
-          <SidebarMenu>
-            <SidebarMenuItem>
-             <SidebarMenuButton onClick={signOut} className=" w-full group/btn flex justify-between items-center gap-2 p-3 px-5 h-14 bg-white text-secondary rounded-full text-sm hover:bg-[#e7dcd3] hover:shadow-sm transition-all cursor-pointer" >
-                {/* <button  className="" >
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={signOut}
+              className=" w-full group/btn flex justify-between items-center gap-2 p-3 px-5 h-14 bg-white text-secondary rounded-full text-sm hover:bg-[#e7dcd3] hover:shadow-sm transition-all cursor-pointer"
+            >
+              {/* <button  className="" >
                 </button> */}
-                  <span className="inline-flex text-base gap-4 items-center" >
-                  <LogOut size={16} />
-                    Logout
-                  </span>
-                  <span >
-                    <ChevronRight className="mr-2 group-hover/btn:mr-0 transition-all -z-10" size={16} />
-                  </span>
-             </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-
+              <span className="inline-flex text-base gap-4 items-center">
+                <LogOut size={16} />
+                Logout
+              </span>
+              <span>
+                <ChevronRight
+                  className="mr-2 group-hover/btn:mr-0 transition-all -z-10"
+                  size={16}
+                />
+              </span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <div className="bg-gradient-to-b  from-secondary to-tertiary py-4 flex flex-col items-center justify-center text-white rounded-2xl mt-1">
+            <img src={"/diamond.svg"} alt="diamond" / >
+            <div className="text-xl font-semibold my-2">Become a Member</div>
+            <button
+              onClick={memberHandler}
+              className="text-sm text-center opacity-80 rounded-xl border-white bg-secondary-foreground text-tertiary px-5 py-3 w-[80%]"
+            >
+              Subscribe Now
+            </button>
+          </div>
+        </SidebarMenu>
       </SidebarFooter>
-
     </Sidebar>
-
-
-
-
 
     // <div className="sidebar">
     //   <div

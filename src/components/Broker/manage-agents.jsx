@@ -41,6 +41,11 @@ import {
   Plus,
   PlusCircle,
   Search,
+  Download,
+  Upload,
+  UserPlus,
+  Eye,
+  Trash2,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -54,6 +59,9 @@ import { API } from "aws-amplify";
 import { listAgents } from "@/graphql/queries";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Badge } from "../ui/badge";
+import AddAgentByBrokerModal from "@/components/Modal/AddAgentByBrokerModal";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const agentTypes = [
   {
@@ -74,7 +82,7 @@ export default function ManageAgents() {
   const [activeTab, setActiveTab] = useState(agentTypes[0]);
   return (
     <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
-      <div className="space-x-3 mb-4">
+      {/* <div className="space-x-3 mb-4">
         {agentTypes.map((item, index) => (
           <button
             className={` ${
@@ -87,15 +95,19 @@ export default function ManageAgents() {
             {item.name}
           </button>
         ))}
-      </div>
+      </div> */}
 
-      {activeTab.id === "agents" && <Agents />}
-      {activeTab.id === "unassigned-agents" && <UnassignedAgents />}
+      {/* {activeTab.id === "agents" && <Agents />}
+      {activeTab.id === "unassigned-agents" && <UnassignedAgents />} */}
+
+
+      <Agents  />
     </div>
   );
 }
 
 function Agents() {
+  const navigate = useNavigate();
   const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -108,6 +120,8 @@ function Agents() {
   const [filteredAgents, setFilteredAgents] = useState([]);
   const [pendingSearch, setPendingSearch] = useState(0);
   const [topPerformer, setTopPerformer] = useState("");
+  const [addAgent, setAddAgent] = useState(false);
+
 
   const fetchData = useCallback(async () => {
     if (user?.attributes?.sub) {
@@ -263,7 +277,8 @@ function Agents() {
         setUser={setAgents}
         agents={agents} // Pass agents to check for duplicates
       />
-      <div className="flex items-center gap-2 justify-end mb-3">
+      <AddAgentByBrokerModal open={addAgent} onOpenChange={()=> setAddAgent(false)} />
+      {/* <div className="flex items-center gap-2 justify-end mb-3">
         <Checkbox
           id="show-deleted-checkbox"
           className="border-2 size-5 cursor-pointer bg-white"
@@ -273,8 +288,60 @@ function Agents() {
         <Label htmlFor="show-deleted-checkbox" className="text-sm mb-0">
           Show Deleted
         </Label>
-      </div>
+      </div> */}
+      <div className="w-full bg-[#F8F4F2] flex flex-wrap items-center justify-between gap-3 p-4 rounded-md">
+        {/* Left Section */}
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <p className="text-[15px] font-semibold text-[#4C0D0D] whitespace-nowrap">
+            All Agents
+          </p>
+          <div className="relative w-full sm:w-[220px]">
+            <Input
+              type="text"
+              placeholder="Search"
+              className="h-[36px] rounded-md pl-8 border border-[#E2DAD5] bg-white text-[#4C0D0D] placeholder:text-[#B6AAA5] focus-visible:ring-0 focus-visible:ring-offset-0"
+            />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="absolute left-2.5 top-2.5 h-4 w-4 text-[#B6AAA5]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="1.8"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z"
+              />
+            </svg>
+          </div>
+        </div>
 
+        {/* Right Section */}
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <Button
+            variant="outline"
+            className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
+          >
+            <Download className="w-4 h-4" />
+            Download Template
+          </Button>
+
+          <Button
+            variant="outline"
+            className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
+          >
+            <Upload className="w-4 h-4" />
+            Upload Template
+          </Button>
+
+          <Button onClick={() => setAddAgent(true)} className="h-[36px] bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[13px] font-medium rounded-md flex items-center gap-1.5 px-3">
+            <PlusCircle className="w-4 h-4" />
+            Add Agent
+          </Button>
+        </div>
+      </div>
       <div className="bg-white !p-4 rounded-xl">
         <Table className="">
           <TableHeader className="bg-[#F5F0EC]">
@@ -286,7 +353,7 @@ function Agents() {
               <TableHead>Status</TableHead>
               <TableHead>Reinvite</TableHead>
               <TableHead>Action</TableHead>
-              <TableHead>Delete</TableHead>
+              {/* <TableHead>Delete</TableHead> */}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -315,36 +382,64 @@ function Agents() {
                   <TableCell>{item.agentName}</TableCell>
                   <TableCell>{item.totalSearches}</TableCell>
                   <TableCell>{getFormattedDateTime(item.lastLogin)}</TableCell>
-                  <TableCell>{item.status}</TableCell>
                   <TableCell>
-                    <Button
-                      className={` text-sm`}
+                    <Badge
+                      className={`${
+                        item?.status === "Active"
+                          ? "bg-[#E9F3E9] text-[#1E8221]"
+                          : item?.status === "Unconfirmed"
+                          ? "bg-[#FFF3D9] text-[#A2781E]"
+                          : "bg-[#FFE3E2] text-[#FF5F59]"
+                      } text-[13px] font-medium px-3 py-1 rounded-md`}
+                    >
+                      {item?.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <UserPlus
+                      className="w-5 h-5"
+                      // className={` text-sm`}
                       disabled={
                         item.status !== "UNCONFIRMED" || !!reinvitingAgentId
                       }
                       onClick={() => handleReinvite(item)}
-                      variant="outline"
-                      size="sm"
-                    >
-                      {reinvitingAgentId === item.id
+                      // variant="outline"
+                      // size="sm"
+                    />
+                    {/* {reinvitingAgentId === item.id
                         ? "Sending..."
-                        : "Reinvite"}
-                    </Button>
+                        : "Reinvite"} */}
                   </TableCell>
                   <TableCell>
                     <div className="dropdown">
-                      {item.status !== "UNCONFIRMED" && (
-                        <>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger>
+
+                        <Button
+                                size="icon"
+                                className="text-sm"
+                                variant="ghost"
+                              >
+                                <PencilLine />
+                              </Button>
+                              <Button
+                                size="icon"
+                                className="text-sm"
+                                variant="ghost"
+                                onClick={() => navigate(`/broker/agent-property-details/123`)}
+                              >
+                                <Eye  />
+                              </Button>
                               <Button
                                 size="icon"
                                 className="text-sm"
                                 variant="ghost"
                               >
-                                {" "}
-                                <PencilLine />
+                                <Trash2 />
                               </Button>
+                      {/* {item.status !== "UNCONFIRMED" && (
+                        <>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger>
+                            
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
                               <DropdownMenuItem
@@ -371,10 +466,10 @@ function Agents() {
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </>
-                      )}
+                      )} */}
                     </div>
                   </TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     {item.status === CONSTANTS.USER_STATUS.DELETED ? (
                       <Button
                         className="text-sm"
@@ -405,7 +500,7 @@ function Agents() {
                         {deletingAgentId === item.id ? "Deleting..." : "Delete"}
                       </Button>
                     )}
-                  </TableCell>
+                  </TableCell> */}
                 </TableRow>
               ))
             )}

@@ -9,11 +9,13 @@ import BrokerSettings from "./components/Broker/settings";
 import BrokerDashboard from "./components/Broker/dashboard";
 import AgentDashboard from "./components/Agent/dashboard";
 import ManageAgents from "./components/Broker/manage-agents";
-
+import HistoryListview from "./components/Broker/history-listview";
 
 import AuditLogsForBroker from "./components/Broker/audit-logs";
 import DemoRequests from "./components/Admin/demo-requests";
 import Users from "./components/Admin/users";
+import PropertyDetails from "./components/Broker/property-details";
+import AgentPropertyDetails from "./components/Broker/agent-property-details";
 
 export const adminRoutes = [
   { path: "admin", component: Admin },
@@ -39,9 +41,12 @@ export const agentRoutes = [
 export const brokerRoutes = [
   { path: "broker", component: Broker },
   { path: "broker/dashboard", component: BrokerDashboard },
+  { path: "broker/history-listview", component: HistoryListview},
   { path: "broker/manage-agents", component: ManageAgents },
   { path: "broker/agent-audit-log", component: AuditLogsForBroker },
   { path: "broker/setting", component: BrokerSettings },
+  { path: "broker/property-details/:id", component: PropertyDetails },
+  { path: "broker/agent-property-details/:id", component: AgentPropertyDetails },
 
   // { path: "broker/search", component: Search },
   // { path: "broker/history", component: BrokerHistory },
