@@ -2,6 +2,7 @@ import { useState } from "react";
 import Setting from "../common/settings";
 import ProfileSetting from "../common/profile-setting";
 import Notification from "../common/notification-setting";
+import Billing from "../common/billing";
 
 const agentTypes = [
   {
@@ -41,7 +42,7 @@ export default function ManageAgents() {
 
       {activeTab.id === "profile" && <ProfileSetting setIsProfile={setIsProfile}  editProfile={editProfile} />}
       {activeTab.id === "notifications" && <Notification />}
-      {/* {activeTab.id === "billing" && <UnassignedAgents />} */}
+      {activeTab.id === "billing" && <Billing />}
     </div>
   );
 }

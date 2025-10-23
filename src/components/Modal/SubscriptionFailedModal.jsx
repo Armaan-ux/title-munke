@@ -14,10 +14,9 @@ export default function SubscriptionFailedModal({ open, onOpenChange }) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[360px] p-0 overflow-hidden rounded-2xl shadow-xl bg-white  border-none">
         <div className="relative flex flex-col items-center justify-center pt-4">
-          {/* <div className="text-5xl text-red-500 mb-2">❌</div> */}
           <img src="/failed.svg" alt="failed" className="py-4" />
           <DialogHeader className="text-center">
-            <DialogTitle className="text-xl font-semibold text-coffee-light">
+            <DialogTitle className="text-xl font-semibold text-coffee-light !font-poppins">
               Payment Failed
             </DialogTitle>
           </DialogHeader>

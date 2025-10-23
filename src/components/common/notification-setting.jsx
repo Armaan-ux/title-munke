@@ -4,7 +4,7 @@ import { Switch } from "@/components/ui/switch";
 
 const Notification = () => {
   return (
-    <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full h-[78vh] shadow-md">
+    <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full h-content shadow-md">
       <form className="space-y-6 flex-1">
         <div className="mb-5">
           <p className="text-xl font-medium">

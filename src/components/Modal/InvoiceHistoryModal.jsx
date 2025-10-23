@@ -1,0 +1,128 @@
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
+
+export function InvoiceHistoryModal({ open, onClose }) {
+  const rows = [
+    {
+      id: 1,
+      agent: "James Anderson",
+      address: "123 Main St, Hometown, USA",
+      date: "Oct 12, 2025 - 05:30 PM",
+      price: "$25",
+    },
+    {
+      id: 2,
+      agent: "Michael Smith",
+      address: "456 Oak Ave, Street - 234, USA",
+      date: "Oct 12, 2025 - 05:30 PM",
+      price: "$25",
+    },
+    {
+      id: 3,
+      agent: "Daniel Wilson",
+      address: "456 Oak Ave, Street - 234, USA",
+      date: "Oct 12, 2025 - 05:30 PM",
+      price: "$25",
+    },
+    {
+      id: 4,
+      agent: "Daniel Wilson",
+      address: "456 Oak Ave, Street - 234, USA",
+      date: "Oct 12, 2025 - 05:30 PM",
+      price: "$25",
+    },
+    {
+      id: 5,
+      agent: "Daniel Wilson",
+      address: "456 Oak Ave, Street - 234, USA",
+      date: "Oct 12, 2025 - 05:30 PM",
+      price: "$25",
+    },
+    {
+      id: 6,
+      agent: "Thomas Clark",
+      address: "123 Main St, Hometown, USA",
+      date: "Oct 12, 2025 - 05:30 PM",
+      price: "$25",
+    },
+    {
+      id: 7,
+      agent: "Thomas Clark",
+      address: "123 Main St, Hometown, USA",
+      date: "Oct 12, 2025 - 05:30 PM",
+      price: "$25",
+    },
+  ];
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="w-[1000px] max-w-[100vw] sm:w-[900px] sm:max-w-[170vw] rounded-2xl p-6">
+        <DialogHeader className="flex flex-row justify-between items-center">
+          <img src="/Logo.svg" alt="Logo" className="h-18 w-18 mb-1" />
+          <div>
+            <DialogTitle className="text-xl font-bold text-[#600000] tracking-wide">
+              INVOICE
+            </DialogTitle>
+            <span className="text-sm text-neutral-500 font-medium">
+              #INV-2025-001
+            </span>
+          </div>
+        </DialogHeader>
+
+        <div className="mt-4 overflow-x-auto">
+          <Table className="w-full min-w-[600px] text-left border-collapse text-sm">
+            <TableHeader className="bg-[#F5F0EC]">
+              <TableRow>
+                <TableHead className="w-[100px]">Sr. No.</TableHead>
+                <TableHead>Agents</TableHead>
+                <TableHead>Address</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Price</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows.map((row, i) => (
+                <TableRow key={i}>
+                  <TableCell>{String(i + 1).padStart(2, "0")}.</TableCell>
+                  <TableCell>{row.agent}</TableCell>
+                  <TableCell>{row.address}</TableCell>
+                  <TableCell>{row.date}</TableCell>
+                  <TableCell>{row.price}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <div className="flex justify-end font-semibold mt-3 text-neutral-900 bg-[#F5F0EC] py-2 px-4 rounded-md w-full">
+            Total: <span className="ml-2">$230.00</span>
+          </div>
+        </div>
+
+        <div className="mt-6 flex justify-center space-x-3">
+          <Button variant="outline" onClick={onClose}>
+            Close
+          </Button>
+          <Button className="bg-[#600000] hover:bg-[#7a0000]">
+            Download CSV
+          </Button>
+          <Button className="bg-[#600000] hover:bg-[#7a0000]">
+            Download PDF
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

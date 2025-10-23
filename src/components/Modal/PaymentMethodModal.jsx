@@ -35,7 +35,7 @@ const PaymentMethodModal = ({ open, onOpenChange, onSuccess }) => {
         {screen === "select" ? (
           <>
             <DialogHeader>
-              <DialogTitle className="text-lg font-semibold text-left text-secondary">
+              <DialogTitle className="text-lg font-semibold text-left text-secondary !font-poppins">
                 Select Payment Method
               </DialogTitle>
             </DialogHeader>
@@ -110,7 +110,7 @@ const PaymentMethodModal = ({ open, onOpenChange, onSuccess }) => {
               >
                 <ChevronLeft className="w-6 h-6 mr-1" />
               </button>
-              <DialogTitle className="text-lg font-semibold text-secondary">
+              <DialogTitle className="text-lg font-semibold text-secondary !font-poppins">
                 Add Card
               </DialogTitle>
               {/* <div className="w-6" />  */}

@@ -1,0 +1,178 @@
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { CardContent } from "@/components/ui/card";
+import { useUser } from "@/context/usercontext";
+import PaymentMethodModal from "@/components/Modal/PaymentMethodModal";
+import SubscriptionSuccessModal from "@/components/Modal/SubscriptionSuccessModal";
+import SubscriptionFailedModal from "@/components/Modal/SubscriptionFailedModal";
+import { useNavigate } from "react-router-dom";
+
+const Billing = () => {
+  const navigate = useNavigate();
+  const {
+    setPaymentModal,
+    paymentModal,
+    setPaymentSuccessModal,
+    paymentSuccessModal,
+    setPaymentFailedModal,
+    paymentFailedModal,
+  } = useUser();
+
+  return (
+    <>
+      {paymentModal && (
+        <PaymentMethodModal
+          open={paymentModal}
+          onOpenChange={() => setPaymentModal(false)}
+          onSuccess={() => setPaymentSuccessModal(true)}
+        />
+      )}
+      {paymentSuccessModal && (
+        <SubscriptionSuccessModal
+          open={paymentSuccessModal}
+          onOpenChange={() => setPaymentSuccessModal(false)}
+          onFailed={() => setPaymentFailedModal(true)}
+        />
+      )}
+
+      {paymentFailedModal && (
+        <SubscriptionFailedModal
+          open={paymentFailedModal}
+          onOpenChange={() => setPaymentFailedModal(false)}
+        />
+      )}
+      <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full h-content shadow-md">
+        <CardContent className="w-full space-y-6">
+          <div>
+            <h2 className="text-xl font-poppins font-semibold text-secondary !font-poppins">
+              Current Plan
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-3 border border-gray-200 rounded-xl overflow-hidden">
+            <div className="p-8 bg-coffee-bg-billing-foreground border-r border-coffee-bg-billing-foreground-50">
+              <p className="text-sm font-medium text-coffee-text-billing font-medium uppercase">
+                Plan
+              </p>
+              <p className="text-base font-semibold text-secondary  font-medium mt-1">
+                Pro{" "}
+                <span className="font-normal text-secondary  font-medium">
+                  (Includes up to 80 agents)
+                </span>
+              </p>
+            </div>
+
+            <div className="p-8 bg-coffee-bg-billing-foreground border-r border--coffee-bg-billing-foreground-50 border-l border-coffee-bg-billing-foreground-200">
+              <p className="text-sm font-medium text-coffee-text-billing font-medium uppercase ">
+                Billing Cycle
+              </p>
+              <p className="text-base font-semibold text-gray-900 mt-1">
+                Monthly
+              </p>
+              <button className="text-sm text-secondary  font-medium mt-1 hover:underline">
+                Switch to annual plan
+              </button>
+            </div>
+
+            <div className="p-8 bg-coffee-bg-billing-foreground  border-l border-coffee-bg-billing-foreground-200 flex flex-col justify-center">
+              <p className="text-sm font-medium text-coffee-text-billing font-medium uppercase mb-1">
+                Billing Cycle
+              </p>
+              <div className="flex items-center justify-between text-sm text-gray-700">
+                <div>
+                  <p className="font-semibold">Monthly</p>
+                  <p className="text-secondary  font-medium text-xs">
+                    Oct 12, 2024
+                  </p>
+                </div>
+                <span className="mx-2 text-secondary font-medium">↔</span>
+                <div>
+                  <p className="font-semibold">Next Billing</p>
+                  <p className="text-secondary font-medium text-xs">
+                    Oct 13, 2025
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-poppins font-semibold text-secondary !font-poppins">
+              Billing Details
+            </h2>
+
+            <div className="mt-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <p className="text-md uppercase text-coffee-text-billing font-medium">
+                  PAYMENT METHOD
+                </p>
+                <div className="flex items-center space-x-3">
+                  <img
+                    src="/mastercard-icon.svg"
+                    alt="Visa"
+                    className="w-8 h-8"
+                  />
+                  <div className="flex gap-4">
+                    <p className="font-medium ttext-secondary font-semibold">
+                      John <span className="tracking-widest">**** 2451</span>
+                    </p>
+                    <p className="text-sm text-coffee-text-billing font-medium">
+                      Expire 02/2028
+                    </p>
+                  </div>
+                </div>
+                <button
+                  className="text-sm text-[#5A0A0A] hover:underline"
+                  onClick={() => setPaymentModal(true)}
+                >
+                  + Add Payment Method
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <p className="text-md uppercase text-coffee-text-billing font-medium">
+                  Billing Contact
+                </p>
+                <p className="text-sm text-secondary font-medium mt-1 mr-92">
+                  John Marks
+                </p>
+                <p className="text-sm text-gray-900 font-medium mt-1"></p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <p className="text-md uppercase text-coffee-text-billing font-medium">
+                  Invoice History
+                </p>
+                <button
+                  className="text-sm text-secondary font-medium mt-1 hover:underline mr-90"
+                  onClick={() => navigate("/broker/billing-history")}
+                >
+                  View History
+                </button>
+                <button className="text-sm text-[#5A0A0A] mt-1 hover:underline"></button>
+              </div>
+            </div>
+          </div>
+
+          <Separator className="my-2" />
+
+          <div className="flex justify-between items-center text-sm text-coffee-light font-medium">
+            <p>
+              Cancel subscription will remain active until the end of the
+              current billing period.
+            </p>
+            <Button
+              variant="ghost"
+              className="text-subscriptions hover:text-subscriptions hover:bg-transparent"
+            >
+              Cancel Subscription
+            </Button>
+          </div>
+        </CardContent>
+      </div>
+    </>
+  );
+};
+
+export default Billing;

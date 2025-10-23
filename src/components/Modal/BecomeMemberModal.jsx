@@ -35,7 +35,9 @@ const BecomeMemberModal = ({ open, onClose, setPaymentModal }) => {
           <DialogTitle className="text-3xl font-semibold">
             Become a Member
           </DialogTitle>
-          <p className="text-sm opacity-80 font-regular">Unlock premium broker features</p>
+          <p className="text-sm opacity-80 font-regular">
+            Unlock premium broker features
+          </p>
         </div>
 
         <div className="p-6 space-y-6 bg-white rounded-b-2xl">

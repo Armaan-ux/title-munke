@@ -10,12 +10,13 @@ import BrokerDashboard from "./components/Broker/dashboard";
 import AgentDashboard from "./components/Agent/dashboard";
 import ManageAgents from "./components/Broker/manage-agents";
 import HistoryListview from "./components/Broker/history-listview";
-
 import AuditLogsForBroker from "./components/Broker/audit-logs";
 import DemoRequests from "./components/Admin/demo-requests";
 import Users from "./components/Admin/users";
 import PropertyDetails from "./components/Broker/property-details";
 import AgentPropertyDetails from "./components/Broker/agent-property-details";
+import BillingHistory from "./components/common/billing-history";
+import { EmailTemplate } from "./components/common/email-template";
 
 export const adminRoutes = [
   { path: "admin", component: Admin },
@@ -47,6 +48,9 @@ export const brokerRoutes = [
   { path: "broker/setting", component: BrokerSettings },
   { path: "broker/property-details/:id", component: PropertyDetails },
   { path: "broker/agent-property-details/:id", component: AgentPropertyDetails },
+  { path: "broker/billing-history", component: BillingHistory },
+  { path: "broker/email-template", component: EmailTemplate },
+
 
   // { path: "broker/search", component: Search },
   // { path: "broker/history", component: BrokerHistory },
