@@ -14,15 +14,16 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { ChevronRight, LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 function AppSidebar() {
+  const { state } = useSidebar();
   const { user, signOut, setMemberModal } = useUser();
   const location = useLocation();
-
+  const isCollapsed = state === "collapsed";
   const userGroups =
     user?.signInUserSession?.idToken?.payload["cognito:groups"];
   const userRole = userGroups?.[0];
@@ -85,8 +86,6 @@ function AppSidebar() {
               onClick={signOut}
               className=" w-full group/btn flex justify-between items-center gap-2 p-3 px-5 h-14 bg-white text-secondary rounded-full text-sm hover:bg-[#e7dcd3] hover:shadow-sm transition-all cursor-pointer"
             >
-              {/* <button  className="" >
-                </button> */}
               <span className="inline-flex text-base gap-4 items-center">
                 <LogOut size={16} />
                 Logout
@@ -99,15 +98,21 @@ function AppSidebar() {
               </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          <div className="bg-gradient-to-b  from-secondary to-tertiary py-4 flex flex-col items-center justify-center text-white rounded-2xl mt-1">
-            <img src={"/diamond.svg"} alt="diamond" / >
-            <div className="text-xl font-semibold my-2">Become a Member</div>
-            <button
-              onClick={memberHandler}
-              className="text-sm text-center opacity-80 rounded-xl border-white bg-secondary-foreground text-tertiary px-5 py-3 w-[80%]"
-            >
-              Subscribe Now
-            </button>
+          <div className="bg-gradient-to-b  from-secondary to-tertiary  py-4 flex flex-col items-center justify-center text-white rounded-2xl mt-1">
+            <img src="/diamond.svg" alt="diamond" />
+            {!isCollapsed && (
+              <div className="flex flex-col items-center justify-center transition-all duration-300">
+                <div className="text-xl font-semibold mb-1 whitespace-nowrap">
+                  Become a Member
+                </div>
+                <button
+                  onClick={memberHandler}
+                  className="text-sm text-center opacity-80 rounded-xl border-white bg-secondary-foreground text-tertiary px-5 py-3 w-[80%]"
+                >
+                  Subscribe Now
+                </button>
+              </div>
+            )}
           </div>
         </SidebarMenu>
       </SidebarFooter>
