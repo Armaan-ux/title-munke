@@ -59,7 +59,7 @@ export const brokerRoutes = [
   },
   { path: "broker/billing-history", component: BillingHistory },
   { path: "broker/email-template", component: EmailTemplate },
-
+ 
   // { path: "broker/search", component: Search },
   // { path: "broker/history", component: BrokerHistory },
   // { path: "broker/setting", component: BrokerSetting },

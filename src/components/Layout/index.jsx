@@ -1,17 +1,18 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import AppSidebar from "../Sidebar/index";
-import { SidebarProvider } from "@/components/ui/sidebar"
+import { SidebarProvider } from "@/components/ui/sidebar";
 import AppHeader from "./app-header";
-
+import AIChatBot from "../common/AIChatBot";
 
 function Layout() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="flex-1 md:pl-0 p-4 min-w-0" >
+      <main className="flex-1 md:pl-0 p-4 min-w-0">
         <AppHeader />
-          <Outlet />
+        <AIChatBot />
+        <Outlet />
       </main>
     </SidebarProvider>
   );

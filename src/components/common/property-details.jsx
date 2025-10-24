@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 const PropertyDetails = () => {
   const navigate = useNavigate();
   return (
@@ -43,7 +44,7 @@ const PropertyDetails = () => {
               </Badge>
             </div>
 
-            <hr className="my-6 border-t border-[#F1EDEA]" />
+             <Separator />
 
             <div className="mt-6 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5">
               <div>
@@ -195,7 +196,7 @@ const PropertyDetails = () => {
               </div>
             </div>
 
-            <hr className="my-6 border-t border-[#F1EDEA]" />
+            <Separator />
             <div className="flex justify-between items-center mt-4 text-[13px]">
               <p className="text-[#4C0D0D]">
                 Documents Completed:{" "}

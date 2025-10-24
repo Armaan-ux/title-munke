@@ -262,7 +262,7 @@ export default function Search() {
           disabled={loading}
         />
       </div>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full md:w-[65%] mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full md:w-[65%] mb-6 flex-wrap">
         <div className="flex items-center gap-3">
           <Checkbox
             id="checkbox"

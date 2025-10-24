@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Auth } from "aws-amplify";
 import { Eye, PencilLine, Upload } from "lucide-react";
 import React, { useState } from "react";
+import { Separator } from "../ui/separator";
 // import "./index.css";
 
 const ProfileSetting = ({ setIsProfile, editProfile }) => {
@@ -35,7 +36,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                 />
                 <Button
                   variant="outline"
-                  className="border-[#9C3D26] text-secondary hover:bg-[#9C3D26] hover:text-white rounded-md px-6 w-full"
+                  className="border-none text-secondary hover:bg-tertiary hover:text-white rounded-md px-6 w-full bg-coffee-bg-billing-foreground"
                   onClick={() => setIsProfile(false)}
                 >
                   <Upload /> Upload Image
@@ -108,7 +109,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                 </div>
               </form>
             </div>
-            <hr className="border-t border-tertiary-200  w-full" />
+            <Separator />
             <div className="w-full">
               <div>
                 <p className="text-md font-medium mt-5">Change Password</p>
@@ -213,7 +214,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
               <PencilLine /> Edit Profile
             </Button>
           </div>
-          <hr className="border-t border-secondary-200 mb-8" />
+          <Separator />
           <div className="flex flex-col md:flex-row items-start gap-10  ">
             <div className="flex flex-col items-center gap-4">
               <img

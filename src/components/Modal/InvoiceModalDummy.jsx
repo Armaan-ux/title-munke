@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "../ui/separator";
 import { ArrowDownToLine } from "lucide-react";
 
-export function InvoiceModal({ open, onOpenChange }) {
+export function InvoiceModalDummy({ open, onOpenChange }) {
   if (!open) return null;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -28,9 +28,7 @@ export function InvoiceModal({ open, onOpenChange }) {
             <p className="text-sm text-secondary font-semibold">
               Payment Method
             </p>
-            <p className="text-sm font-medium text-secondary">
-              Visa Master Card
-            </p>
+            <p className="text-sm font-medium text-secondary">Visa **** 4242</p>
           </div>
         </div>
 
@@ -72,37 +70,21 @@ export function InvoiceModal({ open, onOpenChange }) {
           <div className="bg-[#fdf8f5] text-sm divide-y">
             <div className="grid grid-cols-5 px-3 py-2">
               <div className="col-span-2">
-                <p className="font-medium text-[#581b1b]">Agent Seat Fees</p>
-                <p className="text-xs text-muted-foreground">
-                  Billing Cycle: Sep To Aug
+                <p className="text-xs text-secondary">
+                  123 Main Street, Springfield
                 </p>
               </div>
-              <p className="text-center">10</p>
+              <p className="text-center">1</p>
               <p className="text-center">$25.00</p>
-              <p className="text-right">$225.00</p>
-            </div>
-            <div className="grid grid-cols-5 px-3 py-2">
-              <div className="col-span-2">
-                <p className="font-medium text-[#581b1b]">Agent Seat Fees</p>
-                <p className="text-xs text-muted-foreground">
-                  Billing Cycle: Sep To Aug
-                </p>
-              </div>
-              <p className="text-center">0</p>
-              <p className="text-center">$0.00</p>
-              <p className="text-right">$0.00</p>
+              <p className="text-right">$25.00</p>
             </div>
           </div>
 
           <div className="bg-[#fdf8f5] text-sm border-t px-3 py-3 space-y-1 flex flex-col items-end gap-2">
             <div></div>
             <div className="flex justify-between gap-10 w-48">
-              <p>Subscription</p>
-              <p>$25.00</p>
-            </div>
-            <div className="flex justify-between gap-10 w-48">
               <p>Subtotal</p>
-              <p>$225.00</p>
+              <p>$25.00</p>
             </div>
             <div className="flex justify-between gap-10 w-48">
               <p>Tax</p>
@@ -110,7 +92,7 @@ export function InvoiceModal({ open, onOpenChange }) {
             </div>
             <div className="flex justify-between font-semibold border-t pt-2 gap-10 w-48">
               <p className="text-tertiary">Total</p>
-              <p className="text-secendary">$230.00</p>
+              <p className="text-secondary">$30.00</p>
             </div>
           </div>
         </div>

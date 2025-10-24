@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Setting from "../common/settings";
-import ProfileSetting from "../common/profile-setting";
-import Notification from "../common/notification-setting";
-import Billing from "../common/billing";
+import Setting from "@/components/common/settings";
+import ProfileSetting from "@/components/common/profile-setting";
+import Notification from "@/components/common/notification-setting";
+import Billing from "@/components/common/billing";
 
 const agentTypes = [
   {

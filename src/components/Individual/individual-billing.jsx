@@ -17,7 +17,7 @@ import {
 } from "../ui/table";
 import { CircleCheck, FileDown } from "lucide-react";
 import { getFormattedDateTime } from "@/utils";
-import { InvoiceModal } from "../Modal/InvoiceModal";
+import { InvoiceModalDummy } from "@/components/Modal/InvoiceModalDummy";
 
 const IndividualBilling = () => {
   const navigate = useNavigate();
@@ -76,7 +76,7 @@ const IndividualBilling = () => {
           onOpenChange={() => setPaymentFailedModal(false)}
         />
       )}
-      <InvoiceModal
+      <InvoiceModalDummy
         open={invoiceModal}
         onOpenChange={() => setInvoiceModal(false)}
       />

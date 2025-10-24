@@ -1,12 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import AddUserModal from "@/components/Modal/AddUserModal";
-import // assignAgent,
-// calculateAverage,
-// getTopPerformerAgent,
-// inActiveAgent,
-// pendingAgentSearch,
-// UnassignAgent,
-"@/components/service/agent";
 import {
   reinviteAgent,
   getAgentsTotalSearches,
@@ -47,21 +40,13 @@ import {
   Eye,
   Trash2,
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { API } from "aws-amplify";
 import { listAgents } from "@/graphql/queries";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Badge } from "../ui/badge";
+import { Badge } from "@/components/ui/badge";
 import AddAgentByBrokerModal from "@/components/Modal/AddAgentByBrokerModal";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const agentTypes = [
   {

@@ -7,9 +7,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Link, Share2, Printer, Eye, ChevronLeft } from "lucide-react";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
+import { Eye, ChevronLeft } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
 const AgentPropertyDetails = () => {
       const navigate = useNavigate();

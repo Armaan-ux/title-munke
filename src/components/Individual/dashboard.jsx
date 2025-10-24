@@ -1,17 +1,9 @@
-import {
-  FileSearch2,
-  Logs,
-  Subscript,
-  UserRound,
-  UserRoundCheck,
-  UserRoundX,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SearchHistory from "@/components/Individual/search-history";
 import Search from "@/components/common/search";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "@/context/usercontext";
-import { fetchAgentsWithSearchCount } from "../service/broker";
+import { fetchAgentsWithSearchCount } from "@/components/service/broker";
 import BecomeMemberModal from "@/components/Modal/BecomeMemberModal";
 import PaymentMethodModal from "@/components/Modal/PaymentMethodModal";
 import SubscriptionSuccessModal from "@/components/Modal/SubscriptionSuccessModal";
@@ -54,29 +46,28 @@ const IndividualDashboard = () => {
       <div className="grid grid-cols-2 md:grid-cols-2  gap-5 *:rounded-2xl *:bg-[#F5F0EC] mb-4">
         <div className="p-5 flex justify-between items-end ">
           <div>
-            <p className="mb-4 text-secondary"> Total Agents</p>
+            <p className="mb-4 text-coffee-light font-medium"> Total Search</p>
             <p className="text-4xl font-semibold text-tertiary">
               {totalAgents}
             </p>
           </div>
           <div className="bg-white rounded-full p-3.5">
-            <UserRound className="text-tertiary" />
+            <img src="/t-search.svg" alt="total-search" className="w-6 h-6"/>
           </div>
         </div>
         <div className="p-5 flex justify-between items-end ">
           <div>
-            <p className="mb-4 text-secondary"> Active Agents</p>
+            <p className="mb-4 text-coffee-light font-medium"> Audit Logs</p>
             <p className="text-4xl font-semibold text-tertiary">
               {activeAgents}
             </p>
           </div>
           <div className="bg-white rounded-full p-3.5">
-            <UserRoundCheck className="text-tertiary" />
+            <img src="/audit-log.svg" alt="audit-log" className="w-6 h-6"/>
           </div>
         </div>
       </div>
 
-      {/* Search */}
       <Search />
 
       <div className="bg-[#F5F0EC] p-6 rounded-2xl ">
@@ -86,14 +77,11 @@ const IndividualDashboard = () => {
             variant="outline"
             onClick={() => navigate("/individual/property-search")}
           >
-            {" "}
-            View More{" "}
+            View More
           </Button>
         </div>
-
         <SearchHistory />
       </div>
-
       {memberModal && (
         <BecomeMemberModal
           open={memberModal}
