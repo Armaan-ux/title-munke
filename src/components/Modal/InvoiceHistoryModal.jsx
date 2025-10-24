@@ -70,7 +70,7 @@ export function InvoiceHistoryModal({ open, onClose }) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="w-[1000px] max-w-[100vw] sm:w-[900px] sm:max-w-[170vw] rounded-2xl p-6">
+      <DialogContent  showCloseButton={false} className="w-[1000px] max-w-[100vw] sm:w-[900px] sm:max-w-[170vw] rounded-2xl p-6">
         <DialogHeader className="flex flex-row justify-between items-center">
           <img src="/Logo.svg" alt="Logo" className="h-18 w-18 mb-1" />
           <div>
@@ -112,7 +112,7 @@ export function InvoiceHistoryModal({ open, onClose }) {
         </div>
 
         <div className="mt-6 flex justify-center space-x-3">
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={() => onClose()}>
             Close
           </Button>
           <Button className="bg-[#600000] hover:bg-[#7a0000]">

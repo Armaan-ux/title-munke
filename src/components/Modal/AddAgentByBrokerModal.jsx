@@ -21,8 +21,8 @@ export default function AddAgentByBrokerModal({ open, onOpenChange }) {
    if (!open) return null;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className="max-w-[420px] rounded-2xl py-5  px-8 bg-white shadow-xl border-none [&>button:last-child]:hidden"
+      <DialogContent  showCloseButton={false}
+        className="max-w-[420px] rounded-2xl py-5  px-8 bg-white shadow-xl border-none"
         overlayClass="bg-black/40 backdrop-blur-[1px]"
       >
         <DialogHeader className="flex flex-row items-center justify-between">

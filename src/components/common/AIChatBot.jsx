@@ -100,12 +100,21 @@ const AIChatBot = () => {
             ))}
 
             {loading && (
-<div className="flex space-x-1 text-gray-500 text-sm italic">
-  <span className="animate-bounce">.</span>
-  <span className="animate-bounce" style={{ animationDelay: '0.2s' }}>.</span>
-  <span className="animate-bounce" style={{ animationDelay: '0.4s' }}>.</span>
-</div>
-
+              <div className="flex space-x-1 text-gray-500 text-sm italic">
+                <span className="animate-bounce">.</span>
+                <span
+                  className="animate-bounce"
+                  style={{ animationDelay: "0.2s" }}
+                >
+                  .
+                </span>
+                <span
+                  className="animate-bounce"
+                  style={{ animationDelay: "0.4s" }}
+                >
+                  .
+                </span>
+              </div>
             )}
 
             <div ref={messagesEndRef} />

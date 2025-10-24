@@ -18,7 +18,7 @@ export function SubscriptionCanceledSuccessModal({ open, onClose }) {
           backgroundColor: "rgba(0,0,0,0.5)",
         }}
       >
-      <DialogContent className="w-[420px] rounded-2xl p-8 text-center justify-center align-middle [&>button]:hidden">
+      <DialogContent  showCloseButton={false} className="w-[420px] rounded-2xl p-8 text-center justify-center align-middle ">
         <DialogHeader>
           <div className="flex justify-center">
             <img src="/circle-check.svg" alt="checkIcon" className="h-14 w-14 mb-1" />

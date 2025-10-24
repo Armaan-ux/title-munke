@@ -55,7 +55,7 @@ const BillingHistory = () => {
     <>
       <InvoiceModal
         open={invoiceModal}
-        onOpenChange={() => setInvoiceModal(false)}
+        onClose={() => setInvoiceModal(false)}
       />
       <CancelSubscriptionModal
         open={cancleSubscriptionModal}

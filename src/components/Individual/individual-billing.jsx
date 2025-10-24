@@ -78,7 +78,7 @@ const IndividualBilling = () => {
       )}
       <InvoiceModalDummy
         open={invoiceModal}
-        onOpenChange={() => setInvoiceModal(false)}
+        onClose={() => setInvoiceModal(false)}
       />
 
       <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full h-content shadow-md">

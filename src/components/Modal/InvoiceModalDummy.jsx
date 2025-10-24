@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "../ui/separator";
 import { ArrowDownToLine } from "lucide-react";
 
-export function InvoiceModalDummy({ open, onOpenChange }) {
+export function InvoiceModalDummy({ open, onClose }) {
   if (!open) return null;
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-md rounded-2xl bg-white p-8 shadow-lg">
         <div className="flex flex-row justify-between items-center">
           <img src="/Logo.svg" alt="Logo" className="h-20 w-20 mb-1" />
@@ -103,7 +103,7 @@ export function InvoiceModalDummy({ open, onOpenChange }) {
         <Separator />
 
         <DialogFooter className="flex justify-center gap-3">
-          <Button variant="outline" className="w-28">
+          <Button onClick={()=> onClose()} variant="outline" className="w-28">
             Close
           </Button>
           <Button className="bg-[#581b1b] hover:bg-[#6b1e1e] w-36 text-xs">

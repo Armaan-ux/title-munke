@@ -19,7 +19,7 @@ export function CancelSubscriptionModal({ open, onClose ,onHelpUsImprove}) {
           backgroundColor: "rgba(0,0,0,0.5)",
         }}
       >
-      <DialogContent className="w-[400px] rounded-2xl bg-white p-6 shadow-lg text-center [&>button]:hidden">
+      <DialogContent  showCloseButton={false} className="w-[400px] rounded-2xl bg-white p-6 shadow-lg text-center ">
         <DialogHeader>
           <h2 className="text-lg font-semibold text-secondary mb-2 text-center !font-poppins">
             Confirm Cancellation

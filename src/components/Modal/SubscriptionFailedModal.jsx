@@ -21,7 +21,7 @@ export default function SubscriptionFailedModal({ open, onOpenChange }) {
           backgroundColor: "rgba(0,0,0,0.5)",
         }}
       >
-        <DialogContent
+        <DialogContent  showCloseButton={false}
           className="relative w-[360px] p-0 rounded-2xl  bg-white  border-none overflow-visible z-50"
           style={{
             top: "50% !important",
@@ -33,7 +33,7 @@ export default function SubscriptionFailedModal({ open, onOpenChange }) {
         >
           <Button
             onClick={() => onOpenChange(false)}
-            className="absolute -top-1.5 -right-1.5 bg-white hover:bg-gray-100 rounded-full shadow-md p-1 z-50"
+            className="absolute -top-3 -right-3 bg-white hover:bg-gray-100 rounded-full shadow-md p-1 z-50"
           >
             <X strokeWidth={3} className="w-4 h-4 text-[#2C1B13]" />
           </Button>

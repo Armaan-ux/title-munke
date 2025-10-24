@@ -19,7 +19,7 @@ const BecomeMemberModal = ({ open, onClose, setPaymentModal }) => {
           backgroundColor: "rgba(0,0,0,0.5)",
         }}
       >
-        <DialogContent
+        <DialogContent showCloseButton={false}
           className="relative w-[400px] rounded-2xl p-0 border-none overflow-visible bg-transparent z-50"
           style={{
             top: "50% !important",
@@ -28,11 +28,11 @@ const BecomeMemberModal = ({ open, onClose, setPaymentModal }) => {
             position: "fixed",
             margin: 0,
           }}
-        >
+        > 
           <Button
-            data-custom-close
+           data-slot="dialog-close"
             onClick={onClose}
-            className="absolute -top-1.5 -right-1.5 bg-white hover:bg-gray-100 rounded-full shadow-md p-1 z-50"
+            className="absolute -top-3 -right-3 bg-white hover:bg-gray-100 rounded-full shadow-md p-1 z-50"
           >
             <X strokeWidth={3} className="w-8 h-8 text-[#2C1B13]" />
           </Button>
