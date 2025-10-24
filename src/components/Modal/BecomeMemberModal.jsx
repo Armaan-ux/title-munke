@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { CircleCheck, X } from "lucide-react";
 
 const BecomeMemberModal = ({ open, onClose, setPaymentModal }) => {
+   if (!open) return null;
   const subscribeHandler = () => {
     setPaymentModal(true);
     onClose();
@@ -31,9 +32,9 @@ const BecomeMemberModal = ({ open, onClose, setPaymentModal }) => {
           <Button
             data-custom-close
             onClick={onClose}
-            className="absolute -top-2 -right-2 bg-white hover:bg-gray-100 rounded-full shadow-md p-1 z-50"
+            className="absolute -top-1.5 -right-1.5 bg-white hover:bg-gray-100 rounded-full shadow-md p-1 z-50"
           >
-            <X className="w-8 h-8 text-[#2C1B13]" />
+            <X strokeWidth={3} className="w-8 h-8 text-[#2C1B13]" />
           </Button>
 
           <div className="overflow-hidden rounded-2xl">

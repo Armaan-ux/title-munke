@@ -23,7 +23,8 @@ import {
 const PaymentMethodModal = ({ open, onOpenChange, onSuccess }) => {
   const [screen, setScreen] = useState("select");
   const [selected, setSelected] = useState("card");
-
+  
+  if (!open) return null;
   const paymentHandler = () => {
     onSuccess();
     onOpenChange();
@@ -31,6 +32,14 @@ const PaymentMethodModal = ({ open, onOpenChange, onSuccess }) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
+            <div
+        className="fixed inset-0 z-40 flex items-center justify-center"
+        style={{
+          backdropFilter: "blur(2px)",
+          WebkitBackdropFilter: "blur(2px)",
+          backgroundColor: "rgba(0,0,0,0.5)",
+        }}
+      >
       <DialogContent className="max-w-md rounded-2xl p-6 shadow-xl bg-white">
         {screen === "select" ? (
           <>
@@ -166,6 +175,7 @@ const PaymentMethodModal = ({ open, onOpenChange, onSuccess }) => {
           </>
         )}
       </DialogContent>
+      </div>
     </Dialog>
   );
 };

@@ -8,9 +8,18 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "../ui/separator";
 
 export function CancelSubscriptionModal({ open, onClose ,onHelpUsImprove}) {
+    if (!open) return null;
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="w-[400px] rounded-2xl bg-white p-6 shadow-lg text-center">
+    <div
+        className="fixed inset-0 z-40 flex items-center justify-center"
+        style={{
+          backdropFilter: "blur(2px)",
+          WebkitBackdropFilter: "blur(2px)",
+          backgroundColor: "rgba(0,0,0,0.5)",
+        }}
+      >
+      <DialogContent className="w-[400px] rounded-2xl bg-white p-6 shadow-lg text-center [&>button]:hidden">
         <DialogHeader>
           <h2 className="text-lg font-semibold text-secondary mb-2 text-center !font-poppins">
             Confirm Cancellation
@@ -36,6 +45,8 @@ export function CancelSubscriptionModal({ open, onClose ,onHelpUsImprove}) {
           </Button>
         </DialogFooter>
       </DialogContent>
+      </div>
+    
     </Dialog>
   );
 }

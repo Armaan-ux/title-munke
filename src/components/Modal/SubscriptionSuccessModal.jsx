@@ -12,48 +12,69 @@ export default function SubscriptionSuccessModal({
   onOpenChange,
   onFailed,
 }) {
+   if (!open) return null;
   const subscribeHandler = () => {
     onFailed();
     onOpenChange();
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[360px] p-0 overflow-hidden rounded-2xl shadow-xl bg-white border-none">
-        <div className="relative bg-secondary text-white flex flex-col items-center justify-center py-5">
-          <img src="/success.svg" alt="success" />
-          <DialogHeader className="text-center">
-            <DialogTitle className="text-2xl font-semibold pt-4 !font-poppins">
-              <div className="flex flex-col items-center">
-                <p>Subscription</p>
-                <p>Successful!</p>
-              </div>
-            </DialogTitle>
-          </DialogHeader>
-          <button
-            onClick={() => onOpenChange(false)}
-            className="absolute top-3 right-3 bg-white text-[#5A0A0A] rounded-full p-1 shadow-md hover:bg-gray-100"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-
-        <div className="flex flex-col items-center justify-center px-6 py-6 text-center">
-          <h3 className="text-xl font-semibold text-coffee-light mb-1">
-            Thank you for becoming a member.
-          </h3>
-          <p className="text-sm text-coffee-light text-600 mb-5 leading-relaxed">
-            Your subscription is now active, and you have full access to all
-            brokers features.
-          </p>
-
+      <div
+        className="fixed inset-0 z-40 flex items-center justify-center"
+        style={{
+          backdropFilter: "blur(2px)",
+          WebkitBackdropFilter: "blur(2px)",
+          backgroundColor: "rgba(0,0,0,0.5)",
+        }}
+      >
+        <DialogContent
+          className="relative w-[360px] p-0 rounded-2xl bg-white border-none overflow-visible z-50"
+          style={{
+            top: "50% !important",
+            left: "50% !important",
+            transform: "translate(-50%, -50%) !important",
+            position: "fixed",
+            margin: 0,
+          }}
+        >
           <Button
-            onClick={subscribeHandler}
-            className="w-32 bg-[#5A0A0A] hover:bg-[#460707] text-white rounded-lg py-2 text-sm"
+            onClick={() => onOpenChange(false)}
+            className="absolute -top-1.5 -right-1.5 bg-white hover:bg-gray-100 rounded-full shadow-md p-1 z-50"
           >
-            Continue
+            <X strokeWidth={3} className="w-4 h-4 text-[#2C1B13]" />
           </Button>
-        </div>
-      </DialogContent>
+
+          <div className="overflow-hidden rounded-2xl">
+            <div className="relative bg-secondary text-white flex flex-col items-center justify-center py-5 relative">
+              <img src="/success.svg" alt="success" />
+              <DialogHeader className="text-center">
+                <DialogTitle className="text-2xl font-semibold pt-4 !font-poppins">
+                  <div className="flex flex-col items-center">
+                    <p>Subscription</p>
+                    <p>Successful!</p>
+                  </div>
+                </DialogTitle>
+              </DialogHeader>
+            </div>
+            <div className="flex flex-col items-center justify-center px-6 py-6 text-center">
+              <h3 className="text-xl font-semibold text-coffee-light mb-1">
+                Thank you for becoming a member.
+              </h3>
+              <p className="text-sm text-coffee-light text-600 mb-5 leading-relaxed">
+                Your subscription is now active, and you have full access to all
+                brokers features.
+              </p>
+
+              <Button
+                onClick={subscribeHandler}
+                className="w-32 bg-[#5A0A0A] hover:bg-[#460707] text-white rounded-lg py-2 text-sm"
+              >
+                Continue
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </div>
     </Dialog>
   );
 }

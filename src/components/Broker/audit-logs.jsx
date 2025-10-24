@@ -18,22 +18,22 @@ const AuditLogs = () => {
   return (
     <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
       <div className="space-x-3 mb-4">
-           {agentTypes.map((item, index) => (
-             <button
-               className={` ${
-                 activeTab.id === item.id
-                   ? "bg-tertiary text-white"
-                   : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] "
-               } transition-all  rounded-full px-10 py-3 `}
-               onClick={() => setActiveTab(item)}
-             >
-               {item.name}
-             </button>
-           ))}
-         </div> 
+        {agentTypes.map((item, index) => (
+          <button
+            className={` ${
+              activeTab.id === item.id
+                ? "bg-tertiary text-white"
+                : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] "
+            } transition-all  rounded-full px-10 py-3 `}
+            onClick={() => setActiveTab(item)}
+          >
+            {item.name}
+          </button>
+        ))}
+      </div>
 
-         {activeTab.id === "brokers" && <AuditLogsForBroker />}
-       {activeTab.id === "agents" && <AuditLogsForAgents />}
+      {activeTab.id === "brokers" && <AuditLogsForBroker />}
+      {activeTab.id === "agents" && <AuditLogsForAgents />}
     </div>
   );
 };

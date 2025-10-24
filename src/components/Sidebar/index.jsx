@@ -26,8 +26,8 @@ function AppSidebar() {
   const isCollapsed = state === "collapsed";
   const userGroups =
     user?.signInUserSession?.idToken?.payload["cognito:groups"];
-  const userRole = userGroups?.[0];
 
+  const userRole = userGroups?.[0];
   const roleRoutes = routes[userRole] || [];
 
   const memberHandler = () => {

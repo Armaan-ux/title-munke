@@ -8,7 +8,12 @@ import {
 } from "react-router-dom";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { adminRoutes, agentRoutes, brokerRoutes } from "./routes";
+import {
+  adminRoutes,
+  agentRoutes,
+  brokerRoutes,
+  individualRoutes,
+} from "./routes";
 import Layout from "./components/Layout";
 import { useUser } from "./context/usercontext";
 import ForgetPassword from "./components/ForgetPassword";
@@ -21,7 +26,7 @@ function App() {
 
   if (isLoading) {
     // return <Loader />;
-    return null
+    return null;
   }
 
   return (
@@ -66,6 +71,17 @@ function App() {
                 <ProtectedRoute allowedGroups={["broker"]}>
                   <Component />
                 </ProtectedRoute>
+              }
+            />
+          ))}
+          {individualRoutes.map(({ path, component: Component }) => (
+            <Route
+              key={path}
+              path={path}
+              element={
+                // <ProtectedRoute allowedGroups={["individual"]}>
+                  <Component />
+                // </ProtectedRoute>
               }
             />
           ))}

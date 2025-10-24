@@ -1,16 +1,23 @@
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CheckCircle } from "lucide-react";
 
 export function SubscriptionCanceledSuccessModal({ open, onClose }) {
+   if (!open) return null;
   return (
     <Dialog open={open} onOpenChange={onClose}>
+          <div
+        className="fixed inset-0 z-40 flex items-center justify-center"
+        style={{
+          backdropFilter: "blur(2px)",
+          WebkitBackdropFilter: "blur(2px)",
+          backgroundColor: "rgba(0,0,0,0.5)",
+        }}
+      >
       <DialogContent className="w-[420px] rounded-2xl p-8 text-center justify-center align-middle [&>button]:hidden">
         <DialogHeader>
           <div className="flex justify-center">
@@ -35,6 +42,7 @@ export function SubscriptionCanceledSuccessModal({ open, onClose }) {
           </Button>
         </div>
       </DialogContent>
+      </div>
     </Dialog>
   );
 }

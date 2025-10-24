@@ -8,6 +8,7 @@ import { Separator } from "../ui/separator";
 import { ArrowDownToLine } from "lucide-react";
 
 export function InvoiceModal({ open, onOpenChange }) {
+   if (!open) return null;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md rounded-2xl bg-white p-8 shadow-lg">

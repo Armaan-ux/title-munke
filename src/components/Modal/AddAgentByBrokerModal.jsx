@@ -18,6 +18,7 @@ import {
 import { X } from "lucide-react";
 
 export default function AddAgentByBrokerModal({ open, onOpenChange }) {
+   if (!open) return null;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent

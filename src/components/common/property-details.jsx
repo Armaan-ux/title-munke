@@ -111,67 +111,66 @@ const PropertyDetails = () => {
                     </p>
                   </div>
                 </div>
-            <div className="mt-8">
-              <h3 className="font-semibold text-[15px] text-[#4C0D0D] mb-3">
-                Document Processing Status
-              </h3>
+                <div className="mt-8">
+                  <h3 className="font-semibold text-[15px] text-[#4C0D0D] mb-3">
+                    Document Processing Status
+                  </h3>
 
-              <div className="overflow-hidden border border-[#F1EDEA] rounded-xl">
-                <table className="w-full text-[13px]">
-                  <thead className="bg-[#F9F6F4] text-[#4C0D0D] font-semibold text-left">
-                    <tr>
-                      <th className="py-3 px-4">Sr. No.</th>
-                      <th className="py-3 px-4">Document Type</th>
-                      <th className="py-3 px-4">Date Recorded</th>
-                      <th className="py-3 px-4">Document ID</th>
-                      <th className="py-3 px-4">Progress</th>
-                      <th className="py-3 px-4">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      {
-                        no: "01.",
-                        type: "Document 01",
-                        date: "01 Oct 2025",
-                        id: "DOC-9081",
-                      },
-                      {
-                        no: "02.",
-                        type: "Document 02",
-                        date: "01 Oct 2025",
-                        id: "DOC-9082",
-                      },
-                      {
-                        no: "03.",
-                        type: "Document 03",
-                        date: "30 Sep 2025",
-                        id: "DOC-9075",
-                      },
-                    ].map((item, i) => (
-                      <tr
-                        key={i}
-                        className="border-t border-[#F1EDEA] text-[#4C0D0D]"
-                      >
-                        <td className="py-3 px-4">{item.no}</td>
-                        <td className="py-3 px-4">{item.type}</td>
-                        <td className="py-3 px-4">{item.date}</td>
-                        <td className="py-3 px-4">{item.id}</td>
-                        <td className="py-3 px-4">
-                          <div className="w-[100px] bg-[#EAF7ED] rounded-full h-[6px] overflow-hidden">
-                            <div className="bg-[#3A9447] h-[6px] w-[90%] rounded-full"></div>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <Eye className="w-4 h-4 text-[#4C0D0D]" />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
+                  <div className="overflow-hidden border border-[#F1EDEA] rounded-xl">
+                    <table className="w-full text-[13px]">
+                      <thead className="bg-[#F9F6F4] text-[#4C0D0D] font-semibold text-left">
+                        <tr>
+                          <th className="py-3 px-4">Sr. No.</th>
+                          <th className="py-3 px-4">Document Type</th>
+                          <th className="py-3 px-4">Date Recorded</th>
+                          <th className="py-3 px-4">Document ID</th>
+                          <th className="py-3 px-4">Progress</th>
+                          <th className="py-3 px-4">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          {
+                            no: "01.",
+                            type: "Document 01",
+                            date: "01 Oct 2025",
+                            id: "DOC-9081",
+                          },
+                          {
+                            no: "02.",
+                            type: "Document 02",
+                            date: "01 Oct 2025",
+                            id: "DOC-9082",
+                          },
+                          {
+                            no: "03.",
+                            type: "Document 03",
+                            date: "30 Sep 2025",
+                            id: "DOC-9075",
+                          },
+                        ].map((item, i) => (
+                          <tr
+                            key={i}
+                            className="border-t border-[#F1EDEA] text-[#4C0D0D]"
+                          >
+                            <td className="py-3 px-4">{item.no}</td>
+                            <td className="py-3 px-4">{item.type}</td>
+                            <td className="py-3 px-4">{item.date}</td>
+                            <td className="py-3 px-4">{item.id}</td>
+                            <td className="py-3 px-4">
+                              <div className="w-[100px] bg-[#EAF7ED] rounded-full h-[6px] overflow-hidden">
+                                <div className="bg-[#3A9447] h-[6px] w-[90%] rounded-full"></div>
+                              </div>
+                            </td>
+                            <td className="py-3 px-4">
+                              <Eye className="w-4 h-4 text-[#4C0D0D]" />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
 
               <div className="flex flex-col gap-4">
@@ -196,32 +195,28 @@ const PropertyDetails = () => {
               </div>
             </div>
 
-        
-            
-              <hr className="my-6 border-t border-[#F1EDEA]" />
-              <div className="flex justify-between items-center mt-4 text-[13px]">
-                <p className="text-[#4C0D0D]">
-                  Documents Completed:{" "}
-                  <span className="font-semibold">3 of 3</span>
-                  <br />
-                  Status:{" "}
-                  <span className="text-[#3A9447] font-semibold">
-                    Completed
-                  </span>
-                </p>
+            <hr className="my-6 border-t border-[#F1EDEA]" />
+            <div className="flex justify-between items-center mt-4 text-[13px]">
+              <p className="text-[#4C0D0D]">
+                Documents Completed:{" "}
+                <span className="font-semibold">3 of 3</span>
+                <br />
+                Status:{" "}
+                <span className="text-[#3A9447] font-semibold">Completed</span>
+              </p>
 
-                <div className="flex gap-3">
-                  <Button
-                    variant="outline"
-                    className="border border-[#4C0D0D] text-[#4C0D0D] hover:bg-[#4C0D0D]/5 px-5 rounded-lg"
-                  >
-                    Download CSV
-                  </Button>
-                  <Button className="bg-[#4C0D0D] text-white hover:bg-[#4C0D0D]/90 px-5 rounded-lg">
-                    Download All as ZIP
-                  </Button>
-                </div>
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className="border border-[#4C0D0D] text-[#4C0D0D] hover:bg-[#4C0D0D]/5 px-5 rounded-lg"
+                >
+                  Download CSV
+                </Button>
+                <Button className="bg-[#4C0D0D] text-white hover:bg-[#4C0D0D]/90 px-5 rounded-lg">
+                  Download All as ZIP
+                </Button>
               </div>
+            </div>
           </div>
         </div>
       </div>

@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 
-function HistoryListview() {
+function ProperySearchListView() {
   const navigate = useNavigate();
   // const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -48,6 +48,9 @@ function HistoryListview() {
         </div>
       </div>
       <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
+        <p className="text-lg font-medium mb-4 !font-poppins">
+          Property Search Results
+        </p>
         <div className="bg-white !p-4 rounded-xl">
           <Table className="">
             <TableHeader className="bg-[#F5F0EC]">
@@ -108,7 +111,7 @@ function HistoryListview() {
                           className="text-md"
                           variant="ghost"
                           onClick={() =>
-                            navigate("/broker/property-details/123")
+                            navigate("/individual/property-details/123")
                           }
                         >
                           <Eye />
@@ -131,4 +134,4 @@ function HistoryListview() {
   );
 }
 
-export default HistoryListview;
+export default ProperySearchListView;
