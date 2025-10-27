@@ -20,6 +20,7 @@ import ForgetPassword from "./components/ForgetPassword";
 import Home from "./components/Home";
 import ContactUs from "./components/Contactus";
 import Register from "./components/register";
+import RegisterIndividual from "./components/register-individual";
 
 function App() {
   const { isLoading } = useUser();
@@ -36,6 +37,7 @@ function App() {
         <Route path="/contactus" element={<ContactUs />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/register/individual" element={<RegisterIndividual />} />
         <Route path="/forgot-password" element={<ForgetPassword />} />
         <Route path="/notfound" element={<NotFound />} />
         <Route path="/" element={<Layout />}>

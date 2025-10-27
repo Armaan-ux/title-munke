@@ -61,7 +61,7 @@ const AIChatBot = () => {
       {open && (
         <div className="w-80 md:w-96 bg-white shadow-2xl rounded-2xl overflow-hidden border border-gray-200 animate-in slide-in-from-bottom-4 duration-300">
           <div className="bg-[#5C1F0E] text-white px-4 py-3 flex justify-between items-center">
-            <p className="font-semibold">AI Property Assistant</p>
+            <p className="font-semibold">Munke Assist</p>
             <button onClick={() => setOpen(false)}>
               <X className="w-5 h-5" />
             </button>

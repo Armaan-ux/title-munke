@@ -215,7 +215,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
             </Button>
           </div>
           <Separator />
-          <div className="flex flex-col md:flex-row items-start gap-10  ">
+          <div className="flex flex-col md:flex-row items-start gap-10 mt-6">
             <div className="flex flex-col items-center gap-4">
               <img
                 src="https://images.unsplash.com/photo-1607746882042-944635dfe10e"

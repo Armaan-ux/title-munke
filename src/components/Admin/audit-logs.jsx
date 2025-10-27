@@ -97,7 +97,7 @@ function AuditLogs() {
                       <TableHead>Details</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Time</TableHead>
-                      <TableHead>Action</TableHead>
+                      {/* <TableHead>Action</TableHead> */}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -113,7 +113,7 @@ function AuditLogs() {
                           <TableCell className="break-all break-words whitespace-break-spaces max-w-sm min-w-[300px]" >{item?.detail?.replace(/[{}"]/g, "")}</TableCell>
                           <TableCell>{item.email}</TableCell>
                           <TableCell>{getFormattedDateTime(item?.createdAt)}</TableCell>
-                          <TableCell>{item.action}</TableCell>
+                          {/* <TableCell>{item.action}</TableCell> */}
                         </TableRow> 
                       ))
                     }

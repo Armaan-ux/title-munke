@@ -17,12 +17,12 @@ import { ChevronDown, ChevronsUpDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 
-function AllSearchHistory() {
+function AllSearchHistory({activeTab,onRegisterReset }) {
   const [searchHistories, setSearchHistories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [nextToken, setNextToken] = useState(null);
-  const [activeTab, setActiveTab] = useState("history");
+  // const [activeTab, setActiveTab] = useState("history");
   const [sortConfig, setSortConfig] = useState({
     key: "createdAt",
     direction: "descending",
@@ -125,7 +125,11 @@ function AllSearchHistory() {
     setNextToken(null);
     setSearchHistories([]);
   };
-
+  useEffect(() => {
+    if (onRegisterReset) {
+      onRegisterReset(resetStateOnTabChange);
+    }
+  }, [onRegisterReset]);
   useEffect(() => {
     if (user?.attributes?.sub) {
       if (activeTab === "history") fetchSearchHistories();
@@ -155,24 +159,7 @@ const getSortArrow = (key) => {
     <div className="bg-[#F5F0EC] rounded-lg text-secondary" >
 
 
-              <div className="space-x-3 mb-4" >
-                <button 
-                    className={` ${activeTab === "history" ? "bg-tertiary text-white" : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] " } transition-all  rounded-full px-10 py-3 `}
-                        onClick={() => {
-                            resetStateOnTabChange();
-                            setActiveTab("history");
-                        }}
-                 >Brokers
-                </button>
-                <button
-                   className={` ${activeTab === "agents" ? "bg-tertiary text-white" : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] " } transition-all  rounded-full px-10 py-3 `}
-                      onClick={() => {
-                            resetStateOnTabChange();
-                            setActiveTab("agents");
-                        }}
-                >Agents
-                </button>
-            </div>
+        
 
 
             <div className="bg-white !p-4 rounded-xl" >

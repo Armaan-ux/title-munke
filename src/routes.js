@@ -23,10 +23,18 @@ import BrokerPropertyDetails from "./components/Broker/broker-property-details";
 import IndividualPropertyDetails from "./components/Individual/individual-property-details";
 import AuditLogsForIndividual from "./components/Individual/individual-audit-log";
 import IndividualSettings from "./components/Individual/settings";
+import AdminDashboard from "./components/Admin/dashboard";
+import BrokerBusinessList from "./components/Admin/broker-businessList";
+import BrokerDetails from "./components/Admin/broker-details";
+import PropertySearch from "./components/Admin/property-search";
 
 export const adminRoutes = [
   { path: "admin", component: Admin },
-  // { path: "admin/dashboard", component: AdminDashboard },
+  { path: "admin/dashboard", component: AdminDashboard },
+  { path: "admin/broker-business-list", component: BrokerBusinessList },
+  { path: "admin/broker-details/:id", component: BrokerDetails },
+  { path: "admin/property-search/:id", component: PropertySearch },
+
   { path: "admin/users", component: Users },
   { path: "admin/demo-requests", component: DemoRequests },
   { path: "admin/audit-logs", component: AdminAuditLogs },

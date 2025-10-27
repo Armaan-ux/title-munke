@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, ChevronLeft, Loader } from "lucide-react";
 import { motion } from "motion/react";
 
-
 function Login() {
   const { user, signIn } = useUser();
   const [isChecking, setIsChecking] = useState(false);
@@ -27,7 +26,9 @@ function Login() {
       user.signInUserSession.idToken.payload &&
       user.signInUserSession.idToken.payload["cognito:groups"]
     ) {
-      navigate("/" + user.signInUserSession.idToken.payload["cognito:groups"][0]);
+      navigate(
+        "/" + user.signInUserSession.idToken.payload["cognito:groups"][0]
+      );
     }
   }, [user, navigate]);
 
@@ -36,7 +37,10 @@ function Login() {
       e.preventDefault();
       setError("");
       setIsChecking(true);
-      const { isResetRequired, user: signedInUser } = await signIn(username, password);
+      const { isResetRequired, user: signedInUser } = await signIn(
+        username,
+        password
+      );
 
       if (isResetRequired) {
         setIsReset(true);
@@ -50,7 +54,8 @@ function Login() {
         signedInUser.signInUserSession.idToken.payload &&
         signedInUser.signInUserSession.idToken.payload["cognito:groups"]
       ) {
-        const groups = signedInUser.signInUserSession.idToken.payload["cognito:groups"];
+        const groups =
+          signedInUser.signInUserSession.idToken.payload["cognito:groups"];
         if (groups.includes("admin")) {
           navigate("/admin");
         } else if (groups.includes("agent")) {
@@ -59,7 +64,9 @@ function Login() {
           navigate("/broker");
         }
       } else {
-        setError("User groups not available in the response. Please try again.");
+        setError(
+          "User groups not available in the response. Please try again."
+        );
       }
     } catch (error) {
       setError(error.message || "Login failed");
@@ -72,22 +79,35 @@ function Login() {
 
   return (
     <div className="grid items-center place-items-center h-dvh w-full overflow-auto py-10 px-4 bg-secondary">
-      <img src="/login-bg.jpg" className="w-full h-full object-cover absolute inset-0 " alt="login background" />
-      <motion.div 
+      <img
+        src="/login-bg.jpg"
+        className="w-full h-full object-cover absolute inset-0 "
+        alt="login background"
+      />
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         // exit={{ opacity: 0, y: 5 }}
         transition={{ duration: 0.5 }}
-        className="border rounded-4xl  p-4 px-5 md:px-10 max-w-md w-full bg-white relative z-10" 
+        className="border rounded-4xl  p-4 px-5 md:px-10 max-w-md w-full bg-white relative z-10"
       >
-          <div className="text-center mb-6 text-secondary" >
-            <img className="mx-auto w-24 md:w-32 mb-2" src="/Logo.svg" alt="logo" />
-            <p className="text-[26px] font-semibold" >Welcome Back</p>
-            <p className="text-[#554536]" >Please enter your details to login</p>
-          </div>
-        <form className="space-y-4 text-secondary" onSubmit={e => handleLogin(e)}>
+        <div className="text-center mb-6 text-secondary">
+          <img
+            className="mx-auto w-24 md:w-32 mb-2"
+            src="/Logo.svg"
+            alt="logo"
+          />
+          <p className="text-[26px] font-semibold">Welcome Back</p>
+          <p className="text-[#554536]">Please enter your details to login</p>
+        </div>
+        <form
+          className="space-y-4 text-secondary"
+          onSubmit={(e) => handleLogin(e)}
+        >
           <div>
-            <Label htmlFor="username" className="text-sm" >Email</Label>
+            <Label htmlFor="username" className="text-sm">
+              Email
+            </Label>
             <Input
               type="text"
               id="username"
@@ -99,19 +119,21 @@ function Login() {
             />
           </div>
           <div>
-            <Label htmlFor="password" className="text-sm" >Password</Label>
+            <Label htmlFor="password" className="text-sm">
+              Password
+            </Label>
             <Input
               type="password"
               id="password"
               name="password"
               value={password}
-              className="bg-transparent"
+              className="w-full border border-gray-300 focus:border-brown-500 text-gray-800 rounded-lg px-4 py-3 pr-10 focus:outline-none bg-white password-input"
               required
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <div className="flex justify-end" >
-            <Link to="/forgot-password" className="text-sm hover:underline" >
+          <div className="flex justify-end">
+            <Link to="/forgot-password" className="text-sm hover:underline">
               Forgot Password?
             </Link>
           </div>
@@ -125,16 +147,34 @@ function Login() {
             Login
             {isChecking ? <Loader className="animate-spin" /> : <ArrowRight />}
           </Button>
-          {error && <div className="text-red-500 text-center text-sm font-medium">{error}</div>}
-             
+          <style jsx>{`
+            input.password-input {
+              -webkit-text-security: disc;
+              text-security: disc;
+              font-size: 20px;
+              color: #5c4033; /* brown */
+            }
+            input.password-input::placeholder {
+              color: #aaa;
+            }
+          `}</style>
+          {error && (
+            <div className="text-red-500 text-center text-sm font-medium">
+              {error}
+            </div>
+          )}
         </form>
         {/* <div className="text-center my-4 text-sm" >
             <span>Don't have an account? </span>
             <Link to="/register" className="text-secondary" >Register Now</Link>
         </div> */}
-        <div className="flex justify-center my-4 mt-6 text-secondary group" >
-          <Link to={"/"} className="inline-flex items-center gap-2" >
-              <ChevronLeft size={20} className="group-hover:mr-2 transition-all" /> Back to Home
+        <div className="flex justify-center my-4 mt-6 text-secondary group">
+          <Link to={"/"} className="inline-flex items-center gap-2">
+            <ChevronLeft
+              size={20}
+              className="group-hover:mr-2 transition-all"
+            />{" "}
+            Back to Home
           </Link>
         </div>
       </motion.div>
