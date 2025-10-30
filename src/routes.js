@@ -27,6 +27,7 @@ import AdminDashboard from "./components/Admin/dashboard";
 import BrokerBusinessList from "./components/Admin/broker-businessList";
 import BrokerDetails from "./components/Admin/broker-details";
 import PropertySearch from "./components/Admin/property-search";
+import DummySearchPageResult from "./components/Agent/DummySearchPageResult";
 
 export const adminRoutes = [
   { path: "admin", component: Admin },
@@ -49,8 +50,11 @@ export const adminRoutes = [
 export const agentRoutes = [
   { path: "agent", component: Agent },
   { path: "agent/dashboard", component: AgentDashboard },
+  { path: "agent/history-listview", component: DummySearchPageResult },
+  { path: "agent/property-details/:id", component: BrokerPropertyDetails },
   { path: "agent/audit-logs", component: AuditLogs },
   { path: "agent/setting", component: AgentSetting },
+  { path: "agent/email-template", component: EmailTemplate },
 ];
 
 export const brokerRoutes = [

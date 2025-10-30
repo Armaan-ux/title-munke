@@ -19,8 +19,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Button } from "../ui/button";
+import { Eye, Printer, Share2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function History() {
+  const navigate = useNavigate();
   const [searchHistories, setSearchHistories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -170,6 +174,7 @@ function History() {
                   <TableHead>Date / Time</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Download Link</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -206,6 +211,25 @@ function History() {
                               ""
                             )}
                           </TableCell>
+                          <div className="flex items-center gap-2 flex-row">
+                        <Button size="icon" className="text-md" variant="ghost">
+                          <Share2 />
+                        </Button>
+                        <Button size="icon" className="text-md" variant="ghost">
+                          <Printer />
+                        </Button>
+
+                        <Button
+                          size="icon"
+                          className="text-md"
+                          variant="ghost"
+                          onClick={() =>
+                            navigate("/agent/property-details/123")
+                          }
+                        >
+                          <Eye />
+                        </Button>
+                      </div>
                     </TableRow>
                   ))
                 }

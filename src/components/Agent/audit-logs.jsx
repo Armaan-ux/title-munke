@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Badge } from "../ui/badge";
 
 const dummyData = [
   {
@@ -63,7 +64,15 @@ export default function AuditLogs() {
                       <TableCell>{getFormattedDateTime(item?.createdAt)}</TableCell>
                       <TableCell>{item.action}</TableCell>
                       <TableCell>{item.details}</TableCell>
-                      <TableCell>{item.status}</TableCell>
+                               <TableCell>     <Badge
+                        className={`${
+                          item?.status === "Success"
+                            ? "bg-[#E9F3E9] text-[#1E8221]"
+                            : "bg-[#FFF3D9] text-[#A2781E]"
+                        } text-[13px] font-medium px-3 py-1 rounded-full`}
+                      >
+                        {item?.status}
+                      </Badge></TableCell>
                     </TableRow> 
                   ))
                 }
