@@ -7,6 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ChevronLeft, Loader } from "lucide-react";
 import { motion } from "motion/react";
+import VerifyEmail from "../verify-email";
+import { useMutation } from "@tanstack/react-query";
+import { confirmEmail, resendConfirmationCode } from "../service/userAdmin";
 
 function Login() {
   const { user, signIn } = useUser();
@@ -15,6 +18,7 @@ function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isReset, setIsReset] = useState(false);
+  const [showCodeInput, setShowCodeInput] = useState(false);
 
   const navigate = useNavigate();
 
@@ -32,9 +36,21 @@ function Login() {
     }
   }, [user, navigate]);
 
-  const handleLogin = async (e) => {
+  const resendCodeMutation = useMutation({
+    // mutationFn: code => confirmEmail({code: code, email: formData.email, userType: formData.role}),
+    mutationFn: (email) => resendConfirmationCode(email),
+    onSuccess: () => {
+      // navigate("/login");
+      setShowCodeInput(true);
+    },
+    onError: (error) => {
+      console.log("error", error);
+      // setError(error.response?.data?.error || error.response?.data?.message || "Something went wrong. Please try again later.")
+    },
+  });
+
+  const handleLogin = async () => {
     try {
-      e.preventDefault();
       setError("");
       setIsChecking(true);
       const { isResetRequired, user: signedInUser } = await signIn(
@@ -69,6 +85,14 @@ function Login() {
         );
       }
     } catch (error) {
+      console.log("error ", error);
+      if (error.name === "UserNotConfirmedException") {
+        // setError("Your email is not confirmed. Please enter the verification code sent to your email.");
+        resendCodeMutation.mutate(username);
+
+        // setShowCodeInput(true); // <-- State variable to show confirmation code input
+        return;
+      }
       setError(error.message || "Login failed");
     } finally {
       setIsChecking(false);
@@ -84,100 +108,113 @@ function Login() {
         className="w-full h-full object-cover absolute inset-0 "
         alt="login background"
       />
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        // exit={{ opacity: 0, y: 5 }}
-        transition={{ duration: 0.5 }}
-        className="border rounded-4xl  p-4 px-5 md:px-10 max-w-md w-full bg-white relative z-10"
-      >
-        <div className="text-center mb-6 text-secondary">
-          <img
-            className="mx-auto w-24 md:w-32 mb-2"
-            src="/Logo.svg"
-            alt="logo"
-          />
-          <p className="text-[26px] font-semibold">Welcome Back</p>
-          <p className="text-[#554536]">Please enter your details to login</p>
-        </div>
-        <form
-          className="space-y-4 text-secondary"
-          onSubmit={(e) => handleLogin(e)}
+      {showCodeInput && username ? (
+        <VerifyEmail email={username} login={handleLogin} />
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          // exit={{ opacity: 0, y: 5 }}
+          transition={{ duration: 0.5 }}
+          className="border rounded-4xl  p-4 px-5 md:px-10 max-w-md w-full bg-white relative z-10"
         >
-          <div>
-            <Label htmlFor="username" className="text-sm">
-              Email
-            </Label>
-            <Input
-              type="text"
-              id="username"
-              name="username"
-              value={username}
-              className="bg-transparent"
-              required
-              onChange={(e) => setUsername(e.target.value)}
+          <div className="text-center mb-6 text-secondary">
+            <img
+              className="mx-auto w-24 md:w-32 mb-2"
+              src="/Logo.svg"
+              alt="logo"
             />
+            <p className="text-[26px] font-semibold">Welcome Back</p>
+            <p className="text-[#554536]">Please enter your details to login</p>
           </div>
-          <div>
-            <Label htmlFor="password" className="text-sm">
-              Password
-            </Label>
-            <Input
-              type="password"
-              id="password"
-              name="password"
-              value={password}
-              className="w-full border border-gray-300 focus:border-brown-500 text-gray-800 rounded-lg px-4 py-3 pr-10 focus:outline-none bg-white password-input"
-              required
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <div className="flex justify-end">
-            <Link to="/forgot-password" className="text-sm hover:underline">
-              Forgot Password?
+          <form
+            className="space-y-4 text-secondary"
+            onSubmit={(e) => {
+              e.preventDefault()
+              handleLogin()
+            }}
+          >
+            <div>
+              <Label htmlFor="username" className="text-sm">
+                Email
+              </Label>
+              <Input
+                type="text"
+                id="username"
+                name="username"
+                value={username}
+                className="bg-transparent"
+                required
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="password" className="text-sm">
+                Password
+              </Label>
+              <Input
+                type="password"
+                id="password"
+                name="password"
+                value={password}
+                className="w-full border border-gray-300 focus:border-brown-500 text-gray-800 rounded-lg px-4 py-3 pr-10 focus:outline-none bg-white password-input"
+                required
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <div className="flex justify-end">
+              <Link to="/forgot-password" className="text-sm hover:underline">
+                Forgot Password?
+              </Link>
+            </div>
+            <Button
+              disabled={isChecking || !username || !password}
+              // type="button"
+              className="w-full"
+              variant="secondary"
+              size="lg"
+            >
+              Login
+              {isChecking ? (
+                <Loader className="animate-spin" />
+              ) : (
+                <ArrowRight />
+              )}
+            </Button>
+            <style jsx>{`
+              input.password-input {
+                -webkit-text-security: disc;
+                text-security: disc;
+                font-size: 20px;
+                color: #5c4033; /* brown */
+              }
+              input.password-input::placeholder {
+                color: #aaa;
+              }
+            `}</style>
+            {error && (
+              <div className="text-red-500 text-center text-sm font-medium">
+                {error}
+              </div>
+            )}
+          </form>
+          <div className="text-center my-4 text-sm">
+            <span>Don't have an account? </span>
+            <Link to="/register" className="text-secondary">
+              Register Now
             </Link>
           </div>
-          <Button
-            disabled={isChecking || !username || !password}
-            // type="button"
-            className="w-full"
-            variant="secondary"
-            size="lg"
-          >
-            Login
-            {isChecking ? <Loader className="animate-spin" /> : <ArrowRight />}
-          </Button>
-          <style jsx>{`
-            input.password-input {
-              -webkit-text-security: disc;
-              text-security: disc;
-              font-size: 20px;
-              color: #5c4033; /* brown */
-            }
-            input.password-input::placeholder {
-              color: #aaa;
-            }
-          `}</style>
-          {error && (
-            <div className="text-red-500 text-center text-sm font-medium">
-              {error}
-            </div>
-          )}
-        </form>
-        {/* <div className="text-center my-4 text-sm" >
-            <span>Don't have an account? </span>
-            <Link to="/register" className="text-secondary" >Register Now</Link>
-        </div> */}
-        <div className="flex justify-center my-4 mt-6 text-secondary group">
-          <Link to={"/"} className="inline-flex items-center gap-2">
-            <ChevronLeft
-              size={20}
-              className="group-hover:mr-2 transition-all"
-            />{" "}
-            Back to Home
-          </Link>
-        </div>
-      </motion.div>
+          <div className="flex justify-center my-4 mt-6 text-secondary group">
+            <Link to={"/"} className="inline-flex items-center gap-2">
+              <ChevronLeft
+                size={20}
+                className="group-hover:mr-2 transition-all"
+              />{" "}
+              Back to Home
+            </Link>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }

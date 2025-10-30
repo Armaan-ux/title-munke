@@ -1,6 +1,6 @@
 import { API } from 'aws-amplify';
 
-const apiName = 'usersAdmin';
+const apiName = 'usersAdmin-dev';
 const userPath = '/users';
 const forgotPasswordPath = '/forgot-password';
 
@@ -44,11 +44,16 @@ export const CONSTANTS = { // should always be copied from title-munke-serverles
     UNDELETE_USER: "UndeleteUser",
     CREATE_AUDIT_LOG: "CreateAuditLog",
     LIST_AUDIT_LOGS: "listAuditLogs",
+
+    REGISTER_USER: "RegisterUser",
+    CONFIRM_EMAIL: "ConfirmEmail",
+    RESEND_CONFIRMATION_CODE: "ResendConfirmationCode",
   },
   USER_TYPES: {
     AGENT: "agent",
     BROKER: "broker",
     ADMIN: "admin",
+    INDIVIDUAL: "individual",
   },
   USER_STATUS: {
     UNCONFIRMED: "UNCONFIRMED",
@@ -637,5 +642,59 @@ export async function createAuditLog(userId, email, log_action, detail, isAgent)
         payload,
         'Success in createAuditLog:',
         'Error in createAuditLog:'
+    );
+}
+
+export async function registerUser({name, email, password, userType, teamStrength}) {
+    const payload = {
+      body: {
+        name,
+        email,
+        password,
+        userType,
+        teamStrength,
+        action: CONSTANTS.ACTIONS.REGISTER_USER,
+      },
+      headers: {Authorization: "", "Content-Type": ""},
+    };
+    return callUserAdminApi(
+        payload,
+        'Success in registerUser:',
+        'Error in registerUser:',
+        '/register'
+    );
+}
+
+export async function confirmEmail({code, email, userType}) {
+    const payload = {
+      body: {
+        code: code,
+        email: email,
+        userType: userType,
+        action: CONSTANTS.ACTIONS.CONFIRM_EMAIL,
+      },
+      headers: {Authorization: "", "Content-Type": ""}
+    };
+    return callUserAdminApi(
+        payload,
+        'Success in confirmCode:',
+        'Error in confirmCode:',
+        '/register/confirm-email'
+    );
+}
+
+export async function resendConfirmationCode(email) {
+    const payload = {
+      body: {
+        email: email,
+        action: CONSTANTS.ACTIONS.RESEND_CONFIRMATION_CODE,
+      },
+      headers: {Authorization: "", "Content-Type": ""}
+    };
+    return callUserAdminApi(
+        payload,
+        'Success in resendConfirmationCode:',
+        'Error in resendConfirmationCode:',
+        '/register/resend-code'
     );
 }
