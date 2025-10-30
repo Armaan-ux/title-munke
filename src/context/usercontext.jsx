@@ -6,6 +6,7 @@ import {
   updateAgent,
   updateBroker,
 } from "../components/service/userAdmin";
+import { useNavigate } from "react-router-dom";
 
 const UserContext = createContext();
 
@@ -14,6 +15,7 @@ export const useUser = () => {
 };
 
 export const UserProvider = ({ children }) => {
+
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -80,6 +82,7 @@ export const UserProvider = ({ children }) => {
     await Auth.signOut();
     setUser(null);
     setIsAuthenticated(false);
+    window.location.href = "/login";
   };
 
   return (
