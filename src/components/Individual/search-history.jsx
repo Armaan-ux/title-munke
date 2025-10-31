@@ -277,7 +277,7 @@ function SearchHistory() {
               {sortedHistories?.length === 0 && !loading ? (
                 <TableRow>
                   <TableCell
-                    colSpan={activeTab === "agents" ? 6 : 5}
+                    colSpan={activeTab === "agents" ? 6 : 6}
                     className="font-medium text-center py-10"
                   >
                     No Records found.

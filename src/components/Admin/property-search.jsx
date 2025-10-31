@@ -58,7 +58,7 @@ function PropertySearch() {
           >
             <ChevronLeft className="w-6 h-6 mr-1" />
           </button>
-          <p className="text-md  text-secondary">Back</p>
+          <p className="text-lg text-secondary">Back</p>
         </div>
       </div>
       <div className="bg-[#F5F0EC] rounded-lg py-5 px-7 my-4 text-secondary flex items-center justify-between  gap-1">

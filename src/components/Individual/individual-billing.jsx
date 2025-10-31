@@ -151,7 +151,7 @@ const IndividualBilling = () => {
             <Table className="">
               <TableHeader className="bg-[#F5F0EC]">
                 <TableRow>
-                  <TableHead className="w-[100px]">Sr. No.</TableHead>
+                  <TableHead >Sr. No.</TableHead>
                   <TableHead>
                     <p className="flex items-center gap-2">Invoice ID</p>
                   </TableHead>
@@ -162,7 +162,7 @@ const IndividualBilling = () => {
                     <p className="flex items-center gap-2">Amount</p>
                   </TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Download</TableHead>
+                  <TableHead className="text-center" >Download</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -189,7 +189,7 @@ const IndividualBilling = () => {
                     <TableCell>
                       {item?.downloadLink ? (
                         <FileDown
-                          className="w-4 h-4"
+                          className="w-4 h-4 mx-auto"
                           onClick={() => setInvoiceModal(true)}
                         />
                       ) : (

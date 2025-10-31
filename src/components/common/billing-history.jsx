@@ -85,7 +85,7 @@ const BillingHistory = () => {
           >
             <ChevronLeft className="w-6 h-6 mr-1" />
           </button>
-          <p className="text-md  text-secondary">Back</p>
+          <p className="text-lg text-secondary">Back</p>
         </div>
       </div>
 

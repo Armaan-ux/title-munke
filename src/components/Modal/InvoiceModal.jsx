@@ -7,7 +7,7 @@ export function InvoiceModal({ open, onClose }) {
   if (!open) return null;
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent  showCloseButton={false} className="max-w-md rounded-2xl bg-white p-6 shadow-lg">
+      <DialogContent  showCloseButton={false} className="!max-w-xl !w-full rounded-2xl bg-white p-6 shadow-lg">
         <div className="flex flex-row justify-between items-center">
           <img src="/Logo.svg" alt="Logo" className="h-20 w-20 mb-1" />
           <p className="text-2xl font-bold text-secondary tracking-wide">
