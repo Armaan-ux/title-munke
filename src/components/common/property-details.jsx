@@ -25,9 +25,9 @@ const PropertyDetails = () => {
           <div className="p-6">
             <div className="flex items-start justify-between">
               <div>
-                <h2 className="text-[18px] font-semibold text-[#4C0D0D]">
+                <p className="text-[18px] font-semibold text-[#4C0D0D]">
                   2868 reading rd, Lehigh, Pennsylvania
-                </h2>
+                </p>
                 <p className="text-[13px] text-[#8B8686] mt-1">
                   Searched on:{" "}
                   <span className="font-semibold text-[#4C0D0D]">
@@ -113,9 +113,9 @@ const PropertyDetails = () => {
                   </div>
                 </div>
                 <div className="mt-8">
-                  <h3 className="font-semibold text-[15px] text-[#4C0D0D] mb-3">
+                  <p className="font-semibold text-[15px] text-[#4C0D0D] mb-3">
                     Document Processing Status
-                  </h3>
+                  </p>
 
                   <div className="overflow-hidden border border-[#F1EDEA] rounded-xl">
                     <table className="w-full text-[13px]">
