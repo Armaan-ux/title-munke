@@ -79,11 +79,11 @@ export const brokerRoutes = [
 export const individualRoutes = [
   { path: "individual", component: Individual },
   { path: "individual/dashboard", component: IndividualDashboard },
-  { path: "individual/property-search", component: ProperySearchListView },
-  {
-    path: "individual/property-details/:id",
-    component: IndividualPropertyDetails,
-  },
+  // { path: "individual/property-search", component: ProperySearchListView },
+  // {
+  //   path: "individual/property-details/:id",
+  //   component: IndividualPropertyDetails,
+  // },
   { path: "individual/agent-audit-log", component: AuditLogsForIndividual },
   { path: "individual/setting", component: IndividualSettings },
   { path: "individual/billing-history", component: BillingHistory },

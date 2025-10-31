@@ -16,33 +16,94 @@ const dummyData = [
     id: 1,
     name: "John Doe",
     email: "johndoe@example.com",
-    createdAt: "2023-03-01T00:00:00.000Z",
-    type: "Demo Request",
-    teamStrength: "High",
-    description: "Interested in demo",
-    status: "Pending",
+    county: "Kandy",
+    state: "Central",
+    createdAt: "2023-03-01",
+    description: "Interested in demo"
   },
   {
     id: 2,
-    name: "Jane Doe",
-    email: "janedoe@example.com",
-    createdAt: "2023-03-01T00:00:00.000Z",
-    type: "Demo Request",
-    teamStrength: "Medium",
-    description: "Interested in demo",
-    status: "Approved",
+    name: "Jane Smith",
+    email: "janesmith@example.com",
+    county: "Colombo",
+    state: "Western",
+    createdAt: "2023-03-05",
+    description: "Requested pricing details"
   },
   {
     id: 3,
-    name: "Bob Smith",
-    email: "bobsmith@example.com",
-    createdAt: "2023-03-01T00:00:00.000Z",
-    type: "Demo Request",
-    teamStrength: "Low",
-    description: "Interested in demo",
-    status: "Rejected",
+    name: "Michael Brown",
+    email: "michaelb@example.com",
+    county: "Galle",
+    state: "Southern",
+    createdAt: "2023-03-10",
+    description: "Needs callback for demo"
   },
+  {
+    id: 4,
+    name: "Emily Johnson",
+    email: "emilyj@example.com",
+    county: "Jaffna",
+    state: "Northern",
+    createdAt: "2023-03-12",
+    description: "Looking for enterprise package"
+  },
+  {
+    id: 5,
+    name: "Robert Wilson",
+    email: "robertw@example.com",
+    county: "Matara",
+    state: "Southern",
+    createdAt: "2023-03-18",
+    description: "Interested in long-term contract"
+  },
+  {
+    id: 6,
+    name: "Sophia Davis",
+    email: "sophiad@example.com",
+    county: "Negombo",
+    state: "Western",
+    createdAt: "2023-03-20",
+    description: "Follow-up required next week"
+  },
+  {
+    id: 7,
+    name: "David Miller",
+    email: "davidm@example.com",
+    county: "Kegalle",
+    state: "Sabaragamuwa",
+    createdAt: "2023-03-25",
+    description: "Interested in integration options"
+  },
+  {
+    id: 8,
+    name: "Olivia Garcia",
+    email: "oliviag@example.com",
+    county: "Badulla",
+    state: "Uva",
+    createdAt: "2023-03-28",
+    description: "Asked for technical documentation"
+  },
+  {
+    id: 9,
+    name: "Daniel Martinez",
+    email: "danielm@example.com",
+    county: "Trincomalee",
+    state: "Eastern",
+    createdAt: "2023-04-02",
+    description: "Confirmed demo schedule"
+  },
+  {
+    id: 10,
+    name: "Ava Anderson",
+    email: "avaa@example.com",
+    county: "Kurunegala",
+    state: "North Western",
+    createdAt: "2023-04-06",
+    description: "Needs proposal by next week"
+  }
 ];
+
 
 export default function DemoRequests() {
   const [activeTab, setActiveTab] = useState("pending");
@@ -78,12 +139,11 @@ export default function DemoRequests() {
               <TableRow>
                 <TableHead className="w-[100px]">Sr. No.</TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Date Received</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Team Stength</TableHead>
+                <TableHead>Email / Phone No.</TableHead>
+                <TableHead>County</TableHead>
+                <TableHead>State</TableHead>
+                <TableHead>Date (Received)</TableHead>
                 <TableHead>Description</TableHead>
-                <TableHead>Status</TableHead>
                 <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
@@ -103,13 +163,13 @@ export default function DemoRequests() {
                     <TableCell className="font-medium">{index + 1}</TableCell>
                     <TableCell>{item.name}</TableCell>
                     <TableCell>{item.email}</TableCell>
+                    <TableCell>{item.county}</TableCell>
+                    <TableCell>{item.state}</TableCell>
                     <TableCell>
-                      {new Date(item.createdAt).toLocaleDateString()}
+                      {/* {new Date(item.createdAt).toLocaleDateString()} */}
+                      {item.createdAt}
                     </TableCell>
-                    <TableCell>{item.type}</TableCell>
-                    <TableCell>{item.teamStrength}</TableCell>
                     <TableCell>{item.description}</TableCell>
-                    <TableCell>{item.status}</TableCell>
                     <TableCell>
                       <Repeat2 className="mx-auto" />
                     </TableCell>
@@ -121,15 +181,14 @@ export default function DemoRequests() {
         ) : (
           <Table className="">
             <TableHeader className="bg-[#F5F0EC]">
-              <TableRow>
+               <TableRow>
                 <TableHead className="w-[100px]">Sr. No.</TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Date Received</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Team Stength</TableHead>
+                <TableHead>Email / Phone No.</TableHead>
+                <TableHead>County</TableHead>
+                <TableHead>State</TableHead>
+                <TableHead>Date (Received)</TableHead>
                 <TableHead>Description</TableHead>
-                <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -143,18 +202,19 @@ export default function DemoRequests() {
                   </TableCell>
                 </TableRow>
               ) : (
-                dummyData?.map((item, index) => (
+                dummyData?.slice(5).map((item, index) => (
                   <TableRow key={item.id}>
                     <TableCell className="font-medium">{index + 1}</TableCell>
                     <TableCell>{item.name}</TableCell>
                     <TableCell>{item.email}</TableCell>
+                    <TableCell>{item.county}</TableCell>
+                    <TableCell>{item.state}</TableCell>
                     <TableCell>
-                      {new Date(item.createdAt).toLocaleDateString()}
+                      {/* {new Date(item.createdAt).toLocaleDateString()} */}
+                      {item.createdAt}
                     </TableCell>
-                    <TableCell>{item.type}</TableCell>
-                    <TableCell>{item.teamStrength}</TableCell>
                     <TableCell>{item.description}</TableCell>
-                    <TableCell>{item.status}</TableCell>
+                
                   </TableRow>
                 ))
               )}

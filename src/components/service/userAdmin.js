@@ -1,5 +1,6 @@
 import { API } from 'aws-amplify';
 
+// const apiName = 'usersAdmin-dev';
 const apiName = 'usersAdmin-dev';
 const userPath = '/users';
 const forgotPasswordPath = '/forgot-password';

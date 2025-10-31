@@ -7,15 +7,15 @@ export function InvoiceModal({ open, onClose }) {
   if (!open) return null;
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent  showCloseButton={false} className="max-w-md rounded-2xl bg-white p-8 shadow-lg">
+      <DialogContent  showCloseButton={false} className="max-w-md rounded-2xl bg-white p-6 shadow-lg">
         <div className="flex flex-row justify-between items-center">
           <img src="/Logo.svg" alt="Logo" className="h-20 w-20 mb-1" />
-          <h2 className="text-2xl font-bold text-secondary tracking-wide">
+          <p className="text-2xl font-bold text-secondary tracking-wide">
             INVOICE
-          </h2>
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4  border p-5 rounded-md bg-[#fdf8f5]">
+        <div className="grid grid-cols-1 gap-4   p-5 rounded-md bg-[#fdf8f5]">
           <div className="flex justify-between items-center">
             <p className="text-sm text-secondary font-semibold">Invoice ID</p>
             <p className="text-sm font-medium text-secondary">#1584647</p>
@@ -101,7 +101,7 @@ export function InvoiceModal({ open, onClose }) {
               <p>$25.00</p>
             </div>
             <div className="flex justify-between gap-10 w-48">
-              <p>Subtotal</p>
+              <p  >Subtotal</p>
               <p>$225.00</p>
             </div>
             <div className="flex justify-between gap-10 w-48">

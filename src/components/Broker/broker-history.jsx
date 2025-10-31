@@ -220,7 +220,7 @@ function History() {
   return (
     <>
       <div className="bg-[#F5F0EC] rounded-lg text-secondary">
-        <div className="space-x-3 mb-4">
+        {/* <div className="space-x-3 mb-4">
           <button
             className={` ${
               activeTab === "history"
@@ -247,7 +247,7 @@ function History() {
           >
             Agents
           </button>
-        </div>
+        </div> */}
 
         <div className="bg-white !p-4 rounded-xl">
           <Table className="">
@@ -270,8 +270,8 @@ function History() {
                   </p>
                 </TableHead>
                 {activeTab === "agents" && <TableHead>Name </TableHead>}
-                <TableHead>Download Link</TableHead>
-                <TableHead>Action</TableHead>
+                <TableHead className="text-center" >Download Link</TableHead>
+                <TableHead className="text-center" >Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -307,7 +307,7 @@ function History() {
                     {activeTab === "agents" && (
                       <TableCell>{item.username}</TableCell>
                     )}
-                    <TableCell>
+                    <TableCell className="text-center" > 
                       {item?.downloadLink ? (
                         <a
                           href={item.downloadLink}
@@ -318,14 +318,14 @@ function History() {
                             })
                           }
                         >
-                          <Link className="w-4 h-4" />
+                          <Link className="w-4 h-4 mx-auto" />
                         </a>
                       ) : (
                         ""
                       )}
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2 flex-row">
+                      <div className="flex items-center gap-2 flex-row justify-center">
                         <Button
                           size="icon"
                           className="text-md"

@@ -79,8 +79,8 @@ const AdminDashboard = () => {
       {/* Search */}
       {/* <Search /> */}
 
-      <div className="space-x-3 mb-4 flex justify-between">
-        <div className="space-x-3 mb-4">
+      <div className="space-x-3 flex justify-between items-center mb-4">
+        <div className="space-x-3">
           <button
             className={` ${
               activeTab === "history"
@@ -113,8 +113,8 @@ const AdminDashboard = () => {
         <DateFilter />
       </div>
 
-      <div className="bg-[#F5F0EC] p-6 rounded-2xl ">
-        <div className="flex justify-between items-center gap-4 mb-6">
+      <div className="bg-[#F5F0EC] px-6 py-4 rounded-2xl ">
+        <div className="flex justify-between items-center gap-4 mb-4">
           <div className="flex items-center gap-6">
             <p className="text-secondary font-medium text-xl">
               {activeTab === "history" ? "Business" : "Total Bussiness"}

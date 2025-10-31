@@ -112,8 +112,8 @@ const BillingHistory = () => {
                       <p className="flex items-center gap-2">Amount</p>
                     </TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Download</TableHead>
-                    <TableHead>Action</TableHead>
+                    <TableHead className="text-center" >Download</TableHead>
+                    <TableHead className="text-center" >Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -145,7 +145,7 @@ const BillingHistory = () => {
                       <TableCell>
                         {item?.downloadLink ? (
                           <FileDown
-                            className="w-4 h-4"
+                            className="w-4 h-4 mx-auto"
                             onClick={() => setInvoiceModal(true)}
                           />
                         ) : (
@@ -153,7 +153,7 @@ const BillingHistory = () => {
                         )}
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2 flex-row">
+                        <div className="flex items-center gap-2 flex-row justify-center">
                           <Button
                             size="icon"
                             className="text-md"

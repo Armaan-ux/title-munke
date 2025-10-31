@@ -75,11 +75,11 @@ function AuditLogs() {
             )}
           </TableBody>
         </Table>
-
+{/* 
         {!hasMore && <p>No more data to load.</p>}
         {logs?.length > 0 && hasMore && !loading && (
           <button className="loadmore">Load More</button>
-        )}
+        )} */}
       </div>
     </div>
   );

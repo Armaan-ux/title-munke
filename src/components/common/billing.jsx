@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { CardContent } from "@/components/ui/card";
@@ -7,9 +7,15 @@ import PaymentMethodModal from "@/components/Modal/PaymentMethodModal";
 import SubscriptionSuccessModal from "@/components/Modal/SubscriptionSuccessModal";
 import SubscriptionFailedModal from "@/components/Modal/SubscriptionFailedModal";
 import { useNavigate } from "react-router-dom";
+import { SubscriptionCanceledSuccessModal } from "../Modal/SubscriptionCanceledSuccessModal";
+import { CancelSubscriptionModal } from "../Modal/CancelSubscriptionModal";
+import { HelpUsImproveModal } from "../Modal/HelpUsImproveModal";
 
 const Billing = () => {
   const navigate = useNavigate();
+  const [cancleSubscriptionSucessModal, setCancleSubscriptionSucessModal] = useState(false);
+  const [cancleSubscriptionModal, setCancleSubscriptionModal] = useState(false);
+  const [helpUsImproveModal, setHelpUsImproveModal] = useState(false);
   const {
     setPaymentModal,
     paymentModal,
@@ -21,6 +27,20 @@ const Billing = () => {
 
   return (
     <>
+      <CancelSubscriptionModal
+        open={cancleSubscriptionModal}
+        onClose={() => setCancleSubscriptionModal(false)}
+        onHelpUsImprove={() => setHelpUsImproveModal(true)}
+      />
+      <HelpUsImproveModal
+        open={helpUsImproveModal}
+        onClose={() => setHelpUsImproveModal(false)}
+        onSubmit={() => setCancleSubscriptionSucessModal(true)}
+      />
+      <SubscriptionCanceledSuccessModal
+        open={cancleSubscriptionSucessModal}
+        onClose={() => setCancleSubscriptionSucessModal(false)}
+      />
       {paymentModal && (
         <PaymentMethodModal
           open={paymentModal}
@@ -50,7 +70,7 @@ const Billing = () => {
             </h2>
           </div>
 
-          <div className="grid grid-cols-3 border border-gray-200 rounded-xl overflow-hidden">
+          <div className="grid grid-cols-3 border border-gray-200 rounded-xl overflow-hidden items-start *:h-full">
             <div className="p-8 bg-coffee-bg-billing-foreground border-r border-coffee-bg-billing-foreground-50">
               <p className="text-sm font-medium text-coffee-text-billing font-medium uppercase">
                 Plan
@@ -67,7 +87,7 @@ const Billing = () => {
               <p className="text-sm font-medium text-coffee-text-billing font-medium uppercase ">
                 Billing Cycle
               </p>
-              <p className="text-base font-semibold text-gray-900 mt-1">
+              <p className="text-base font-semibold text-gray-900 mt-1 mb-4">
                 Monthly
               </p>
               <button className="text-sm text-secondary  font-medium mt-1 hover:underline">
@@ -75,7 +95,7 @@ const Billing = () => {
               </button>
             </div>
 
-            <div className="p-8 bg-coffee-bg-billing-foreground  border-l border-coffee-bg-billing-foreground-200 flex flex-col justify-center">
+            <div className="p-8 bg-coffee-bg-billing-foreground  border-l border-coffee-bg-billing-foreground-200 flex flex-col ">
               <p className="text-sm font-medium text-coffee-text-billing font-medium uppercase mb-1">
                 Billing Cycle
               </p>
@@ -165,6 +185,7 @@ const Billing = () => {
             <Button
               variant="ghost"
               className="text-subscriptions hover:text-subscriptions hover:bg-transparent"
+              onClick={() => setCancleSubscriptionModal(true)}
             >
               Cancel Subscription
             </Button>

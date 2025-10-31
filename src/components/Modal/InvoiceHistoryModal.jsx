@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import { Download } from "lucide-react";
 
 export function InvoiceHistoryModal({ open, onClose }) {
   const rows = [
@@ -74,7 +75,7 @@ export function InvoiceHistoryModal({ open, onClose }) {
         <DialogHeader className="flex flex-row justify-between items-center">
           <img src="/Logo.svg" alt="Logo" className="h-18 w-18 mb-1" />
           <div>
-            <DialogTitle className="text-xl font-bold text-[#600000] tracking-wide">
+            <DialogTitle className="text-xl font-bold text-[#600000] tracking-wide !font-poppins">
               INVOICE
             </DialogTitle>
             <span className="text-sm text-neutral-500 font-medium">
@@ -116,9 +117,11 @@ export function InvoiceHistoryModal({ open, onClose }) {
             Close
           </Button>
           <Button className="bg-[#600000] hover:bg-[#7a0000]">
-            Download CSV
+            <Download />
+            Download CSV 
           </Button>
           <Button className="bg-[#600000] hover:bg-[#7a0000]">
+            <Download />
             Download PDF
           </Button>
         </div>

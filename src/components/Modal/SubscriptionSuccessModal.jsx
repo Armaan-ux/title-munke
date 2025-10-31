@@ -45,7 +45,7 @@ export default function SubscriptionSuccessModal({
           </Button>
 
           <div className="overflow-hidden rounded-2xl">
-            <div className="relative bg-secondary text-white flex flex-col items-center justify-center py-5 relative">
+            <div className="relative bg-secondary text-white flex flex-col items-center justify-center py-5">
               <img src="/success.svg" alt="success" />
               <DialogHeader className="text-center">
                 <DialogTitle className="text-2xl font-semibold pt-4 !font-poppins">
@@ -57,9 +57,9 @@ export default function SubscriptionSuccessModal({
               </DialogHeader>
             </div>
             <div className="flex flex-col items-center justify-center px-6 py-6 text-center">
-              <h3 className="text-xl font-semibold text-coffee-light mb-1">
+              <p className="text-xl font-semibold text-coffee-light mb-1">
                 Thank you for becoming a member.
-              </h3>
+              </p>
               <p className="text-sm text-coffee-light text-600 mb-5 leading-relaxed">
                 Your subscription is now active, and you have full access to all
                 brokers features.

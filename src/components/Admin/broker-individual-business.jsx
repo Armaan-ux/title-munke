@@ -173,7 +173,7 @@ function BrokerIndividualBusiness({ activeTab, onRegisterReset }) {
       status: "Active",
       name: "brokerA",
       downloadLink: "#",
-      agent: "Agent A",
+      agent: "5",
       search: "11",
       business: "$2200",
       lastActivity: "2024-06-10 14:30",
@@ -185,7 +185,7 @@ function BrokerIndividualBusiness({ activeTab, onRegisterReset }) {
       status: "Inactive",
       name: "brokerB",
       downloadLink: "#",
-      agent: "Agent B",
+      agent: "6",
       search: "112",
       business: "$2500",
       lastActivity: "2024-06-10 14:30",
@@ -197,7 +197,7 @@ function BrokerIndividualBusiness({ activeTab, onRegisterReset }) {
       status: "Active",
       name: "brokerC",
       downloadLink: "#",
-      agent: "Agent C",
+      agent: "10",
       search: "121",
       business: "$200",
       lastActivity: "2024-06-10 14:30",
@@ -212,24 +212,27 @@ function BrokerIndividualBusiness({ activeTab, onRegisterReset }) {
             <Table className="w-full">
               <TableHeader className="bg-[#F5F0EC] w-full">
                 <TableRow className="w-full">
-                  <TableHead className="w-full">Sr. No.</TableHead>
+                  <TableHead >Sr. No.</TableHead>
                   <TableHead onClick={() => requestSort("address")}>
-                    <p className="flex items-center gap-2">
+                    Broker Name
+                    {/* <p className="flex items-center gap-2">
                       Broker Name<span>{getSortArrow("address")}</span>
-                    </p>
+                    </p> */}
                   </TableHead>
-                  <TableHead onClick={() => requestSort("createdAt")}>
-                    <p className="flex items-center gap-2">
+                  <TableHead className="text-center" onClick={() => requestSort("createdAt")}>
+                    Agent
+                    {/* <p className="flex items-center justify-center gap-2">
                       Agent <span>{getSortArrow("createdAt")}</span>
-                    </p>
+                    </p> */}
                   </TableHead>
-                  <TableHead onClick={() => requestSort("status")}>
-                    <p className="flex items-center gap-2">
+                  <TableHead className="text-center" onClick={() => requestSort("status")}>
+                    Search Count
+                    {/* <p className="flex items-center justify-center gap-2">
                       Search Count <span>{getSortArrow("status")}</span>
-                    </p>
+                    </p> */}
                   </TableHead>
                   <TableHead>Last Activity</TableHead>
-                  <TableHead>Business</TableHead>
+                  <TableHead className="text-center" >Business</TableHead>
                   <TableHead>Account Created</TableHead>
                   <TableHead>Action</TableHead>
                   <TableHead></TableHead>
@@ -250,12 +253,12 @@ function BrokerIndividualBusiness({ activeTab, onRegisterReset }) {
                     <TableRow key={item.id}>
                       <TableCell className="font-medium">{index + 1}</TableCell>
                       <TableCell>{item.name}</TableCell>
-                      <TableCell>{item.agent}</TableCell>
-                      <TableCell>{item.search}</TableCell>
+                      <TableCell className="text-center" >{item.agent}</TableCell>
+                      <TableCell className="text-center" >{item.search}</TableCell>
                       <TableCell>
                         {getFormattedDateTime(item?.lastActivity)}
                       </TableCell>
-                      <TableCell>{item.business}</TableCell>
+                      <TableCell className="text-center" >{item.business}</TableCell>
                       <TableCell>
                         {getFormattedDateTime(item?.createdAt)}
                       </TableCell>
@@ -281,20 +284,22 @@ function BrokerIndividualBusiness({ activeTab, onRegisterReset }) {
             <Table className="">
               <TableHeader className="bg-[#F5F0EC]">
                 <TableRow>
-                  <TableHead className="w-[100px]">Sr. No.</TableHead>
+                  <TableHead>Sr. No.</TableHead>
                   <TableHead onClick={() => requestSort("address")}>
-                    <p className="flex items-center gap-2">
+                    Name
+                    {/* <p className="flex items-center gap-2">
                       Name<span>{getSortArrow("address")}</span>
-                    </p>
+                    </p> */}
                   </TableHead>
-                  <TableHead onClick={() => requestSort("createdAt")}>
-                    <p className="flex items-center gap-2">
+                  <TableHead className="text-center" onClick={() => requestSort("createdAt")}>
+                    Property Search
+                    {/* <p className="flex items-center gap-2">
                       Property Search <span>{getSortArrow("createdAt")}</span>
-                    </p>
+                    </p> */}
                   </TableHead>
 
-                  <TableHead>Business</TableHead>
-                  <TableHead>Action</TableHead>
+                  <TableHead className="text-center" >Business</TableHead>
+                  <TableHead className="text-center" > Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -312,11 +317,11 @@ function BrokerIndividualBusiness({ activeTab, onRegisterReset }) {
                     <TableRow key={item.id}>
                       <TableCell className="font-medium">{index + 1}</TableCell>
                       <TableCell>{item.name || "John"}</TableCell>
-                      <TableCell>{item.searchProperty || "2"}</TableCell>
-                      <TableCell>{item.business || "$150"}</TableCell>
+                      <TableCell className="text-center" >{item.searchProperty || "2"}</TableCell>
+                      <TableCell className="text-center" >{item.business || "$150"}</TableCell>
                       <TableCell>
                         {" "}
-                        <div className="flex items-center gap-2 flex-row">
+                        <div className="flex items-center justify-center gap-2 flex-row">
                           <Button
                             size="icon"
                             className="text-md"

@@ -55,12 +55,12 @@ function ProperySearchListView() {
           <Table className="">
             <TableHeader className="bg-[#F5F0EC]">
               <TableRow>
-                <TableHead className="w-[100px]">Sr. No.</TableHead>
+                <TableHead >Sr. No.</TableHead>
                 <TableHead>Address</TableHead>
                 <TableHead>Date / Time</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Download Link</TableHead>
-                <TableHead>Action</TableHead>
+                <TableHead className="text-center" >Status</TableHead>
+                <TableHead className="text-center" >Download Link</TableHead>
+                <TableHead className="text-center" >Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -83,7 +83,7 @@ function ProperySearchListView() {
                     <TableCell>
                       {getFormattedDateTime(item?.createdAt)}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-center" >
                       <Badge
                         className={`${
                           item?.status === "Active"
@@ -95,10 +95,10 @@ function ProperySearchListView() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Link className="w-4 h-4" />
+                      <Link className="w-4 h-4 mx-auto" />
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2 flex-row">
+                      <div className="flex justify-center items-center gap-2 flex-row">
                         <Button size="icon" className="text-md" variant="ghost">
                           <Share2 />
                         </Button>

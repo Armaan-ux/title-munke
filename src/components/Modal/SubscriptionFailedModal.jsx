@@ -53,7 +53,7 @@ export default function SubscriptionFailedModal({ open, onOpenChange }) {
                 Your last payment attempt failed. Please update your payment
                 method to continue using Title Munke.
               </p>
-              <p className="text-sm text-red-500 italic mb-5">
+              <p className="text-sm text-red-500 mb-5">
                 *No payment method on file
               </p>
 

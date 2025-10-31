@@ -59,7 +59,7 @@ function AuditLogsAgent() {
         <Table className="">
           <TableHeader className="bg-[#F5F0EC]">
             <TableRow>
-              <TableHead className="w-[100px]">Sr. No.</TableHead>
+              <TableHead>Sr. No.</TableHead>
               {/* <TableHead>Action</TableHead> */}
               <TableHead>Details</TableHead>
               <TableHead>Email</TableHead>

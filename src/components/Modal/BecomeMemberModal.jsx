@@ -44,7 +44,7 @@ const BecomeMemberModal = ({ open, onClose, setPaymentModal }) => {
                 src="/diamond.svg"
                 alt="diamond Icon"
               />
-              <DialogTitle className="text-3xl font-semibold">
+              <DialogTitle className="text-3xl font-semibold !font-poppins">
                 Become a Member
               </DialogTitle>
               <p className="text-sm opacity-80 font-regular">

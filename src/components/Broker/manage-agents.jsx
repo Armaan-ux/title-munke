@@ -85,8 +85,7 @@ export default function ManageAgents() {
       {/* {activeTab.id === "agents" && <Agents />}
       {activeTab.id === "unassigned-agents" && <UnassignedAgents />} */}
 
-
-      <Agents  />
+      <Agents />
     </div>
   );
 }
@@ -106,7 +105,6 @@ function Agents() {
   const [pendingSearch, setPendingSearch] = useState(0);
   const [topPerformer, setTopPerformer] = useState("");
   const [addAgent, setAddAgent] = useState(false);
-
 
   const fetchData = useCallback(async () => {
     if (user?.attributes?.sub) {
@@ -262,7 +260,10 @@ function Agents() {
         setUser={setAgents}
         agents={agents} // Pass agents to check for duplicates
       />
-      <AddAgentByBrokerModal open={addAgent} onOpenChange={()=> setAddAgent(false)} />
+      <AddAgentByBrokerModal
+        open={addAgent}
+        onOpenChange={() => setAddAgent(false)}
+      />
       {/* <div className="flex items-center gap-2 justify-end mb-3">
         <Checkbox
           id="show-deleted-checkbox"
@@ -274,21 +275,21 @@ function Agents() {
           Show Deleted
         </Label>
       </div> */}
-      <div className="w-full bg-[#F8F4F2] flex flex-wrap items-center justify-between gap-3 p-4 rounded-md">
+      <div className="w-full  flex flex-wrap items-center justify-between gap-3 mb-4 rounded-md">
         {/* Left Section */}
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <p className="text-[15px] font-semibold text-[#4C0D0D] whitespace-nowrap">
+        <div className="flex items-center gap-5 w-full sm:w-auto">
+          <p className="text-xl font-semibold text-[#4C0D0D] whitespace-nowrap">
             All Agents
           </p>
           <div className="relative w-full sm:w-[220px]">
             <Input
               type="text"
               placeholder="Search"
-              className="h-[36px] rounded-md pl-8 border border-[#E2DAD5] bg-white text-[#4C0D0D] placeholder:text-[#B6AAA5] focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="h-[40px] rounded-md pl-8 border border-[#E2DAD5] bg-white text-[#4C0D0D] placeholder:text-[#B6AAA5] focus-visible:ring-0 focus-visible:ring-offset-0"
             />
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="absolute left-2.5 top-2.5 h-4 w-4 text-[#B6AAA5]"
+              className="absolute left-2.5 top-3 h-4 w-4 text-[#B6AAA5]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -321,7 +322,10 @@ function Agents() {
             Upload Template
           </Button>
 
-          <Button onClick={() => setAddAgent(true)} className="h-[36px] bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[13px] font-medium rounded-md flex items-center gap-1.5 px-3">
+          <Button
+            onClick={() => setAddAgent(true)}
+            className="h-[36px] bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[13px] font-medium rounded-md flex items-center gap-1.5 px-3"
+          >
             <PlusCircle className="w-4 h-4" />
             Add Agent
           </Button>
@@ -333,11 +337,13 @@ function Agents() {
             <TableRow>
               <TableHead className="w-[100px]">Sr. No.</TableHead>
               <TableHead>Agent Name</TableHead>
-              <TableHead>Searchers This Month</TableHead>
+              <TableHead className="text-center">
+                Searchers This Month
+              </TableHead>
               <TableHead>Last Login</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Reinvite</TableHead>
-              <TableHead>Action</TableHead>
+              <TableHead className="text-center">Reinvite</TableHead>
+              <TableHead className="text-center">Action</TableHead>
               {/* <TableHead>Delete</TableHead> */}
             </TableRow>
           </TableHeader>
@@ -365,7 +371,9 @@ function Agents() {
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">{index + 1}</TableCell>
                   <TableCell>{item.agentName}</TableCell>
-                  <TableCell>{item.totalSearches}</TableCell>
+                  <TableCell className="text-center">
+                    {item.totalSearches}
+                  </TableCell>
                   <TableCell>{getFormattedDateTime(item.lastLogin)}</TableCell>
                   <TableCell>
                     <Badge
@@ -380,9 +388,9 @@ function Agents() {
                       {item?.status}
                     </Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-center">
                     <UserPlus
-                      className="w-5 h-5"
+                      className="w-5 h-5 mx-auto"
                       // className={` text-sm`}
                       disabled={
                         item.status !== "UNCONFIRMED" || !!reinvitingAgentId
@@ -395,31 +403,24 @@ function Agents() {
                         ? "Sending..."
                         : "Reinvite"} */}
                   </TableCell>
-                  <TableCell>
-                    <div className="dropdown">
-
-                        <Button
-                                size="icon"
-                                className="text-sm"
-                                variant="ghost"
-                              >
-                                <PencilLine />
-                              </Button>
-                              <Button
-                                size="icon"
-                                className="text-sm"
-                                variant="ghost"
-                                onClick={() => navigate(`/broker/agent-property-details/123`)}
-                              >
-                                <Eye  />
-                              </Button>
-                              <Button
-                                size="icon"
-                                className="text-sm"
-                                variant="ghost"
-                              >
-                                <Trash2 />
-                              </Button>
+                  <TableCell className="text-center" >
+                    <div className="">
+                      <Button size="icon" className="text-sm" variant="ghost">
+                        <PencilLine />
+                      </Button>
+                      <Button
+                        size="icon"
+                        className="text-sm"
+                        variant="ghost"
+                        onClick={() =>
+                          navigate(`/broker/agent-property-details/123`)
+                        }
+                      >
+                        <Eye />
+                      </Button>
+                      <Button size="icon" className="text-sm" variant="ghost">
+                        <Trash2 />
+                      </Button>
                       {/* {item.status !== "UNCONFIRMED" && (
                         <>
                           <DropdownMenu>

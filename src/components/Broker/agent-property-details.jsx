@@ -65,16 +65,16 @@ const AgentPropertyDetails = () => {
 
       {/* Info */}
       <div className="flex flex-col">
-        <h3 className="text-[20px] font-semibold text-secondary leading-tight">
+        <p className="text-[20px] font-semibold text-secondary leading-tight">
           John Smith
-        </h3>
+        </p>
         <p className="text-[14px] text-secondary/70 leading-snug">
           Property searches this month:{" "}
           <span className="font-semibold text-secondary">24</span>
         </p>
         <a
           href="mailto:john@email.com"
-          className="text-[14px] text-secondary hover:underline mt-[2px]"
+          className="text-[14px] text-tertiary hover:underline mt-[2px]"
         >
           john@email.com
         </a>
@@ -83,15 +83,15 @@ const AgentPropertyDetails = () => {
       </div>
       <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
         <div className="bg-white !p-4 rounded-xl">
-             <h3 className="text-[20px] py-3 px-1 text-secondary leading-tight">
+             <p className="text-[20px] py-3 px-1 text-secondary leading-tight font-medium mb-2">
           Recent Properties Searches
-        </h3>
+        </p>
           <Table className="">
             <TableHeader className="bg-[#F5F0EC]">
               <TableRow>
-                <TableHead className="w-[100px]">Sr. No.</TableHead>
+                <TableHead>Sr. No.</TableHead>
                 <TableHead>Address</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead >Status</TableHead>
                 <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
@@ -113,7 +113,7 @@ const AgentPropertyDetails = () => {
                       {item.address}
                     </TableCell>
                
-                    <TableCell>
+                    <TableCell >
                         <Badge className={`${item?.status === "Active"
                             ? "bg-[#E9F3E9] text-[#1E8221]"
                             : "bg-[#FFF3D9] text-[#A2781E]"} text-[13px] font-medium px-3 py-1 rounded-full`}>

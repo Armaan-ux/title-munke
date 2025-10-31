@@ -98,14 +98,16 @@ const PaymentMethodModal = ({ open, onOpenChange, onSuccess }) => {
 
             <button
               onClick={() => setScreen("add")}
-              className="w-full mt-4 py-3 bg-[#f5ede7] rounded-xl text-center text-sm font-medium flex items-center justify-center gap-2 text-tertiary hover:bg-[#e3d5ca] transition"
+              className="w-full mt-4 py-4 bg-[#f5ede7] rounded-full cursor-pointer text-center text-sm font-medium flex items-center justify-center gap-2 text-tertiary hover:bg-[#e3d5ca] transition"
             >
               <Plus className="w-4 h-4" /> Add New Credit / Debit Card
             </button>
 
             <Button
+              size="lg"
               onClick={paymentHandler}
-              className="w-full mt-4 bg-[#5a0a0a] hover:bg-[#4a0808] text-white text-sm rounded-xl py-3"
+              className="w-full mt-1"
+              variant="secondary"
             >
               Continue
             </Button>
