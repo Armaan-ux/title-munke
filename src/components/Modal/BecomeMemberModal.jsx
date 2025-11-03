@@ -47,7 +47,7 @@ const BecomeMemberModal = ({ open, onClose, setPaymentModal }) => {
               <DialogTitle className="text-3xl font-semibold !font-poppins">
                 Become a Member
               </DialogTitle>
-              <p className="text-sm opacity-80 font-regular">
+              <p className="text-sm text-[#D7C4B6]">
                 Unlock premium broker features
               </p>
             </div>
@@ -60,13 +60,13 @@ const BecomeMemberModal = ({ open, onClose, setPaymentModal }) => {
                 </div>
                 <p className="text-xs text-[#3B1F15] mt-1">Membership fee</p>
               </div>
-
+{/* 
               <p className="font-medium text-sm text-[#4B2E20] text-center">
                 Your one-stop platform for fast, reliable, and transparent
                 property title searches
-              </p>
+              </p> */}
 
-              <div className="flex items-start gap-2">
+              <div className="flex items-start gap-2 ml-6">
                 <CircleCheck className="text-green-500 w-5 h-5 mt-0.5" />
                 <div>
                   <p className="font-medium text-sm text-[#4B2E20]">
@@ -78,7 +78,7 @@ const BecomeMemberModal = ({ open, onClose, setPaymentModal }) => {
                 </div>
               </div>
 
-              <div className="border border-[#EAD6C8] rounded-md p-3 text-xs text-[#4B2E20] bg-[#FFF9F6]">
+              <div className="border border-[#EAD6C8] rounded-md p-3 px-5 text-xs text-[#4B2E20] bg-[#FFF9F6]">
                 <p>
                   <span className="font-medium">Pricing Example:</span> With 5
                   agents, your total would be <br />
@@ -94,7 +94,9 @@ const BecomeMemberModal = ({ open, onClose, setPaymentModal }) => {
 
                 <Button
                   onClick={subscribeHandler}
-                  className="w-[50%] bg-[#4B2E20] hover:bg-[#3a2218] text-white rounded-md py-2"
+                  // className="w-[50%] bg-[#4B2E20] hover:bg-[#3a2218] text-white rounded-md py-2"
+                  className="text-sm max-w-[10rem] w-full"
+                  variant="secondary"
                 >
                   Subscribe Now
                 </Button>

@@ -4,7 +4,7 @@ import TimeFilter from "../common/time-filter";
 import { useState } from "react";
 import DateFilter from "../common/date-filter";
 import BrokerIndividualBusiness from "./broker-individual-business";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -127,7 +127,9 @@ const AdminDashboard = () => {
           </div>
           <div className="flex justify-between items-center gap-2">
           <Button variant="outline"><ArrowDownToLine /> Download CSV</Button>
-          <Button onClick={() => navigate("/admin/broker-business-list")} variant="outline"> View More </Button>
+          <Link to={activeTab === "history" ? "/admin/broker-business" : "/admin/individual-business"}>
+          <Button variant="outline"> View More </Button>
+          </Link>
           </div>
         </div>
         <BrokerIndividualBusiness

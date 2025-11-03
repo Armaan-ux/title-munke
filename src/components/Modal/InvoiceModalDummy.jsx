@@ -7,37 +7,39 @@ export function InvoiceModalDummy({ open, onClose }) {
   if (!open) return null;
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="!max-w-xl !w-full rounded-2xl bg-white p-8 shadow-lg">
+      <DialogContent  showCloseButton={false} className="!max-w-xl !w-full rounded-2xl bg-white p-6 shadow-lg">
         <div className="flex flex-row justify-between items-center">
           <img src="/Logo.svg" alt="Logo" className="h-20 w-20 mb-1" />
-          <h2 className="text-2xl font-bold text-secondary tracking-wide !font-poppins">
+          <p className="text-3xl font-bold text-tertiary tracking-wide">
             INVOICE
-          </h2>
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4  p-5 rounded-md bg-[#fdf8f5]">
+        <div className="grid grid-cols-1 gap-4   p-5 rounded-md bg-[#fdf8f5]">
           <div className="flex justify-between items-center">
-            <p className="text-sm text-secondary font-semibold">Invoice ID</p>
-            <p className="text-sm font-medium text-secondary">#1584647</p>
+            <p className="text-sm text-tertiary font-medium">Invoice ID</p>
+            <p className="text-sm text-secondary">#1584647</p>
           </div>
           <div className="flex justify-between items-center">
-            <p className="text-sm text-secondary font-semibold">Bill Date</p>
-            <p className="text-sm font-medium text-secondary">Apr 01, 2025</p>
+            <p className="text-sm text-tertiary font-medium">Bill Date</p>
+            <p className="text-sm text-secondary">Apr 01, 2025</p>
           </div>
           <div className="flex justify-between items-center">
-            <p className="text-sm text-secondary font-semibold">
+            <p className="text-sm text-tertiary font-medium">
               Payment Method
             </p>
-            <p className="text-sm font-medium text-secondary">Visa **** 4242</p>
+            <p className="text-sm text-secondary">
+              Visa Master Card
+            </p>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-1">
           <div className="border rounded-md p-3">
-            <p className="text-sm font-semibold text-[#581b1b] mb-1">
+            <p className="font-semibold text-tertiary mb-1">
               Issued From
             </p>
-            <p className="text-xs text-secondary">
+            <p className="text-sm text-secondary">
               123 Main St.
               <br />
               Hometown, USA
@@ -46,10 +48,10 @@ export function InvoiceModalDummy({ open, onClose }) {
             </p>
           </div>
           <div className="border rounded-md p-3">
-            <p className="text-sm font-semibold text-[#581b1b] mb-1">
+            <p className="font-semibold text-tertiary mb-1">
               Billed To
             </p>
-            <p className="text-xs text-secondary">
+            <p className="text-sm text-secondary">
               John Marks
               <br />
               456 Oak Ave.
@@ -68,23 +70,39 @@ export function InvoiceModalDummy({ open, onClose }) {
           </div>
 
           <div className="bg-[#fdf8f5] text-sm divide-y">
-            <div className="grid grid-cols-5 px-3 py-2">
+            <div className="grid grid-cols-5 items-center px-3 py-2">
               <div className="col-span-2">
-                <p className="text-xs text-secondary">
-                  123 Main Street, Springfield
+                <p className="font-medium text-[#581b1b]">Agent Seat Fees</p>
+                <p className="text-xs text-muted-foreground">
+                  Billing Cycle: Sep To Aug
                 </p>
               </div>
-              <p className="text-center">1</p>
+              <p className="text-center">10</p>
               <p className="text-center">$25.00</p>
-              <p className="text-right">$25.00</p>
+              <p className="text-right">$225.00</p>
             </div>
+            {/* <div className="grid grid-cols-5 items-center px-3 py-2">
+              <div className="col-span-2">
+                <p className="font-medium text-[#581b1b]">Agent Seat Fees</p>
+                <p className="text-xs text-muted-foreground">
+                  Billing Cycle: Sep To Aug
+                </p>
+              </div>
+              <p className="text-center">0</p>
+              <p className="text-center">$0.00</p>
+              <p className="text-right">$0.00</p>
+            </div> */}
           </div>
 
           <div className="bg-[#fdf8f5] text-sm border-t px-3 py-3 space-y-1 flex flex-col items-end gap-2">
             <div></div>
             <div className="flex justify-between gap-10 w-48">
-              <p>Subtotal</p>
+              <p>Subscription</p>
               <p>$25.00</p>
+            </div>
+            <div className="flex justify-between gap-10 w-48">
+              <p  >Subtotal</p>
+              <p>$225.00</p>
             </div>
             <div className="flex justify-between gap-10 w-48">
               <p>Tax</p>
@@ -92,7 +110,7 @@ export function InvoiceModalDummy({ open, onClose }) {
             </div>
             <div className="flex justify-between font-semibold border-t pt-2 gap-10 w-48">
               <p className="text-tertiary">Total</p>
-              <p className="text-secondary">$30.00</p>
+              <p className="text-secendary">$230.00</p>
             </div>
           </div>
         </div>
@@ -102,14 +120,14 @@ export function InvoiceModalDummy({ open, onClose }) {
         </p>
         <Separator />
 
-        <DialogFooter className="flex justify-center gap-3">
-          <Button onClick={()=> onClose()} variant="outline" className="w-28">
+        <DialogFooter className="flex justify-center gap-2 *:flex-1">
+          <Button onClick={() => onClose()} variant="outline" size="lg" >
             Close
           </Button>
-          <Button className="bg-[#581b1b] hover:bg-[#6b1e1e] w-36 text-xs">
+          <Button variant="secondary" size="lg" >
             <ArrowDownToLine /> Download CSV
           </Button>
-          <Button className="bg-[#581b1b] hover:bg-[#6b1e1e] w-36 text-xs">
+          <Button variant="secondary" size="lg" >
             <ArrowDownToLine /> Download PDF
           </Button>
         </DialogFooter>

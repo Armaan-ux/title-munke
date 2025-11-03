@@ -6,7 +6,7 @@ import { useUser } from "@/context/usercontext";
 import PaymentMethodModal from "@/components/Modal/PaymentMethodModal";
 import SubscriptionSuccessModal from "@/components/Modal/SubscriptionSuccessModal";
 import SubscriptionFailedModal from "@/components/Modal/SubscriptionFailedModal";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -84,7 +84,7 @@ const IndividualBilling = () => {
       <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full h-content shadow-md">
         <CardContent className="w-full space-y-6">
           <div>
-            <h2 className="text-xl font-poppins font-semibold text-secondary !font-poppins">
+            <h2 className="text-xl !font-poppins font-semibold text-secondary">
               Billing Details
             </h2>
 
@@ -100,7 +100,7 @@ const IndividualBilling = () => {
                     className="w-8 h-8"
                   />
                   <div className="flex gap-4">
-                    <p className="font-medium ttext-secondary font-semibold">
+                    <p className="font-medium ttext-secondary">
                       John <span className="tracking-widest">**** 2451</span>
                     </p>
                     <p className="text-sm text-coffee-text-billing font-medium">
@@ -109,7 +109,7 @@ const IndividualBilling = () => {
                   </div>
                 </div>
                 <button
-                  className="text-sm text-[#5A0A0A] hover:underline"
+                  className="text-sm text-tertiary hover:underline"
                   onClick={() => setPaymentModal(true)}
                 >
                   + Add Payment Method
@@ -139,13 +139,13 @@ const IndividualBilling = () => {
           <div className="bg-white !p-4 rounded-xl w-full">
             <div className="flex justify-between items-center gap-4 mb-6">
               <p className="text-secondary font-medium text-xl">View History</p>
-              <Button
-                variant="outline"
-                onClick={() => navigate("/individual/billing-history")}
-              >
-                {" "}
-                View More{" "}
-              </Button>
+              <Link to="/individual/billing-history" >
+                <Button
+                  variant="outline"
+                  >
+                  View More
+                </Button>
+              </Link>
             </div>
 
             <Table className="">
@@ -156,7 +156,7 @@ const IndividualBilling = () => {
                     <p className="flex items-center gap-2">Invoice ID</p>
                   </TableHead>
                   <TableHead>
-                    <p className="flex items-center gap-2">Billing Period</p>
+                    <p className="flex items-center gap-2">Date</p>
                   </TableHead>
                   <TableHead>
                     <p className="flex items-center gap-2">Amount</p>
@@ -169,7 +169,7 @@ const IndividualBilling = () => {
                 {sortedHistories?.map((item, index) => (
                   <TableRow key={item.id}>
                     <TableCell className="font-medium">{index + 1}</TableCell>
-                    <TableCell>{item.invoiceId}</TableCell>
+                    <TableCell className="text-black font-medium" >{item.invoiceId}</TableCell>
                     <TableCell>{getFormattedDateTime(item?.billing)}</TableCell>
                     <TableCell>{item.amount}</TableCell>
                     <TableCell
@@ -186,12 +186,15 @@ const IndividualBilling = () => {
                       </div>
                     </TableCell>
 
-                    <TableCell>
+                    <TableCell className="text-center" >
                       {item?.downloadLink ? (
-                        <FileDown
-                          className="w-4 h-4 mx-auto"
+                        <Button variant="ghost" size="icon" 
                           onClick={() => setInvoiceModal(true)}
-                        />
+                        >
+                          <FileDown
+                            className="size-5 mx-auto"
+                            />
+                        </Button>
                       ) : (
                         ""
                       )}

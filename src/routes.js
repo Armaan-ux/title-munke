@@ -24,14 +24,16 @@ import IndividualPropertyDetails from "./components/Individual/individual-proper
 import AuditLogsForIndividual from "./components/Individual/individual-audit-log";
 import IndividualSettings from "./components/Individual/settings";
 import AdminDashboard from "./components/Admin/dashboard";
-import BrokerBusinessList from "./components/Admin/broker-businessList";
+import BrokerBusiness from "./components/Admin/broker-business";
 import BrokerDetails from "./components/Admin/broker-details";
 import PropertySearch from "./components/Admin/property-search";
+import IndividualBusiness from "./components/Admin/individual-business";
 
 export const adminRoutes = [
   { path: "admin", component: Admin },
   { path: "admin/dashboard", component: AdminDashboard },
-  { path: "admin/broker-business-list", component: BrokerBusinessList },
+  { path: "admin/broker-business", component: BrokerBusiness },
+  { path: "admin/individual-business", component: IndividualBusiness },
   { path: "admin/broker-details/:id", component: BrokerDetails },
   { path: "admin/property-search/:id", component: PropertySearch },
 
@@ -49,6 +51,8 @@ export const adminRoutes = [
 export const agentRoutes = [
   { path: "agent", component: Agent },
   { path: "agent/dashboard", component: AgentDashboard },
+  { path: "agent/search-history", component: HistoryListview },
+  { path: "agent/property-details/:id", component: BrokerPropertyDetails },
   { path: "agent/audit-logs", component: AuditLogs },
   { path: "agent/setting", component: AgentSetting },
 ];
@@ -56,7 +60,7 @@ export const agentRoutes = [
 export const brokerRoutes = [
   { path: "broker", component: Broker },
   { path: "broker/dashboard", component: BrokerDashboard },
-  { path: "broker/history-listview", component: HistoryListview },
+  { path: "broker/search-history", component: HistoryListview },
   { path: "broker/manage-agents", component: ManageAgents },
   { path: "broker/agent-audit-log", component: AuditLogsForBroker },
   { path: "broker/setting", component: BrokerSettings },
@@ -79,11 +83,12 @@ export const brokerRoutes = [
 export const individualRoutes = [
   { path: "individual", component: Individual },
   { path: "individual/dashboard", component: IndividualDashboard },
+  { path: "individual/search-history", component: HistoryListview },
   // { path: "individual/property-search", component: ProperySearchListView },
-  // {
-  //   path: "individual/property-details/:id",
-  //   component: IndividualPropertyDetails,
-  // },
+  {
+    path: "individual/property-details/:id",
+    component: IndividualPropertyDetails,
+  },
   { path: "individual/agent-audit-log", component: AuditLogsForIndividual },
   { path: "individual/setting", component: IndividualSettings },
   { path: "individual/billing-history", component: BillingHistory },

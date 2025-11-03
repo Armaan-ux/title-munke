@@ -8,7 +8,7 @@ import BecomeMemberModal from "@/components/Modal/BecomeMemberModal";
 import PaymentMethodModal from "@/components/Modal/PaymentMethodModal";
 import SubscriptionSuccessModal from "@/components/Modal/SubscriptionSuccessModal";
 import SubscriptionFailedModal from "@/components/Modal/SubscriptionFailedModal";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const IndividualDashboard = () => {
   const navigate = useNavigate();
@@ -73,12 +73,13 @@ const IndividualDashboard = () => {
       <div className="bg-[#F5F0EC] p-6 rounded-2xl ">
         <div className="flex justify-between items-center gap-4 mb-6">
           <p className="text-secondary font-medium text-xl">Search History</p>
-          <Button
-            variant="outline"
-            onClick={() => navigate("/individual/property-search")}
-          >
-            View More
-          </Button>
+          <Link to="/individual/search-history">
+            <Button
+              variant="outline"
+              >
+              View More
+            </Button>
+          </Link>
         </div>
         <SearchHistory />
       </div>

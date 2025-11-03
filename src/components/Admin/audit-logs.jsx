@@ -65,7 +65,7 @@ function AuditLogs() {
   }, [user, activeTab]);
 
   return (
-        <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
+        <div className="bg-[#F5F0EC] rounded-lg px-7 py-4 my-4 text-secondary">
 
             <div className="space-x-3 mb-4" >
                 <button 

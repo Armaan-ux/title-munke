@@ -21,8 +21,10 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import DateFilter from "../common/date-filter";
+import BackBtn from "../back-btn";
+import BrokerBusinessTable from "./broker-business-table";
 
-function BrokerBusinessList() {
+export default function BrokerBusiness() {
   const navigate = useNavigate();
   // const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -50,8 +52,9 @@ function BrokerBusinessList() {
   ];
   return (
     <>
-      <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
-        <div className="flex items-center justify-left gap-2">
+      <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
+        <BackBtn />
+        {/* <div className="flex items-center justify-left gap-2">
           <button
             onClick={() => navigate(-1)}
             className="flex items-center text-[#5a0a0a] hover:text-[#3d0606] transition"
@@ -59,7 +62,7 @@ function BrokerBusinessList() {
             <ChevronLeft className="w-6 h-6 mr-1" />
           </button>
           <p className="text-lg text-secondary">Back</p>
-        </div>
+        </div> */}
       </div>
       <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
         <div className="flex justify-between items-center gap-4 mb-6">
@@ -79,59 +82,7 @@ function BrokerBusinessList() {
           </div>
         </div>
         <div className="bg-white !p-4 rounded-xl">
-          <Table className="">
-            <TableHeader className="bg-[#F5F0EC]">
-              <TableRow>
-                <TableHead className="w-[100px]">Sr. No.</TableHead>
-                <TableHead>Broker Name</TableHead>
-                <TableHead>Agent</TableHead>
-                <TableHead>Search Count</TableHead>
-                <TableHead>Last Activity</TableHead>
-                <TableHead>Business</TableHead>
-                <TableHead>Account Created</TableHead>
-                <TableHead>Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {logs?.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="font-medium text-center py-10"
-                  >
-                    No Records found.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                logs?.map((item, index) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium">{index + 1}</TableCell>
-                    <TableCell className="font-medium">{item.name}</TableCell>
-                    <TableCell className="font-medium">{item.agent}</TableCell>
-                    <TableCell>{item?.searchCount}</TableCell>
-                    <TableCell>{item?.lastActivity}</TableCell>
-                    <TableCell>{item?.business}</TableCell>
-                    <TableCell>{item?.accountCreated}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2 flex-row">
-                        <Button
-                          size="icon"
-                          className="text-md"
-                          variant="ghost"
-                          onClick={() =>
-                            navigate("/admin/broker-details/123")
-                          }
-                        >
-                          <Eye />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-
+          <BrokerBusinessTable />
           {!hasMore && <p>No more data to load.</p>}
           {logs?.length > 0 && hasMore && !loading && (
             <button className="loadmore mt-4">Load More</button>
@@ -142,4 +93,3 @@ function BrokerBusinessList() {
   );
 }
 
-export default BrokerBusinessList;

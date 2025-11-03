@@ -54,7 +54,7 @@ function AuditLogs() {
   }, [user]);
 
   return (
-    <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
+    <div className="bg-[#F5F0EC] rounded-lg text-secondary">
       {/* <div className="space-x-3 mb-4" >
                 <button 
                     className="bg-tertiary text-white rounded-full px-10 py-3"

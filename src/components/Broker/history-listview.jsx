@@ -9,10 +9,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Link, Share2, Printer, Eye, ChevronLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link as LinkIcon, Share2, Printer, Eye, ChevronLeft } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import BackBtn from "../back-btn";
 
 function HistoryListview() {
   const navigate = useNavigate();
@@ -30,14 +31,17 @@ function HistoryListview() {
     {
       id: "2",
       address: "456 Elm St, Springfield, IL 62702",
-      status: "Active",
+      status: "Successfull",
       createdAt: "2023-03-01T00:00:00.000Z",
     },
   ];
+  const currentRoute  = useLocation();
+  console.log('currentRoute', currentRoute)
   return (
     <>
-      <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
-        <div className="flex items-center justify-left gap-2">
+      <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
+        <BackBtn />
+        {/* <div className="flex items-center justify-left gap-2">
           <button
             onClick={() => navigate(-1)}
             className="flex items-center text-[#5a0a0a] hover:text-[#3d0606] transition"
@@ -45,7 +49,7 @@ function HistoryListview() {
             <ChevronLeft className="w-6 h-6 mr-1" />
           </button>
           <p className="text-lg text-secondary">Back</p>
-        </div>
+        </div> */}
       </div>
       <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
         <div className="bg-white !p-4 rounded-xl">
@@ -55,8 +59,8 @@ function HistoryListview() {
                 <TableHead className="w-[100px]">Sr. No.</TableHead>
                 <TableHead>Address</TableHead>
                 <TableHead>Date / Time</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Download Link</TableHead>
+                <TableHead className="text-center" >Status</TableHead>
+                <TableHead className="text-center" >Download Link</TableHead>
                 <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
@@ -80,10 +84,10 @@ function HistoryListview() {
                     <TableCell>
                       {getFormattedDateTime(item?.createdAt)}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-center" >
                       <Badge
                         className={`${
-                          item?.status === "Active"
+                          item?.status === "Successfull"
                             ? "bg-[#E9F3E9] text-[#1E8221]"
                             : "bg-[#FFF3D9] text-[#A2781E]"
                         } text-[13px] font-medium px-3 py-1 rounded-full`}
@@ -91,8 +95,10 @@ function HistoryListview() {
                         {item?.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      <Link className="w-4 h-4" />
+                    <TableCell className="text-center" >
+                      <Button variant="ghost" size="icon">
+                        <LinkIcon className="w-4 h-4 mx-auto" />
+                      </Button>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2 flex-row">
@@ -102,17 +108,22 @@ function HistoryListview() {
                         <Button size="icon" className="text-md" variant="ghost">
                           <Printer />
                         </Button>
-
+                      
+                      <Link to={ currentRoute.pathname.startsWith("/agent") ?  
+                        "/agent/property-details/123" : 
+                        currentRoute.pathname.startsWith("/broker") ?
+                        "/broker/property-details/123"
+                        :
+                        "/individual/property-details/123"
+                      } >
                         <Button
                           size="icon"
                           className="text-md"
                           variant="ghost"
-                          onClick={() =>
-                            navigate("/broker/property-details/123")
-                          }
-                        >
+                          >
                           <Eye />
                         </Button>
+                      </Link>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -121,10 +132,10 @@ function HistoryListview() {
             </TableBody>
           </Table>
 
-          {!hasMore && <p>No more data to load.</p>}
+          {/* {!hasMore && <p>No more data to load.</p>}
           {logs?.length > 0 && hasMore && !loading && (
             <button className="loadmore mt-4">Load More</button>
-          )}
+          )} */}
         </div>
       </div>
     </>

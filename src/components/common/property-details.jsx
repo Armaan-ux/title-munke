@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import BackBtn from "../back-btn";
 const PropertyDetails = () => {
   const navigate = useNavigate();
   return (
     <>
-      <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
-        <div className="flex items-center justify-left gap-2">
+      <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
+        <BackBtn />
+        {/* <div className="flex items-center justify-left gap-2">
           <button
             onClick={() => navigate(-1)}
             className="flex items-center text-[#5a0a0a] hover:text-[#3d0606] transition"
@@ -18,7 +20,7 @@ const PropertyDetails = () => {
             <ChevronLeft className="w-6 h-6 mr-1" />
           </button>
           <p className="text-lg text-secondary">Back</p>
-        </div>
+        </div> */}
       </div>
       <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
         <div className="bg-white !p-4 rounded-xl">

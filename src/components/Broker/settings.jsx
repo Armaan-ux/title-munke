@@ -24,7 +24,7 @@ export default function ManageAgents() {
  const [editProfile, setIsProfile] = useState(false);
 
   return (
-    <div className="bg-[#F5F0EC] h-[90vh] rounded-lg p-7 mt-3 text-secondary">
+    <div className="bg-[#F5F0EC] h-[90vh] rounded-lg p-4 px-7  my-4 text-secondary">
       {editProfile !== true && <div className="space-x-3 mb-4">
         {agentTypes.map((item, index) => (
           <button

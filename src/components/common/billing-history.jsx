@@ -16,6 +16,7 @@ import { CancelSubscriptionModal } from "@/components/Modal/CancelSubscriptionMo
 import { HelpUsImproveModal } from "@/components/Modal/HelpUsImproveModal";
 import { SubscriptionCanceledSuccessModal } from "@/components/Modal/SubscriptionCanceledSuccessModal";
 import { InvoiceHistoryModal } from "@/components/Modal/InvoiceHistoryModal";
+import BackBtn from "../back-btn";
 
 const BillingHistory = () => {
   const navigate = useNavigate();
@@ -77,8 +78,9 @@ const BillingHistory = () => {
         onClose={() => setInvoiceHistoryModal(false)}
       />
 
-      <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
-        <div className="flex items-center justify-left gap-2">
+      <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
+        <BackBtn />
+        {/* <div className="flex items-center justify-left gap-2">
           <button
             onClick={() => navigate(-1)}
             className="flex items-center text-[#5a0a0a] hover:text-[#3d0606] transition"
@@ -86,7 +88,7 @@ const BillingHistory = () => {
             <ChevronLeft className="w-6 h-6 mr-1" />
           </button>
           <p className="text-lg text-secondary">Back</p>
-        </div>
+        </div> */}
       </div>
 
       <div className="bg-[#F5F0EC] rounded-lg p-7  text-secondary h-[82%]">
@@ -97,7 +99,7 @@ const BillingHistory = () => {
         >
           {true ? (
             <div className="bg-white !p-4 rounded-xl w-full">
-              <p className="text-xl text-secondary mb-4">View History</p>
+              <p className="text-lg text-secondary font-medium mb-4">View History</p>
               <Table className="">
                 <TableHeader className="bg-[#F5F0EC]">
                   <TableRow>
@@ -106,7 +108,7 @@ const BillingHistory = () => {
                       <p className="flex items-center gap-2">Invoice ID</p>
                     </TableHead>
                     <TableHead>
-                      <p className="flex items-center gap-2">Billing Period</p>
+                      <p className="flex items-center gap-2">Date </p>
                     </TableHead>
                     <TableHead>
                       <p className="flex items-center gap-2">Amount</p>
@@ -119,9 +121,9 @@ const BillingHistory = () => {
                 <TableBody>
                   {sortedHistories?.map((item, index) => (
                     <TableRow key={item.id}>
-                      <TableCell className="font-medium">{index + 1}</TableCell>
-                      <TableCell>{item.invoiceId}</TableCell>
-                      <TableCell>
+                      <TableCell className="font-medium text-black">{index + 1}</TableCell>
+                      <TableCell className="text-black font-medium" >{item.invoiceId}</TableCell>
+                      <TableCell >
                         {getFormattedDateTime(item?.billing)}
                       </TableCell>
                       <TableCell>{item.amount}</TableCell>
@@ -142,12 +144,15 @@ const BillingHistory = () => {
                         </div>
                       </TableCell>
 
-                      <TableCell>
+                      <TableCell className="text-center" >
                         {item?.downloadLink ? (
-                          <FileDown
-                            className="w-4 h-4 mx-auto"
+                          <Button variant="ghost" size="icon" 
                             onClick={() => setInvoiceModal(true)}
-                          />
+                          >
+                          <FileDown
+                            className="size-5"
+                            />
+                          </Button>
                         ) : (
                           ""
                         )}
@@ -156,11 +161,11 @@ const BillingHistory = () => {
                         <div className="flex items-center gap-2 flex-row justify-center">
                           <Button
                             size="icon"
-                            className="text-md"
+                            // className="text-md"
                             variant="ghost"
                             onClick={() => setInvoiceHistoryModal(true)}
                           >
-                            <Eye />
+                            <Eye className="size-5" />
                           </Button>
                         </div>
                       </TableCell>

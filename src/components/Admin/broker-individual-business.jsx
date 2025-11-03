@@ -21,7 +21,9 @@ import {
   FileDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import BrokerBusinessTable from "./broker-business-table";
+import IndividualBusinessTable from "./individual-business-table";
 
 function BrokerIndividualBusiness({ activeTab, onRegisterReset }) {
   const navigate = useNavigate();
@@ -160,196 +162,19 @@ function BrokerIndividualBusiness({ activeTab, onRegisterReset }) {
     );
   };
 
-  const sortedIndividual = [
-    { id: 1, name: "John Doe", searchProperty: "5", business: "$200" },
-    { id: 2, name: "Jane Smith", searchProperty: "3", business: "$150" },
-    { id: 3, name: "Mike Johnson", searchProperty: "8", business: "$300" },
-  ];
-  const sortedBrokers = [
-    {
-      id: 1,
-      address: "Broker A",
-      createdAt: "2024-06-10T14:30:00Z",
-      status: "Active",
-      name: "brokerA",
-      downloadLink: "#",
-      agent: "5",
-      search: "11",
-      business: "$2200",
-      lastActivity: "2024-06-10 14:30",
-    },
-    {
-      id: 2,
-      address: "Broker B",
-      createdAt: "2024-06-09T10:15:00Z",
-      status: "Inactive",
-      name: "brokerB",
-      downloadLink: "#",
-      agent: "6",
-      search: "112",
-      business: "$2500",
-      lastActivity: "2024-06-10 14:30",
-    },
-    {
-      id: 3,
-      address: "Broker C",
-      createdAt: "2024-06-08T09:00:00Z",
-      status: "Active",
-      name: "brokerC",
-      downloadLink: "#",
-      agent: "10",
-      search: "121",
-      business: "$200",
-      lastActivity: "2024-06-10 14:30",
-    },
-  ];
 
   return (
     <>
       <div className="bg-[#F5F0EC] rounded-lg text-secondary">
         <div className="bg-white !p-4 rounded-xl">
           {activeTab === "history" ? (
-            <Table className="w-full">
-              <TableHeader className="bg-[#F5F0EC] w-full">
-                <TableRow className="w-full">
-                  <TableHead >Sr. No.</TableHead>
-                  <TableHead onClick={() => requestSort("address")}>
-                    Broker Name
-                    {/* <p className="flex items-center gap-2">
-                      Broker Name<span>{getSortArrow("address")}</span>
-                    </p> */}
-                  </TableHead>
-                  <TableHead className="text-center" onClick={() => requestSort("createdAt")}>
-                    Agent
-                    {/* <p className="flex items-center justify-center gap-2">
-                      Agent <span>{getSortArrow("createdAt")}</span>
-                    </p> */}
-                  </TableHead>
-                  <TableHead className="text-center" onClick={() => requestSort("status")}>
-                    Search Count
-                    {/* <p className="flex items-center justify-center gap-2">
-                      Search Count <span>{getSortArrow("status")}</span>
-                    </p> */}
-                  </TableHead>
-                  <TableHead>Last Activity</TableHead>
-                  <TableHead className="text-center" >Business</TableHead>
-                  <TableHead>Account Created</TableHead>
-                  <TableHead>Action</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedBrokers?.length === 0 && !loading ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={6}
-                      className="font-medium text-center py-10"
-                    >
-                      No Records found.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  sortedBrokers?.map((item, index) => (
-                    <TableRow key={item.id}>
-                      <TableCell className="font-medium">{index + 1}</TableCell>
-                      <TableCell>{item.name}</TableCell>
-                      <TableCell className="text-center" >{item.agent}</TableCell>
-                      <TableCell className="text-center" >{item.search}</TableCell>
-                      <TableCell>
-                        {getFormattedDateTime(item?.lastActivity)}
-                      </TableCell>
-                      <TableCell className="text-center" >{item.business}</TableCell>
-                      <TableCell>
-                        {getFormattedDateTime(item?.createdAt)}
-                      </TableCell>
-                      <TableCell>
-                        {" "}
-                        <div className="flex items-center gap-2 flex-row">
-                          <Button
-                            size="icon"
-                            className="text-md"
-                            variant="ghost"
-                          >
-                            <Eye />
-                          </Button>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right"></TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+           <BrokerBusinessTable />
           ) : (
-            <Table className="">
-              <TableHeader className="bg-[#F5F0EC]">
-                <TableRow>
-                  <TableHead>Sr. No.</TableHead>
-                  <TableHead onClick={() => requestSort("address")}>
-                    Name
-                    {/* <p className="flex items-center gap-2">
-                      Name<span>{getSortArrow("address")}</span>
-                    </p> */}
-                  </TableHead>
-                  <TableHead className="text-center" onClick={() => requestSort("createdAt")}>
-                    Property Search
-                    {/* <p className="flex items-center gap-2">
-                      Property Search <span>{getSortArrow("createdAt")}</span>
-                    </p> */}
-                  </TableHead>
-
-                  <TableHead className="text-center" >Business</TableHead>
-                  <TableHead className="text-center" > Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedIndividual?.length === 0 && !loading ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={6}
-                      className="font-medium text-center py-10"
-                    >
-                      No Records found.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  sortedIndividual?.map((item, index) => (
-                    <TableRow key={item.id}>
-                      <TableCell className="font-medium">{index + 1}</TableCell>
-                      <TableCell>{item.name || "John"}</TableCell>
-                      <TableCell className="text-center" >{item.searchProperty || "2"}</TableCell>
-                      <TableCell className="text-center" >{item.business || "$150"}</TableCell>
-                      <TableCell>
-                        {" "}
-                        <div className="flex items-center justify-center gap-2 flex-row">
-                          <Button
-                            size="icon"
-                            className="text-md"
-                            variant="ghost"
-                            onClick={() =>
-                              navigate("/admin/property-search/123")
-                            }
-                          >
-                            <Eye />
-                          </Button>
-                          <Button
-                            size="icon"
-                            className="text-md"
-                            variant="ghost"
-                          >
-                            <FileDown />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+            <IndividualBusinessTable />
           )}
 
           {/* {searchHistories?.length === 0 && <p>No Records found.</p>} */}
-          <div className="text-center space-y-2 my-4 text-muted-foreground">
+          {/* <div className="text-center space-y-2 my-4 text-muted-foreground">
             {loading && <p>Loading...</p>}
             {!hasMore && <p>No more data to load.</p>}
 
@@ -368,7 +193,7 @@ function BrokerIndividualBusiness({ activeTab, onRegisterReset }) {
                 </Button>
               </div>
             )}
-          </div>
+          </div> */}
         </div>
       </div>
     </>

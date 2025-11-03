@@ -24,6 +24,8 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import DateFilter from "../common/date-filter";
+import BackBtn from "../back-btn";
+import UserDetailHeader from "../user-detail-header";
 
 function BrokerDetails() {
   const navigate = useNavigate();
@@ -47,8 +49,9 @@ function BrokerDetails() {
   ];
   return (
     <>
-      <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
-        <div className="flex items-center justify-left gap-2">
+      <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
+        <BackBtn />
+        {/* <div className="flex items-center justify-left gap-2">
           <button
             onClick={() => navigate(-1)}
             className="flex items-center text-[#5a0a0a] hover:text-[#3d0606] transition"
@@ -56,9 +59,10 @@ function BrokerDetails() {
             <ChevronLeft className="w-6 h-6 mr-1" />
           </button>
           <p className="text-lg text-secondary">Back</p>
-        </div>
+        </div> */}
       </div>
-        <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary flex items-center justify-between w-full gap-1">
+      <UserDetailHeader />
+        {/* <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary flex items-center justify-between w-full gap-1">
         
       <div className="flex items-center gap-4">
         <img
@@ -67,7 +71,7 @@ function BrokerDetails() {
           className="w-16 h-16 rounded-full object-cover"
         />
         <div>
-          <h2 className="text-[#2A1A14] font-semibold text-lg">James Anderson</h2>
+          <p className="text-[#2A1A14] font-semibold text-lg">James Anderson</p>
           <p className="text-[#6B5E55] text-sm">andrew@email.com</p>
           <div className="flex items-center gap-2 text-sm mt-1">
             <span className="w-2 h-2 bg-[#B89C65] rounded-full"></span>
@@ -108,7 +112,7 @@ function BrokerDetails() {
         </div>
       </div>
 
-      </div>
+      </div> */}
       <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
         <div className="bg-white !p-4 rounded-xl">
         <div className="flex justify-between items-center gap-4 mb-6">
@@ -120,14 +124,14 @@ function BrokerDetails() {
           <Table className="">
             <TableHeader className="bg-[#F5F0EC]">
               <TableRow>
-                <TableHead className="w-[100px]">Sr. No.</TableHead>
+                <TableHead>Sr. No.</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Last Activity</TableHead>
-                <TableHead>Searches</TableHead>
-                <TableHead>Action</TableHead>
+                <TableHead className="text-center" >Searches</TableHead>
+                <TableHead className="text-center" >Action</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className="text-black" >  
               {logs?.length === 0 ? (
                 <TableRow>
                   <TableCell
@@ -139,13 +143,14 @@ function BrokerDetails() {
                 </TableRow>
               ) : (
                 logs?.map((item, index) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium">{index + 1}</TableCell>
-                    <TableCell className="font-medium">{item.name}</TableCell>
-                    <TableCell>{item?.lastActivity}</TableCell>
-                    <TableCell>{item?.searchCount}</TableCell>
+                  <TableRow key={item.id} className="text-black" >
+                    <TableCell >{index + 1}</TableCell>
+                    <TableCell >{item.name}</TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2 flex-row">
+                      {getFormattedDateTime(item?.lastActivity)}
+                      </TableCell>
+                    <TableCell className="text-center" >{item?.searchCount}</TableCell>
+                    <TableCell className="text-center" >
                         <Button
                           size="icon"
                           className="text-md"
@@ -156,7 +161,6 @@ function BrokerDetails() {
                         >
                           <Eye />
                         </Button>
-                      </div>
                     </TableCell>
                   </TableRow>
                 ))
@@ -164,10 +168,12 @@ function BrokerDetails() {
             </TableBody>
           </Table>
 
-          {!hasMore && <p>No more data to load.</p>}
+          {/* {!hasMore && <p>No more data to load.</p>}
           {logs?.length > 0 && hasMore && !loading && (
-            <button className="loadmore mt-4">Load More</button>
-          )}
+            <div className="flex justify-center" >
+              <button className=" mt-4">Load More</button>
+            </div>
+          )} */}
         </div>
       </div>
     </>

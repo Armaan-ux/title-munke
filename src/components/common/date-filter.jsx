@@ -13,7 +13,7 @@ export default function DateFilter() {
           type="date"
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
-          className="w-full border border-[#E3D8D2] rounded-md px-3 py-2 pr-8 text-[#6B5E55] text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#550000] appearance-none [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-3 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+          className="w-full border border-[#E3D8D2] rounded-md px-3 py-2.5 pr-8 text-[#6B5E55] text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#550000] appearance-none [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-3 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
           placeholder="dd-mm-yyyy"
         />
         <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B5E55] pointer-events-none" />
@@ -24,7 +24,7 @@ export default function DateFilter() {
           type="date"
           value={endDate}
           onChange={(e) => setEndDate(e.target.value)}
-          className="w-full border border-[#E3D8D2] rounded-md px-3 py-2 pr-8 text-[#6B5E55] text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#550000] appearance-none [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-3 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+          className="w-full border border-[#E3D8D2] rounded-md px-3 py-2.5 pr-8 text-[#6B5E55] text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#550000] appearance-none [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-3 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
           placeholder="dd-mm-yyyy"
         />
         <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B5E55] pointer-events-none" />

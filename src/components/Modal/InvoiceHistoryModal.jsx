@@ -99,7 +99,7 @@ export function InvoiceHistoryModal({ open, onClose }) {
               {rows.map((row, i) => (
                 <TableRow key={i}>
                   <TableCell>{String(i + 1).padStart(2, "0")}.</TableCell>
-                  <TableCell>{row.agent}</TableCell>
+                  <TableCell className="font-medium" >{row.agent}</TableCell>
                   <TableCell>{row.address}</TableCell>
                   <TableCell>{row.date}</TableCell>
                   <TableCell>{row.price}</TableCell>
@@ -108,19 +108,19 @@ export function InvoiceHistoryModal({ open, onClose }) {
             </TableBody>
           </Table>
           <div className="flex justify-end font-semibold mt-3 text-neutral-900 bg-[#F5F0EC] py-2 px-4 rounded-md w-full">
-            Total: <span className="ml-2">$230.00</span>
+            <span className=" text-tertiary font-bold mr-2" > Total </span> <span className="ml-2">$230.00</span>
           </div>
         </div>
 
-        <div className="mt-6 flex justify-center space-x-3">
+        <div className="mt-6 flex justify-center space-x-2 *:w-full max-w-[11rem] mx-auto">
           <Button variant="outline" onClick={() => onClose()}>
             Close
           </Button>
-          <Button className="bg-[#600000] hover:bg-[#7a0000]">
+          <Button variant="secondary" size="lg" >
             <Download />
             Download CSV 
           </Button>
-          <Button className="bg-[#600000] hover:bg-[#7a0000]">
+          <Button variant="secondary" size="lg" >
             <Download />
             Download PDF
           </Button>

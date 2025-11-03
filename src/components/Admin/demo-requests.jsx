@@ -108,9 +108,9 @@ const dummyData = [
 export default function DemoRequests() {
   const [activeTab, setActiveTab] = useState("pending");
   return (
-    <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
+    <div className="bg-[#F5F0EC] rounded-lg px-7 py-4 my-4 text-secondary">
       <div className="space-x-3 mb-4">
-        <Button
+        <button
           onClick={() => setActiveTab("pending")}
           className={` ${
             activeTab === "pending"
@@ -119,8 +119,8 @@ export default function DemoRequests() {
           } transition-all  rounded-full px-10 py-3 `}
         >
           Pending
-        </Button>
-        <Button
+        </button>
+        <button
           onClick={() => setActiveTab("contacted")}
           className={` ${
             activeTab === "contacted"
@@ -129,7 +129,7 @@ export default function DemoRequests() {
           } transition-all  rounded-full px-10 py-3 `}
         >
           Contacted
-        </Button>
+        </button>
       </div>
 
       <div className="bg-white !p-4 rounded-xl">
@@ -137,7 +137,7 @@ export default function DemoRequests() {
           <Table className="">
             <TableHeader className="bg-[#F5F0EC]">
               <TableRow>
-                <TableHead className="w-[100px]">Sr. No.</TableHead>
+                <TableHead className="text-center">Sr. No.</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Email / Phone No.</TableHead>
                 <TableHead>County</TableHead>
@@ -159,9 +159,9 @@ export default function DemoRequests() {
                 </TableRow>
               ) : (
                 dummyData?.map((item, index) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium">{index + 1}</TableCell>
-                    <TableCell>{item.name}</TableCell>
+                  <TableRow key={item.id} >
+                    <TableCell className="font-medium text-center">{index + 1}</TableCell>
+                    <TableCell className="text-black font-medium" >{item.name}</TableCell>
                     <TableCell>{item.email}</TableCell>
                     <TableCell>{item.county}</TableCell>
                     <TableCell>{item.state}</TableCell>
@@ -170,8 +170,10 @@ export default function DemoRequests() {
                       {item.createdAt}
                     </TableCell>
                     <TableCell>{item.description}</TableCell>
-                    <TableCell>
-                      <Repeat2 className="mx-auto" />
+                    <TableCell className="text-center" >
+                      <Button variant="ghost" size="icon" >
+                        <Repeat2 className="mx-auto size-5"  />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))
@@ -182,7 +184,7 @@ export default function DemoRequests() {
           <Table className="">
             <TableHeader className="bg-[#F5F0EC]">
                <TableRow>
-                <TableHead className="w-[100px]">Sr. No.</TableHead>
+                <TableHead className="text-center">Sr. No.</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Email / Phone No.</TableHead>
                 <TableHead>County</TableHead>
@@ -204,8 +206,8 @@ export default function DemoRequests() {
               ) : (
                 dummyData?.slice(5).map((item, index) => (
                   <TableRow key={item.id}>
-                    <TableCell className="font-medium">{index + 1}</TableCell>
-                    <TableCell>{item.name}</TableCell>
+                    <TableCell className="font-medium text-center">{index + 1}</TableCell>
+                    <TableCell className="text-black font-medium" >{item.name}</TableCell>
                     <TableCell>{item.email}</TableCell>
                     <TableCell>{item.county}</TableCell>
                     <TableCell>{item.state}</TableCell>

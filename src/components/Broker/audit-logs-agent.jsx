@@ -54,7 +54,7 @@ function AuditLogsAgent() {
   }, [user]);
 
   return (
-    <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
+    <div className="bg-[#F5F0EC] rounded-lg text-secondary">
       <div className="bg-white !p-4 rounded-xl">
         <Table className="">
           <TableHeader className="bg-[#F5F0EC]">

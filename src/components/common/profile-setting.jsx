@@ -56,7 +56,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                     id="phone"
                     name="username"
                     placeholder="Name"
-                    className="font-medium placeholder:text-tertiary placeholder:font-normal mt-3 bg-white"
+                    className="font-medium  placeholder:font-normal mt-3 bg-white"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />
@@ -74,7 +74,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                     id="phone"
                     name="phone"
                     placeholder="Phone Number"
-                    className="font-medium placeholder:text-tertiary placeholder:font-normal mt-3 bg-white"
+                    className="font-medium  placeholder:font-normal mt-3 bg-white"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                   />
@@ -92,7 +92,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                     id="email"
                     name="email"
                     placeholder="Email"
-                    className="font-medium placeholder:text-tertiary placeholder:font-normal mt-3 bg-white"
+                    className="font-medium  placeholder:font-normal mt-3 bg-white"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
@@ -100,8 +100,9 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
 
                 <div className="pt-4 justify-end flex gap-4">
                   <Button
-                    variant="outline"
-                    className="bg-tertiary text-white hover:bg-[#9C3D26] hover:text-white rounded-md px-12 mb-6 w-[20%]"
+                    variant="secondary"
+                    // className="bg-tertiary text-white hover:bg-[#9C3D26] hover:text-white rounded-md px-12 mb-6 w-[20%]"
+                    size="lg"
                     onClick={() => setIsProfile(false)}
                   >
                     Save Changes
@@ -128,7 +129,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                       id="current-password"
                       name="current-password"
                       placeholder="Current password"
-                      className="font-medium placeholder:text-tertiary placeholder:font-normal mt-3 bg-white"
+                      className="font-medium  placeholder:font-normal mt-3 bg-white"
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
                     />
@@ -149,7 +150,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                       id="new-password"
                       name="new-password"
                       placeholder="New password"
-                      className="font-medium placeholder:text-tertiary placeholder:font-normal mt-3 bg-white"
+                      className="font-medium  placeholder:font-normal mt-3 bg-white"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                     />
@@ -169,7 +170,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                       id="confirm-password"
                       name="confirm-password"
                       placeholder="Confirm new password"
-                      className="font-medium placeholder:text-tertiary placeholder:font-normal mt-3 bg-white "
+                      className="font-medium  placeholder:font-normal mt-3 bg-white "
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                     />
@@ -192,11 +193,12 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
 
             <div className=" pt-8 border-t border-gray-200 justify-end flex gap-4">
               <Button
-                variant="outline"
-                className="bg-tertiary text-white hover:bg-[#9C3D26] hover:text-white rounded-md px-12"
+                variant="secondary"
+                size="lg"
+                // className="bg-tertiary text-white hover:bg-[#9C3D26] hover:text-white rounded-md px-12"
                 onClick={() => setIsProfile(false)}
               >
-                Update
+                Save Changes
               </Button>
             </div>
           </div>
@@ -206,8 +208,8 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
           <div className="mb-5 flex items-center justify-between gap-4">
             <p className="text-xl font-medium">Profile Details</p>
             <Button
-              size="icon"
-              className="text-md mr-10"
+              // size="icon"
+              className="text-md"
               variant="ghost"
               onClick={() => setIsProfile(true)}
             >

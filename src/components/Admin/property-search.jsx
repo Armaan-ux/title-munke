@@ -25,6 +25,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import DateFilter from "../common/date-filter";
 import { Separator } from "../ui/separator";
+import BackBtn from "../back-btn";
+import UserDetailHeader from "../user-detail-header";
 
 function PropertySearch() {
   const navigate = useNavigate();
@@ -50,8 +52,9 @@ function PropertySearch() {
   ];
   return (
     <>
-      <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
-        <div className="flex items-center justify-left gap-2">
+      <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
+        <BackBtn />
+        {/* <div className="flex items-center justify-left gap-2">
           <button
             onClick={() => navigate(-1)}
             className="flex items-center text-[#5a0a0a] hover:text-[#3d0606] transition cursor-pointer"
@@ -59,9 +62,10 @@ function PropertySearch() {
             <ChevronLeft className="w-6 h-6 mr-1" />
           </button>
           <p className="text-lg text-secondary">Back</p>
-        </div>
+        </div> */}
       </div>
-      <div className="bg-[#F5F0EC] rounded-lg py-5 px-7 my-4 text-secondary flex items-center justify-between  gap-1">
+      <UserDetailHeader />
+      {/* <div className="bg-[#F5F0EC] rounded-lg py-5 px-7 my-4 text-secondary flex items-center justify-between  gap-1">
         <div className="flex items-center gap-4">
           <img
             src="/agent-2.png"
@@ -114,7 +118,7 @@ function PropertySearch() {
             </button>
           </div>
         </div>
-      </div>
+      </div> */}
       <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
         <div className="bg-white !p-4 rounded-xl">
           <div className="flex justify-between items-center gap-4 mb-6">
@@ -133,10 +137,10 @@ function PropertySearch() {
                 <TableHead>Searched Date</TableHead>
                 <TableHead className="text-center" >Business</TableHead>
                 <TableHead className="text-center" >Status</TableHead>
-                <TableHead className="text-center" >Action</TableHead>
+                {/* <TableHead className="text-center" >Action</TableHead> */}
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className="text-black" >
               {logs?.length === 0 ? (
                 <TableRow>
                   <TableCell
@@ -149,8 +153,8 @@ function PropertySearch() {
               ) : (
                 logs?.map((item, index) => (
                   <TableRow key={item.id}>
-                    <TableCell className="font-medium">{index + 1}</TableCell>
-                    <TableCell className="font-medium">
+                    <TableCell >{index + 1}</TableCell>
+                    <TableCell >
                       {item.address}
                     </TableCell>
                     <TableCell>{item?.searchDate}</TableCell>
@@ -167,7 +171,7 @@ function PropertySearch() {
                         {item?.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <div className="flex items-center gap-2 flex-row justify-center">
                         <Button
                           size="icon"
@@ -180,17 +184,17 @@ function PropertySearch() {
                           <Eye />
                         </Button>
                       </div>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 ))
               )}
             </TableBody>
           </Table>
 
-          {!hasMore && <p>No more data to load.</p>}
+          {/* {!hasMore && <p>No more data to load.</p>}
           {logs?.length > 0 && hasMore && !loading && (
             <button className="loadmore mt-4">Load More</button>
-          )}
+          )} */}
         </div>
       </div>
     </>

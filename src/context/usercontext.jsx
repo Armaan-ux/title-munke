@@ -19,7 +19,7 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [memberModal, setMemberModal] = useState(false);
+  const [memberModal, setMemberModal] = useState(true);
   const [paymentModal, setPaymentModal] = useState(false);
   const [paymentSuccessModal, setPaymentSuccessModal] = useState(false);
   const [paymentFailedModal, setPaymentFailedModal] = useState(false);

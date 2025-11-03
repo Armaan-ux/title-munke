@@ -16,8 +16,8 @@ const AuditLogs = () => {
 
   const [activeTab, setActiveTab] = useState(agentTypes[0]);
   return (
-    <div className="bg-[#F5F0EC] rounded-lg  my-4 text-secondary">
-      <div className="space-x-3 mb-4 p-7 pb-0">
+    <div className="bg-[#F5F0EC] rounded-lg px-7 py-4 my-4 text-secondary">
+      <div className="space-x-3 mb-4">
         {agentTypes.map((item, index) => (
           <button
             className={` ${
@@ -32,7 +32,7 @@ const AuditLogs = () => {
         ))}
       </div>
       
-      <div className="-mt-4" >
+      <div >
         {activeTab.id === "brokers" && <AuditLogsForBroker />}
         {activeTab.id === "agents" && <AuditLogsForAgents />}
       </div>

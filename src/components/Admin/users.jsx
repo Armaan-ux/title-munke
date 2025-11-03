@@ -66,7 +66,7 @@ export default function Users() {
   const [activeTab, setActiveTab] = useState(userTypes[0]);
 
   return (
-    <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
+    <div className="bg-[#F5F0EC] rounded-lg px-7 py-4 my-4 text-secondary">
       <div className="space-x-3 mb-4">
         {userTypes.map((item, index) => (
           <button
@@ -115,7 +115,7 @@ function Admins() {
         isOpen={isOpen}
       /> */}
       <div className="flex justify-between gap-4 items-center mb-4">
-        <p>All Admins</p>
+        <p className="text-lg font-medium" >All Admins</p>
         <Button variant="secondary" onClick={() => setIsOpen(true)}>
           {" "}
           <PlusCircle /> Add Admin
@@ -125,11 +125,11 @@ function Admins() {
       <Table className="">
         <TableHeader className="bg-[#F5F0EC]">
           <TableRow>
-            <TableHead className="w-[100px]">Sr. No.</TableHead>
+            <TableHead className="">Sr. No.</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Action</TableHead>
+            <TableHead >Status</TableHead>
+            <TableHead >Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -145,8 +145,8 @@ function Admins() {
           ) : (
             admins?.map((item, index) => (
               <TableRow key={item.id}>
-                <TableCell className="font-medium">{index + 1}</TableCell>
-                <TableCell>{item.name}</TableCell>
+                <TableCell className="font-medium ">{index + 1}</TableCell>
+                <TableCell className="font-medium text-black" >{item.name}</TableCell>
                 <TableCell>{item.email}</TableCell>
                 <TableCell>
                   <Badge
@@ -349,7 +349,7 @@ function AdminBrokersList() {
       <div>
         <div className="bg-white !p-4 rounded-xl">
           <div className="flex justify-between gap-4 items-center mb-4">
-            <p>All Brokers</p>
+            <p className="text-lg font-medium" >All Brokers</p>
 
             <div className="space-x-2">
               <Button variant="secondary" onClick={() => setIsOpen(true)}>
@@ -362,14 +362,14 @@ function AdminBrokersList() {
           <Table className="">
             <TableHeader className="bg-[#F5F0EC]">
               <TableRow>
-                <TableHead className="w-[100px]">Sr. No.</TableHead>
-                <TableHead>Broker Name</TableHead>
-                <TableHead>Monthly Searches</TableHead>
-                <TableHead>Last Login</TableHead>
+                <TableHead>Sr. No.</TableHead>
+                <TableHead>Name</TableHead>
+                {/* <TableHead>Monthly Searches</TableHead>
+                <TableHead>Last Login</TableHead> */}
                 <TableHead>Email</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Action</TableHead>
-                <TableHead>Agent List</TableHead>
+                {/* <TableHead>Agent List</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -385,13 +385,13 @@ function AdminBrokersList() {
               ) : (
                 brokers?.map((item, index) => (
                   <TableRow key={item.id}>
-                    <TableCell className="font-medium">{index + 1}</TableCell>
-                    <TableCell>{item.name}</TableCell>
-                    <TableCell>{item.totalSearches}</TableCell>
-                    <TableCell>
+                    <TableCell className="font-medium ">{index + 1}</TableCell>
+                    <TableCell className="font-medium text-black" >{item.name}</TableCell>
+                    {/* <TableCell>{item.totalSearches}</TableCell> */}
+                    {/* <TableCell>
                       {getFormattedDateTime(item.lastLogin)}
-                    </TableCell>
-                    <TableCell>{item.email}</TableCell>
+                    </TableCell> */}
+                    {/* <TableCell>{item.email}</TableCell> */}
                     <TableCell>
                       {" "}
                       <Badge
@@ -450,7 +450,7 @@ function AdminBrokersList() {
                               )}
                             </div> */}
                     </TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <Button
                         size="icon"
                         variant="ghost"
@@ -458,7 +458,7 @@ function AdminBrokersList() {
                       >
                         <EyeIcon />
                       </Button>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 ))
               )}
@@ -520,11 +520,11 @@ function Agents() {
       <Table className="">
         <TableHeader className="bg-[#F5F0EC]">
           <TableRow>
-            <TableHead className="w-[100px]">Sr. No.</TableHead>
+            <TableHead>Sr. No.</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Reinvite</TableHead>
+            <TableHead className="text-center" >Reinvite</TableHead>
             <TableHead>Action</TableHead>
           </TableRow>
         </TableHeader>
@@ -542,7 +542,7 @@ function Agents() {
             admins?.map((item, index) => (
               <TableRow key={item.id}>
                 <TableCell className="font-medium">{index + 1}</TableCell>
-                <TableCell>{item.name}</TableCell>
+                <TableCell className="text-black font-medium" >{item.name}</TableCell>
                 <TableCell>{item.email}</TableCell>
                 <TableCell>
                   <Badge
@@ -555,12 +555,10 @@ function Agents() {
                     {item?.status}
                   </Badge>
                 </TableCell>
-                      <TableCell>
-                  <div className="flex items-center gap-2 flex-row">
+                <TableCell className="text-center" >
                     <Button size="icon" className="text-md" variant="ghost">
                       <UserPlus />
                     </Button>
-                  </div>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2 flex-row">
