@@ -83,10 +83,10 @@ export default function BrokerBusiness() {
         </div>
         <div className="bg-white !p-4 rounded-xl">
           <BrokerBusinessTable />
-          {!hasMore && <p>No more data to load.</p>}
+          {/* {!hasMore && <p>No more data to load.</p>}
           {logs?.length > 0 && hasMore && !loading && (
             <button className="loadmore mt-4">Load More</button>
-          )}
+          )} */}
         </div>
       </div>
     </>

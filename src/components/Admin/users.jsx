@@ -510,7 +510,7 @@ function Agents() {
         isOpen={isOpen}
       /> */}
       <div className="flex justify-between gap-4 items-center mb-4">
-        <p>All Agents</p>
+        <p className="text-lg font-medium" >All Agents</p>
         <Button variant="secondary" onClick={() => setIsOpen(true)}>
           {" "}
           <PlusCircle /> Add Agent
