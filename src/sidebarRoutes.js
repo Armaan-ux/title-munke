@@ -39,23 +39,23 @@ export const routes = {
     },
   ],
   admin: [
-    // {
-    //   link: "/admin/dashboard",
-    //   name: "Dashboard",
-    //   class: "fas fa-person",
-    //   icon: LayoutDashboard
-    // },
     {
-      link: "/admin/users",
-      name: "Users",
+      link: "/admin/dashboard",
+      name: "Dashboard",
       class: "fas fa-person",
-      icon: UserRound
+      icon: LayoutDashboard
     },
     {
       link: "/admin/demo-requests",
       name: "Demo Requests",
       class: "fas fa-person",
       icon: BookUser
+    },
+    {
+      link: "/admin/users",
+      name: "Users",
+      class: "fas fa-person",
+      icon: UserRound
     },
     {
       link: "/admin/audit-logs",
@@ -129,6 +129,32 @@ export const routes = {
     },
         {
       link: "/broker/setting",
+      name: "Settings",
+      class: "fas fa-cog",
+      icon: Settings
+    },
+  ],
+  individual: [
+    {
+      link: "/individual/dashboard",
+      name: "Dashboard",
+      class: "fas fa-search",
+      icon: LayoutDashboard
+    },
+    // {
+    //   link: "/individual/property-search",
+    //   name: "Property Search",
+    //   class: "fas fa-search",
+    //   icon: LayoutDashboard
+    // },
+    {
+      link: "/individual/agent-audit-log",
+      name: "Audit Logs",
+      class: "fas fa-clipboard-list",
+      icon: Logs
+    },
+    {
+      link: "/individual/setting",
       name: "Settings",
       class: "fas fa-cog",
       icon: Settings

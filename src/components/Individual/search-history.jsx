@@ -1,0 +1,393 @@
+import { API } from "aws-amplify";
+import { useState, useEffect, useCallback } from "react";
+import { listSearchHistories } from "@/graphql/queries";
+// import "./index.css";
+import axios from "axios";
+import { updateSearchHistory } from "@/graphql/mutations";
+import { useUser } from "@/context/usercontext";
+import {
+  FETCH_LIMIT,
+  getFormattedDateTime,
+  handleCreateAuditLog,
+  INTERVALTIME,
+} from "@/utils";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  ChevronDown,
+  ChevronsUpDown,
+  ChevronUp,
+  Eye,
+  Link,
+  Printer,
+  Share2,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
+
+function SearchHistory() {
+  const [searchHistories, setSearchHistories] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [nextToken, setNextToken] = useState(null);
+  const [activeTab, setActiveTab] = useState("history");
+  const [inProgressSearches, setInProgressSearches] = useState([]);
+  const [sortConfig, setSortConfig] = useState({
+    key: "createdAt",
+    direction: "descending",
+  });
+  const { user } = useUser();
+  const navigate = useNavigate();
+
+  const fetchSearchHistories = useCallback(async () => {
+    if (loading || !hasMore) return;
+    setLoading(true);
+    try {
+      const response = await API.graphql({
+        query: listSearchHistories,
+        variables: {
+          filter: { userId: { eq: user?.attributes?.sub } },
+          limit: FETCH_LIMIT,
+          nextToken,
+        },
+      });
+      const { items, nextToken: newNextToken } =
+        response.data.listSearchHistories;
+      setSearchHistories((prev) => [...prev, ...items]);
+      setNextToken(newNextToken);
+      setHasMore(!!newNextToken);
+
+      const inProgress = items.filter((item) => item.status === "In Progress");
+      setInProgressSearches((prev) => [...prev, ...inProgress]);
+    } catch (error) {
+      console.error("Error fetching search histories:", error);
+    }
+    setLoading(false);
+  }, [loading, hasMore, nextToken, user]);
+
+  const fetchAgentSearchHistories = useCallback(async () => {
+    if (loading || !hasMore) return;
+    setLoading(true);
+    try {
+      const response = await API.graphql({
+        query: listSearchHistories,
+        variables: {
+          filter: { brokerId: { eq: user?.attributes?.sub } },
+          limit: FETCH_LIMIT,
+          nextToken,
+        },
+      });
+      const { items, nextToken: newNextToken } =
+        response.data.listSearchHistories;
+      setSearchHistories((prev) => [...prev, ...items]);
+      setNextToken(newNextToken);
+      setHasMore(!!newNextToken);
+
+      const inProgress = items.filter((item) => item.status === "In Progress");
+      setInProgressSearches((prev) => [...prev, ...inProgress]);
+    } catch (error) {
+      console.error("Error fetching agent search histories:", error);
+    }
+    setLoading(false);
+  }, [loading, hasMore, nextToken, user]);
+
+  const checkSearchStatus = async (searchId, id) => {
+    try {
+      const response = await axios.post(
+        "https://hwk77cjbdtmopznce6tneqknvi0rqvta.lambda-url.us-east-1.on.aws/",
+        {
+          mode: "CHECK_STATUS",
+          search_id: searchId,
+        }
+      );
+
+      const { status, zip_url } = response.data;
+
+      if (status === "SUCCESS") {
+        await API.graphql({
+          query: updateSearchHistory,
+          variables: {
+            input: {
+              id,
+              searchId,
+              status: "SUCCESS",
+              downloadLink: zip_url,
+            },
+          },
+        });
+
+        setSearchHistories((prev) =>
+          prev.map((record) =>
+            record.searchId === searchId
+              ? { ...record, status: "SUCCESS", downloadLink: zip_url }
+              : record
+          )
+        );
+
+        setInProgressSearches((prev) =>
+          prev.filter((record) => record.searchId !== searchId)
+        );
+      }
+    } catch (error) {
+      console.error(`Error checking status for ${searchId}:`, error);
+    }
+  };
+
+  const resetStateOnTabChange = () => {
+    setInProgressSearches([]);
+    setHasMore(true);
+    setLoading(false);
+    setNextToken(null);
+    setSearchHistories([]);
+  };
+
+  useEffect(() => {
+    inProgressSearches.forEach((search) => {
+      checkSearchStatus(search.searchId, search.id);
+    });
+    const interval = setInterval(() => {
+      inProgressSearches.forEach((search) => {
+        checkSearchStatus(search.searchId, search.id);
+      });
+    }, INTERVALTIME);
+
+    return () => clearInterval(interval);
+  }, [inProgressSearches]);
+
+  useEffect(() => {
+    if (user?.attributes?.sub) {
+      if (activeTab === "history") fetchSearchHistories();
+      else fetchAgentSearchHistories();
+    }
+  }, [user, activeTab, fetchSearchHistories, fetchAgentSearchHistories]);
+
+  const requestSort = (key) => {
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedHistories = [...searchHistories].sort((a, b) => {
+    if (
+      !a.hasOwnProperty(sortConfig.key) ||
+      !b.hasOwnProperty(sortConfig.key)
+    ) {
+      return 0;
+    }
+
+    let aValue = a[sortConfig.key];
+    let bValue = b[sortConfig.key];
+
+    if (sortConfig.key === "createdAt") {
+      aValue = new Date(aValue).getTime();
+      bValue = new Date(bValue).getTime();
+    }
+
+    if (aValue < bValue) {
+      return sortConfig.direction === "ascending" ? -1 : 1;
+    }
+    if (aValue > bValue) {
+      return sortConfig.direction === "ascending" ? 1 : -1;
+    }
+    return 0;
+  });
+
+  const getSortArrow = (key) => {
+    if (sortConfig.key !== key) {
+      // Not the active column → show neutral icon
+      return <ChevronsUpDown className="text-muted-tertiary" size={18} />;
+    }
+
+    // Active column → show up or down depending on direction
+    return sortConfig.direction === "ascending" ? (
+      <ChevronUp className="text-tertiary" size={18} />
+    ) : (
+      <ChevronDown className="text-tertiary" size={18} />
+    );
+  };
+
+  return (
+    <>
+      <div className="bg-[#F5F0EC] rounded-lg text-secondary">
+        {/* <div className="space-x-3 mb-4">
+          <button
+            className={` ${
+              activeTab === "history"
+                ? "bg-tertiary text-white"
+                : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] "
+            } transition-all  rounded-full px-10 py-3 `}
+            onClick={() => {
+              resetStateOnTabChange();
+              setActiveTab("history");
+            }}
+          >
+            Brokers
+          </button>
+          <button
+            className={` ${
+              activeTab === "agents"
+                ? "bg-tertiary text-white"
+                : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] "
+            } transition-all  rounded-full px-10 py-3 `}
+            onClick={() => {
+              resetStateOnTabChange();
+              setActiveTab("agents");
+            }}
+          >
+            Agents
+          </button>
+        </div> */}
+
+        <div className="bg-white !p-4 rounded-xl">
+          <Table className="">
+            <TableHeader className="bg-[#F5F0EC]">
+              <TableRow>
+                <TableHead className="w-[100px]">Sr. No.</TableHead>
+                <TableHead onClick={() => requestSort("address")}>
+                  <p className="flex items-center gap-2">
+                    Address <span>{getSortArrow("address")}</span>
+                  </p>
+                </TableHead>
+                <TableHead onClick={() => requestSort("createdAt")}>
+                  <p className="flex items-center gap-2">
+                    Date / Time <span>{getSortArrow("createdAt")}</span>
+                  </p>
+                </TableHead>
+                <TableHead onClick={() => requestSort("status")}>
+                  <p className="flex items-center gap-2">
+                    Status <span>{getSortArrow("status")}</span>
+                  </p>
+                </TableHead>
+                {activeTab === "agents" && <TableHead>Name </TableHead>}
+                <TableHead>Download Link</TableHead>
+                <TableHead>Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sortedHistories?.length === 0 && !loading ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={activeTab === "agents" ? 6 : 6}
+                    className="font-medium text-center py-10"
+                  >
+                    No Records found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                sortedHistories?.map((item, index) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium">{index + 1}</TableCell>
+                    <TableCell>{item.address}</TableCell>
+                    <TableCell>
+                      {getFormattedDateTime(item?.createdAt)}
+                    </TableCell>
+                    <TableCell>        <Badge
+                      className={`${
+                        item?.status === "Active"
+                          ? "bg-[#E9F3E9] text-[#1E8221]"
+                          : item?.status === "Unconfirmed"
+                          ? "bg-[#FFF3D9] text-[#A2781E]"
+                          : "bg-[#FFE3E2] text-[#FF5F59]"
+                      } text-[13px] font-medium px-3 py-1 rounded-md`}
+                    >
+                      {item?.status}
+                    </Badge></TableCell>
+
+                    {activeTab === "agents" && (
+                      <TableCell>{item.username}</TableCell>
+                    )}
+                    <TableCell>
+                      {item?.downloadLink ? (
+                        <a
+                          href={item.downloadLink}
+                          download
+                          onClick={() =>
+                            handleCreateAuditLog("DOWNLOAD", {
+                              zipUrl: item.downloadLink,
+                            })
+                          }
+                        >
+                          <Link className="w-4 h-4" />
+                        </a>
+                      ) : (
+                        ""
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2 flex-row">
+                        <Button
+                          size="icon"
+                          className="text-md"
+                          variant="ghost"
+                         
+                        >
+                          <Share2 />
+                        </Button>
+                        <Button
+                          size="icon"
+                          className="text-md"
+                          variant="ghost"
+                        >
+                          <Printer />
+                        </Button>
+
+                        <Button
+                          size="icon"
+                          className="text-md"
+                          variant="ghost"
+                          onClick={() =>
+                            navigate("/broker/property-details/123")
+                          }
+                        >
+                          <Eye />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+
+          {/* {searchHistories?.length === 0 && <p>No Records found.</p>} */}
+          <div className="text-center space-y-2 my-4 text-muted-foreground">
+            {loading && <p>Loading...</p>}
+            {!hasMore && sortedHistories.length > 0 && (
+              <p>No more data to load.</p>
+            )}
+
+            {searchHistories?.length > 0 && hasMore && !loading && (
+              <div className="flex justify-center">
+                <Button
+                  // className="loadmore"
+                  size="sm"
+                  onClick={
+                    activeTab === "history"
+                      ? fetchSearchHistories
+                      : fetchAgentSearchHistories
+                  }
+                >
+                  Load More
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+
+    </>
+  );
+}
+
+export default SearchHistory;

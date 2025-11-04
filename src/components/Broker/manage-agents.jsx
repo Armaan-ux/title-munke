@@ -1,26 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import AddUserModal from "@/components/Modal/AddUserModal";
 import {
-  // assignAgent,
-  // calculateAverage,
-  // getTopPerformerAgent,
-  // inActiveAgent,
-  // pendingAgentSearch,
-  // UnassignAgent,
-} from "@/components/service/agent";
-import {
-    reinviteAgent,
-    getAgentsTotalSearches,
-    deleteUser,
-    CONSTANTS,
-    undeleteUser,
-    updateAgentStatus,
-    getPendingAgentSearches,
-    UnassignAgent,
-    assignAgent,
-    getTopPerformerAgent,
-    getUnassignedAgents,
-    } from "@/components/service/userAdmin";
+  reinviteAgent,
+  getAgentsTotalSearches,
+  deleteUser,
+  CONSTANTS,
+  undeleteUser,
+  updateAgentStatus,
+  getPendingAgentSearches,
+  UnassignAgent,
+  assignAgent,
+  getTopPerformerAgent,
+  getUnassignedAgents,
+} from "@/components/service/userAdmin";
 import { useUser } from "@/context/usercontext";
 import { fetchAgentsWithSearchCount } from "@/components/service/broker";
 import { getFormattedDateTime, handleCreateAuditLog } from "@/utils";
@@ -33,69 +25,73 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ChevronDownIcon, PencilLine, Plus, PlusCircle, Search } from "lucide-react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+  ChevronDownIcon,
+  PencilLine,
+  Plus,
+  PlusCircle,
+  Search,
+  Download,
+  Upload,
+  UserPlus,
+  Eye,
+  Trash2,
+} from "lucide-react";
 import { API } from "aws-amplify";
 import { listAgents } from "@/graphql/queries";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import AddAgentByBrokerModal from "@/components/Modal/AddAgentByBrokerModal";
+import { useNavigate } from "react-router-dom";
 
 const agentTypes = [
-    {
-        name: "Agents",
-        id: "agents" 
-    },
-    {
-        name: "Unassigned Agents",
-        id: "unassigned-agents"
-    },
-    // {
-    //     name: "Agent",
-    //     id: "agent" 
-    // }
-]
+  {
+    name: "Agents",
+    id: "agents",
+  },
+  {
+    name: "Unassigned Agents",
+    id: "unassigned-agents",
+  },
+  // {
+  //     name: "Agent",
+  //     id: "agent"
+  // }
+];
 
-
-export default function ManageAgents(){
+export default function ManageAgents() {
   const [activeTab, setActiveTab] = useState(agentTypes[0]);
   return (
-    
-        <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
+    <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
+      {/* <div className="space-x-3 mb-4">
+        {agentTypes.map((item, index) => (
+          <button
+            className={` ${
+              activeTab.id === item.id
+                ? "bg-tertiary text-white"
+                : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] "
+            } transition-all  rounded-full px-10 py-3 `}
+            onClick={() => setActiveTab(item)}
+          >
+            {item.name}
+          </button>
+        ))}
+      </div> */}
 
-          <div className="space-x-3 mb-4" >
-            {
-                agentTypes.map((item, index) => (
-                        <button 
-                            className={` ${activeTab.id === item.id ? "bg-tertiary text-white" : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] " } transition-all  rounded-full px-10 py-3 `}
-                            onClick={() => setActiveTab(item)}
-                         >{item.name}
-                        </button>
-                ))
-            }
-            </div>
+      {/* {activeTab.id === "agents" && <Agents />}
+      {activeTab.id === "unassigned-agents" && <UnassignedAgents />} */}
 
-          
-             
-               {activeTab.id === "agents" && <Agents />}
-               {activeTab.id === "unassigned-agents" && <UnassignedAgents />}
-               
-             
-         
-        </div>
-  )
+      <Agents />
+    </div>
+  );
 }
 
-function Agents(){
+function Agents() {
+  const navigate = useNavigate();
   const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -108,6 +104,7 @@ function Agents(){
   const [filteredAgents, setFilteredAgents] = useState([]);
   const [pendingSearch, setPendingSearch] = useState(0);
   const [topPerformer, setTopPerformer] = useState("");
+  const [addAgent, setAddAgent] = useState(false);
 
   const fetchData = useCallback(async () => {
     if (user?.attributes?.sub) {
@@ -121,7 +118,11 @@ function Agents(){
 
         const [totalSearches, agents, pendingSearches, topPerformerObj] =
           await Promise.all([
-            getAgentsTotalSearches(user.attributes.sub, currentMonthStart, nextMonthStart),
+            getAgentsTotalSearches(
+              user.attributes.sub,
+              currentMonthStart,
+              nextMonthStart
+            ),
             fetchAgentsWithSearchCount(user.attributes.sub),
             getPendingAgentSearches(user.attributes.sub),
             getTopPerformerAgent(user.attributes.sub),
@@ -160,7 +161,9 @@ function Agents(){
     if (agents) {
       const filtered = showDeleted
         ? agents
-        : agents.filter((agent) => agent.status !== CONSTANTS.USER_STATUS.DELETED);
+        : agents.filter(
+            (agent) => agent.status !== CONSTANTS.USER_STATUS.DELETED
+          );
       setFilteredAgents(filtered);
     }
   }, [agents, showDeleted]);
@@ -168,7 +171,9 @@ function Agents(){
   const unAssignAgent = async (agentId) => {
     const result = await UnassignAgent(agentId);
     if (result) {
-      setAgents((prevAgents) => prevAgents.filter((elem) => elem.agentId !== agentId));
+      setAgents((prevAgents) =>
+        prevAgents.filter((elem) => elem.agentId !== agentId)
+      );
       toast.success("Agent UnAssigned Successfully.");
       handleCreateAuditLog("UNASSIGN", {
         detail: `Unassigned Agent ${agentId}`,
@@ -203,7 +208,11 @@ function Agents(){
   };
 
   const handleDelete = async (agent) => {
-    if (window.confirm(`Are you sure you want to delete agent ${agent.agentName}? This is a soft delete.`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete agent ${agent.agentName}? This is a soft delete.`
+      )
+    ) {
       setDeletingAgentId(agent.id);
       try {
         await deleteUser(agent.id, agent.email, CONSTANTS.USER_TYPES.AGENT);
@@ -211,7 +220,9 @@ function Agents(){
         fetchData();
       } catch (error) {
         console.error("Failed to delete agent:", error);
-        toast.error(`Failed to delete agent. ${error?.response?.data?.message || ""}`);
+        toast.error(
+          `Failed to delete agent. ${error?.response?.data?.message || ""}`
+        );
       } finally {
         setDeletingAgentId(null);
       }
@@ -219,7 +230,11 @@ function Agents(){
   };
 
   const handleUndelete = async (agent) => {
-    if (window.confirm(`Are you sure you want to restore agent ${agent.agentName}?`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to restore agent ${agent.agentName}?`
+      )
+    ) {
       setUndeletingAgentId(agent.id);
       try {
         await undeleteUser(agent.id, agent.email, CONSTANTS.USER_TYPES.AGENT);
@@ -227,7 +242,9 @@ function Agents(){
         fetchData();
       } catch (error) {
         console.error("Failed to restore agent:", error);
-        toast.error(`Failed to restore agent. ${error?.response?.data?.message || ""}`);
+        toast.error(
+          `Failed to restore agent. ${error?.response?.data?.message || ""}`
+        );
       } finally {
         setUndeletingAgentId(null);
       }
@@ -236,125 +253,253 @@ function Agents(){
 
   return (
     <>
-    <AddUserModal
+      <AddUserModal
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         userType="agent"
         setUser={setAgents}
         agents={agents} // Pass agents to check for duplicates
-    />
-         <div className="flex items-center gap-2 justify-end mb-3" >
-          <Checkbox
-            id="show-deleted-checkbox"
-            className="border-2 size-5 cursor-pointer bg-white"
-            checked={showDeleted}
-            onCheckedChange={(value) => setShowDeleted(value)}
-          />
-          <Label htmlFor="show-deleted-checkbox" className="text-sm mb-0" >Show Deleted</Label>
+      />
+      <AddAgentByBrokerModal
+        open={addAgent}
+        onOpenChange={() => setAddAgent(false)}
+      />
+      {/* <div className="flex items-center gap-2 justify-end mb-3">
+        <Checkbox
+          id="show-deleted-checkbox"
+          className="border-2 size-5 cursor-pointer bg-white"
+          checked={showDeleted}
+          onCheckedChange={(value) => setShowDeleted(value)}
+        />
+        <Label htmlFor="show-deleted-checkbox" className="text-sm mb-0">
+          Show Deleted
+        </Label>
+      </div> */}
+      <div className="w-full  flex flex-wrap items-center justify-between gap-3 mb-4 rounded-md">
+        {/* Left Section */}
+        <div className="flex items-center gap-5 w-full sm:w-auto">
+          <p className="text-xl font-semibold text-[#4C0D0D] whitespace-nowrap">
+            All Agents
+          </p>
+          <div className="relative w-full sm:w-[220px]">
+            <Input
+              type="text"
+              placeholder="Search"
+              className="h-[40px] rounded-md pl-8 border border-[#E2DAD5] bg-white text-[#4C0D0D] placeholder:text-[#B6AAA5] focus-visible:ring-0 focus-visible:ring-offset-0"
+            />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="absolute left-2.5 top-3 h-4 w-4 text-[#B6AAA5]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="1.8"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z"
+              />
+            </svg>
+          </div>
         </div>
-      
-        <div className="bg-white !p-4 rounded-xl" >
 
-            <Table className=""  >
-              <TableHeader className="bg-[#F5F0EC]" >
-                <TableRow>
-                  <TableHead className="w-[100px]">Sr. No.</TableHead>
-                  <TableHead>Agent Name</TableHead>
-                  <TableHead>Searchers This Month</TableHead>
-                  <TableHead>Last Login</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Reinvite</TableHead>
-                  <TableHead>Action</TableHead>
-                  <TableHead>Delete</TableHead>
+        {/* Right Section */}
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <Button
+            variant="outline"
+            className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
+          >
+            <Download className="w-4 h-4" />
+            Download Template
+          </Button>
+
+          <Button
+            variant="outline"
+            className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
+          >
+            <Upload className="w-4 h-4" />
+            Upload Template
+          </Button>
+
+          <Button
+            onClick={() => setAddAgent(true)}
+            className="h-[36px] bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[13px] font-medium rounded-md flex items-center gap-1.5 px-3"
+          >
+            <PlusCircle className="w-4 h-4" />
+            Add Agent
+          </Button>
+        </div>
+      </div>
+      <div className="bg-white !p-4 rounded-xl">
+        <Table className="">
+          <TableHeader className="bg-[#F5F0EC]">
+            <TableRow>
+              <TableHead className="w-[100px]">Sr. No.</TableHead>
+              <TableHead>Agent Name</TableHead>
+              <TableHead className="text-center">
+                Searchers This Month
+              </TableHead>
+              <TableHead>Last Login</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-center">Reinvite</TableHead>
+              <TableHead className="text-center">Action</TableHead>
+              {/* <TableHead>Delete</TableHead> */}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={8}
+                  className="font-medium text-center py-10 text-muted-foreground"
+                >
+                  Loading...
+                </TableCell>
+              </TableRow>
+            ) : filteredAgents?.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={8}
+                  className="font-medium text-center py-10 text-muted-foreground"
+                >
+                  No Records found.
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredAgents?.map((item, index) => (
+                <TableRow key={item.id}>
+                  <TableCell className="font-medium">{index + 1}</TableCell>
+                  <TableCell>{item.agentName}</TableCell>
+                  <TableCell className="text-center">
+                    {item.totalSearches}
+                  </TableCell>
+                  <TableCell>{getFormattedDateTime(item.lastLogin)}</TableCell>
+                  <TableCell>
+                    <Badge
+                      className={`${
+                        item?.status === "Active"
+                          ? "bg-[#E9F3E9] text-[#1E8221]"
+                          : item?.status === "Unconfirmed"
+                          ? "bg-[#FFF3D9] text-[#A2781E]"
+                          : "bg-[#FFE3E2] text-[#FF5F59]"
+                      } text-[13px] font-medium px-3 py-1 rounded-md`}
+                    >
+                      {item?.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <UserPlus
+                      className="w-5 h-5 mx-auto"
+                      // className={` text-sm`}
+                      disabled={
+                        item.status !== "UNCONFIRMED" || !!reinvitingAgentId
+                      }
+                      onClick={() => handleReinvite(item)}
+                      // variant="outline"
+                      // size="sm"
+                    />
+                    {/* {reinvitingAgentId === item.id
+                        ? "Sending..."
+                        : "Reinvite"} */}
+                  </TableCell>
+                  <TableCell className="text-center" >
+                    <div className="">
+                      <Button size="icon" className="text-sm" variant="ghost">
+                        <PencilLine />
+                      </Button>
+                      <Button
+                        size="icon"
+                        className="text-sm"
+                        variant="ghost"
+                        onClick={() =>
+                          navigate(`/broker/agent-property-details/123`)
+                        }
+                      >
+                        <Eye />
+                      </Button>
+                      <Button size="icon" className="text-sm" variant="ghost">
+                        <Trash2 />
+                      </Button>
+                      {/* {item.status !== "UNCONFIRMED" && (
+                        <>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger>
+                            
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  unAssignAgent(item.id, item.agentId)
+                                }
+                              >
+                                Unassign
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  toggleAgentStatus(
+                                    item.agentId,
+                                    item.status === "INACTIVE"
+                                      ? "ACTIVE"
+                                      : "INACTIVE"
+                                  )
+                                }
+                              >
+                                {item.status === "ACTIVE"
+                                  ? "Inactive"
+                                  : "Active"}
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </>
+                      )} */}
+                    </div>
+                  </TableCell>
+                  {/* <TableCell>
+                    {item.status === CONSTANTS.USER_STATUS.DELETED ? (
+                      <Button
+                        className="text-sm"
+                        size="sm"
+                        disabled={
+                          undeletingAgentId === item.id ||
+                          reinvitingAgentId ||
+                          deletingAgentId
+                        }
+                        onClick={() => handleUndelete(item)}
+                      >
+                        {undeletingAgentId === item.id
+                          ? "Restoring..."
+                          : "Undelete"}
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        className="text-sm"
+                        variant="destructive"
+                        disabled={
+                          deletingAgentId === item.id ||
+                          reinvitingAgentId ||
+                          undeletingAgentId
+                        }
+                        onClick={() => handleDelete(item)}
+                      >
+                        {deletingAgentId === item.id ? "Deleting..." : "Delete"}
+                      </Button>
+                    )}
+                  </TableCell> */}
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {
-                  loading?
-                  <TableRow >
-                    <TableCell colSpan={8} className="font-medium text-center py-10 text-muted-foreground">Loading...</TableCell>
-                  </TableRow> :
-                  filteredAgents?.length === 0 ?
-                  <TableRow >
-                    <TableCell colSpan={8} className="font-medium text-center py-10 text-muted-foreground">No Records found.</TableCell>
-                  </TableRow>
-                  :
-                  filteredAgents?.map((item, index) => (
-                    <TableRow key={item.id}>
-                      <TableCell className="font-medium">{index + 1}</TableCell>
-                      <TableCell>{item.agentName}</TableCell>
-                      <TableCell>{item.totalSearches}</TableCell>
-                      <TableCell>{getFormattedDateTime(item.lastLogin)}</TableCell>
-                      <TableCell>{item.status}</TableCell>
-                      <TableCell>
-                        <Button
-                            className={` text-sm`}
-                            disabled={item.status !== "UNCONFIRMED" || !!reinvitingAgentId}
-                            onClick={() => handleReinvite(item)}
-                            variant="outline"
-                            size='sm'
-                          >
-                            {reinvitingAgentId === item.id ? "Sending..." : "Reinvite"}
-                        </Button>
-                      </TableCell>
-                      <TableCell>
-                        <div className="dropdown">
-                        {item.status !== "UNCONFIRMED" && (
-                          <>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
-                            <DropdownMenu>
-                              <DropdownMenuTrigger>
-                                <Button size="icon" className="text-sm" variant="ghost" > <PencilLine /></Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent>
-                                <DropdownMenuItem onClick={() => unAssignAgent(item.id, item.agentId)}>Unassign</DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => toggleAgentStatus(item.agentId, item.status === "INACTIVE" ? "ACTIVE" : "INACTIVE")}>
-                                  {item.status === "ACTIVE" ? "Inactive" : "Active"}
-                                  </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </>
-                        )}
-                      </div>
-                      </TableCell>
-                      <TableCell>
-                        {item.status === CONSTANTS.USER_STATUS.DELETED ? (
-                          <Button
-                            className="text-sm"
-                            size="sm"
-                            disabled={undeletingAgentId === item.id || reinvitingAgentId || deletingAgentId}
-                            onClick={() => handleUndelete(item)}
-                          >
-                            {undeletingAgentId === item.id ? "Restoring..." : "Undelete"}
-                          </Button>
-                        ) : (
-                          <Button
-                            size="sm"
-                            className="text-sm"
-                            variant="destructive"
-                            disabled={deletingAgentId === item.id || reinvitingAgentId || undeletingAgentId}
-                            onClick={() => handleDelete(item)}
-                          >
-                            {deletingAgentId === item.id ? "Deleting..." : "Delete"}
-                          </Button>
-                        )}
-                      </TableCell>
-                    </TableRow> 
-                  ))
-                }
-
-              </TableBody>
-            </Table>
-        </div>
-     
-    {/* </div> */}
+      {/* </div> */}
     </>
   );
-};
+}
 
-
-function UnassignedAgents(){
-
+function UnassignedAgents() {
   const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -431,93 +576,97 @@ function UnassignedAgents(){
     }
   }, [agents, showDeleted]);
   return (
-   <>
-       <div className="flex items-center gap-2 justify-end mb-3" >
-                <Checkbox
-                  id="show-deleted-checkbox"
-                  className="border-2 size-5 cursor-pointer bg-white"
-                  checked={showDeleted}
-                  onCheckedChange={(value) => setShowDeleted(value)}
-                />
-                <Label htmlFor="show-deleted-checkbox" className="text-sm mb-0" >Show Deleted</Label>
-              </div>
-     <div className="bg-white !p-4 rounded-xl"  >
-
-
-                  <Table className=""  >
-                        <TableHeader className="bg-[#F5F0EC]" >
-                          <TableRow>
-                            <TableHead className="w-[100px]">Sr. No.</TableHead>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Assign</TableHead>
-                            <TableHead>Delete</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody >
-                          {
-                            isLoading ?
-                            <TableRow >
-                              <TableCell colSpan={6} className="font-medium text-center py-10 text-muted-foreground">Loading...</TableCell>
-                            </TableRow>
-                            :
-                            filteredAgents?.length === 0 ?
-                            <TableRow >
-                              <TableCell colSpan={6} className="font-medium text-center py-10 text-muted-foreground">No Records found.</TableCell>
-                            </TableRow>
-                            :
-                            filteredAgents?.map((item, index) => (
-                              <TableRow key={item.id} >
-                                <TableCell className="font-medium">{index + 1}</TableCell>
-                                <TableCell>{item.name}</TableCell>
-                                <TableCell> {item.email}</TableCell>
-                                <TableCell>{item.status}</TableCell>
-                                <TableCell>
-                                 <Button
-                                    size="sm"
-                                    className={`text-sm`}
-                                    onClick={() => handleAssignAgent(item.id, item.name)}
-                                  >
-                                   Assign
-                                </Button>
-                                </TableCell>
-                                <TableCell>
-                                    {item.status === CONSTANTS.USER_STATUS.DELETED ? (
-                                      <Button
-                                        onClick={() => handleUndeleteAgent(item.id, item.name, item.email)}
-                                        className="text-sm"
-                                        size="sm"
-                                      >
-                                        Undelete
-                                      </Button>
-                                    ) : (
-                                      <Button
-                                        onClick={() => handleDeleteAgent(item.id, item.name, item.email)}
-                                        className="text-sm"
-                                        size="sm"
-                                        variant="destructive"
-                                      >
-                                        Delete
-                                      </Button>
-                                    )}
-                                </TableCell>
-                               
-                              </TableRow> 
-                            ))
-                          }
-          
-                        </TableBody>
-                      </Table>
-
-       
+    <>
+      <div className="flex items-center gap-2 justify-end mb-3">
+        <Checkbox
+          id="show-deleted-checkbox"
+          className="border-2 size-5 cursor-pointer bg-white"
+          checked={showDeleted}
+          onCheckedChange={(value) => setShowDeleted(value)}
+        />
+        <Label htmlFor="show-deleted-checkbox" className="text-sm mb-0">
+          Show Deleted
+        </Label>
       </div>
-   </>
-
-  )
+      <div className="bg-white !p-4 rounded-xl">
+        <Table className="">
+          <TableHeader className="bg-[#F5F0EC]">
+            <TableRow>
+              <TableHead className="w-[100px]">Sr. No.</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Assign</TableHead>
+              <TableHead>Delete</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  className="font-medium text-center py-10 text-muted-foreground"
+                >
+                  Loading...
+                </TableCell>
+              </TableRow>
+            ) : filteredAgents?.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  className="font-medium text-center py-10 text-muted-foreground"
+                >
+                  No Records found.
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredAgents?.map((item, index) => (
+                <TableRow key={item.id}>
+                  <TableCell className="font-medium">{index + 1}</TableCell>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell> {item.email}</TableCell>
+                  <TableCell>{item.status}</TableCell>
+                  <TableCell>
+                    <Button
+                      size="sm"
+                      className={`text-sm`}
+                      onClick={() => handleAssignAgent(item.id, item.name)}
+                    >
+                      Assign
+                    </Button>
+                  </TableCell>
+                  <TableCell>
+                    {item.status === CONSTANTS.USER_STATUS.DELETED ? (
+                      <Button
+                        onClick={() =>
+                          handleUndeleteAgent(item.id, item.name, item.email)
+                        }
+                        className="text-sm"
+                        size="sm"
+                      >
+                        Undelete
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() =>
+                          handleDeleteAgent(item.id, item.name, item.email)
+                        }
+                        className="text-sm"
+                        size="sm"
+                        variant="destructive"
+                      >
+                        Delete
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </>
+  );
 }
 
 // export default ManageAgents;
-
-
-

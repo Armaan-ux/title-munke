@@ -1,11 +1,12 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { Auth } from "aws-amplify";
 import {
-    getAdminDetails,
-    updateAdmin,
-    updateAgent,
-    updateBroker,
+  getAdminDetails,
+  updateAdmin,
+  updateAgent,
+  updateBroker,
 } from "../components/service/userAdmin";
+import { useNavigate } from "react-router-dom";
 
 const UserContext = createContext();
 
@@ -14,9 +15,14 @@ export const useUser = () => {
 };
 
 export const UserProvider = ({ children }) => {
+
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [memberModal, setMemberModal] = useState(true);
+  const [paymentModal, setPaymentModal] = useState(false);
+  const [paymentSuccessModal, setPaymentSuccessModal] = useState(false);
+  const [paymentFailedModal, setPaymentFailedModal] = useState(false);
 
   useEffect(() => {
     const checkUserSession = async () => {
@@ -44,16 +50,17 @@ export const UserProvider = ({ children }) => {
 
       setUser(user); // Set the user state
       setIsAuthenticated(true);
-      const userGroups = user?.signInUserSession?.idToken?.payload["cognito:groups"] || [];
+      const userGroups =
+        user?.signInUserSession?.idToken?.payload["cognito:groups"] || [];
       const userId = user?.attributes?.sub;
       let input = {
-          id: user?.attributes?.sub,
-          lastLogin: new Date().toISOString(),
+        id: user?.attributes?.sub,
+        lastLogin: new Date().toISOString(),
       };
       if (userGroups.includes("agent")) {
-          updateAgent(userId, input);
+        updateAgent(userId, input);
       } else if (userGroups.includes("broker")) {
-          updateBroker(userId, input);
+        updateBroker(userId, input);
       } else if (userGroups.includes("admin")) {
         const admin = await getAdminDetails(userId);
         if (admin.status === "UNCONFIRMED") {
@@ -75,10 +82,27 @@ export const UserProvider = ({ children }) => {
     await Auth.signOut();
     setUser(null);
     setIsAuthenticated(false);
+    window.location.href = "/login";
   };
 
   return (
-    <UserContext.Provider value={{ user, signIn, signOut, isAuthenticated, isLoading }}>
+    <UserContext.Provider
+      value={{
+        user,
+        signIn,
+        signOut,
+        isAuthenticated,
+        isLoading,
+        setMemberModal,
+        memberModal,
+        setPaymentModal,
+        paymentModal,
+        setPaymentSuccessModal,
+        paymentSuccessModal,
+        setPaymentFailedModal,
+        paymentFailedModal,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

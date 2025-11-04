@@ -11,9 +11,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { EyeIcon, PencilLine, PlusCircle, Trash2 } from "lucide-react";
+import { EyeIcon, PencilLine, PlusCircle, Trash2, UserPlus } from "lucide-react";
 import AddUserModal from "../Modal/AddUserModal";
 import AgentList from "../Modal/AgentList";
 import AddAgentByAdminModal from "../Modal/AddAgentByAdminModal";
@@ -22,9 +22,17 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import { toast } from "react-toastify";
-import { CONSTANTS, deleteUser, getActiveBrokers, getBrokersWithSearchCount, getTotalBrokers, getTotalBrokerSearchesThisMonth, updateBrokerStatus } from "../service/userAdmin";
+import {
+  CONSTANTS,
+  deleteUser,
+  getActiveBrokers,
+  getBrokersWithSearchCount,
+  getTotalBrokers,
+  getTotalBrokerSearchesThisMonth,
+  updateBrokerStatus,
+} from "../service/userAdmin";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,121 +43,143 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-
+} from "@/components/ui/alert-dialog";
+import { Badge } from "../ui/badge";
+import AddAdminModal from "../Modal/AddAdminModal";
 
 const userTypes = [
-    {
-        name: "Admin",
-        id: "admin" 
-    },
-    {
-        name: "Broker",
-        id: "broker"
-    },
-    // {
-    //     name: "Agent",
-    //     id: "agent" 
-    // }
-]
-
+  {
+    name: "Admin",
+    id: "admin",
+  },
+  {
+    name: "Broker",
+    id: "broker",
+  },
+  {
+    name: "Agent",
+    id: "agent",
+  },
+];
 
 export default function Users() {
+  const [activeTab, setActiveTab] = useState(userTypes[0]);
 
-    const [activeTab, setActiveTab] = useState(userTypes[0]);
+  return (
+    <div className="bg-[#F5F0EC] rounded-lg px-7 py-4 my-4 text-secondary">
+      <div className="space-x-3 mb-4">
+        {userTypes.map((item, index) => (
+          <button
+            key={item.id}
+            className={` ${
+              activeTab.id === item.id
+                ? "bg-tertiary text-white"
+                : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] "
+            } transition-all  rounded-full px-10 py-3 `}
+            onClick={() => setActiveTab(item)}
+          >
+            {item.name}
+          </button>
+        ))}
+      </div>
 
-    return (
-        <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
-
-          <div className="space-x-3 mb-4" >
-            {
-                userTypes.map((item, index) => (
-                        <button 
-                            key={item.id}
-                            className={` ${activeTab.id === item.id ? "bg-tertiary text-white" : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] " } transition-all  rounded-full px-10 py-3 `}
-                            onClick={() => setActiveTab(item)}
-                         >{item.name}
-                        </button>
-                ))
-            }
-            </div>
-
-          
-             
-               {activeTab.id === "admin" && <Admins />}
-               {activeTab.id === "broker" && <AdminBrokersList />}
-               
-             
-         
-        </div>
-    )
+      {activeTab.id === "admin" && <Admins />}
+      {activeTab.id === "broker" && <AdminBrokersList />}
+      {activeTab.id === "agent" && <Agents />}
+    </div>
+  );
 }
 
-
-
-function Admins(){
-
+function Admins() {
   const [isOpen, setIsOpen] = useState(false);
-    const [admins, setAdmins] = useState([]);
-  
-    useEffect(() => {
-      const getAdmins = async () => {
-        const response = await API.graphql({
-          query: listAdmins,
-        });
-        const { items } = response.data.listAdmins;
-        setAdmins(items);
-      };
-      getAdmins();
-    }, []);
-  return(
-            <div className="bg-white !p-4 rounded-xl" >
-              <AddUserModal 
-                setIsOpen={setIsOpen}
-                userType="admin"
-                setUser={setAdmins}
-                isOpen={isOpen}
-              />
-                <div className="flex justify-between gap-4 items-center mb-4" >
-                    <p>All Admins</p>
-                    <Button variant="secondary" onClick={() => setIsOpen(true)} >  <PlusCircle /> Add Admin</Button>
-                </div>
-    
-                <Table className=""  >
-                  <TableHeader className="bg-[#F5F0EC]" >
-                    <TableRow>
-                      <TableHead className="w-[100px]">Sr. No.</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {
-                      admins?.length === 0 ?
-                      <TableRow >
-                        <TableCell colSpan={5} className="font-medium text-center py-10 text-muted-foreground">No Records found.</TableCell>
-                      </TableRow>
-                      :
-                      admins?.map((item, index) => (
-                        <TableRow key={item.id}>
-                          <TableCell className="font-medium">{index + 1}</TableCell>
-                          <TableCell>{item.name}</TableCell>
-                          <TableCell>{item.email}</TableCell>
-                          <TableCell>{item.status}</TableCell>
-                        </TableRow> 
-                      ))
-                    }
-    
-                  </TableBody>
-                </Table>
+  const [admins, setAdmins] = useState([]);
 
-              </div>
-  )
+  useEffect(() => {
+    const getAdmins = async () => {
+      const response = await API.graphql({
+        query: listAdmins,
+      });
+      const { items } = response.data.listAdmins;
+      setAdmins(items);
+    };
+    getAdmins();
+  }, []);
+  return (
+    <>
+     <AddAdminModal  open={isOpen} onClose={()=> setIsOpen(false)} title="Admin"  />
+    <div className="bg-white !p-4 rounded-xl">
+      {/* <AddUserModal
+        setIsOpen={setIsOpen}
+        userType="admin"
+        setUser={setAdmins}
+        isOpen={isOpen}
+      /> */}
+      <div className="flex justify-between gap-4 items-center mb-4">
+        <p className="text-lg font-medium" >All Admins</p>
+        <Button variant="secondary" onClick={() => setIsOpen(true)}>
+          {" "}
+          <PlusCircle /> Add Admin
+        </Button>
+      </div>
+
+      <Table className="">
+        <TableHeader className="bg-[#F5F0EC]">
+          <TableRow>
+            <TableHead className="">Sr. No.</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead >Status</TableHead>
+            <TableHead >Action</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {admins?.length === 0 ? (
+            <TableRow>
+              <TableCell
+                colSpan={5}
+                className="font-medium text-center py-10 text-muted-foreground"
+              >
+                No Records found.
+              </TableCell>
+            </TableRow>
+          ) : (
+            admins?.map((item, index) => (
+              <TableRow key={item.id}>
+                <TableCell className="font-medium ">{index + 1}</TableCell>
+                <TableCell className="font-medium text-black" >{item.name}</TableCell>
+                <TableCell>{item.email}</TableCell>
+                <TableCell>
+                  <Badge
+                    className={`${
+                      item?.status === "ACTIVE"
+                        ? "bg-[#E9F3E9] text-[#1E8221]"
+                        : "bg-[#FFF3D9] text-[#A2781E]"
+                    } text-[13px] font-medium px-3 py-1 rounded-full`}
+                  >
+                    {item?.status}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2 flex-row">
+                    <Button size="icon" className="text-md" variant="ghost">
+                      <PencilLine />
+                    </Button>
+                    <Button size="icon" className="text-md" variant="ghost">
+                      <Trash2 />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+    </div>
+    </>
+  );
 }
 
-function AdminBrokersList(){
-
+function AdminBrokersList() {
   const [isBrokerListLoading, setIsBrokerListLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isAgentCreationModalOpen, setIsAgentCreationModalOpen] =
@@ -170,26 +200,27 @@ function AdminBrokersList(){
   const [totalBrokerSearchThisMonthCount, setTotalBrokerSearchThisMonthCount] =
     useState(0);
   const [deletingBrokerId, setDeletingBrokerId] = useState(null);
-    
 
-    const getBroker = async () => {
-      try {
-        setLoading(true);
-        const totalBrokerDict = await getTotalBrokers();
-        const ActiveBrokers = await getActiveBrokers();
-        const TotalBrokerSearchesThisMonthDict = await getTotalBrokerSearchesThisMonth();
-        setTotalBrokerSearchThisMonthCount( TotalBrokerSearchesThisMonthDict.totalSearches );
-        setTotalBrokerCount(totalBrokerDict?.totalBrokers);
-        setTotalActiveBrokerCount(ActiveBrokers?.length);
-        setActiveBrokers(ActiveBrokers); // Store the fetched active brokers in state
-      } catch (err) {
-        console.error("Error", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const getBroker = async () => {
+    try {
+      setLoading(true);
+      const totalBrokerDict = await getTotalBrokers();
+      const ActiveBrokers = await getActiveBrokers();
+      const TotalBrokerSearchesThisMonthDict =
+        await getTotalBrokerSearchesThisMonth();
+      setTotalBrokerSearchThisMonthCount(
+        TotalBrokerSearchesThisMonthDict.totalSearches
+      );
+      setTotalBrokerCount(totalBrokerDict?.totalBrokers);
+      setTotalActiveBrokerCount(ActiveBrokers?.length);
+      setActiveBrokers(ActiveBrokers); // Store the fetched active brokers in state
+    } catch (err) {
+      console.error("Error", err);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-
     getBroker();
     const interval = setInterval(getBroker, 1800000);
 
@@ -218,26 +249,28 @@ function AdminBrokersList(){
   };
 
   const handleBrokerStatus = async (elem) => {
-      const { id: brokerId, status: currentStatus } = elem;
-      const newStatus = currentStatus === "ACTIVE" ? "INACTIVE" : "ACTIVE";
-      try {
-          setUpdatingStatusId(brokerId);
-          await updateBrokerStatus(brokerId, newStatus);
-          setBrokers((currentBrokers) =>
-            currentBrokers.map((broker) =>
-                broker.id === brokerId
-                  ? { ...broker, status: newStatus } // Create a new object for the updated item
-                  : broker // Return all other items as they are
-            )
-          );
-      } catch (error) {
-        // Use the specific error message from the backend if available
-        const errorMessage = error.response?.data?.message || "Failed to update broker status";
-        console.error("Failed to update broker status:", error);
-        toast.error(errorMessage);
-      } finally {
-        setUpdatingStatusId(null);
-      }
+    const { id: brokerId, status: currentStatus } = elem;
+    const newStatus = currentStatus === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+    try {
+      setUpdatingStatusId(brokerId);
+      await updateBrokerStatus(brokerId, newStatus);
+      setBrokers((currentBrokers) =>
+        currentBrokers.map(
+          (broker) =>
+            broker.id === brokerId
+              ? { ...broker, status: newStatus } // Create a new object for the updated item
+              : broker // Return all other items as they are
+        )
+      );
+    } catch (error) {
+      // Use the specific error message from the backend if available
+      const errorMessage =
+        error.response?.data?.message || "Failed to update broker status";
+      console.error("Failed to update broker status:", error);
+      toast.error(errorMessage);
+    } finally {
+      setUpdatingStatusId(null);
+    }
   };
 
   const refreshCurrentAgentList = async () => {
@@ -268,97 +301,120 @@ function AdminBrokersList(){
     }
   };
 
-
-    const handleDelete = async (broker) => {
+  const handleDelete = async (broker) => {
     // if (window.confirm(`Are you sure you want to delete agent ${broker.agentName}? This is a soft delete.`)) {
     // }
-      setDeletingBrokerId(broker.id);
-      try {
-        await deleteUser(broker.id, broker.email, CONSTANTS.USER_TYPES.BROKER);
-        toast.success(`Broker ${broker.name} has been deleted.`);
-        // Call the refresh function passed from the parent component.
-        // if (onListRefresh) onListRefresh();
-        getBroker()
-      } catch (error) {
-        console.error("Failed to delete broker:", error);
-        toast.error(`Failed to delete broker. ${error?.response?.data?.message || ""}`);
-      } finally {
-        setDeletingBrokerId(null);
-      }
+    setDeletingBrokerId(broker.id);
+    try {
+      await deleteUser(broker.id, broker.email, CONSTANTS.USER_TYPES.BROKER);
+      toast.success(`Broker ${broker.name} has been deleted.`);
+      // Call the refresh function passed from the parent component.
+      // if (onListRefresh) onListRefresh();
+      getBroker();
+    } catch (error) {
+      console.error("Failed to delete broker:", error);
+      toast.error(
+        `Failed to delete broker. ${error?.response?.data?.message || ""}`
+      );
+    } finally {
+      setDeletingBrokerId(null);
+    }
   };
 
-  return(
-        <>
+  return (
+    <>
+      {/* <AgentList
+        data={agentList}
+        isOpen={isAgentListOpen}
+        // isOpen={true}
+        setIsOpen={setIsAgentListOpen}
+        isAgentListLoading={isAgentListLoading}
+        onListRefresh={refreshCurrentAgentList}
+      /> */}
 
-        <AgentList
-          data={agentList}
-          isOpen={isAgentListOpen}
-          // isOpen={true}
-          setIsOpen={setIsAgentListOpen}
-          isAgentListLoading={isAgentListLoading}
-          onListRefresh={refreshCurrentAgentList}
-        />
-      
+      {/* <AddUserModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        userType={"broker"}
+        setUser={setBrokers}
+      /> */}
+{/* 
+      <AddAgentByAdminModal
+        isOpen={isAgentCreationModalOpen}
+        setIsOpen={setIsAgentCreationModalOpen}
+        brokers={activeBrokers}
+      /> */}
+      <AddAdminModal  open={isOpen} onClose={()=> setIsOpen(false)} title="Broker" />
 
-        <AddUserModal
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          userType={"broker"}
-          setUser={setBrokers}
-        />
-      
-      <AddAgentByAdminModal 
-        isOpen={isAgentCreationModalOpen} 
-        setIsOpen={setIsAgentCreationModalOpen} 
-        brokers={activeBrokers} 
-      />
-      
       <div>
+        <div className="bg-white !p-4 rounded-xl">
+          <div className="flex justify-between gap-4 items-center mb-4">
+            <p className="text-lg font-medium" >All Brokers</p>
 
+            <div className="space-x-2">
+              <Button variant="secondary" onClick={() => setIsOpen(true)}>
+                {" "}
+                <PlusCircle /> Add Broker
+              </Button>
+            </div>
+          </div>
 
+          <Table className="">
+            <TableHeader className="bg-[#F5F0EC]">
+              <TableRow>
+                <TableHead>Sr. No.</TableHead>
+                <TableHead>Name</TableHead>
+                {/* <TableHead>Monthly Searches</TableHead>
+                <TableHead>Last Login</TableHead> */}
+                <TableHead>Email</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Action</TableHead>
+                {/* <TableHead>Agent List</TableHead> */}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {brokers?.length === 0 && !isBrokerListLoading ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={8}
+                    className="font-medium text-center py-10 text-muted-foreground"
+                  >
+                    No Records found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                brokers?.map((item, index) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium ">{index + 1}</TableCell>
+                    <TableCell className="font-medium text-black" >{item.name}</TableCell>
+                    {/* <TableCell>{item.totalSearches}</TableCell> */}
+                    {/* <TableCell>
+                      {getFormattedDateTime(item.lastLogin)}
+                    </TableCell> */}
+                    {/* <TableCell>{item.email}</TableCell> */}
+                    <TableCell>
+                      {" "}
+                      <Badge
+                        className={`${
+                          item?.status === "ACTIVE"
+                            ? "bg-[#E9F3E9] text-[#1E8221]"
+                            : "bg-[#FFF3D9] text-[#A2781E]"
+                        } text-[13px] font-medium px-3 py-1 rounded-full`}
+                      >
+                        {item?.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2 flex-row">
+                        <Button size="icon" className="text-md" variant="ghost">
+                          <PencilLine />
+                        </Button>
+                        <Button size="icon" className="text-md" variant="ghost">
+                          <Trash2 />
+                        </Button>
+                      </div>
 
-           <div className="bg-white !p-4 rounded-xl" >
-
-                <div className="flex justify-between gap-4 items-center mb-4" >
-                    <p>All Brokers</p>
-
-                    <div className="space-x-2" > 
-                      <Button variant="secondary" onClick={() => setIsAgentCreationModalOpen(true)} >  <PlusCircle /> Add Agent</Button>
-                      <Button variant="secondary" onClick={() => setIsOpen(true)} >  <PlusCircle /> Add Broker</Button>
-                    </div>
-                </div>
-    
-                <Table className=""  >
-                  <TableHeader className="bg-[#F5F0EC]" >
-                    <TableRow>
-                      <TableHead className="w-[100px]">Sr. No.</TableHead>
-                      <TableHead>Broker Name</TableHead>
-                      <TableHead>Monthly Searches</TableHead>
-                      <TableHead>Last Login</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Action</TableHead>
-                      <TableHead>Agent List</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {
-                      brokers?.length === 0 && !isBrokerListLoading ?
-                      <TableRow >
-                        <TableCell colSpan={8} className="font-medium text-center py-10 text-muted-foreground">No Records found.</TableCell>
-                      </TableRow>
-                      :
-                      brokers?.map((item, index) => (
-                        <TableRow key={item.id}>
-                          <TableCell className="font-medium">{index + 1}</TableCell>
-                          <TableCell>{item.name}</TableCell>
-                          <TableCell>{item.totalSearches}</TableCell>
-                          <TableCell>{getFormattedDateTime(item.lastLogin)}</TableCell>
-                          <TableCell>{item.email}</TableCell>
-                          <TableCell>{item.status}</TableCell>
-                          <TableCell>
-
-                             <div >
+                      {/* <div >
                               {item.status !== "UNCONFIRMED" && (
                                 <>
 
@@ -392,41 +448,134 @@ function AdminBrokersList(){
                             </DropdownMenu>
                                 </>
                               )}
-                            </div>
+                            </div> */}
+                    </TableCell>
+                    {/* <TableCell>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => handleFetchAgentListForBroker(item.id)}
+                      >
+                        <EyeIcon />
+                      </Button>
+                    </TableCell> */}
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
 
-                          </TableCell>
-                          <TableCell>
-                            <Button size="icon" variant="ghost" onClick={() =>  handleFetchAgentListForBroker(item.id)} >
-                              <EyeIcon />
-                            </Button>
-                          </TableCell>
-                        </TableRow> 
-                      ))
-                    }
-    
-                  </TableBody>
-                </Table>
-
-                
-          <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground" >
-
-          {isBrokerListLoading && <p>Loading...</p>}
-          {!hasMore && <p>No more data to load.</p>}
-          {brokers?.length > 0 && hasMore && !isBrokerListLoading && (
-            <Button
-              size="sm"
-              className=""
-              onClick={handleFetchBrokersWithSearchCount}
-            >
-              Load More
-            </Button>
-          )}
-
+          <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
+            {isBrokerListLoading && <p>Loading...</p>}
+            {!hasMore && <p>No more data to load.</p>}
+            {brokers?.length > 0 && hasMore && !isBrokerListLoading && (
+              <Button
+                size="sm"
+                className=""
+                onClick={handleFetchBrokersWithSearchCount}
+              >
+                Load More
+              </Button>
+            )}
           </div>
-
-              </div>
-
+        </div>
       </div>
     </>
-  )
+  );
+}
+
+
+function Agents() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [admins, setAdmins] = useState([]);
+
+  useEffect(() => {
+    const getAdmins = async () => {
+      const response = await API.graphql({
+        query: listAdmins,
+      });
+      const { items } = response.data.listAdmins;
+      setAdmins(items);
+    };
+    getAdmins();
+  }, []);
+  return (
+    <>
+     <AddAdminModal  open={isOpen} onClose={()=> setIsOpen(false)}  title="Agent" />
+    <div className="bg-white !p-4 rounded-xl">
+      {/* <AddUserModal
+        setIsOpen={setIsOpen}
+        userType="admin"
+        setUser={setAdmins}
+        isOpen={isOpen}
+      /> */}
+      <div className="flex justify-between gap-4 items-center mb-4">
+        <p className="text-lg font-medium" >All Agents</p>
+        <Button variant="secondary" onClick={() => setIsOpen(true)}>
+          {" "}
+          <PlusCircle /> Add Agent
+        </Button>
+      </div>
+
+      <Table className="">
+        <TableHeader className="bg-[#F5F0EC]">
+          <TableRow>
+            <TableHead>Sr. No.</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-center" >Reinvite</TableHead>
+            <TableHead>Action</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {admins?.length === 0 ? (
+            <TableRow>
+              <TableCell
+                colSpan={5}
+                className="font-medium text-center py-10 text-muted-foreground"
+              >
+                No Records found.
+              </TableCell>
+            </TableRow>
+          ) : (
+            admins?.map((item, index) => (
+              <TableRow key={item.id}>
+                <TableCell className="font-medium">{index + 1}</TableCell>
+                <TableCell className="text-black font-medium" >{item.name}</TableCell>
+                <TableCell>{item.email}</TableCell>
+                <TableCell>
+                  <Badge
+                    className={`${
+                      item?.status === "ACTIVE"
+                        ? "bg-[#E9F3E9] text-[#1E8221]"
+                        : "bg-[#FFF3D9] text-[#A2781E]"
+                    } text-[13px] font-medium px-3 py-1 rounded-full`}
+                  >
+                    {item?.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-center" >
+                    <Button size="icon" className="text-md" variant="ghost">
+                      <UserPlus />
+                    </Button>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2 flex-row">
+                    <Button size="icon" className="text-md" variant="ghost">
+                      <PencilLine />
+                    </Button>
+                    <Button size="icon" className="text-md" variant="ghost">
+                      <Trash2 />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+    </div>
+    </>
+  );
 }

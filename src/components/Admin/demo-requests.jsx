@@ -1,6 +1,4 @@
-import {
-  getFormattedDateTime,
-} from "@/utils";
+import { getFormattedDateTime } from "@/utils";
 import {
   Table,
   TableBody,
@@ -8,99 +6,224 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import { Repeat2 } from "lucide-react";
+import { useState } from "react";
+import { Button } from "../ui/button";
 
 const dummyData = [
-    {
-        id: 1,
-        name: "John Doe",
-        email: "johndoe@example.com",
-        createdAt: "2023-03-01T00:00:00.000Z",
-        type: "Demo Request",
-        teamStrength: "High",
-        description: "Interested in demo",
-        status: "Pending"
-    },
-    {
-        id: 2,
-        name: "Jane Doe",
-        email: "janedoe@example.com",
-        createdAt: "2023-03-01T00:00:00.000Z",
-        type: "Demo Request",
-        teamStrength: "Medium",
-        description: "Interested in demo",
-        status: "Approved"
-    },
-    {
-        id: 3,
-        name: "Bob Smith",
-        email: "bobsmith@example.com",
-        createdAt: "2023-03-01T00:00:00.000Z",
-        type: "Demo Request",
-        teamStrength: "Low",
-        description: "Interested in demo",
-        status: "Rejected"  
-    }
+  {
+    id: 1,
+    name: "John Doe",
+    email: "johndoe@example.com",
+    county: "Kandy",
+    state: "Central",
+    createdAt: "2023-03-01",
+    description: "Interested in demo"
+  },
+  {
+    id: 2,
+    name: "Jane Smith",
+    email: "janesmith@example.com",
+    county: "Colombo",
+    state: "Western",
+    createdAt: "2023-03-05",
+    description: "Requested pricing details"
+  },
+  {
+    id: 3,
+    name: "Michael Brown",
+    email: "michaelb@example.com",
+    county: "Galle",
+    state: "Southern",
+    createdAt: "2023-03-10",
+    description: "Needs callback for demo"
+  },
+  {
+    id: 4,
+    name: "Emily Johnson",
+    email: "emilyj@example.com",
+    county: "Jaffna",
+    state: "Northern",
+    createdAt: "2023-03-12",
+    description: "Looking for enterprise package"
+  },
+  {
+    id: 5,
+    name: "Robert Wilson",
+    email: "robertw@example.com",
+    county: "Matara",
+    state: "Southern",
+    createdAt: "2023-03-18",
+    description: "Interested in long-term contract"
+  },
+  {
+    id: 6,
+    name: "Sophia Davis",
+    email: "sophiad@example.com",
+    county: "Negombo",
+    state: "Western",
+    createdAt: "2023-03-20",
+    description: "Follow-up required next week"
+  },
+  {
+    id: 7,
+    name: "David Miller",
+    email: "davidm@example.com",
+    county: "Kegalle",
+    state: "Sabaragamuwa",
+    createdAt: "2023-03-25",
+    description: "Interested in integration options"
+  },
+  {
+    id: 8,
+    name: "Olivia Garcia",
+    email: "oliviag@example.com",
+    county: "Badulla",
+    state: "Uva",
+    createdAt: "2023-03-28",
+    description: "Asked for technical documentation"
+  },
+  {
+    id: 9,
+    name: "Daniel Martinez",
+    email: "danielm@example.com",
+    county: "Trincomalee",
+    state: "Eastern",
+    createdAt: "2023-04-02",
+    description: "Confirmed demo schedule"
+  },
+  {
+    id: 10,
+    name: "Ava Anderson",
+    email: "avaa@example.com",
+    county: "Kurunegala",
+    state: "North Western",
+    createdAt: "2023-04-06",
+    description: "Needs proposal by next week"
+  }
 ];
 
+
 export default function DemoRequests() {
-    return (
-        <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
+  const [activeTab, setActiveTab] = useState("pending");
+  return (
+    <div className="bg-[#F5F0EC] rounded-lg px-7 py-4 my-4 text-secondary">
+      <div className="space-x-3 mb-4">
+        <button
+          onClick={() => setActiveTab("pending")}
+          className={` ${
+            activeTab === "pending"
+              ? "bg-tertiary text-white hover:bg-tertiary"
+              : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] "
+          } transition-all  rounded-full px-10 py-3 `}
+        >
+          Pending
+        </button>
+        <button
+          onClick={() => setActiveTab("contacted")}
+          className={` ${
+            activeTab === "contacted"
+              ? "bg-tertiary text-white hover:bg-tertiary"
+              : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] "
+          } transition-all  rounded-full px-10 py-3 `}
+        >
+          Contacted
+        </button>
+      </div>
 
-            <div className="space-x-3 mb-4" >
-                <button 
-                    className="bg-tertiary text-white rounded-full px-10 py-3"
-                 >Pending
-                </button>
-                <button
-                    className="bg-white hover:bg-coffee-bg-foreground transition-all cursor-pointer text-primary rounded-full px-10 py-3"
-                >Contacted
-                </button>
-            </div>
-      
-        <div className="bg-white !p-4 rounded-xl" >
-
-            <Table className=""  >
-              <TableHeader className="bg-[#F5F0EC]" >
+      <div className="bg-white !p-4 rounded-xl">
+        {activeTab === "pending" ? (
+          <Table className="">
+            <TableHeader className="bg-[#F5F0EC]">
+              <TableRow>
+                <TableHead className="text-center">Sr. No.</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Email / Phone No.</TableHead>
+                <TableHead>County</TableHead>
+                <TableHead>State</TableHead>
+                <TableHead>Date (Received)</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead>Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {dummyData?.length === 0 ? (
                 <TableRow>
-                  <TableHead className="w-[100px]">Sr. No.</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Date Received</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Team Stength</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Action</TableHead>
+                  <TableCell
+                    colSpan={9}
+                    className="font-medium text-center py-10"
+                  >
+                    No Records found.
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {
-                  dummyData?.length === 0 ?
-                  <TableRow >
-                    <TableCell colSpan={9} className="font-medium text-center py-10">No Records found.</TableCell>
+              ) : (
+                dummyData?.map((item, index) => (
+                  <TableRow key={item.id} >
+                    <TableCell className="font-medium text-center">{index + 1}</TableCell>
+                    <TableCell className="text-black font-medium" >{item.name}</TableCell>
+                    <TableCell>{item.email}</TableCell>
+                    <TableCell>{item.county}</TableCell>
+                    <TableCell>{item.state}</TableCell>
+                    <TableCell>
+                      {/* {new Date(item.createdAt).toLocaleDateString()} */}
+                      {item.createdAt}
+                    </TableCell>
+                    <TableCell>{item.description}</TableCell>
+                    <TableCell className="text-center" >
+                      <Button variant="ghost" size="icon" >
+                        <Repeat2 className="mx-auto size-5"  />
+                      </Button>
+                    </TableCell>
                   </TableRow>
-                  :
-                  dummyData?.map((item, index) => (
-                    <TableRow key={item.id}>
-                      <TableCell className="font-medium">{index + 1}</TableCell>
-                      <TableCell>{item.name}</TableCell>
-                      <TableCell>{item.email}</TableCell>
-                      <TableCell>{new Date(item.createdAt).toLocaleDateString()}</TableCell>
-                      <TableCell>{item.type}</TableCell>
-                      <TableCell>{item.teamStrength}</TableCell>
-                      <TableCell>{item.description}</TableCell>
-                      <TableCell>{item.status}</TableCell>
-                      <TableCell><Repeat2 className="mx-auto" /></TableCell>
-                    </TableRow> 
-                  ))
-                }
-
-              </TableBody>
-            </Table>
-          </div>
-     
+                ))
+              )}
+            </TableBody>
+          </Table>
+        ) : (
+          <Table className="">
+            <TableHeader className="bg-[#F5F0EC]">
+               <TableRow>
+                <TableHead className="text-center">Sr. No.</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Email / Phone No.</TableHead>
+                <TableHead>County</TableHead>
+                <TableHead>State</TableHead>
+                <TableHead>Date (Received)</TableHead>
+                <TableHead>Description</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {dummyData?.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={9}
+                    className="font-medium text-center py-10"
+                  >
+                    No Records found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                dummyData?.slice(5).map((item, index) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium text-center">{index + 1}</TableCell>
+                    <TableCell className="text-black font-medium" >{item.name}</TableCell>
+                    <TableCell>{item.email}</TableCell>
+                    <TableCell>{item.county}</TableCell>
+                    <TableCell>{item.state}</TableCell>
+                    <TableCell>
+                      {/* {new Date(item.createdAt).toLocaleDateString()} */}
+                      {item.createdAt}
+                    </TableCell>
+                    <TableCell>{item.description}</TableCell>
+                
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        )}
+      </div>
     </div>
-    )
+  );
 }

@@ -3,6 +3,7 @@ import { FileSearch2, Logs } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import History from "@/components/common/history";
 import Search from "@/components/common/search";
+import { Link } from "react-router-dom";
 
 const BrokerDashboard = () => {
 
@@ -39,7 +40,9 @@ const BrokerDashboard = () => {
         <div className="bg-[#F5F0EC] p-6 rounded-2xl " >
           <div className="flex justify-between items-center gap-4 mb-6" >
             <p className="text-secondary font-medium text-xl" >Search History</p>
+            <Link to="/agent/search-history">
             <Button variant="outline" > View More </Button>
+            </Link>
           </div>
 
             <History />

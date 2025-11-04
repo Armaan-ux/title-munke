@@ -8,7 +8,7 @@ export const FETCH_LIMIT = 100;
 export const getFormattedDateTime = (lastLoginUTC) => {
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const zonedDate = toZonedTime(new Date(lastLoginUTC), userTimeZone);
-  const formattedDate = format(zonedDate, "yyyy-MM-dd HH:mm:ss", {
+  const formattedDate = format(zonedDate, "MMM dd, yyyy HH:mm a", {
     timeZone: userTimeZone,
   });
   return formattedDate;

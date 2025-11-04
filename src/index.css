@@ -88,6 +88,10 @@ a{
 
   --color-coffee-bg-foreground: var(--coffee-bg-foreground);
 
+  --color-coffee-bg-billing-foreground: var(--coffee-bg-billing-foreground);
+
+  --color-coffee-text-billing: var(--coffee-text-billing);
+
   --color-tertiary-foreground: var(--tertiary-foreground);
 
   --color-muted: var(--muted);
@@ -99,6 +103,8 @@ a{
   --color-accent-foreground: var(--accent-foreground);
 
   --color-destructive: var(--destructive);
+  
+  --color-subscriptions: var(--subscriptions);
 
   --color-border: var(--border);
 
@@ -170,6 +176,10 @@ a{
 
   --coffee-bg-foreground: #E8D0A7;
 
+  --coffee-bg-billing-foreground: #F5F0EC;
+
+  --coffee-text-billing : #A9927F;
+
   --muted: oklch(0.97 0 0);
 
   --muted-foreground: oklch(0.556 0 0);
@@ -179,6 +189,8 @@ a{
   --accent-foreground: oklch(0.205 0 0);
 
   --destructive: oklch(0.577 0.245 27.325);
+  
+  --subscriptions: #FF645E;
 
   --border: oklch(0.922 0 0);
 

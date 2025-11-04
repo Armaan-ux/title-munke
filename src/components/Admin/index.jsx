@@ -6,7 +6,7 @@ function Admin() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate("/admin/users");
+    navigate("/admin/dashboard");
   }, []);
   return null;
 }
