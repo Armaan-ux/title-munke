@@ -19,6 +19,7 @@ import {
   CreditCard,
   ChevronLeft,
 } from "lucide-react";
+import PaymentSetup from "../stripe/payment-form";
 
 const PaymentMethodModal = ({ open, onOpenChange, onSuccess }) => {
   const [screen, setScreen] = useState("select");
@@ -30,18 +31,9 @@ const PaymentMethodModal = ({ open, onOpenChange, onSuccess }) => {
     onOpenChange();
   };
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-            <div
-        className="fixed inset-0 z-40 flex items-center justify-center"
-        style={{
-          backdropFilter: "blur(2px)",
-          WebkitBackdropFilter: "blur(2px)",
-          backgroundColor: "rgba(0,0,0,0.5)",
-        }}
-      >
-      <DialogContent className="max-w-md rounded-2xl p-6 shadow-xl bg-white">
-        {screen === "select" ? (
+  function PaymentForm(){
+    return<>
+     {screen === "select" ? (
           <>
             <DialogHeader>
               <DialogTitle className="text-lg font-semibold text-left text-secondary !font-poppins">
@@ -176,9 +168,25 @@ const PaymentMethodModal = ({ open, onOpenChange, onSuccess }) => {
             </form>
           </>
         )}
+    </>
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <div
+        className="fixed inset-0 z-40 flex items-center justify-center"
+        style={{
+          backdropFilter: "blur(2px)",
+          WebkitBackdropFilter: "blur(2px)",
+          backgroundColor: "rgba(0,0,0,0.5)",
+        }}
+      >
+      <DialogContent className="max-w-md rounded-2xl p-6 shadow-xl bg-white">
+        <PaymentSetup userId="123" />
       </DialogContent>
       </div>
     </Dialog>
   );
 };
 export default PaymentMethodModal;
+

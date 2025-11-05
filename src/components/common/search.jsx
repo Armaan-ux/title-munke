@@ -24,7 +24,7 @@ export default function Search() {
   const [percentage, setPercentage] = useState(null);
   const [zipUrl, setZipUrl] = useState(null);
   const [isAgent, setIsAgent] = useState(false);
-  const { user } = useUser();
+  const { user,  setMemberModal } = useUser();
 
   const ONE_AND_HALF_HOURS = 1.5 * 60 * 60 * 1000;
 
@@ -143,6 +143,10 @@ export default function Search() {
 
   const handleSearch = async (e) => {
     if (e) e.preventDefault();
+    setMemberModal(true);
+    return //disable search to demo the modal
+
+
     if (loading || !address.trim().length || !isChecked) return;
 
     setLoading(true);
