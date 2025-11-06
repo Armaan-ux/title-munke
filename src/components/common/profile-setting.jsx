@@ -80,7 +80,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                   />
                 </div>
 
-                <div className="mb-9">
+                <div>
                   <Label
                     htmlFor="confirm-password"
                     className="text-secondary text-sm"
@@ -98,7 +98,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                   />
                 </div>
 
-                <div className="pt-4 justify-end flex gap-4">
+                <div className="justify-end flex gap-4 items-center mt-7 mb-5">
                   <Button
                     variant="secondary"
                     // className="bg-tertiary text-white hover:bg-[#9C3D26] hover:text-white rounded-md px-12 mb-6 w-[20%]"
