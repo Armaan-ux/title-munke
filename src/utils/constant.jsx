@@ -446,3 +446,5 @@ export const sampleReportItems = [
     ],
   },
 ];
+
+export const TEAMS = ["2", "5", "10", "10+", "50+", "100+"];

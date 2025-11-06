@@ -4,11 +4,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { useState } from "react";
+import { TEAMS } from "@/utils/constant";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "../ui/label";
 
 export default function AddAdminModal({ open, onClose,title }) {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [teamStrength, setTeamStrength] = useState(2)
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -47,6 +57,31 @@ export default function AddAdminModal({ open, onClose,title }) {
               className="border-[#E3D8D2] focus-visible:ring-coffee-bg-foreground bg-white"
             />
           </div>
+          <div>
+              <Label htmlFor="role" className="text-sm text-[#2c150f]">
+                Team Strength <span className="text-red-500">*</span>
+              </Label>
+              <Select
+                onValueChange={(val) =>
+                  setTeamStrength(val)
+                }
+                value={teamStrength}
+              >
+                <SelectTrigger className="mt-1 w-full h-11 text-[#2c150f] border-[#d5c3b5] focus:ring-0">
+                  <SelectValue
+                    placeholder="Select role"
+                    className="text-[#2c150f]"
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {TEAMS.map((item, index) => (
+                    <SelectItem key={index} value={item.toLowerCase()}>
+                      {item}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
           <div>
             <label className="text-sm text-[#6B5E55] mb-1 block">Message (Optional)</label>
