@@ -18,7 +18,7 @@ export default function AddAdminModal({ open, onClose,title }) {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const [teamStrength, setTeamStrength] = useState(2)
+  const [teamStrength, setTeamStrength] = useState("")
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -43,7 +43,7 @@ export default function AddAdminModal({ open, onClose,title }) {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               placeholder="John Marks"
-              className="border-[#E3D8D2] focus-visible:ring-coffee-bg-foreground bg-white"
+              className="bg-white"
             />
           </div>
 
@@ -54,12 +54,12 @@ export default function AddAdminModal({ open, onClose,title }) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="john@emailaddress.com"
-              className="border-[#E3D8D2] focus-visible:ring-coffee-bg-foreground bg-white"
+              className=" bg-white"
             />
           </div>
           <div>
-              <Label htmlFor="role" className="text-sm text-[#2c150f]">
-                Team Strength <span className="text-red-500">*</span>
+              <Label htmlFor="role" className="text-sm text-[#6B5E55] mb-1 block">
+                Team Strength
               </Label>
               <Select
                 onValueChange={(val) =>
@@ -67,9 +67,9 @@ export default function AddAdminModal({ open, onClose,title }) {
                 }
                 value={teamStrength}
               >
-                <SelectTrigger className="mt-1 w-full h-11 text-[#2c150f] border-[#d5c3b5] focus:ring-0">
+                <SelectTrigger className="mt-1 w-full !h-11">
                   <SelectValue
-                    placeholder="Select role"
+                    placeholder="Select strength"
                     className="text-[#2c150f]"
                   />
                 </SelectTrigger>
@@ -90,21 +90,26 @@ export default function AddAdminModal({ open, onClose,title }) {
               onChange={(e) => setMessage(e.target.value)}
               placeholder=""
               rows={10}
-              className="border-[#E3D8D2] focus-visible:ring-coffee-bg-foreground"
+              className=""
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-2 px-4">
+          <div className="flex justify-end gap-3 pt-2 *:flex-1">
             <Button
               type="button"
               onClick={onClose}
-              className="border border-[#550000] bg-transparent text-[#550000] hover:bg-[#F5F0EC] w-[50%]"
-            >
+              variant="outline"
+              size="lg"
+              // className="border border-[#550000] bg-transparent text-[#550000] hover:bg-[#F5F0EC] w-[50%]"
+              // className="w-full"
+              >
               Cancel
             </Button>
             <Button
               type="submit"
-              className="bg-[#550000] hover:bg-[#3D0000] text-white w-[50%]"
+              variant="secondary"
+              size="lg"
+              // className="bg-[#550000] hover:bg-[#3D0000] text-white w-[50%]"
             >
               Invite Agent
             </Button>

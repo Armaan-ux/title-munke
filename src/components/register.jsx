@@ -206,7 +206,7 @@ export default function Register() {
               >
                 <SelectTrigger className="mt-1 w-full h-11 text-[#2c150f] border-[#d5c3b5] focus:ring-0">
                   <SelectValue
-                    placeholder="Select role"
+                    placeholder="Select strength"
                     className="text-[#2c150f]"
                   />
                 </SelectTrigger>
