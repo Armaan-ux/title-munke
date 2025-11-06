@@ -16,9 +16,10 @@ import { Checkbox } from "./ui/checkbox";
 import { useMutation } from "@tanstack/react-query";
 import { confirmEmail, registerUser } from "./service/userAdmin";
 import VerifyEmail from "./verify-email";
+import { TEAMS } from "@/utils/constant";
 
 const ROLES = ["individual", "broker"];
-const TEAMS = ["2", "5", "10", "10+", "50+", "100+"];
+
 
 export default function Register() {
 
