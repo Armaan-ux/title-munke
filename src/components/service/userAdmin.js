@@ -49,6 +49,8 @@ export const CONSTANTS = { // should always be copied from title-munke-serverles
     REGISTER_USER: "RegisterUser",
     CONFIRM_EMAIL: "ConfirmEmail",
     RESEND_CONFIRMATION_CODE: "ResendConfirmationCode",
+
+    ADD_CARD: "addCard"
   },
   USER_TYPES: {
     AGENT: "agent",
@@ -697,5 +699,23 @@ export async function resendConfirmationCode(email) {
         'Success in resendConfirmationCode:',
         'Error in resendConfirmationCode:',
         '/register/resend-code'
+    );
+}
+
+
+export async function addCard(brokerId){
+      const payload = {
+      body: {
+        // email: email,
+        userId: brokerId,
+        action: "subscribe",
+        userType: "broker"
+      },
+    };
+    return callUserAdminApi(
+        payload,
+        'Success in resendConfirmationCode:',
+        'Error in resendConfirmationCode:',
+        '/users'
     );
 }

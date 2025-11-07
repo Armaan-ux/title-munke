@@ -40,7 +40,7 @@ const IndividualDashboard = () => {
   const inactiveAgents = agents.filter(
     (agent) => agent.status === "INACTIVE"
   ).length;
-
+  console.log("user ===> ", user?.pool?.clientId)
   return (
     <div className="my-4">
       {/* cards */}
@@ -84,7 +84,7 @@ const IndividualDashboard = () => {
         </div>
         <SearchHistory />
       </div>
-      <IndividualBilling />
+      {/* <IndividualBilling /> */}
       {/* {memberModal && (
         <BecomeMemberModal
           open={memberModal}

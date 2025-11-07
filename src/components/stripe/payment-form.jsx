@@ -6,6 +6,7 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import { addCard } from "../service/userAdmin";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
@@ -44,34 +45,36 @@ function PaymentForm() {
 }
 
 export default function PaymentSetup({ userId }) {
-//   const [clientSecret, setClientSecret] = useState("");
+  const [clientSecret, setClientSecret] = useState("");
 
-//   useEffect(() => {
-//     const init = async () => {
-//       const res = await fetch("/create-setup-intent", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ userId }),
-//       });
-//       const data = await res.json();
-//       setClientSecret(data.clientSecret);
-//     };
-//     init();
-//   }, [userId]);
+  useEffect(() => {
+    const init = async () => {
+      // const res = await fetch("https://gia0egoc93.execute-api.us-east-1.amazonaws.com/dev/stripe", {
+      //   method: "POST",
+      //   // headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ userId, userType: "broker" }),
+      // });
+
+      const data = await addCard(userId);
+      console.log('data -> ', data)
+      setClientSecret(data.clientSecret);
+    };
+    init();
+  }, [userId]);
 
   // 👉 Use clientSecret as an option to <Elements>
   const options = {
-    // clientSecret, 
+    clientSecret, 
     appearance: { theme: "stripe" },
   };
-return <Elements stripe={stripePromise} options={options}>
-      <PaymentForm />
-    </Elements>
-//   return clientSecret ? (
-//     <Elements stripe={stripePromise} options={options}>
+// return <Elements stripe={stripePromise} options={options}>
 //       <PaymentForm />
 //     </Elements>
-//   ) : (
-//     <p>Loading...</p>
-//   );
+  return clientSecret ? (
+    <Elements stripe={stripePromise} options={options}>
+      <PaymentForm />
+    </Elements>
+  ) : (
+    <p>Loading...</p>
+  );
 }

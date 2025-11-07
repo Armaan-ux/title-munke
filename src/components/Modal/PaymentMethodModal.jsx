@@ -20,11 +20,12 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import PaymentSetup from "../stripe/payment-form";
+import { useUser } from "@/context/usercontext";
 
 const PaymentMethodModal = ({ open, onOpenChange, onSuccess }) => {
   const [screen, setScreen] = useState("select");
   const [selected, setSelected] = useState("card");
-  
+  const {user} = useUser()
   if (!open) return null;
   const paymentHandler = () => {
     onSuccess();
@@ -174,7 +175,8 @@ const PaymentMethodModal = ({ open, onOpenChange, onSuccess }) => {
         )}
     </>
   }
-
+  
+console.log(user)
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <div
@@ -186,7 +188,7 @@ const PaymentMethodModal = ({ open, onOpenChange, onSuccess }) => {
         }}
       >
       <DialogContent className="max-w-md rounded-2xl p-6 shadow-xl bg-white">
-        <PaymentSetup userId="123" />
+        <PaymentSetup userId={user?.attributes?.sub} />
       </DialogContent>
       </div>
     </Dialog>
