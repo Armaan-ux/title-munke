@@ -191,7 +191,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
               </form>
             </div>
 
-            <div className=" pt-8 border-t border-gray-200 justify-end flex gap-4">
+            <div className="pt-3 pb-1 border-t border-gray-200 justify-end flex gap-4">
               <Button
                 variant="secondary"
                 size="lg"

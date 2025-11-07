@@ -26,7 +26,7 @@ export default function AddAgentByBrokerModal({ open, onOpenChange }) {
         overlayClass="bg-black/40 backdrop-blur-[1px]"
       >
         <DialogHeader className="flex flex-row items-center justify-between">
-          <DialogTitle className="text-[18px] text-secondary font-semibold">
+          <DialogTitle className="text-[26px] text-secondary font-semibold !font-poppins">
             Add Agent
           </DialogTitle>
           <DialogClose className="text-secondary hover:bg-transparent focus:outline-none">
@@ -74,7 +74,7 @@ export default function AddAgentByBrokerModal({ open, onOpenChange }) {
             </Select>
           </div>
 
-          <div className="flex items-center space-x-2 pt-1">
+          {/* <div className="flex items-center space-x-2 pt-1">
             <Checkbox id="activate" />
             <label
               htmlFor="activate"
@@ -82,7 +82,7 @@ export default function AddAgentByBrokerModal({ open, onOpenChange }) {
             >
               Activate this agent immediately
             </label>
-          </div>
+          </div> */}
 
           <div className="flex justify-end gap-3 pt-3 ">
             <Button

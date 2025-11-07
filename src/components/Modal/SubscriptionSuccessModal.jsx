@@ -46,12 +46,12 @@ export default function SubscriptionSuccessModal({
 
           <div className="overflow-hidden rounded-2xl">
             <div className="relative bg-secondary text-white flex flex-col items-center justify-center py-5">
-              <img src="/success.svg" alt="success" />
+              <img src="/add-Card-Success.png" alt="success" />
               <DialogHeader className="text-center">
                 <DialogTitle className="text-2xl font-semibold pt-4 !font-poppins">
                   <div className="flex flex-col items-center">
-                    <p>Subscription</p>
-                    <p>Successful!</p>
+                    <p>Card Added</p>
+                    <p>Successfully!</p>
                   </div>
                 </DialogTitle>
               </DialogHeader>

@@ -29,6 +29,10 @@ const PaymentMethodModal = ({ open, onOpenChange, onSuccess }) => {
     onSuccess();
     onOpenChange();
   };
+  const handleCardSubmit = (e) => {
+    e.preventDefault();
+    setScreen("select");
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -129,7 +133,7 @@ const PaymentMethodModal = ({ open, onOpenChange, onSuccess }) => {
             <div className="border-t mt-3 mb-4" />
 
             {/* FORM */}
-            <form className="space-y-3 px-5">
+            <form className="space-y-3 px-5" onSubmit={handleCardSubmit}>
               <p className="text-sm text-secondary">Enter Card Details</p>
               <Input placeholder="Name on Card" className="bg-white" />
               <Input placeholder="Card Number" className="bg-white" />
