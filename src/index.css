@@ -196,7 +196,8 @@ a{
 
   --input: #BEA999;
 
-  --ring: oklch(0.708 0 0);
+  /* --ring: oklch(0.708 0 0); */
+  --ring: #E8D0A7;
 
   --chart-1: oklch(0.646 0.222 41.116);
 

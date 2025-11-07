@@ -9,6 +9,7 @@ import PaymentMethodModal from "@/components/Modal/PaymentMethodModal";
 import SubscriptionSuccessModal from "@/components/Modal/SubscriptionSuccessModal";
 import SubscriptionFailedModal from "@/components/Modal/SubscriptionFailedModal";
 import { Link, useNavigate } from "react-router-dom";
+import IndividualBilling from "./individual-billing";
 
 const IndividualDashboard = () => {
   const navigate = useNavigate();
@@ -68,7 +69,7 @@ const IndividualDashboard = () => {
         </div>
       </div>
 
-      <Search />
+      <Search isIndivisual={true}/>
 
       <div className="bg-[#F5F0EC] p-6 rounded-2xl ">
         <div className="flex justify-between items-center gap-4 mb-6">
@@ -83,7 +84,8 @@ const IndividualDashboard = () => {
         </div>
         <SearchHistory />
       </div>
-      {memberModal && (
+      <IndividualBilling />
+      {/* {memberModal && (
         <BecomeMemberModal
           open={memberModal}
           onClose={() => setMemberModal(false)}
@@ -110,7 +112,7 @@ const IndividualDashboard = () => {
           open={paymentFailedModal}
           onOpenChange={() => setPaymentFailedModal(false)}
         />
-      )}
+      )} */}
     </div>
   );
 };

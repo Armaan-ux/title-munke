@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
-export default function Search() {
+export default function Search({isIndivisual=false}) {
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState("");
@@ -24,7 +24,7 @@ export default function Search() {
   const [percentage, setPercentage] = useState(null);
   const [zipUrl, setZipUrl] = useState(null);
   const [isAgent, setIsAgent] = useState(false);
-  const { user,  setMemberModal } = useUser();
+  const { user, setPaymentModal } = useUser();
 
   const ONE_AND_HALF_HOURS = 1.5 * 60 * 60 * 1000;
 
@@ -143,10 +143,10 @@ export default function Search() {
 
   const handleSearch = async (e) => {
     if (e) e.preventDefault();
-    setMemberModal(true);
-    return //disable search to demo the modal
-
-
+    if(isIndivisual) {
+      setPaymentModal(true);
+      return;
+    }
     if (loading || !address.trim().length || !isChecked) return;
 
     setLoading(true);

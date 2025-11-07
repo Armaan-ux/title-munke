@@ -23,49 +23,42 @@ export function InvoiceHistoryModal({ open, onClose }) {
       agent: "James Anderson",
       address: "123 Main St, Hometown, USA",
       date: "Oct 12, 2025 - 05:30 PM",
-      price: "$25",
     },
     {
       id: 2,
       agent: "Michael Smith",
       address: "456 Oak Ave, Street - 234, USA",
       date: "Oct 12, 2025 - 05:30 PM",
-      price: "$25",
     },
     {
       id: 3,
       agent: "Daniel Wilson",
       address: "456 Oak Ave, Street - 234, USA",
       date: "Oct 12, 2025 - 05:30 PM",
-      price: "$25",
     },
     {
       id: 4,
       agent: "Daniel Wilson",
       address: "456 Oak Ave, Street - 234, USA",
       date: "Oct 12, 2025 - 05:30 PM",
-      price: "$25",
     },
     {
       id: 5,
       agent: "Daniel Wilson",
       address: "456 Oak Ave, Street - 234, USA",
       date: "Oct 12, 2025 - 05:30 PM",
-      price: "$25",
     },
     {
       id: 6,
       agent: "Thomas Clark",
       address: "123 Main St, Hometown, USA",
       date: "Oct 12, 2025 - 05:30 PM",
-      price: "$25",
     },
     {
       id: 7,
       agent: "Thomas Clark",
       address: "123 Main St, Hometown, USA",
       date: "Oct 12, 2025 - 05:30 PM",
-      price: "$25",
     },
   ];
 
@@ -75,12 +68,12 @@ export function InvoiceHistoryModal({ open, onClose }) {
         <DialogHeader className="flex flex-row justify-between items-center">
           <img src="/Logo.svg" alt="Logo" className="h-18 w-18 mb-1" />
           <div>
-            <DialogTitle className="text-xl font-bold text-[#600000] tracking-wide !font-poppins">
+            <DialogTitle className="text-[32px] font-bold text-[#600000] tracking-wide !font-poppins">
               INVOICE
             </DialogTitle>
-            <span className="text-sm text-neutral-500 font-medium">
+            <div className="text-[#550000] font-medium !text-center">
               #INV-2025-001
-            </span>
+            </div>
           </div>
         </DialogHeader>
 
@@ -92,7 +85,6 @@ export function InvoiceHistoryModal({ open, onClose }) {
                 <TableHead>Agents</TableHead>
                 <TableHead>Address</TableHead>
                 <TableHead>Date</TableHead>
-                <TableHead>Price</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -102,14 +94,10 @@ export function InvoiceHistoryModal({ open, onClose }) {
                   <TableCell className="font-medium" >{row.agent}</TableCell>
                   <TableCell>{row.address}</TableCell>
                   <TableCell>{row.date}</TableCell>
-                  <TableCell>{row.price}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-          <div className="flex justify-end font-semibold mt-3 text-neutral-900 bg-[#F5F0EC] py-2 px-4 rounded-md w-full">
-            <span className=" text-tertiary font-bold mr-2" > Total </span> <span className="ml-2">$230.00</span>
-          </div>
         </div>
 
         <div className="mt-6 flex justify-center space-x-2 *:w-full max-w-[11rem] mx-auto">

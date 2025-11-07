@@ -16,9 +16,10 @@ import { Checkbox } from "./ui/checkbox";
 import { useMutation } from "@tanstack/react-query";
 import { confirmEmail, registerUser } from "./service/userAdmin";
 import VerifyEmail from "./verify-email";
+import { TEAMS } from "@/utils/constant";
 
 const ROLES = ["individual", "broker"];
-const TEAMS = ["2", "5", "10", "10+", "50+", "100+"];
+
 
 export default function Register() {
 
@@ -178,7 +179,7 @@ export default function Register() {
                 setFormData((prev) => ({ ...prev, role: val }))
               }
             >
-              <SelectTrigger className="mt-1 w-full h-11 text-[#2c150f] border-[#d5c3b5] focus:ring-0 capitalize">
+              <SelectTrigger className="mt-1 w-full !h-11 capitalize">
                 <SelectValue
                   placeholder="Select role"
                   className="text-[#2c150f]"
@@ -203,9 +204,9 @@ export default function Register() {
                   setFormData((prev) => ({ ...prev, team: val }))
                 }
               >
-                <SelectTrigger className="mt-1 w-full h-11 text-[#2c150f] border-[#d5c3b5] focus:ring-0">
+                <SelectTrigger className="mt-1 w-full !h-11">
                   <SelectValue
-                    placeholder="Select role"
+                    placeholder="Select strength"
                     className="text-[#2c150f]"
                   />
                 </SelectTrigger>

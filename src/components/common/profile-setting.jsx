@@ -19,7 +19,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
   const [currentPassword, setCurrentPassword] = useState("");
 
   return (
-    <div className="bg-[#F5F0EC] h[100vh] flex items-start justify-start text-secondary">
+    <div className="bg-[#F5F0EC] flex items-start justify-start text-secondary">
       {editProfile === true ? (
         <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full h-[85vh] shadow-md">
           <div className="flex flex-col w-full">
@@ -80,7 +80,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                   />
                 </div>
 
-                <div className="mb-9">
+                <div>
                   <Label
                     htmlFor="confirm-password"
                     className="text-secondary text-sm"
@@ -98,7 +98,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                   />
                 </div>
 
-                <div className="pt-4 justify-end flex gap-4">
+                <div className="justify-end flex gap-4 items-center mt-7 mb-5">
                   <Button
                     variant="secondary"
                     // className="bg-tertiary text-white hover:bg-[#9C3D26] hover:text-white rounded-md px-12 mb-6 w-[20%]"
@@ -191,7 +191,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
               </form>
             </div>
 
-            <div className=" pt-8 border-t border-gray-200 justify-end flex gap-4">
+            <div className="pt-3 pb-1 border-t border-gray-200 justify-end flex gap-4">
               <Button
                 variant="secondary"
                 size="lg"
@@ -204,7 +204,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-xl p-8 w-full h-[78vh]">
+        <div className="bg-white rounded-xl p-8 w-full">
           <div className="mb-5 flex items-center justify-between gap-4">
             <p className="text-xl font-medium">Profile Details</p>
             <Button

@@ -103,22 +103,26 @@ function AppSidebar() {
               </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          <div className="bg-gradient-to-b  from-secondary to-tertiary  py-4 flex flex-col items-center justify-center text-white rounded-2xl mt-1">
-            <img src="/diamond.svg" alt="diamond" />
-            {!isCollapsed && (
-              <div className="flex flex-col items-center justify-center transition-all duration-300">
-                <div className="text-xl font-semibold mb-1 whitespace-nowrap">
-                  Become a Member
+
+          { 
+            <div className="bg-gradient-to-b  from-secondary to-tertiary py-2 flex flex-col items-center justify-center text-white rounded-2xl mt-2">
+              <img src="/diamond.png" alt="diamond" />
+              {!isCollapsed && (
+                <div className="flex flex-col items-center justify-center transition-all duration-300">
+                  <div className="text-lg font-semibold mb-1 whitespace-nowrap">
+                    Become a Member
+                  </div>
+                  <button
+                    onClick={memberHandler}
+                    className="text-sm text-center font-semibold rounded-lg border-white bg-secondary-foreground text-tertiary px-5 py-2"
+                  >
+                    Subscribe Now
+                  </button>
                 </div>
-                <button
-                  onClick={memberHandler}
-                  className="text-sm text-center opacity-80 rounded-xl border-white bg-secondary-foreground text-tertiary px-5 py-3 w-[80%]"
-                >
-                  Subscribe Now
-                </button>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          }
+          
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
