@@ -187,7 +187,7 @@ console.log(user)
           backgroundColor: "rgba(0,0,0,0.5)",
         }}
       >
-      <DialogContent className="max-w-md rounded-2xl p-6 shadow-xl bg-white">
+      <DialogContent className="max-w-md rounded-2xl p-6 shadow-xl bg-white overflow-auto max-h-screen">
         <PaymentSetup userId={user?.attributes?.sub} />
       </DialogContent>
       </div>
