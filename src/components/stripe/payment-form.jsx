@@ -10,7 +10,7 @@ import { addCard } from "../service/userAdmin";
 import { color } from "motion";
 import { Button } from "../ui/button";
 const appearance = {
-  
+    theme: "none",
     rules: {
       // '.Tab': {
       //   border: '1px solid #E0E6EB',
