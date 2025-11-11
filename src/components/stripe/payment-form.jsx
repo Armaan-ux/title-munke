@@ -9,55 +9,56 @@ import {
 import { addCard } from "../service/userAdmin";
 import { color } from "motion";
 import { Button } from "../ui/button";
+import { toast } from "react-toastify";
 const appearance = {
-    theme: "none",
-    rules: {
-      // '.Tab': {
-      //   border: '1px solid #E0E6EB',
-      //   boxShadow: '0px 1px 1px rgba(0, 0, 0, 0.03), 0px 3px 6px rgba(18, 42, 66, 0.02)',
-      // },
+  theme: "none",
+  rules: {
+    // '.Tab': {
+    //   border: '1px solid #E0E6EB',
+    //   boxShadow: '0px 1px 1px rgba(0, 0, 0, 0.03), 0px 3px 6px rgba(18, 42, 66, 0.02)',
+    // },
 
-      // '.Tab:hover': {
-      //   color: 'var(--colorText)',
-      // },
+    // '.Tab:hover': {
+    //   color: 'var(--colorText)',
+    // },
 
-      // '.Tab--selected': {
-      //   borderColor: '#E0E6EB',
-      //   boxShadow: '0px 1px 1px rgba(0, 0, 0, 0.03), 0px 3px 6px rgba(18, 42, 66, 0.02), 0 0 0 2px var(--colorPrimary)',
-      // },
-      '.Input': {
-      color: 'var(--color-foreground)',
-      backgroundColor: '#F5F0EC',
-      border: '1px solid #BEA999',
-      borderRadius: '10px',
-      height: '50px',
-      width: '100%',
-      padding: '12px',
-      fontSize: '1rem',
-      transition: 'color 0.2s, box-shadow 0.2s',
-      outline: 'none',
-      boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+    // '.Tab--selected': {
+    //   borderColor: '#E0E6EB',
+    //   boxShadow: '0px 1px 1px rgba(0, 0, 0, 0.03), 0px 3px 6px rgba(18, 42, 66, 0.02), 0 0 0 2px var(--colorPrimary)',
+    // },
+    ".Input": {
+      color: "var(--color-foreground)",
+      backgroundColor: "#F5F0EC",
+      border: "1px solid #BEA999",
+      borderRadius: "10px",
+      height: "50px",
+      width: "100%",
+      padding: "12px",
+      fontSize: "1rem",
+      transition: "color 0.2s, box-shadow 0.2s",
+      outline: "none",
+      boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
     },
-    '.Input:focus': {
-      borderColor: '#BEA999',
-      boxShadow: '0 0 0 3px rgba(196, 171, 153, 0.5)',
+    ".Input:focus": {
+      borderColor: "#BEA999",
+      boxShadow: "0 0 0 3px rgba(196, 171, 153, 0.5)",
     },
-    '.Input:disabled': {
-      opacity: '0.5',
-      cursor: 'not-allowed',
-      pointerEvents: 'none',
+    ".Input:disabled": {
+      opacity: "0.5",
+      cursor: "not-allowed",
+      pointerEvents: "none",
     },
-    '.Input--invalid': {
-      borderColor: 'var(--color-destructive)',
-      boxShadow: '0 0 0 3px rgba(220, 38, 38, 0.2)',
+    ".Input--invalid": {
+      borderColor: "var(--color-destructive)",
+      boxShadow: "0 0 0 3px rgba(220, 38, 38, 0.2)",
     },
     ".Label": {
       color: "#3D2014",
       fontWeight: 500,
-      marginBottom: "10px"
-    }
-    }
-  };
+      marginBottom: "10px",
+    },
+  },
+};
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
@@ -69,19 +70,20 @@ function PaymentForm() {
     e.preventDefault();
     if (!stripe || !elements) return;
 
-    const { error } = await stripe.confirmSetup({
+    const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: window.location.origin + "/payment-success",
+        return_url:
+          window.location.origin + "/broker/dashboard?isCardAdded=true",
       },
     });
 
     if (error) {
-      alert(error.message);
+      toast.error(error?.message);
     }
-    else {
-      console.log("Card saved successfully");
-    }
+    // else {
+    //   console.log("Card saved successfully");
+    // }
   };
 
   return (
@@ -112,7 +114,7 @@ export default function PaymentSetup({ userId }) {
       // });
 
       const data = await addCard(userId);
-      console.log('data -> ', data)
+      console.log("data -> ", data);
       setClientSecret(data.clientSecret);
     };
     init();
@@ -120,12 +122,12 @@ export default function PaymentSetup({ userId }) {
 
   // 👉 Use clientSecret as an option to <Elements>
   const options = {
-    clientSecret, 
+    clientSecret,
     appearance,
   };
-// return <Elements stripe={stripePromise} options={options}>
-//       <PaymentForm />
-//     </Elements>
+  // return <Elements stripe={stripePromise} options={options}>
+  //       <PaymentForm />
+  //     </Elements>
   return clientSecret ? (
     <Elements stripe={stripePromise} options={options}>
       <PaymentForm />
