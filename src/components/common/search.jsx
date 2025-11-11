@@ -143,10 +143,10 @@ export default function Search({isIndivisual=false}) {
 
   const handleSearch = async (e) => {
     if (e) e.preventDefault();
-    // if(isIndivisual) {
-    //   setPaymentModal(true);
-    //   return;
-    // }
+    if(isIndivisual) {
+      setPaymentModal(true);
+      return;
+    }
     if (loading || !address.trim().length || !isChecked) return;
 
     setLoading(true);

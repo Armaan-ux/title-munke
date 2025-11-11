@@ -703,19 +703,19 @@ export async function resendConfirmationCode(email) {
 }
 
 
-export async function addCard(brokerId){
+export async function addCard(userId, userType){
       const payload = {
       body: {
         // email: email,
-        userId: brokerId,
+        userId,
         action: "subscribe",
-        userType: "broker"
+        userType
       },
     };
     return callUserAdminApi(
         payload,
-        'Success in resendConfirmationCode:',
-        'Error in resendConfirmationCode:',
+        'Success in addCard:',
+        'Error in addCard:',
         '/users'
     );
 }

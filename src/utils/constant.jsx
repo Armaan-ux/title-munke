@@ -448,3 +448,48 @@ export const sampleReportItems = [
 ];
 
 export const TEAMS = ["2", "5", "10", "10+", "50+", "100+"];
+
+export const appearance = {
+  theme: "stripe",
+  
+  variables: {
+    colorBackground: '#ffffff',
+    colorText: '#3D2014',
+    fontFamily: 'Poppins, Ideal Sans, system-ui, sans-serif',
+    spacingUnit: '2px',
+    borderRadius: '4px',
+  },
+  rules: {
+    ".Input": {
+      color: "var(--color-foreground)",
+      backgroundColor: "#F5F0EC",
+      border: "1px solid #BEA999",
+      borderRadius: "10px",
+      height: "50px",
+      width: "100%",
+      padding: "12px",
+      fontSize: "1rem",
+      transition: "color 0.2s, box-shadow 0.2s",
+      outline: "none",
+      boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+    },
+    ".Input:focus": {
+      borderColor: "#BEA999",
+      boxShadow: "0 0 0 3px rgba(196, 171, 153, 0.5)",
+    },
+    ".Input:disabled": {
+      opacity: "0.5",
+      cursor: "not-allowed",
+      pointerEvents: "none",
+    },
+    ".Input--invalid": {
+      borderColor: "var(--color-destructive)",
+      boxShadow: "0 0 0 3px rgba(220, 38, 38, 0.2)",
+    },
+    ".Label": {
+      color: "#3D2014",
+      fontWeight: 500,
+      marginBottom: "10px",
+    },
+  },
+};

@@ -85,6 +85,28 @@ const IndividualDashboard = () => {
         <SearchHistory />
       </div>
       {/* <IndividualBilling /> */}
+
+      {paymentModal && (
+        <PaymentMethodModal
+          open={paymentModal}
+          onOpenChange={() => setPaymentModal(false)}
+          onSuccess={() => setPaymentSuccessModal(true)}
+        />
+      )}
+      {paymentSuccessModal && (
+        <SubscriptionSuccessModal
+          open={paymentSuccessModal}
+          onOpenChange={() => setPaymentSuccessModal(false)}
+          onFailed={() => setPaymentFailedModal(true)}
+        />
+      )}
+
+      {paymentFailedModal && (
+        <SubscriptionFailedModal
+          open={paymentFailedModal}
+          onOpenChange={() => setPaymentFailedModal(false)}
+        />
+      )}
       {/* {memberModal && (
         <BecomeMemberModal
           open={memberModal}
