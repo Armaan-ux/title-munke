@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -14,6 +14,8 @@ import { appearance } from "@/utils/constant";
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 function PaymentForm() {
+  const [type, setType] = useState("");
+  const  userClickedRef = useRef(false);
   const stripe = useStripe();
   const elements = useElements();
   const {user} = useUser()
@@ -36,18 +38,35 @@ function PaymentForm() {
     
   };
 
+  useEffect(() => {
+    if (!elements) return;
+    const paymentElement = elements.getElement("payment");
+
+    if (!paymentElement) return;
+    paymentElement.on("change", (event) => {
+      if(!userClickedRef?.current) {
+        userClickedRef.current = true;
+        return;
+      } 
+      setType(event?.value?.type);
+    });
+    return () => paymentElement.off("change");
+  }, [elements]);
+
   return (
     <form onSubmit={handleSubmit}>
       <PaymentElement />
-      <Button
-        type="submit"
-        disabled={!stripe}
-        variant="secondary"
-        size="lg"
-        className="mt-4"
-      >
-        Save Card
-      </Button>
+      {!!type &&
+        <Button
+          type="submit"
+          disabled={!stripe}
+          variant="secondary"
+          size="lg"
+          className="mt-4"
+        >
+          {type === "card" ? "Save Card" : "Make Payment"}
+        </Button>
+      }
     </form>
   );
 }
