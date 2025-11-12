@@ -47,7 +47,7 @@ const BrokerDashboard = () => {
     if(isCardAdded) {
       setPaymentModal(false);
       setPaymentSuccessModal(true);
-      setTimeout(() => setPaymentSuccessModal(false), 3000)
+      // setTimeout(() => setPaymentSuccessModal(false), 3000)
     }
   }, [isCardAdded])
   
