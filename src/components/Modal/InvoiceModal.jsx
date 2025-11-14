@@ -76,7 +76,6 @@ export function InvoiceModal({ open, onClose, invoice }) {
 
           <div className="bg-[#fdf8f5] text-sm divide-y">
             {invoice?.plans?.map(plan => {
-              if(plan?.priceName === "Monthly Subscription Price") return null;
               return <div className="grid grid-cols-5 items-center px-3 py-2" key={plan?.priceId}>
                 <div className="col-span-2">
                   <p className="font-medium text-[#581b1b]">{plan?.priceName}</p>
@@ -93,10 +92,10 @@ export function InvoiceModal({ open, onClose, invoice }) {
 
           <div className="bg-[#fdf8f5] text-sm border-t px-3 py-3 space-y-1 flex flex-col items-end gap-2">
             <div></div>
-            <div className="flex justify-between gap-10 w-48">
+            {/* <div className="flex justify-between gap-10 w-48">
               <p>Subscription</p>
               <p>${subPrice}</p>
-            </div>
+            </div> */}
             <div className="flex justify-between gap-10 w-48">
               <p  >Subtotal</p>
               <p>${invoice?.subtotal / 100}</p>
