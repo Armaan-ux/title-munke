@@ -2,9 +2,12 @@ import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "../ui/separator";
 import { ArrowDownToLine } from "lucide-react";
+import { convertFromTimestamp } from "@/utils";
 
-export function InvoiceModal({ open, onClose }) {
+export function InvoiceModal({ open, onClose, invoice }) {
   if (!open) return null;
+  if(!invoice) return null
+  const subPrice = invoice?.plans?.find((plan) => plan?.priceName === "Monthly Subscription Price")?.amount / 100;
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent  showCloseButton={false} className="!max-w-xl !w-full rounded-2xl bg-white p-6 shadow-lg">
@@ -18,18 +21,18 @@ export function InvoiceModal({ open, onClose }) {
         <div className="grid grid-cols-1 gap-4   p-5 rounded-md bg-[#fdf8f5]">
           <div className="flex justify-between items-center">
             <p className="text-sm text-tertiary font-medium">Invoice ID</p>
-            <p className="text-sm text-secondary">#1584647</p>
+            <p className="text-sm text-secondary">{invoice?.id}</p>
           </div>
           <div className="flex justify-between items-center">
             <p className="text-sm text-tertiary font-medium">Bill Date</p>
-            <p className="text-sm text-secondary">Apr 01, 2025</p>
+            <p className="text-sm text-secondary">{convertFromTimestamp(invoice?.created, "dateTime")}</p>
           </div>
           <div className="flex justify-between items-center">
             <p className="text-sm text-tertiary font-medium">
               Payment Method
             </p>
-            <p className="text-sm text-secondary">
-              Visa Master Card
+            <p className="text-sm text-secondary uppercase">
+              {invoice?.payment_method?.brand ?? ""}
             </p>
           </div>
         </div>
@@ -70,18 +73,21 @@ export function InvoiceModal({ open, onClose }) {
           </div>
 
           <div className="bg-[#fdf8f5] text-sm divide-y">
-            <div className="grid grid-cols-5 items-center px-3 py-2">
-              <div className="col-span-2">
-                <p className="font-medium text-[#581b1b]">Agent Seat Fees</p>
-                <p className="text-xs text-muted-foreground">
-                  Billing Cycle: Sep To Aug
-                </p>
+            {invoice?.plans?.map(plan => {
+              if(plan?.priceName === "Monthly Subscription Price") return null;
+              return <div className="grid grid-cols-5 items-center px-3 py-2" key={plan?.priceId}>
+                <div className="col-span-2">
+                  <p className="font-medium text-[#581b1b]">{plan?.priceName}</p>
+                  <p className="text-xs text-muted-foreground">
+                    Billing Cycle: {convertFromTimestamp(plan?.start, "monthYear")?.split(",")?.[0]} To {convertFromTimestamp(plan?.end, "monthYear")}
+                  </p>
+                </div>
+                <p className="text-center">{plan?.quantity}</p>
+                <p className="text-center">${plan?.amount / 100}</p>
+                <p className="text-right">${(plan?.amount / 100) * plan?.quantity}</p>
               </div>
-              <p className="text-center">10</p>
-              <p className="text-center">$25.00</p>
-              <p className="text-right">$225.00</p>
-            </div>
-            <div className="grid grid-cols-5 items-center px-3 py-2">
+              })}
+            {/* <div className="grid grid-cols-5 items-center px-3 py-2">
               <div className="col-span-2">
                 <p className="font-medium text-[#581b1b]">Agent Seat Fees</p>
                 <p className="text-xs text-muted-foreground">
@@ -91,26 +97,26 @@ export function InvoiceModal({ open, onClose }) {
               <p className="text-center">0</p>
               <p className="text-center">$0.00</p>
               <p className="text-right">$0.00</p>
-            </div>
+            </div> */}
           </div>
 
           <div className="bg-[#fdf8f5] text-sm border-t px-3 py-3 space-y-1 flex flex-col items-end gap-2">
             <div></div>
             <div className="flex justify-between gap-10 w-48">
               <p>Subscription</p>
-              <p>$25.00</p>
+              <p>${subPrice}</p>
             </div>
             <div className="flex justify-between gap-10 w-48">
               <p  >Subtotal</p>
-              <p>$225.00</p>
+              <p>${invoice?.subtotal / 100}</p>
             </div>
             <div className="flex justify-between gap-10 w-48">
               <p>Tax</p>
-              <p>$5.00</p>
+              <p>${invoice?.tax ? `${invoice?.tax}` : 0}</p>
             </div>
             <div className="flex justify-between font-semibold border-t pt-2 gap-10 w-48">
               <p className="text-tertiary">Total</p>
-              <p className="text-secendary">$230.00</p>
+              <p className="text-secendary">${(invoice?.total / 100) + (invoice?.tax ? invoice?.tax : 0)}</p>
             </div>
           </div>
         </div>

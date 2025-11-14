@@ -1,4 +1,4 @@
-import { ChevronLeft, CircleCheck, Eye, FileDown} from "lucide-react";
+import { CircleCheck, Eye, FileDown} from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getFormattedDateTime } from "@/utils";
+import { convertFromTimestamp } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { InvoiceModal } from "@/components/Modal/InvoiceModal";
 import { CancelSubscriptionModal } from "@/components/Modal/CancelSubscriptionModal";
@@ -17,8 +17,14 @@ import { HelpUsImproveModal } from "@/components/Modal/HelpUsImproveModal";
 import { SubscriptionCanceledSuccessModal } from "@/components/Modal/SubscriptionCanceledSuccessModal";
 import { InvoiceHistoryModal } from "@/components/Modal/InvoiceHistoryModal";
 import BackBtn from "../back-btn";
+import { useQuery } from "@tanstack/react-query";
+import { getInvoice } from "../service/userAdmin";
+import { useUser } from "@/context/usercontext";
+import { CenterLoader } from "./Loader";
+import ShowError from "./ShowError";
 
 const BillingHistory = () => {
+
   const navigate = useNavigate();
   const [searchHistories, setSearchHistories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -26,10 +32,16 @@ const BillingHistory = () => {
   const [invoiceModal, setInvoiceModal] = useState(false);
   const [cancleSubscriptionModal, setCancleSubscriptionModal] = useState(false);
   const [helpUsImproveModal, setHelpUsImproveModal] = useState(false);
-  const [cancleSubscriptionSucessModal, setCancleSubscriptionSucessModal] =
-    useState(false);
+  const [cancleSubscriptionSucessModal, setCancleSubscriptionSucessModal] = useState(false);
   const [invoiceHistoryModal, setInvoiceHistoryModal] = useState(false);
-
+  const [selectInvoice, setSelectedInvoice] = useState({});
+  const {user} = useUser()
+  const userType = user?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
+  const invoiceListingQuery = useQuery({
+    queryKey: ["listingInvoice"],
+    queryFn: () => getInvoice(user?.attributes?.sub, userType),
+    refetchOnWindowFocus: false
+  })
   const sortedHistories = [
     {
       id: "1",
@@ -52,11 +64,16 @@ const BillingHistory = () => {
       downloadLink: "/invoices/INV-1002.pdf",
     },
   ];
+  console.log("invoice ===============>", invoiceListingQuery?.data?.invoices)
   return (
     <>
       <InvoiceModal
         open={invoiceModal}
-        onClose={() => setInvoiceModal(false)}
+        onClose={() => {
+          setInvoiceModal(false);
+          setSelectedInvoice({})
+        }}
+        invoice={selectInvoice}
       />
       <CancelSubscriptionModal
         open={cancleSubscriptionModal}
@@ -94,10 +111,14 @@ const BillingHistory = () => {
       <div className="bg-[#F5F0EC] rounded-lg p-7  text-secondary h-[82%]">
         <div
           className={`bg-white rounded-xl p-2 flex flex-col md:flex-row  gap-10 w-full h-full shadow-md ${
-            sortedHistories.length === 0 ? "items-center justify-center" : ""
+            invoiceListingQuery?.data?.invoices?.length === 0 ? "items-center justify-center" : ""
           }`}
         >
-          {true ? (
+          {invoiceListingQuery?.isError &&
+            <ShowError message={invoiceListingQuery?.error?.response?.data?.message}/>
+          }
+          {invoiceListingQuery?.isLoading && <CenterLoader />}
+          {invoiceListingQuery.isSuccess && invoiceListingQuery?.data?.invoices?.length > 0  &&
             <div className="bg-white !p-4 rounded-xl w-full">
               <p className="text-lg text-secondary font-medium mb-4">View History</p>
               <Table className="">
@@ -119,19 +140,19 @@ const BillingHistory = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {sortedHistories?.map((item, index) => (
-                    <TableRow key={item.id}>
+                  {invoiceListingQuery?.data?.invoices?.map((invoice, index) => (
+                    <TableRow key={invoice.id}>
                       <TableCell className="font-medium text-black">{index + 1}</TableCell>
-                      <TableCell className="text-black font-medium" >{item.invoiceId}</TableCell>
+                      <TableCell className="text-black font-medium" >{invoice?.id}</TableCell>
                       <TableCell >
-                        {getFormattedDateTime(item?.billing)}
+                        {convertFromTimestamp(invoice?.created, "dateTime")}
                       </TableCell>
-                      <TableCell>{item.amount}</TableCell>
+                      <TableCell>${invoice?.total / 100}</TableCell>
                       <TableCell  onClick={() => setCancleSubscriptionModal(true)}
                         className={`${
-                          item?.status === "Paid"
+                          invoice?.status === "paid"
                             ? "text-[#1E8221]"
-                            : item?.status === "Pending"
+                            : invoice?.status === "open"
                             ? "text-[#A2781E]"
                             : "text-[#FF5F59]"
                         } text-[13px] font-medium px-3 py-1 rounded-md`}
@@ -140,22 +161,19 @@ const BillingHistory = () => {
                           <CircleCheck
                            
                           />{" "}
-                          {item?.status}
+                          {invoice?.status}
                         </div>
                       </TableCell>
 
                       <TableCell className="text-center" >
-                        {item?.downloadLink ? (
-                          <Button variant="ghost" size="icon" 
-                            onClick={() => setInvoiceModal(true)}
-                          >
-                          <FileDown
-                            className="size-5"
-                            />
-                          </Button>
-                        ) : (
-                          ""
-                        )}
+                        <Button variant="ghost" size="icon" 
+                          onClick={() => {
+                            setInvoiceModal(true);
+                            setSelectedInvoice(invoice)
+                          }}
+                        >
+                          <FileDown className="size-5" />
+                        </Button>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2 flex-row justify-center">
@@ -192,25 +210,28 @@ const BillingHistory = () => {
                 )}
               </div>
             </div>
-          ) : (
+          }
+
+          {invoiceListingQuery.isSuccess && invoiceListingQuery?.data?.invoices?.length === 0  &&
             <div className="flex flex-col items-center justify-center text-center py-16 w-full gap-4">
-              <img
-                src="/search-icon.svg"
-                alt="invoice icon"
-                className="w-20 h-20"
-              />
+                <img
+                  src="/search-icon.svg"
+                  alt="invoice icon"
+                  className="w-20 h-20"
+                />
 
-              <h2 className="text-3xl font-semibold text-secondary mb-2">
-                No Invoice Yet
-              </h2>
+                <h2 className="text-3xl font-semibold text-secondary mb-2">
+                  No Invoice Yet
+                </h2>
 
-              <p className="max-w-md text-md text-secondary">
-                It looks like you haven’t initiated any property searches yet.
-                Once you start exploring, your search invoice history records
-                will appear here.
-              </p>
+                <p className="max-w-md text-md text-secondary">
+                  It looks like you haven’t initiated any property searches yet.
+                  Once you start exploring, your search invoice history records
+                  will appear here.
+                </p>
             </div>
-          )}
+          }
+
         </div>
       </div>
     </>

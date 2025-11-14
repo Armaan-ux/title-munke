@@ -1,4 +1,5 @@
 import { API } from 'aws-amplify';
+import { constants } from 'buffer';
 
 // const apiName = 'usersAdmin-dev';
 const apiName = 'usersAdmin-dev';
@@ -50,7 +51,8 @@ export const CONSTANTS = { // should always be copied from title-munke-serverles
     CONFIRM_EMAIL: "ConfirmEmail",
     RESEND_CONFIRMATION_CODE: "ResendConfirmationCode",
 
-    ADD_CARD: "addCard"
+    PURCHASE_MEMBERSHIP: "subscribe",
+    LIST_INVOICE: "listinvoice"
   },
   USER_TYPES: {
     AGENT: "agent",
@@ -708,14 +710,30 @@ export async function addCard(userId, userType){
       body: {
         // email: email,
         userId,
-        action: "subscribe",
+        action: CONSTANTS.ACTIONS.PURCHASE_MEMBERSHIP,
         userType
       },
     };
     return callUserAdminApi(
         payload,
-        'Success in addCard:',
-        'Error in addCard:',
+        'Success in subscriber:',
+        'Error in subscriber:',
         '/users'
     );
+}
+
+export async function getInvoice(userId, userType) {
+  const payload = {
+    body: {
+      userId,
+      action: CONSTANTS?.ACTIONS?.LIST_INVOICE,
+      userType,
+    }
+  };
+  return callUserAdminApi(
+    payload,
+    "Successs in listinvoice",
+    "Error in listinvoice",
+    "/users"
+  )
 }
