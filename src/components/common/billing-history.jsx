@@ -18,7 +18,7 @@ import { SubscriptionCanceledSuccessModal } from "@/components/Modal/Subscriptio
 import { InvoiceHistoryModal } from "@/components/Modal/InvoiceHistoryModal";
 import BackBtn from "../back-btn";
 import { useQuery } from "@tanstack/react-query";
-import { getInvoice } from "../service/userAdmin";
+import { getInvoice, getSubscriptionDetails } from "../service/userAdmin";
 import { useUser } from "@/context/usercontext";
 import { CenterLoader } from "./Loader";
 import ShowError from "./ShowError";
@@ -64,7 +64,7 @@ const BillingHistory = () => {
       downloadLink: "/invoices/INV-1002.pdf",
     },
   ];
-  console.log("invoice ===============>", invoiceListingQuery?.data?.invoices)
+
   return (
     <>
       <InvoiceModal

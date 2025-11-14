@@ -22,7 +22,7 @@ import {
 import PaymentSetup from "../stripe/payment-form";
 
 
-const PaymentMethodModal = ({ open, onOpenChange, onSuccess }) => {
+const PaymentMethodModal = ({ open, onOpenChange, onSuccess, isAddCard }) => {
   const [screen, setScreen] = useState("select");
   const [selected, setSelected] = useState("card");
   if (!open) return null;
@@ -188,7 +188,7 @@ const PaymentMethodModal = ({ open, onOpenChange, onSuccess }) => {
       >
       <DialogContent className="max-w-md rounded-2xl p-6 shadow-xl bg-white overflow-auto max-h-screen">
         <div className="mt-4">
-          <PaymentSetup  />
+          <PaymentSetup  isAddCard={isAddCard}/>
         </div>
       </DialogContent>
       </div>

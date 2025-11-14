@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect, useContext } from "react";
 import { Auth } from "aws-amplify";
 import {
   getAdminDetails,
+  getSubscriptionDetails,
   updateAdmin,
   updateAgent,
   updateBroker,
@@ -30,7 +31,10 @@ export const UserProvider = ({ children }) => {
         const currentUser = await Auth.currentAuthenticatedUser();
         setUser(currentUser);
         setIsAuthenticated(true);
-        console.log("user", currentUser);
+        const userType = currentUser?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
+        const subSDetail = await getSubscriptionDetails(currentUser?.attributes?.sub, userType)
+        setUser(pre => ({...pre, status: subSDetail?.status}))
+        setMemberModal(subSDetail?.status === "active" ? false : true)
       } catch (error) {
         setIsAuthenticated(false);
       } finally {

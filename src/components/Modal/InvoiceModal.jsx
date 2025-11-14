@@ -3,14 +3,16 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "../ui/separator";
 import { ArrowDownToLine } from "lucide-react";
 import { convertFromTimestamp } from "@/utils";
+import { usePdfDownload } from "@/hooks/usePdfDownload";
 
 export function InvoiceModal({ open, onClose, invoice }) {
+  const {handleDownload} = usePdfDownload()
   if (!open) return null;
   if(!invoice) return null
   const subPrice = invoice?.plans?.find((plan) => plan?.priceName === "Monthly Subscription Price")?.amount / 100;
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent  showCloseButton={false} className="!max-w-xl !w-full rounded-2xl bg-white p-6 shadow-lg">
+      <DialogContent  showCloseButton={false} className="!max-w-xl !w-full rounded-2xl bg-white p-6 shadow-lg" id="invoice">
         <div className="flex flex-row justify-between items-center">
           <img src="/Logo.svg" alt="Logo" className="h-20 w-20 mb-1" />
           <p className="text-3xl font-bold text-tertiary tracking-wide">
@@ -87,17 +89,6 @@ export function InvoiceModal({ open, onClose, invoice }) {
                 <p className="text-right">${(plan?.amount / 100) * plan?.quantity}</p>
               </div>
               })}
-            {/* <div className="grid grid-cols-5 items-center px-3 py-2">
-              <div className="col-span-2">
-                <p className="font-medium text-[#581b1b]">Agent Seat Fees</p>
-                <p className="text-xs text-muted-foreground">
-                  Billing Cycle: Sep To Aug
-                </p>
-              </div>
-              <p className="text-center">0</p>
-              <p className="text-center">$0.00</p>
-              <p className="text-right">$0.00</p>
-            </div> */}
           </div>
 
           <div className="bg-[#fdf8f5] text-sm border-t px-3 py-3 space-y-1 flex flex-col items-end gap-2">
@@ -133,7 +124,7 @@ export function InvoiceModal({ open, onClose, invoice }) {
           <Button variant="secondary" size="lg" >
             <ArrowDownToLine /> Download CSV
           </Button>
-          <Button variant="secondary" size="lg" >
+          <Button variant="secondary" size="lg">
             <ArrowDownToLine /> Download PDF
           </Button>
         </DialogFooter>

@@ -104,7 +104,7 @@ function AppSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
 
-          { 
+          { (user?.status !== "active" || !user.hasOwnProperty("status")) &&
             <div className="bg-gradient-to-b  from-secondary to-tertiary py-2 flex flex-col items-center justify-center text-white rounded-2xl mt-2">
               <img src="/diamond.png" alt="diamond" />
               {!isCollapsed && (

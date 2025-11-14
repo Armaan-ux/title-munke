@@ -14,7 +14,7 @@ export default function SubscriptionSuccessModal({
 }) {
    if (!open) return null;
   const subscribeHandler = () => {
-    onFailed();
+    // onFailed();
     onOpenChange();
   };
   return (

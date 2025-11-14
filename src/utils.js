@@ -51,6 +51,8 @@ export const convertFromTimestamp = (timestamp, type) => {
       return formatInTimeZone(date, localTz, "MMM dd, yyyy hh:mm a");
       case "monthYear":
         return `${months[date.getMonth()]}, ${date.getFullYear()}`
+      case "monthDateYear":
+        return `${months[date.getMonth()]} ${date?.getDate()}, ${date.getFullYear()}`
       default:
         return ""
     }

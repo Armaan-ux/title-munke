@@ -52,7 +52,8 @@ export const CONSTANTS = { // should always be copied from title-munke-serverles
     RESEND_CONFIRMATION_CODE: "ResendConfirmationCode",
 
     PURCHASE_MEMBERSHIP: "subscribe",
-    LIST_INVOICE: "listinvoice"
+    LIST_INVOICE: "listinvoice",
+    MEMBERSHIP_DETAIL: "subscription-details"
   },
   USER_TYPES: {
     AGENT: "agent",
@@ -705,12 +706,29 @@ export async function resendConfirmationCode(email) {
 }
 
 
-export async function addCard(userId, userType){
+export async function addCard(userId, userType, action){
       const payload = {
       body: {
         // email: email,
         userId,
-        action: CONSTANTS.ACTIONS.PURCHASE_MEMBERSHIP,
+        action: action,
+        userType
+      },
+    };
+    return callUserAdminApi(
+        payload,
+        'Success in subscriber:',
+        'Error in subscriber:',
+        '/users'
+    );
+}
+
+export async function getSubscriptionDetails(userId, userType){
+      const payload = {
+      body: {
+        // email: email,
+        userId,
+        action: CONSTANTS.ACTIONS.MEMBERSHIP_DETAIL,
         userType
       },
     };
