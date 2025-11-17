@@ -263,6 +263,7 @@ function Agents() {
       <AddAgentByBrokerModal
         open={addAgent}
         onOpenChange={() => setAddAgent(false)}
+        setUser={setAgents}
       />
       {/* <div className="flex items-center gap-2 justify-end mb-3">
         <Checkbox

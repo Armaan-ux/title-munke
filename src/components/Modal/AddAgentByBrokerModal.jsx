@@ -26,10 +26,10 @@ import { createAgentForBroker } from "../service/agent";
 import { toast } from "react-toastify";
 import { useUser } from "@/context/usercontext";
 import { handleCreateAuditLog } from "@/utils";
-export default function AddAgentByBrokerModal({ open, onOpenChange }) {
-  const {user, setUser} = useUser();
+export default function AddAgentByBrokerModal({ open, onOpenChange, setUser }) {
+  const {user} = useUser();
   const { userId } = useUserIdType();
-  const {control, handleSubmit, formState: { errors, isSubmitting }} = useForm({
+  const {control, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({
     defaultValues: { name: "", email: "", searchLimit: 10 },
     resolver: zodResolver(newAgentSchema),
   });
@@ -44,13 +44,12 @@ export default function AddAgentByBrokerModal({ open, onOpenChange }) {
             searchLimit
           );
           toast.success("Agent Created Successfully.");
-          console.log("response", response);
           const newAgent = response.user;
           console.log("newAgent", newAgent);
           setUser((prev) => [...prev,
               { ...newAgent, totalSearches: 0, agentName: name }
               ]);
-          toast.success("Agent Created Successfully.");
+
           const userGroups =
             user?.signInUserSession?.idToken?.payload["cognito:groups"] || [];
           if (userGroups.includes("broker")) {
@@ -58,6 +57,8 @@ export default function AddAgentByBrokerModal({ open, onOpenChange }) {
               detail: `Broker ${user?.attributes?.sub} has created the agent ${newAgent.id}`,
             });
           }
+          reset();
+          onOpenChange();
       }
     catch(err) {
       toast.error(err?.response?.data?.message || "Something went wrong.")
