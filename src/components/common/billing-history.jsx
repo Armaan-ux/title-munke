@@ -123,7 +123,7 @@ const BillingHistory = () => {
           {invoiceListingQuery?.isLoading && <CenterLoader />}
           {invoiceListingQuery.isSuccess && invoiceListingQuery?.data?.invoices?.length > 0  &&
             <div className="bg-white !p-4 rounded-xl w-full">
-              <p className="text-lg text-secondary font-medium mb-4">View History</p>
+              <p className="text-lg text-secondary font-medium mb-4">Invoice History</p>
               <Table className="">
                 <TableHeader className="bg-[#F5F0EC]">
                   <TableRow>
