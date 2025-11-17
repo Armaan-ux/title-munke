@@ -66,15 +66,18 @@ const BillingHistory = () => {
   ];
 
   return (
-    <>
-      <InvoiceModal
-        open={invoiceModal}
-        onClose={() => {
-          setInvoiceModal(false);
-          setSelectedInvoice({})
-        }}
-        invoice={selectInvoice}
-      />
+    <div className="relative">
+      {invoiceModal && 
+        <div className="absolute left-[120%]">
+          <InvoiceModal
+            onClose={() => {
+              setInvoiceModal(false);
+              setSelectedInvoice({})
+            }}
+            invoice={selectInvoice}
+          />
+        </div>
+      }
       <CancelSubscriptionModal
         open={cancleSubscriptionModal}
         onClose={() => setCancleSubscriptionModal(false)}
@@ -234,7 +237,7 @@ const BillingHistory = () => {
 
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

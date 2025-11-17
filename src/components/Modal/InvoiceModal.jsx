@@ -1,18 +1,20 @@
-import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Separator } from "../ui/separator";
-import { ArrowDownToLine } from "lucide-react";
 import { convertFromTimestamp } from "@/utils";
 import { usePdfDownload } from "@/hooks/usePdfDownload";
+import { useEffect, useRef } from "react";
 
 export function InvoiceModal({ open, onClose, invoice }) {
+  const invoiceRef = useRef(null)
   const {handleDownload} = usePdfDownload()
-  if (!open) return null;
-  if(!invoice) return null
-  const subPrice = invoice?.plans?.find((plan) => plan?.priceName === "Monthly Subscription Price")?.amount / 100;
+  useEffect(() => {
+    setTimeout(() => handleDownload(invoiceRef), 400);
+    // setTimeout(onClose, 1000)
+  }, [])
+  // if (!open) return null;
+  // if(!invoice) return null
+
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent  showCloseButton={false} className="!max-w-xl !w-full rounded-2xl bg-white p-6 shadow-lg" id="invoice">
+    <div ref={invoiceRef}>
+      <div className="!w-full rounded-2xl bg-white p-6 shadow-lg flex flex-col gap-4">
         <div className="flex flex-row justify-between items-center">
           <img src="/Logo.svg" alt="Logo" className="h-20 w-20 mb-1" />
           <p className="text-3xl font-bold text-tertiary tracking-wide">
@@ -114,20 +116,20 @@ export function InvoiceModal({ open, onClose, invoice }) {
         <p className="text-center text-[#581b1b] font-medium mb-1">
           Thank you for your business!
         </p>
-        <Separator />
+        {/* <Separator /> */}
 
-        <DialogFooter className="flex justify-center gap-2 *:flex-1">
+        {/* <div className="flex justify-center gap-2 *:flex-1">
           <Button onClick={() => onClose()} variant="outline" size="lg" >
             Close
           </Button>
           <Button variant="secondary" size="lg" >
             <ArrowDownToLine /> Download CSV
           </Button>
-          <Button variant="secondary" size="lg">
+          <Button variant="secondary" size="lg" onClick={() => handleDownload()}>
             <ArrowDownToLine /> Download PDF
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </div> */}
+    </div>
+    </div>
   );
 }
