@@ -4,10 +4,10 @@ import { useEffect, useRef } from "react";
 
 export function InvoiceModal({ open, onClose, invoice }) {
   const invoiceRef = useRef(null)
-  const {handleDownload} = usePdfDownload()
+  const {handleDownload, isDownloading} = usePdfDownload()
   useEffect(() => {
-    setTimeout(() => handleDownload(invoiceRef), 400);
-    // setTimeout(onClose, 1000)
+    setTimeout(() => handleDownload(invoiceRef), 300);
+    setTimeout(onClose, 1000)
   }, [])
   // if (!open) return null;
   // if(!invoice) return null
@@ -69,7 +69,7 @@ export function InvoiceModal({ open, onClose, invoice }) {
         </div>
 
         <div className="border rounded-md overflow-hidden mb-1">
-          <div className="bg-[#581b1b] text-white text-sm font-medium grid grid-cols-5 px-3 py-2">
+          <div className={`bg-[#581b1b] text-white text-sm font-medium grid grid-cols-5 px-3 ${isDownloading ? "pb-4" : "py-2"}`}>
             <span className="col-span-2">Description</span>
             <span className="text-center">QTY</span>
             <span className="text-center">Price</span>

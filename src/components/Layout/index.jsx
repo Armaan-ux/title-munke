@@ -7,7 +7,7 @@ import AIChatBot from "../common/AIChatBot";
 
 function Layout() {
   return (
-    <SidebarProvider>
+    <SidebarProvider className="overflow-x-hidden">
       <AppSidebar />
       <main className="flex-1 md:pl-0 p-4 min-w-0">
         <AppHeader />
