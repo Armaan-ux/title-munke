@@ -8,6 +8,7 @@ import {
   updateBroker,
 } from "../components/service/userAdmin";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
 const UserContext = createContext();
 
@@ -20,10 +21,32 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [memberModal, setMemberModal] = useState(true);
+  const [memberModal, setMemberModal] = useState(false);
   const [paymentModal, setPaymentModal] = useState(false);
   const [paymentSuccessModal, setPaymentSuccessModal] = useState(false);
   const [paymentFailedModal, setPaymentFailedModal] = useState(false);
+  const userType = user?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
+
+  const subsDetailQuery = useQuery({
+    queryKey: ["subcription-details"],
+    queryFn: () => getSubscriptionDetails(user?.attributes?.sub, userType),
+    enabled: !!user?.attributes?.sub && !!userType,
+    refetchOnWindowFocus: false,
+    staleTime: Infinity
+  })
+
+  console.log("subdata", subsDetailQuery?.data)
+  useEffect(() => {
+    if(subsDetailQuery?.isSuccess) {
+      setUser(pre => ({
+        ...pre, 
+        status: subsDetailQuery?.data?.status, 
+        cancel_at: subsDetailQuery?.data?.cancel_at,
+        cancel_at_period_end: subsDetailQuery?.data?.cancel_at_period_end
+      }))
+      setMemberModal(subsDetailQuery?.data?.status === "active" ? false : true)
+    }
+  }, [subsDetailQuery?.data])
 
   useEffect(() => {
     const checkUserSession = async () => {
@@ -31,10 +54,7 @@ export const UserProvider = ({ children }) => {
         const currentUser = await Auth.currentAuthenticatedUser();
         setUser(currentUser);
         setIsAuthenticated(true);
-        const userType = currentUser?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
-        const subSDetail = await getSubscriptionDetails(currentUser?.attributes?.sub, userType)
-        setUser(pre => ({...pre, status: subSDetail?.status}))
-        setMemberModal(subSDetail?.status === "active" ? false : true)
+     
       } catch (error) {
         setIsAuthenticated(false);
       } finally {

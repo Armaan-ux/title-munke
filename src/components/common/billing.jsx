@@ -10,11 +10,13 @@ import { useNavigate } from "react-router-dom";
 import { SubscriptionCanceledSuccessModal } from "../Modal/SubscriptionCanceledSuccessModal";
 import { CancelSubscriptionModal } from "../Modal/CancelSubscriptionModal";
 import { HelpUsImproveModal } from "../Modal/HelpUsImproveModal";
-import { useQuery } from "@tanstack/react-query";
-import { getSubscriptionDetails } from "../service/userAdmin";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { cancelSubscription, getSubscriptionDetails } from "../service/userAdmin";
 import { CenterLoader } from "./Loader";
 import ShowError from "./ShowError";
 import { convertFromTimestamp } from "@/utils";
+import { useUserIdType } from "@/hooks/useUserIdType";
+import { toast } from "react-toastify";
 
 const Billing = () => {
   const navigate = useNavigate();
@@ -32,10 +34,25 @@ const Billing = () => {
   } = useUser();
 
   const userType = user?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
-
+  const queryClient = useQueryClient();
+  const {userId} = useUserIdType();
   const subcriptionDetailQuery = useQuery({
     queryKey: ["subcription-details"],
     queryFn: () => getSubscriptionDetails(user?.attributes?.sub, userType)
+  })
+  const cancelSubscriptionMutation = useMutation({
+    mutationFn: (reason) => cancelSubscription(userId, userType, user?.cancel_at_period_end ? false : true, reason=""),
+    onSuccess: (data) => {
+      if(!user?.cancel_at_period_end) {
+        setCancleSubscriptionModal(false);
+        setHelpUsImproveModal(false);
+      } else
+        toast.success(data?.message)
+      queryClient.invalidateQueries({queryKey: ["subcription-details"], exact: true})
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.message ?? "Something went wrong.")
+    }
   })
   const cardDetail = subcriptionDetailQuery?.data?.payment_methods?.[0] || {};
   return (
@@ -49,7 +66,8 @@ const Billing = () => {
         open={helpUsImproveModal}
         onClose={() => setHelpUsImproveModal(false)}
         onSubmit={() => setCancleSubscriptionSucessModal(true)}
-      />
+        cancelSubscriptionMutation={cancelSubscriptionMutation}
+        />
       <SubscriptionCanceledSuccessModal
         open={cancleSubscriptionSucessModal}
         onClose={() => setCancleSubscriptionSucessModal(false)}
@@ -200,13 +218,24 @@ const Billing = () => {
                 Cancel subscription will remain active until the end of the
                 current billing period.
               </p>
-              <Button
-                variant="ghost"
-                className="text-subscriptions hover:text-subscriptions hover:bg-transparent"
-                onClick={() => setCancleSubscriptionModal(true)}
-              >
-                Cancel Subscription
-              </Button>
+              <div className="flex flex-col items-center">
+                <Button
+                  variant="ghost"
+                  className={`${user?.cancel_at_period_end ? "text-chart-2 hover:text-chart-2" :
+                    "text-subscriptions hover:text-subscriptions"} hover:bg-transparent`}
+                  onClick={() => {
+                    if(user?.cancel_at_period_end) {
+                      cancelSubscriptionMutation.mutate("");
+                      return;
+                    }
+                    setCancleSubscriptionModal(true)
+                  }}
+                  disabled={cancelSubscriptionMutation?.isPending}
+                >
+                  {user?.cancel_at_period_end ? "Subscribe Again" : "Cancel Subscription"}
+                </Button>
+                {user?.cancel_at_period_end && <div><span className="text-coffee-text-billing font-medium">Plan expires at</span> {convertFromTimestamp(user?.cancel_at, "dateTime")}</div>}
+              </div>
             </div>
           </CardContent>
         }

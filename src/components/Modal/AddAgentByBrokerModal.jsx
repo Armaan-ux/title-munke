@@ -16,12 +16,60 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { X } from "lucide-react";
-
+import { useUserIdType } from "@/hooks/useUserIdType";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { newAgentSchema } from "@/formSchema";
+import { FormValidationError } from "../common/FormValidationError";
+import { createAgentForBroker } from "../service/agent";
+import { toast } from "react-toastify";
+import { useUser } from "@/context/usercontext";
+import { handleCreateAuditLog } from "@/utils";
 export default function AddAgentByBrokerModal({ open, onOpenChange }) {
-   if (!open) return null;
+  const {user, setUser} = useUser();
+  const { userId } = useUserIdType();
+  const {control, handleSubmit, formState: { errors, isSubmitting }} = useForm({
+    defaultValues: { name: "", email: "", searchLimit: 10 },
+    resolver: zodResolver(newAgentSchema),
+  });
+
+  const onSubmit = async (data) => {
+      try {
+        const { name, email, searchLimit } = data;
+          const response = await createAgentForBroker(
+           userId,
+            name,
+            email,
+            searchLimit
+          );
+          toast.success("Agent Created Successfully.");
+          console.log("response", response);
+          const newAgent = response.user;
+          console.log("newAgent", newAgent);
+          setUser((prev) => [...prev,
+              { ...newAgent, totalSearches: 0, agentName: name }
+              ]);
+          toast.success("Agent Created Successfully.");
+          const userGroups =
+            user?.signInUserSession?.idToken?.payload["cognito:groups"] || [];
+          if (userGroups.includes("broker")) {
+            handleCreateAuditLog("AGENT_CREATE", {
+              detail: `Broker ${user?.attributes?.sub} has created the agent ${newAgent.id}`,
+            });
+          }
+      }
+    catch(err) {
+      toast.error(err?.response?.data?.message || "Something went wrong.")
+    }
+  }
+  if (!open) return null;
+  console.log("isSubmitting", isSubmitting)
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent  showCloseButton={false}
+      <DialogContent
+        showCloseButton={false}
         className="max-w-[420px] rounded-2xl py-5  px-8 bg-white shadow-xl border-none"
         overlayClass="bg-black/40 backdrop-blur-[1px]"
       >
@@ -34,44 +82,73 @@ export default function AddAgentByBrokerModal({ open, onOpenChange }) {
           </DialogClose>
         </DialogHeader>
 
-        <div className="mt-5 space-y-4">
+        <form
+          className="mt-5 space-y-4"
+          onSubmit={handleSubmit((data) => onSubmit(data))}
+        >
           <div className="space-y-1">
             <label className="text-[14px] font-medium text-secondary">
               Full Name
             </label>
-            <Input
-              placeholder="John Marks"
-              className="h-[38px] bg-white border border-[#E6DFDB] text-secondary placeholder:text-[#B6AAA5] focus-visible:ring-0 focus-visible:ring-offset-0"
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  placeholder="John Marks"
+                  className="h-[38px] bg-white border border-[#E6DFDB] text-secondary placeholder:text-[#B6AAA5] focus-visible:ring-0 focus-visible:ring-offset-0"
+                  {...field}
+                />
+              )}
             />
+            {errors.name && <FormValidationError message={errors.name.message} />}
           </div>
 
           <div className="space-y-1">
             <label className="text-[14px] font-medium text-secondary">
               Email Address
             </label>
-            <Input
-              placeholder="john@emailaddress.com"
-              className="h-[38px] bg-white border border-[#E6DFDB] text-secondary placeholder:text-[#B6AAA5] focus-visible:ring-0 focus-visible:ring-offset-0"
+            <Controller
+              name="email"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  placeholder="John Marks"
+                  className="h-[38px] bg-white border border-[#E6DFDB] text-secondary placeholder:text-[#B6AAA5] focus-visible:ring-0 focus-visible:ring-offset-0"
+                  {...field}
+                />
+              )}
             />
+            {errors.email && <FormValidationError message={errors.email.message} />}
           </div>
 
           <div className="space-y-1">
             <label className="text-[14px] font-medium text-secondary">
               Monthly Search Limit
             </label>
-            <Select>
-              <SelectTrigger className="h-[38px] w-full border border-[#E6DFDB] text-secondary focus:ring-0 focus:ring-offset-0">
-                <SelectValue placeholder="Select" />
-              </SelectTrigger>
-              <SelectContent className="text-secondary">
-                {[10, 20, 30, 50, 100].map((limit) => (
-                  <SelectItem key={limit} value={limit.toString()}>
-                    {limit}
-                  </SelectItem>
-                ))}
-                <SelectItem value="unlimited">Unlimited</SelectItem>
-              </SelectContent>
-            </Select>
+            <Controller
+              name="searchLimit"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                >
+                  <SelectTrigger className="h-[38px] w-full border border-[#E6DFDB] text-secondary focus:ring-0 focus:ring-offset-0">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+
+                  <SelectContent className="text-secondary">
+                    {[10, 20, 30, 50, 100].map((limit) => (
+                      <SelectItem key={limit} value={limit}>
+                        {limit}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="unlimited">Unlimited</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </div>
 
           {/* <div className="flex items-center space-x-2 pt-1">
@@ -92,11 +169,11 @@ export default function AddAgentByBrokerModal({ open, onOpenChange }) {
             >
               Cancel
             </Button>
-            <Button className="h-[38px] w-[50%] px-5 bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[14px] font-medium rounded-md">
+            <Button className="h-[38px] w-[50%] px-5 bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[14px] font-medium rounded-md" disabled={isSubmitting}>
               Invite Agent
             </Button>
           </div>
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

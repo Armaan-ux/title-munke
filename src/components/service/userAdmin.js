@@ -94,8 +94,8 @@ async function createUser(userData) {
   );
 }
 
-export async function createAgentOnCognito(name, email, brokerId) {
-  return createUser({ name, userType: CONSTANTS.USER_TYPES.AGENT, email, brokerId });
+export async function createAgentOnCognito(name, email, searchLimit, brokerId) {
+  return createUser({ name, userType: CONSTANTS.USER_TYPES.AGENT, email, brokerId, searchLimit });
 }
 
 export async function createBrokerOnCognito(name, email) {
@@ -752,6 +752,24 @@ export async function getInvoice(userId, userType) {
     payload,
     "Successs in listinvoice",
     "Error in listinvoice",
+    "/users"
+  )
+}
+
+export async function cancelSubscription(userId, userType, isCancel, reason) {
+  const payload = {
+    body: {
+      userId,
+      action: "update-subscription-status",
+      userType,
+      cancel_at_period_end: isCancel,
+      reason
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in update-subscription-status",
+    "error in update-subscription-status",
     "/users"
   )
 }

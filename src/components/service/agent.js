@@ -4,11 +4,11 @@ export function calculateAverage(totalSearches, agentCount) {
   return totalSearches / agentCount;
 }
 
-export async function createAgentForBroker(brokerId, name, email) {
+export async function createAgentForBroker(brokerId, name, email, searchLimit) {
   try {
     // The backend Lambda handles creating the user in Cognito, the agent in DynamoDB,
     // and the relationship record. This is the secure, modern approach.
-    const response = await createAgentOnCognito(name, email, brokerId);
+    const response = await createAgentOnCognito(name, email,searchLimit, brokerId);
     console.log("Agent creation initiated via backend:", response);
 
     // The backend response already indicates success.

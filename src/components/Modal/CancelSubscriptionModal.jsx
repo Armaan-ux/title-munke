@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "../ui/separator";
 
 export function CancelSubscriptionModal({ open, onClose ,onHelpUsImprove}) {
-    if (!open) return null;
+
+  if (!open) return null;
   return (
     <Dialog open={open} onOpenChange={onClose}>
     <div

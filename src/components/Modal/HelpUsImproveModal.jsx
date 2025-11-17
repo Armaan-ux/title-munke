@@ -11,9 +11,17 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Separator } from "../ui/separator";
 import { X } from "lucide-react";
+import { useUserIdType } from "@/hooks/useUserIdType";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { cancelSubscription } from "../service/userAdmin";
+import { toast } from "react-toastify";
 
-export function HelpUsImproveModal({ open, onClose, onSubmit }) {
+export function HelpUsImproveModal({ open, onClose, cancelSubscriptionMutation }) {
+
+  
   const [reason, setReason] = useState("Too expensive");
+  
+  
   if (!open) return null;
 
   return (
@@ -96,10 +104,8 @@ export function HelpUsImproveModal({ open, onClose, onSubmit }) {
               </Button>
               <Button
                 className="w-1/2 bg-[#600000] hover:bg-[#7a0000] text-sm"
-                onClick={() => {
-                  onSubmit();
-                  onClose();
-                }}
+                onClick={() => {cancelSubscriptionMutation?.mutate(reason)}}
+                disabled={cancelSubscriptionMutation?.isPending}
               >
                 Submit Reason
               </Button>
