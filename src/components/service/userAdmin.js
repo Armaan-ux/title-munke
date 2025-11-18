@@ -788,3 +788,18 @@ export async function getSearchedStatus(searchId) {
     "/users"
   )
 }
+export async function updateStatus(agentId) {
+  const payload = {
+    body: {
+      status: "ACTIVE",
+      action: "updateAgentStatus",
+      agentId
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in updateAgentStatus",
+    "error in updateAgentStatus",
+    "/users"
+  )
+}

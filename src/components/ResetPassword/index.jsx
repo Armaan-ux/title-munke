@@ -6,9 +6,11 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import {motion} from "motion/react"
+import { updateStatus } from "../service/userAdmin";
 
 
 function ResetPassword({ username, password }) {
+  console.log({username})
   const { signIn } = useUser();
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -21,6 +23,7 @@ function ResetPassword({ username, password }) {
       setLoading(true);
       const user = await Auth.signIn(username, password);
       await Auth.completeNewPassword(user, newPassword);
+      await updateStatus(user?.username)
       const { user: completedUser } = await signIn(username, newPassword);
       const groups =
         completedUser.signInUserSession.idToken.payload["cognito:groups"];
