@@ -31,6 +31,7 @@ const Billing = () => {
     paymentSuccessModal,
     setPaymentFailedModal,
     paymentFailedModal,
+    setCardListingModal
   } = useUser();
 
   const userType = user?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
@@ -180,7 +181,7 @@ const Billing = () => {
                   </div>
                   <button
                     className="text-sm text-[#5A0A0A] hover:underline"
-                    onClick={() => setPaymentModal(true)}
+                    onClick={() => setCardListingModal(true)}
                   >
                     + Add Payment Method
                   </button>

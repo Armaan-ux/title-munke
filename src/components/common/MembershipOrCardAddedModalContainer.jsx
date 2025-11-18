@@ -7,6 +7,14 @@ import SubscriptionFailedModal from "../Modal/SubscriptionFailedModal";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
+import { Dialog } from "../ui/dialog";
+import { DialogContent } from "@radix-ui/react-dialog";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { Card } from "../ui/card";
+import { Pencil, Trash2 } from "lucide-react";
+import { Button } from "../ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { getSubscriptionDetails } from "../service/userAdmin";
 
 function MembershipOrCardAddedModalContainer() {
   const { pathname } = useLocation();
@@ -22,12 +30,21 @@ function MembershipOrCardAddedModalContainer() {
     paymentSuccessModal,
     setPaymentFailedModal,
     paymentFailedModal,
+    cardListingModal, 
+    setCardListingModal
   } = useUser();
-  const { userType } = useUserIdType();
+
+  
+  const { userId,userType } = useUserIdType();
   const [searchParams] = useSearchParams();
   const isCardAdded = searchParams.get("isCardAdded");
   const isPaymentSuccessful = searchParams.get("isPaymentSuccessful");
-
+  
+  const subcriptionDetailQuery = useQuery({
+    queryKey: ["subcription-details"],
+    queryFn: () => getSubscriptionDetails(userId, userType),
+    enabled: cardListingModal && !!userId
+  })
   useEffect(() => {
     if (isCardAdded || isPaymentSuccessful) {
       setPaymentModal(false);
@@ -36,10 +53,81 @@ function MembershipOrCardAddedModalContainer() {
       // setTimeout(() => setPaymentSuccessModal(false), 3000)
     }
   }, [isCardAdded, isPaymentSuccessful]);
-
+  console.log(subcriptionDetailQuery.data)
   if (!["individual", "broker"].includes(userType)) return null;
+  const cards = subcriptionDetailQuery?.data?.payment_methods ?? [];
+
   return (
     <div>
+      {cardListingModal && 
+        <Dialog open={cardListingModal} onOpenChange={() => setCardListingModal(false)}>
+          <div
+        className="fixed inset-0 z-40 flex items-center justify-center"
+        style={{
+          backdropFilter: "blur(2px)",
+          WebkitBackdropFilter: "blur(2px)",
+          backgroundColor: "rgba(0,0,0,0.5)",
+        }}
+      >
+          <DialogContent className="relative w-[400px] rounded-2xl p-0 border-none overflow-visible bg-transparent z-50">
+            <RadioGroup
+                value={0}
+                onValueChange={() => console.log("called")}
+                className="space-y-3 bg-white px-4 py-8 rounded-md max-h-[500px] overflow-y-auto"
+              >
+                {/* <Card className="flex flex-row items-center justify-between px-5 py-3 rounded-xl border hover:border-gray-400 transition">
+                  <div className="flex items-center gap-3">
+                    <img src="/apple-pay.svg" alt="apple pay" />
+                    <span className="font-medium">Apple Pay</span>
+                  </div>
+                  <RadioGroupItem value="apple" />
+                </Card>
+
+                <Card className="flex flex-row items-center justify-between px-5 py-3 rounded-xl border hover:border-gray-400 transition">
+                  <div className="flex items-center gap-3">
+                    <img src="/pp-logo.svg" alt="paypal" />
+                    <span className="font-medium">Paypal</span>
+                  </div>
+                  <RadioGroupItem value="paypal" />
+                </Card> */}
+
+                {cards?.map((value, ind) => (
+                  <div className="flex items-center justify-center gap-2" key={ind}>
+                  <Card className="flex flex-row items-center justify-between px-5 py-3 rounded-xl border hover:border-gray-400 transition w-[85%]">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src="/mc-card.svg"
+                        alt="card"
+                        className="w-10 h-15 object-contain"
+                      />
+                      <span className="tracking-widest font-medium">
+                        •••• •••• •••• {value?.last4}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value={ind} />
+                    </div>
+                  </Card>
+                  {/* <div className="flex items-center justify-between gap-3">
+                    <Pencil
+                      className="w-4 h-4 text-secondary cursor-pointer"
+                      onClick={() => ""}
+                    />
+                    <Trash2 className="w-4 h-4 text-secondary cursor-pointer" />
+                  </div> */}
+                </div>
+                ))}
+                <Button
+                    className="text-sm text-secondary bg-[#FDF6EE] hover:underline hover:bg-secondary hover:text-primary-foreground"
+                    onClick={() => {setPaymentModal(true); setCardListingModal(false) }}
+                  >
+                    + Add New Credit / Debit Card
+                  </Button>
+              </RadioGroup>
+          </DialogContent>
+          </div>
+        </Dialog>
+      }
       {memberModal && userType === "broker" && (
         <BecomeMemberModal
           open={memberModal}

@@ -26,7 +26,7 @@ export const UserProvider = ({ children }) => {
   const [paymentSuccessModal, setPaymentSuccessModal] = useState(false);
   const [paymentFailedModal, setPaymentFailedModal] = useState(false);
   const userType = user?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
-
+  const [cardListingModal, setCardListingModal] = useState(false);
   const subsDetailQuery = useQuery({
     queryKey: ["subcription-details"],
     queryFn: () => getSubscriptionDetails(user?.attributes?.sub, userType),
@@ -140,6 +140,8 @@ export const UserProvider = ({ children }) => {
         paymentSuccessModal,
         setPaymentFailedModal,
         paymentFailedModal,
+        cardListingModal, 
+        setCardListingModal
       }}
     >
       {children}

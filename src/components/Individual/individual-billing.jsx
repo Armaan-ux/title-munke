@@ -33,7 +33,7 @@ const IndividualBilling = () => {
     setPaymentSuccessModal,
     paymentSuccessModal,
     setPaymentFailedModal,
-    paymentFailedModal,
+    setCardListingModal
   } = useUser();
   const [selectedInvoice, setSelectedInvoice] = useState({});
   const subcriptionDetailQuery = useQuery({
@@ -132,7 +132,7 @@ const IndividualBilling = () => {
                   </div>
                   <button
                     className="text-sm text-tertiary hover:underline"
-                    onClick={() => setPaymentModal(true)}
+                    onClick={() => setCardListingModal(true)}
                   >
                     + Add Payment Method
                   </button>
