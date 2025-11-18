@@ -70,7 +70,7 @@ const IndividualBilling = () => {
   const cardDetail = subcriptionDetailQuery?.data?.payment_methods?.[0] || {};
   return (
     <>
-      {paymentModal && (
+      {/* {paymentModal && (
         <PaymentMethodModal
           open={paymentModal}
           onOpenChange={() => setPaymentModal(false)}
@@ -90,7 +90,7 @@ const IndividualBilling = () => {
           open={paymentFailedModal}
           onOpenChange={() => setPaymentFailedModal(false)}
         />
-      )}
+      )} */}
       <InvoiceModalDummy
         open={invoiceModal}
         onClose={() => setInvoiceModal(false)}

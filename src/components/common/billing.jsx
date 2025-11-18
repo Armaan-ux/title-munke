@@ -72,7 +72,7 @@ const Billing = () => {
         open={cancleSubscriptionSucessModal}
         onClose={() => setCancleSubscriptionSucessModal(false)}
       />
-      {paymentModal && (
+      {/* {paymentModal && (
         <PaymentMethodModal
           open={paymentModal}
           onOpenChange={() => setPaymentModal(false)}
@@ -93,7 +93,7 @@ const Billing = () => {
           open={paymentFailedModal}
           onOpenChange={() => setPaymentFailedModal(false)}
         />
-      )}
+      )} */}
       <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full h-content shadow-md">
         {subcriptionDetailQuery?.isLoading && <CenterLoader />}
         {subcriptionDetailQuery?.isError && <ShowError />}

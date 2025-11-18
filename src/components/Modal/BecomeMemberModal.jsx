@@ -1,11 +1,14 @@
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CircleCheck, X } from "lucide-react";
+import { useUser } from "@/context/usercontext";
 
 const BecomeMemberModal = ({ open, onClose, setPaymentModal }) => {
+  const {setUser} = useUser();
    if (!open) return null;
   const subscribeHandler = () => {
     setPaymentModal(true);
+    setUser(pre => ({...pre, isAddCard: false}))
     onClose();
   };
 

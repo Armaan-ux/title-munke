@@ -14,28 +14,30 @@ import { appearance } from "@/utils/constant";
 import { useMutation } from "@tanstack/react-query";
 import { CenterLoader } from "../common/Loader";
 import ShowError from "../common/ShowError";
+import { useLocation } from "react-router-dom";
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
-function PaymentForm({isAddCard}) {
+function PaymentForm() {
+  const {user} = useUser()
+  const {pathname} = useLocation();
   const [type, setType] = useState("");
   const  userClickedRef = useRef(false);
   const stripe = useStripe();
   const elements = useElements();
-  const {user} = useUser()
-  const userType = user?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!stripe || !elements) return;
 
-    const { error } = isAddCard ? await stripe.confirmSetup({
+    const { error } = user?.isAddCard ? await stripe.confirmSetup({
       elements,
-      confirmParams: { return_url: window.location.origin + `/${userType === "broker" ? "broker" : "individual"}/dashboard?isCardAdded=true`, },
+      confirmParams: { return_url: window.location.origin + `${pathname}?isCardAdded=true`, },
     }):
     await stripe.confirmPayment({
       elements,
       confirmParams: {
         return_url:
-          window.location.origin + `/${userType === "broker" ? "broker" : "individual"}/dashboard?isCardAdded=true`,
+          window.location.origin + `${pathname}?isPaymentSuccessful=true`,
       },
     });
 
@@ -70,7 +72,7 @@ function PaymentForm({isAddCard}) {
           size="lg"
           className="mt-4"
         >
-          Save Card
+          {user?.isAddCard ? "Save Card" : "Make Payment"}
         </Button>
     </form>
   );
@@ -82,12 +84,12 @@ function PaymentForm({isAddCard}) {
 
 
 
-export default function PaymentSetup({isAddCard}) {
+export default function PaymentSetup() {
   const [clientSecret, setClientSecret] = useState("");
   const {user} = useUser()
   const userType = user?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
   const membershipMutation = useMutation({
-    mutationFn: () => addCard(user?.attributes?.sub, userType, isAddCard ? "add-card" : "subscribe"), 
+    mutationFn: () => addCard(user?.attributes?.sub, userType, user?.isAddCard ? "add-card" : "subscribe"), 
     onSuccess: (data) =>  setClientSecret(data.clientSecret)
   })
   const init = async () => {
@@ -113,7 +115,7 @@ export default function PaymentSetup({isAddCard}) {
       {membershipMutation?.isError && <ShowError message={membershipMutation?.error?.response?.data?.error}/>}
       {membershipMutation?.isSuccess && 
         <Elements stripe={stripePromise} options={options}>
-          <PaymentForm isAddCard={isAddCard}/>
+          <PaymentForm />
         </Elements>
       }
     </>

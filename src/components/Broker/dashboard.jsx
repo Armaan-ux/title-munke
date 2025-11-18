@@ -18,12 +18,12 @@ import SubscriptionSuccessModal from "@/components/Modal/SubscriptionSuccessModa
 import SubscriptionFailedModal from "@/components/Modal/SubscriptionFailedModal";
 import { Link, useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
+import CardAddedSuccessModal from "../Modal/CardAddedSuccessModal";
 
 const BrokerDashboard = () => {
   const navigate =  useNavigate()
   const [agents, setAgents] = useState([]);
-  const [searchParams] = useSearchParams();
-  const isCardAdded = searchParams.get("isCardAdded");
+  
 
   const {
     user,
@@ -43,13 +43,7 @@ const BrokerDashboard = () => {
     );
   }, []);
 
-  useEffect(() => {
-    if(isCardAdded) {
-      setPaymentModal(false);
-      setPaymentSuccessModal(true);
-      // setTimeout(() => setPaymentSuccessModal(false), 3000)
-    }
-  }, [isCardAdded])
+  
   
   const totalAgents = agents.length;
   const activeAgents = agents.filter(
@@ -113,7 +107,7 @@ const BrokerDashboard = () => {
         <BrokerHistory />
       </div>
 
-      {memberModal && (
+      {/* {memberModal && (
         <BecomeMemberModal
           open={memberModal}
           onClose={() => setMemberModal(false)}
@@ -134,13 +128,20 @@ const BrokerDashboard = () => {
           onFailed={() => setPaymentFailedModal(true)}
         />
       )}
+      {true && (
+        <CardAddedSuccessModal
+          open={true}
+          onOpenChange={() => setPaymentSuccessModal(false)}
+          onFailed={() => setPaymentFailedModal(true)}
+        />
+      )}
 
       {paymentFailedModal && (
         <SubscriptionFailedModal
           open={paymentFailedModal}
           onOpenChange={() => setPaymentFailedModal(false)}
         />
-      )}
+      )} */}
     </div>
   );
 };

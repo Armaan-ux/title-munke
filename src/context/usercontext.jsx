@@ -53,7 +53,7 @@ export const UserProvider = ({ children }) => {
     const checkUserSession = async () => {
       try {
         const currentUser = await Auth.currentAuthenticatedUser();
-        setUser(currentUser);
+        setUser({...currentUser, isAddCard: true});
         setIsAuthenticated(true);
      
       } catch (error) {
@@ -73,7 +73,7 @@ export const UserProvider = ({ children }) => {
         return { user, isResetRequired: true };
       }
 
-      setUser(user); // Set the user state
+      setUser({...user, isAddCard: true}); // Set the user state
       setIsAuthenticated(true);
       const userGroups =
         user?.signInUserSession?.idToken?.payload["cognito:groups"] || [];
@@ -114,6 +114,7 @@ export const UserProvider = ({ children }) => {
     <UserContext.Provider
       value={{
         user,
+        setUser,
         signIn,
         signOut,
         isAuthenticated,

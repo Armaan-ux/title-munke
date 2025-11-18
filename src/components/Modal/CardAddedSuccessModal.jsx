@@ -7,7 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 
-export default function SubscriptionSuccessModal({
+export default function CardAddedSuccessModal({
   open,
   onOpenChange,
   onFailed,
@@ -46,23 +46,20 @@ export default function SubscriptionSuccessModal({
 
           <div className="overflow-hidden rounded-2xl">
             <div className="relative bg-secondary text-white flex flex-col items-center justify-center py-5">
-              <img src="/success.svg" alt="success" />
+              <img src="/add-Card-Success.png" alt="success" />
               <DialogHeader className="text-center">
                 <DialogTitle className="text-2xl font-semibold pt-4 !font-poppins">
                   <div className="flex flex-col items-center">
-                    <p>Subscription</p>
-                    <p>Successful!</p>
+                    <p>Card Added</p>
+                    <p>Successfully!</p>
                   </div>
                 </DialogTitle>
               </DialogHeader>
             </div>
             <div className="flex flex-col items-center justify-center px-6 py-6 text-center">
-              <p className="text-xl font-semibold text-coffee-light mb-1">
-                Thank you for becoming a member.
-              </p>
               <p className="text-sm text-coffee-light text-600 mb-5 leading-relaxed">
-                Your subscription is now active, and you have full access to all
-                brokers features.
+                Your card details has been <br/>
+                successfully added.
               </p>
 
               <Button

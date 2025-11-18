@@ -4,17 +4,21 @@ import AppSidebar from "../Sidebar/index";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppHeader from "./app-header";
 import AIChatBot from "../common/AIChatBot";
+import MembershipOrCardAddedModalContainer from "../common/MembershipOrCardAddedModalContainer";
 
 function Layout() {
   return (
-    <SidebarProvider className="overflow-x-hidden">
-      <AppSidebar />
-      <main className="flex-1 md:pl-0 p-4 min-w-0">
-        <AppHeader />
-        <AIChatBot />
-        <Outlet />
-      </main>
-    </SidebarProvider>
+    <>
+      <MembershipOrCardAddedModalContainer />
+      <SidebarProvider className="overflow-x-hidden">
+        <AppSidebar />
+        <main className="flex-1 md:pl-0 p-4 min-w-0">
+          <AppHeader />
+          <AIChatBot />
+          <Outlet />
+        </main>
+      </SidebarProvider>
+    </>
   );
 }
 
