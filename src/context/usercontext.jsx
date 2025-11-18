@@ -32,10 +32,23 @@ export const UserProvider = ({ children }) => {
     queryFn: () => getSubscriptionDetails(user?.attributes?.sub, userType),
     enabled: !!user?.attributes?.sub && !!userType,
     refetchOnWindowFocus: false,
-    staleTime: Infinity
+    staleTime: Infinity,
+    retry: false
   })
 
   console.log("subdata", subsDetailQuery?.data)
+  useEffect(() => {
+    if(subsDetailQuery?.isError) {
+      setUser(pre => ({
+        ...pre, 
+        status: null, 
+        // cancel_at: subsDetailQuery?.data?.cancel_at,
+        // cancel_at_period_end: subsDetailQuery?.data?.cancel_at_period_end,
+        isIndividualCardAdded: false,
+      }))
+      setMemberModal(true)
+    }
+  }, [subsDetailQuery?.isError])
   useEffect(() => {
     if(subsDetailQuery?.isSuccess) {
       setUser(pre => ({

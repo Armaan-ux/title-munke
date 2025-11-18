@@ -204,7 +204,7 @@ const Billing = () => {
                     className="text-sm text-secondary font-medium mt-1 hover:underline mr-90"
                     onClick={() => navigate("/broker/billing-history")}
                   >
-                    View History
+                    View
                   </button>
                   <button className="text-sm text-[#5A0A0A] mt-1 hover:underline"></button>
                 </div>
