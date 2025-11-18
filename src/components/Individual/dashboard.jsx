@@ -8,13 +8,21 @@ import BecomeMemberModal from "@/components/Modal/BecomeMemberModal";
 import PaymentMethodModal from "@/components/Modal/PaymentMethodModal";
 import SubscriptionSuccessModal from "@/components/Modal/SubscriptionSuccessModal";
 import SubscriptionFailedModal from "@/components/Modal/SubscriptionFailedModal";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import IndividualBilling from "./individual-billing";
 
 const IndividualDashboard = () => {
   const navigate = useNavigate();
   const [agents, setAgents] = useState([]);
-
+  const [searchParams] = useSearchParams();
+  const isCardAdded = searchParams.get("isCardAdded");
+  useEffect(() => {
+    if(isCardAdded) {
+      setPaymentModal(false);
+      setPaymentSuccessModal(true);
+      // setTimeout(() => setPaymentSuccessModal(false), 3000)
+    }
+  }, [isCardAdded])
   const {
     user,
     memberModal,
@@ -91,6 +99,7 @@ const IndividualDashboard = () => {
           open={paymentModal}
           onOpenChange={() => setPaymentModal(false)}
           onSuccess={() => setPaymentSuccessModal(true)}
+          isAddCard={true}
         />
       )}
       {paymentSuccessModal && (

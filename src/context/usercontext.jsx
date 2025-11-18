@@ -42,7 +42,8 @@ export const UserProvider = ({ children }) => {
         ...pre, 
         status: subsDetailQuery?.data?.status, 
         cancel_at: subsDetailQuery?.data?.cancel_at,
-        cancel_at_period_end: subsDetailQuery?.data?.cancel_at_period_end
+        cancel_at_period_end: subsDetailQuery?.data?.cancel_at_period_end,
+        isIndividualCardAdded: !!subsDetailQuery?.data?.payment_methods?.length,
       }))
       setMemberModal(subsDetailQuery?.data?.status === "active" ? false : true)
     }
