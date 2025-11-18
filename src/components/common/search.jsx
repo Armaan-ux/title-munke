@@ -12,8 +12,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { getSearchedStatus } from "../service/userAdmin";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Search({isIndivisual=false}) {
+  const queryClient = useQueryClient();
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState("");
@@ -51,11 +54,12 @@ export default function Search({isIndivisual=false}) {
   const checkSearchStatus = useCallback(
     async (searchId, isRestoring = false) => {
       try {
-        const response = await axios.post(
-          "https://ffdldf2c4ozijgyvor26zr5qyu0ulsie.lambda-url.us-east-1.on.aws/",
-          { mode: "CHECK_STATUS", search_id: searchId },
-          { timeout: 10000 }
-        );
+        // const response = await axios.post(
+        //   "https://ffdldf2c4ozijgyvor26zr5qyu0ulsie.lambda-url.us-east-1.on.aws/",
+        //   { mode: "CHECK_STATUS", searchId, action: "GetSearchStatus" },
+        //   { timeout: 10000 }
+        // );
+        const response = await getSearchedStatus(searchId);
 
         const { status, status_message, zip_url, percent_completion } =
           response.data;
@@ -63,6 +67,7 @@ export default function Search({isIndivisual=false}) {
         if (isRestoring && status === "IN_PROGRESS") setLoading(true);
 
         if (status === "SUCCESS") {
+          queryClient.invalidateQueries({queryKey: ["subcription-details"]})
           setProgress("Search Completed");
           setPercentage(100);
           setMessage(status_message || "Search Complete Successfully");
