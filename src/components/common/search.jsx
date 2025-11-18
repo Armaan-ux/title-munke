@@ -60,9 +60,8 @@ export default function Search({isIndivisual=false}) {
         //   { timeout: 10000 }
         // );
         const response = await getSearchedStatus(searchId);
-
-        const { status, status_message, zip_url, percent_completion } =
-          response.data;
+        console.log("response ==>", response)
+        const { status, status_message, zip_url, percent_completion } = response
 
         if (isRestoring && status === "IN_PROGRESS") setLoading(true);
 
