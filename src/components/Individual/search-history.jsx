@@ -293,7 +293,7 @@ function SearchHistory() {
                     </TableCell>
                     <TableCell>        <Badge
                       className={`${
-                        item?.status === "Active"
+                        item?.status === "SUCCESS"
                           ? "bg-[#E9F3E9] text-[#1E8221]"
                           : item?.status === "Unconfirmed"
                           ? "bg-[#FFF3D9] text-[#A2781E]"
