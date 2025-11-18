@@ -41,7 +41,7 @@ export function InvoiceModal({ open, onClose, invoice }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mb-1">
+        {/* <div className="grid grid-cols-2 gap-4 mb-1">
           <div className="border rounded-md p-3">
             <p className="font-semibold text-tertiary mb-1">
               Issued From
@@ -66,7 +66,7 @@ export function InvoiceModal({ open, onClose, invoice }) {
               Street - 234, USA
             </p>
           </div>
-        </div>
+        </div> */}
 
         <div className="border rounded-md overflow-hidden mb-1">
           <div className={`bg-[#581b1b] text-white text-sm font-medium grid grid-cols-5 px-3 ${isDownloading ? "pb-4" : "py-2"}`}>

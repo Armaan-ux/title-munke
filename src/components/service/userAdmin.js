@@ -773,3 +773,18 @@ export async function cancelSubscription(userId, userType, isCancel, reason) {
     "/users"
   )
 }
+
+export async function getSearchedStatus(searchId) {
+  const payload = {
+    body: {
+      searchId,
+      action: "GetSearchStatus",
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in GetSearchStatus",
+    "error in GetSearchStatus",
+    "/users"
+  )
+}

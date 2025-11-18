@@ -2,12 +2,19 @@ import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "../ui/separator";
 import { ArrowDownToLine } from "lucide-react";
+import { convertFromTimestamp } from "@/utils";
+import { usePdfDownload } from "@/hooks/usePdfDownload";
+import { useRef } from "react";
 
-export function InvoiceModalDummy({ open, onClose }) {
-  if (!open) return null;
+export function InvoiceModalDummy({ open, onClose, invoice }) {
+  console.log("invoice", invoice)
+  const {handleDownload, isDownloading} = usePdfDownload();
+  const ref = useRef(null);
+  // if (!open) return null;
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent  showCloseButton={false} className="!max-w-xl !w-full rounded-2xl bg-white p-6 shadow-lg">
+        <div ref={ref} className={isDownloading ? "p-4 flex flex-col gap-4" : ""}>
         <div className="flex flex-row justify-between items-center">
           <img src="/Logo.svg" alt="Logo" className="h-20 w-20 mb-1" />
           <p className="text-3xl font-bold text-tertiary tracking-wide">
@@ -18,23 +25,23 @@ export function InvoiceModalDummy({ open, onClose }) {
         <div className="grid grid-cols-1 gap-4   p-5 rounded-md bg-[#fdf8f5]">
           <div className="flex justify-between items-center">
             <p className="text-sm text-tertiary font-medium">Invoice ID</p>
-            <p className="text-sm text-secondary">#1584647</p>
+            <p className="text-sm text-secondary">{invoice?.id}</p>
           </div>
           <div className="flex justify-between items-center">
             <p className="text-sm text-tertiary font-medium">Bill Date</p>
-            <p className="text-sm text-secondary">Apr 01, 2025</p>
+            <p className="text-sm text-secondary">{convertFromTimestamp(invoice?.created, "dateTime")}</p>
           </div>
           <div className="flex justify-between items-center">
             <p className="text-sm text-tertiary font-medium">
               Payment Method
             </p>
-            <p className="text-sm text-secondary">
-              Visa Master Card
+            <p className="text-sm text-secondary uppercase">
+              {invoice?.payment_method?.brand ?? ""}
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mb-1">
+        {/* <div className="grid grid-cols-2 gap-4 mb-1">
           <div className="border rounded-md p-3">
             <p className="font-semibold text-tertiary mb-1">
               Issued From
@@ -59,10 +66,10 @@ export function InvoiceModalDummy({ open, onClose }) {
               Street - 234, USA
             </p>
           </div>
-        </div>
+        </div> */}
 
         <div className="border rounded-md overflow-hidden mb-1">
-          <div className="bg-[#581b1b] text-white text-sm font-medium grid grid-cols-5 px-3 py-2">
+          <div className={`bg-[#581b1b] text-white text-sm font-medium grid grid-cols-5 px-3 py-2 ${isDownloading ? "pb-6" : "py-2"}`}>
             <span className="col-span-2">Description</span>
             <span className="text-center">QTY</span>
             <span className="text-center">Price</span>
@@ -95,22 +102,22 @@ export function InvoiceModalDummy({ open, onClose }) {
           </div>
 
           <div className="bg-[#fdf8f5] text-sm border-t px-3 py-3 space-y-1 flex flex-col items-end gap-2">
-            <div></div>
+            {/* <div></div>
             <div className="flex justify-between gap-10 w-48">
               <p>Subscription</p>
               <p>$25.00</p>
-            </div>
+            </div> */}
             <div className="flex justify-between gap-10 w-48">
-              <p  >Subtotal</p>
-              <p>$225.00</p>
+              <p>Subtotal</p>
+              <p>${invoice?.subtotal / 100}</p>
             </div>
             <div className="flex justify-between gap-10 w-48">
               <p>Tax</p>
-              <p>$5.00</p>
+              <p>${invoice?.tax ? `${invoice?.tax}` : 0}</p>
             </div>
             <div className="flex justify-between font-semibold border-t pt-2 gap-10 w-48">
               <p className="text-tertiary">Total</p>
-              <p className="text-secendary">$230.00</p>
+              <p className="text-secendary">${(invoice?.total / 100) + (invoice?.tax > 0 ? invoice?.tax : 0)}</p>
             </div>
           </div>
         </div>
@@ -118,6 +125,8 @@ export function InvoiceModalDummy({ open, onClose }) {
         <p className="text-center text-[#581b1b] font-medium mb-1">
           Thank you for your business!
         </p>
+        {!isDownloading && 
+        <>
         <Separator />
 
         <DialogFooter className="flex justify-center gap-2 *:flex-1">
@@ -127,10 +136,13 @@ export function InvoiceModalDummy({ open, onClose }) {
           <Button variant="secondary" size="lg" >
             <ArrowDownToLine /> Download CSV
           </Button>
-          <Button variant="secondary" size="lg" >
+          <Button variant="secondary" size="lg" onClick={() => handleDownload(ref)} disabled={isDownloading}>
             <ArrowDownToLine /> Download PDF
           </Button>
         </DialogFooter>
+        </>
+}
+        </div>
       </DialogContent>
     </Dialog>
   );

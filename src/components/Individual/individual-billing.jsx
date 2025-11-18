@@ -35,6 +35,7 @@ const IndividualBilling = () => {
     setPaymentFailedModal,
     paymentFailedModal,
   } = useUser();
+  const [selectedInvoice, setSelectedInvoice] = useState({});
   const subcriptionDetailQuery = useQuery({
     queryKey: ["subcription-details"],
     queryFn: () => getSubscriptionDetails(userId, userType)
@@ -91,10 +92,13 @@ const IndividualBilling = () => {
           onOpenChange={() => setPaymentFailedModal(false)}
         />
       )} */}
-      <InvoiceModalDummy
-        open={invoiceModal}
-        onClose={() => setInvoiceModal(false)}
-      />
+      {invoiceModal &&
+        <InvoiceModalDummy
+          open={invoiceModal}
+          onClose={() => {setInvoiceModal(false); setSelectedInvoice({})}}
+          invoice={selectedInvoice}
+        />
+      }
 
       <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full h-content shadow-md">
         {subcriptionDetailQuery?.isLoading && <CenterLoader />}
@@ -211,7 +215,7 @@ const IndividualBilling = () => {
 
                     <TableCell className="text-center" >
                         <Button variant="ghost" size="icon" 
-                          onClick={() => setInvoiceModal(true)}
+                          onClick={() => {setInvoiceModal(true); setSelectedInvoice(invoice)}}
                         >
                           <FileDown
                             className="size-5 mx-auto"
