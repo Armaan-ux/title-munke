@@ -143,7 +143,7 @@ export default function Search({isIndivisual=false}) {
 
   const handleSearch = async (e) => {
     if (e) e.preventDefault();
-    if(isIndivisual) {
+    if(isIndivisual && !user?.isIndividualCardAdded) {
       setPaymentModal(true);
       return;
     }
