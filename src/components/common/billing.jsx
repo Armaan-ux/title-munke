@@ -101,17 +101,17 @@ const Billing = () => {
         {subcriptionDetailQuery?.isSuccess &&
           <CardContent className="w-full space-y-6">
             <div>
-              <h2 className="text-xl font-poppins font-semibold text-secondary !font-poppins">
+              <h2 className="text-xl font-semibold text-secondary !font-poppins">
                 Current Plan
               </h2>
             </div>
 
             <div className="grid grid-cols-3 border border-gray-200 rounded-xl overflow-hidden items-start *:h-full">
               <div className="p-8 bg-coffee-bg-billing-foreground border-r border-coffee-bg-billing-foreground-50">
-                <p className="text-sm font-medium text-coffee-text-billing font-medium uppercase">
+                <p className="text-sm text-coffee-text-billing font-medium uppercase">
                   Plan
                 </p>
-                <p className="text-base font-semibold text-secondary  font-medium mt-1">
+                <p className="text-base text-secondary  font-medium mt-1">
                   Pro{" "}
                   <span className="font-normal text-secondary  font-medium">
                     (Includes up to 80 agents)
@@ -120,7 +120,7 @@ const Billing = () => {
               </div>
 
               <div className="p-8 bg-coffee-bg-billing-foreground border-r border--coffee-bg-billing-foreground-50 border-l border-coffee-bg-billing-foreground-200">
-                <p className="text-sm font-medium text-coffee-text-billing font-medium uppercase ">
+                <p className="text-sm text-coffee-text-billing font-medium uppercase ">
                   Billing Cycle
                 </p>
                 <p className="text-base font-semibold text-gray-900 mt-1 mb-4">
@@ -132,7 +132,7 @@ const Billing = () => {
               </div>
 
               <div className="p-8 bg-coffee-bg-billing-foreground  border-l border-coffee-bg-billing-foreground-200 flex flex-col ">
-                <p className="text-sm font-medium text-coffee-text-billing font-medium uppercase mb-1">
+                <p className="text-sm text-coffee-text-billing font-medium uppercase mb-1">
                   Billing Cycle
                 </p>
                 <div className="flex items-center justify-between text-sm text-gray-700">
@@ -154,7 +154,7 @@ const Billing = () => {
             </div>
 
             <div>
-              <h2 className="text-xl font-poppins font-semibold text-secondary !font-poppins">
+              <h2 className="text-xl font-semibold text-secondary !font-poppins">
                 Billing Details
               </h2>
 
@@ -170,7 +170,7 @@ const Billing = () => {
                       className="w-8 h-8"
                     />
                     <div className="flex gap-4">
-                      <p className="font-medium ttext-secondary font-semibold">
+                      <p className="ttext-secondary font-semibold">
                         {/* {subcriptionDetailQuery?.data?.customerName}  */}
                         <span className="tracking-widest">**** {cardDetail?.last4}</span>
                       </p>
