@@ -97,7 +97,7 @@ const Billing = () => {
       )} */}
       <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full h-content shadow-md">
         {subcriptionDetailQuery?.isLoading && <CenterLoader />}
-        {subcriptionDetailQuery?.isError && <ShowError />}
+        {subcriptionDetailQuery?.isError && <ShowError message={subcriptionDetailQuery?.error?.response?.data?.message}/>}
         {subcriptionDetailQuery?.isSuccess &&
           <CardContent className="w-full space-y-6">
             <div>
