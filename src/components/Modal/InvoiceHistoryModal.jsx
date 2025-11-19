@@ -87,7 +87,7 @@ export function InvoiceHistoryModal({ open, onClose, invoice }) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent  showCloseButton={false} className="w-[1000px] max-w-[100vw] sm:w-[900px] sm:max-w-[170vw] rounded-2xl p-6">
+      <DialogContent  showCloseButton={false} className="w-[1000px] max-w-[100vw] sm:w-[900px] sm:max-w-[170vw] rounded-2xl p-6 max-h-screen overflow-y-auto">
         <InvoiceModal invoice={invoice} />
         {showAgentIvoiceListing && 
           <>
@@ -119,7 +119,7 @@ export function InvoiceHistoryModal({ open, onClose, invoice }) {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {agentSearchesQuery?.data?.Items.map((row, i) => (
+                      {agentSearchesQuery?.data?.Items?.map((row, i) => (
                         <TableRow key={i}>
                           <TableCell>{String(i + 1).padStart(2, "0")}.</TableCell>
                           <TableCell className="font-medium" >{row?.userId}</TableCell>
