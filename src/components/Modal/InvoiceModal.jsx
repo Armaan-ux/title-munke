@@ -6,8 +6,10 @@ export function InvoiceModal({ open, onClose, invoice }) {
   const invoiceRef = useRef(null)
   const {handleDownload, isDownloading} = usePdfDownload()
   useEffect(() => {
-    setTimeout(() => handleDownload(invoiceRef), 300);
-    setTimeout(onClose, 1000)
+    if(onClose) {
+      setTimeout(() => handleDownload(invoiceRef), 300);
+      setTimeout(onClose, 1000);
+    }
   }, [])
   // if (!open) return null;
   // if(!invoice) return null

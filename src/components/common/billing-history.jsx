@@ -95,7 +95,8 @@ const BillingHistory = () => {
 
       <InvoiceHistoryModal
         open={invoiceHistoryModal}
-        onClose={() => setInvoiceHistoryModal(false)}
+        onClose={() => {setInvoiceHistoryModal(false); setSelectedInvoice({})}}
+        invoice={selectInvoice}
       />
 
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
@@ -184,7 +185,10 @@ const BillingHistory = () => {
                             size="icon"
                             // className="text-md"
                             variant="ghost"
-                            onClick={() => setInvoiceHistoryModal(true)}
+                            onClick={() => {
+                              setInvoiceHistoryModal(true);
+                              setSelectedInvoice(invoice)
+                            }}
                           >
                             <Eye className="size-5" />
                           </Button>

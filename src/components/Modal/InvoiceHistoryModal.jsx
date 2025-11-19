@@ -15,8 +15,11 @@ import {
   TableRow,
 } from "../ui/table";
 import { Download } from "lucide-react";
+import { InvoiceModal } from "./InvoiceModal";
 
-export function InvoiceHistoryModal({ open, onClose }) {
+export function InvoiceHistoryModal({ open, onClose, invoice }) {
+  console.log(invoice)
+  const showAgentIvoiceListing = invoice?.plan?.find((inv) => inv?.invoice === "Agent Seat Price")?.quantity > 0;
   const rows = [
     {
       id: 1,
@@ -65,6 +68,8 @@ export function InvoiceHistoryModal({ open, onClose }) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent  showCloseButton={false} className="w-[1000px] max-w-[100vw] sm:w-[900px] sm:max-w-[170vw] rounded-2xl p-6">
+        {showAgentIvoiceListing &&
+        <>
         <DialogHeader className="flex flex-row justify-between items-center">
           <img src="/Logo.svg" alt="Logo" className="h-18 w-18 mb-1" />
           <div>
@@ -113,6 +118,9 @@ export function InvoiceHistoryModal({ open, onClose }) {
             Download PDF
           </Button>
         </div>
+        </>
+}
+      {!showAgentIvoiceListing && <InvoiceModal invoice={invoice} />}
       </DialogContent>
     </Dialog>
   );
