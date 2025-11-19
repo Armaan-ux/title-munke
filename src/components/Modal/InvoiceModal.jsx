@@ -88,8 +88,8 @@ export function InvoiceModal({ open, onClose, invoice }) {
                   </p>
                 </div>
                 <p className="text-center">{plan?.quantity}</p>
-                <p className="text-center">${plan?.amount / 100}</p>
-                <p className="text-right">${(plan?.amount / 100) * plan?.quantity}</p>
+                <p className="text-center">${plan?.amount / ((plan?.quantity || 1) * 100)}</p>
+                <p className="text-right">${(plan?.amount / 100)}</p>
               </div>
               })}
           </div>

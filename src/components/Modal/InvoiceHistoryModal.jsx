@@ -19,7 +19,7 @@ import { InvoiceModal } from "./InvoiceModal";
 
 export function InvoiceHistoryModal({ open, onClose, invoice }) {
   console.log(invoice)
-  const showAgentIvoiceListing = invoice?.plan?.find((inv) => inv?.invoice === "Agent Seat Price")?.quantity > 0;
+  const showAgentIvoiceListing = invoice?.plans?.find((inv) => inv?.priceName === "Agent Seat Price")?.quantity > 0;
   const rows = [
     {
       id: 1,
