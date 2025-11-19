@@ -126,7 +126,7 @@ export async function forgotPassword(email) {
         email: email,
         action: CONSTANTS.ACTIONS.FORGOT_PASSWORD,
       },
-      headers: {Authorization: "", "Content-Type": ""},
+      // headers: {Authorization: "", "Content-Type": "application/json"},
     };
 
     return callUserAdminApi(
@@ -800,6 +800,20 @@ export async function updateStatus(agentId) {
     payload,
     "Success in updateAgentStatus",
     "error in updateAgentStatus",
+    "/users"
+  )
+}
+export async function getAgentBrokerDetails(agentId) {
+  const payload = {
+    body: {
+      action: "getAgentDetails",
+      agentId
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in getAgentDetails",
+    "error in getAgentDetails",
     "/users"
   )
 }
