@@ -12,8 +12,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { getSearchedStatus } from "../service/userAdmin";
-import { useQueryClient } from "@tanstack/react-query";
+import { getAgentBrokerDetails, getBrokerDetails, getSearchedStatus } from "../service/userAdmin";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useUserIdType } from "@/hooks/useUserIdType";
 
 export default function Search({isIndivisual=false}) {
   const queryClient = useQueryClient();
@@ -28,8 +29,19 @@ export default function Search({isIndivisual=false}) {
   const [zipUrl, setZipUrl] = useState(null);
   const [isAgent, setIsAgent] = useState(false);
   const { user, setPaymentModal } = useUser();
-
+  const {userId:agentId, userType} = useUserIdType();
   const ONE_AND_HALF_HOURS = 1.5 * 60 * 60 * 1000;
+
+  const agentBrokerDetailQuery = useQuery({
+    queryKey: ["agentBrokerDetail"],
+    queryFn: () => getAgentBrokerDetails(agentId),
+    enabled: userType === "agent"
+  })
+  const brokerDetailQuery = useQuery({
+    queryKey: ["agentBrokerDetail"],
+    queryFn: () => getBrokerDetails(agentId),
+    enabled: userType === "broker"
+  })
 
   const clearSearchState = () => {
     const searchKeys = [
@@ -209,25 +221,20 @@ export default function Search({isIndivisual=false}) {
       let brokerId = "none";
       let username = "";
 
-      if (
-        user?.signInUserSession?.idToken?.payload?.["cognito:groups"].includes(
-          "agent"
-        )
-      ) {
-        const response = await API.graphql(
-          graphqlOperation(relationshipsByAgentId, { agentId: userId })
-        );
-        const agentDetail = await API.graphql(
-          graphqlOperation(getAgent, { id: userId })
-        );
-        username = agentDetail?.data?.getAgent?.name;
-        brokerId =
-          response.data?.relationshipsByAgentId?.items[0]?.brokerId || "";
+      if (user?.signInUserSession?.idToken?.payload?.["cognito:groups"].includes("agent")) {
+        // const response = await API.graphql(
+        //   graphqlOperation(relationshipsByAgentId, { agentId: userId })
+        // );
+        // const agentDetail = await API.graphql(
+        //   graphqlOperation(getAgent, { id: userId })
+        // );
+        username = agentBrokerDetailQuery.data?.name;
+        brokerId = agentBrokerDetailQuery.data?.relationship?.brokerId;
       } else {
-        const brokerDetail = await API.graphql(
-          graphqlOperation(getBroker, { id: userId })
-        );
-        username = brokerDetail?.data?.getBroker?.name;
+        // const brokerDetail = await API.graphql(
+        //   graphqlOperation(getBroker, { id: userId })
+        // );
+        username = brokerDetailQuery.data?.name;
       }
 
       await API.graphql(
