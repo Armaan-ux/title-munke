@@ -122,7 +122,7 @@ export function InvoiceHistoryModal({ open, onClose, invoice }) {
                       {agentSearchesQuery?.data?.Items?.map((row, i) => (
                         <TableRow key={i}>
                           <TableCell>{String(i + 1).padStart(2, "0")}.</TableCell>
-                          <TableCell className="font-medium" >{row?.userId}</TableCell>
+                          <TableCell className="font-medium" >{row?.username ?? "--"}</TableCell>
                           <TableCell>{row?.address}</TableCell>
                           <TableCell>{convertFromTimestamp(parseInt(new Date(row?.createdAt)?.getTime() / 1000), "dateTime")}</TableCell>
                         </TableRow>
