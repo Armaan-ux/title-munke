@@ -93,11 +93,13 @@ const BillingHistory = () => {
         onClose={() => setCancleSubscriptionSucessModal(false)}
       />
 
-      <InvoiceHistoryModal
-        open={invoiceHistoryModal}
-        onClose={() => {setInvoiceHistoryModal(false); setSelectedInvoice({})}}
-        invoice={selectInvoice}
-      />
+      {invoiceHistoryModal &&
+        <InvoiceHistoryModal
+          open={invoiceHistoryModal}
+          onClose={() => {setInvoiceHistoryModal(false); setSelectedInvoice({})}}
+          invoice={selectInvoice}
+        />
+      }
 
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
         <BackBtn />
