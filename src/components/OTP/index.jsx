@@ -32,17 +32,6 @@ function ResetPasswordWithOTP({ username }) {
           </div>
         <form className="space-y-4">
           <div>
-            <Label for="password" className="text-base" >Reset Password</Label>
-            <Input
-              type="password"
-              id="password"
-              name="password"
-              value={newPassword}
-              required
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-          </div>
-          <div>
             <Label for="password" className="text-base" >OTP</Label>
             <Input
               type="text"
@@ -51,6 +40,17 @@ function ResetPasswordWithOTP({ username }) {
               value={otp}
               required
               onChange={(e) => setOTP(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label for="password" className="text-base" >Reset Password</Label>
+            <Input
+              type="password"
+              id="password"
+              name="password"
+              value={newPassword}
+              required
+              onChange={(e) => setNewPassword(e.target.value)}
             />
           </div>
           <Button

@@ -23,6 +23,7 @@ function ForgetPassword() {
       }
     } catch (error) {
       setError(error.message || "Password reset failed");
+      toast.error("User does not exist")
     } finally {
       setLoading(false);
     }
@@ -72,7 +73,7 @@ function ForgetPassword() {
           >
             {loading ? "Processing...." : "submit"}
           </Button>
-          {error && <div className="text-red-500 text-center text-sm font-medium">{error}</div>}
+          {/* {error && <div className="text-red-500 text-center text-sm font-medium">{error}</div>} */}
              
         </form>
         </>
