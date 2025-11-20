@@ -29,7 +29,7 @@ export default function Search({isIndivisual=false}) {
   const [zipUrl, setZipUrl] = useState(null);
   const [isAgent, setIsAgent] = useState(false);
   const { user, setPaymentModal } = useUser();
-  const {userId:agentId, userType, status} = useUserIdType();
+  const {userId:agentId, userType, status:brokerStatus} = useUserIdType();
   const ONE_AND_HALF_HOURS = 1.5 * 60 * 60 * 1000;
 
   const agentBrokerDetailQuery = useQuery({
@@ -157,10 +157,10 @@ export default function Search({isIndivisual=false}) {
       setIsAgent(groups.includes("agent"));
     }
   }, [user]);
-  console.log("status", status)
+
   const handleSearch = async (e) => {
     if (e) e.preventDefault();
-    if(userType === "broker" && status === "active") {
+    if(userType === "broker" && brokerStatus === "active") {
       toast.error("Subscription required to access this feature.")
       return;
     }
