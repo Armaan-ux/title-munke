@@ -32,6 +32,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { getSearchedStatus } from "../service/userAdmin";
 
 function SearchHistory() {
   const [searchHistories, setSearchHistories] = useState([]);
@@ -101,13 +102,7 @@ function SearchHistory() {
 
   const checkSearchStatus = async (searchId, id) => {
     try {
-      const response = await axios.post(
-        "https://hwk77cjbdtmopznce6tneqknvi0rqvta.lambda-url.us-east-1.on.aws/",
-        {
-          mode: "CHECK_STATUS",
-          search_id: searchId,
-        }
-      );
+      const response = await getSearchedStatus(searchId)
 
       const { status, zip_url } = response.data;
 
