@@ -144,6 +144,7 @@ export const UserProvider = ({ children }) => {
     await Auth.signOut();
     setUser(null);
     setIsAuthenticated(false);
+    localStorage?.clear()
     window.location.href = "/login";
   };
 
