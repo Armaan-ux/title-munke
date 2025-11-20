@@ -250,7 +250,7 @@ function Agents() {
       }
     }
   };
-
+  console.log("user status =====>", user.status)
   return (
     <>
       <AddUserModal
@@ -324,8 +324,9 @@ function Agents() {
           </Button>
 
           <Button
-            onClick={() => setAddAgent(true)}
+            onClick={() => setAddAgent(user?.status === "active")}
             className="h-[36px] bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[13px] font-medium rounded-md flex items-center gap-1.5 px-3"
+            disabled={user?.status !== "active"}
           >
             <PlusCircle className="w-4 h-4" />
             Add Agent
