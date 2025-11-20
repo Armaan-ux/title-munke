@@ -3,6 +3,7 @@ import { Auth } from "aws-amplify";
 import {
   getAdminDetails,
   getAgentBrokerDetails,
+  getAgentDetails,
   getSubscriptionDetails,
   updateAdmin,
   updateAgent,
@@ -48,11 +49,17 @@ export const UserProvider = ({ children }) => {
   })
 
   useEffect(() => {
+    if(userType === "agent")
+      getAgentDetails(user?.attributes?.sub).then(res => console.log("agent", res))
+  }, [userType])
+
+  useEffect(() => {
     if(agentBrokerDetailQuery?.isSuccess) {
       getSubscriptionDetails(brokerId, "broker")
       .then(subData => setUser(pre => ({...pre, brokerStatus: subData?.status, brokerId})))
     }
   }, [agentBrokerDetailQuery.isSuccess])
+
   useEffect(() => {
     if(subsDetailQuery?.isError) {
       setUser(pre => ({
@@ -65,6 +72,7 @@ export const UserProvider = ({ children }) => {
       setMemberModal(true)
     }
   }, [subsDetailQuery?.isError])
+  
   useEffect(() => {
     if(subsDetailQuery?.isSuccess) {
       setUser(pre => ({
