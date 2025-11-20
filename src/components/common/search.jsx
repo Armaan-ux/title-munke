@@ -78,7 +78,8 @@ export default function Search({isIndivisual=false}) {
         if (isRestoring && status === "IN_PROGRESS") setLoading(true);
 
         if (status === "SUCCESS") {
-          queryClient.invalidateQueries({queryKey: ["subcription-details"]})
+          if(userType === "individual")
+            queryClient.invalidateQueries({queryKey: ["subcription-details"]})
           setProgress("Search Completed");
           setPercentage(100);
           setMessage(status_message || "Search Complete Successfully");
@@ -201,7 +202,7 @@ export default function Search({isIndivisual=false}) {
 
       const { search_id } = initiateResponse.data;
       localStorage.setItem("searchId", search_id);
-
+      
       await addToDynamoDB(address, search_id, user?.attributes?.sub);
       checkSearchStatus(search_id);
     } catch (error) {

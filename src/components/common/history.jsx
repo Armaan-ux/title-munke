@@ -19,8 +19,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getAgentSearches } from "../service/userAdmin";
+import { useUserIdType } from "@/hooks/useUserIdType";
+import { CenterLoader } from "./Loader";
+import ShowError from "./ShowError";
 
 function History() {
+  const queryClient = useQueryClient();
   const [searchHistories, setSearchHistories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -31,6 +37,12 @@ function History() {
     direction: "descending",
   });
   const { user } = useUser();
+  const {userId} = useUserIdType()
+
+  const agentHistoryQuery = useQuery({
+    queryKey: ["agentSearchHistory"],
+    queryFn: () => getAgentSearches(userId)
+  })
 
   const fetchSearchHistories = useCallback(async () => {
     if (loading || !hasMore) return;
@@ -84,6 +96,8 @@ function History() {
             },
           },
         });
+        queryClient.invalidateQueries({queryKey: ["agentSearchHistory"], exact: true})
+
 
         setSearchHistories((prev) =>
           prev.map((record) =>
@@ -103,17 +117,18 @@ function History() {
   };
 
   useEffect(() => {
-    inProgressSearches.forEach((search) => {
+    if(!agentHistoryQuery?.data?.length)return;
+    agentHistoryQuery.data.filter(({status})=> status == "In Progress").forEach((search) => {
       checkSearchStatus(search.searchId, search.id);
     });
     const interval = setInterval(() => {
-      inProgressSearches.forEach((search) => {
+      agentHistoryQuery.data.filter(({status})=> status == "In Progress").forEach((search) => {
         checkSearchStatus(search.searchId, search.id);
       });
     }, INTERVALTIME);
 
     return () => clearInterval(interval);
-  }, [inProgressSearches]);
+  }, [agentHistoryQuery.data]);
 
   useEffect(() => {
     if (user?.attributes?.sub) fetchSearchHistories();
@@ -161,57 +176,60 @@ function History() {
 
       
         <div className="bg-white !p-4 rounded-xl" >
+            {agentHistoryQuery?.isLoading && <CenterLoader />}
+            {agentHistoryQuery?.isError && <ShowError message={agentHistoryQuery?.error?.response?.data?.message} />}
 
-            <Table className=""  >
-              <TableHeader className="bg-[#F5F0EC]" >
-                <TableRow>
-                  <TableHead className="w-[100px]">Sr. No.</TableHead>
-                  <TableHead>Address</TableHead>
-                  <TableHead>Date / Time</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Download Link</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {
-                  sortedHistories?.length === 0 ?
-                  <TableRow >
-                    <TableCell colSpan={5} className="font-medium text-center py-10">No Records found.</TableCell>
+            {agentHistoryQuery?.isSuccess &&
+              <Table className=""  >
+                <TableHeader className="bg-[#F5F0EC]" >
+                  <TableRow>
+                    <TableHead className="w-[100px]">Sr. No.</TableHead>
+                    <TableHead>Address</TableHead>
+                    <TableHead>Date / Time</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Download Link</TableHead>
                   </TableRow>
-                  :
-                  sortedHistories?.map((item, index) => (
-                    <TableRow key={item.id}>
-                      <TableCell className="font-medium">{index + 1}</TableCell>
-                      <TableCell>{item.address}</TableCell>
-                      <TableCell>{getFormattedDateTime(item?.createdAt)}</TableCell>
-                      <TableCell>{item.status}</TableCell>
-                      <TableCell>{}</TableCell>
-                      <TableCell className="text-right">
-                        {/* <a href={item.downloadLink} download>Download</a> */}
-                          {item?.downloadLink ? (
-                          <a
-                            href={item.downloadLink}
-                              download
-                                onClick={() =>
-                                  handleCreateAuditLog(
-                                    "DOWNLOAD",
-                                    { zipUrl: item.downloadLink },
-                                    true
-                                  )
-                                }
-                            >
-                                Click to Download
-                              </a>
-                            ) : (
-                              ""
-                            )}
-                          </TableCell>
+                </TableHeader>
+                <TableBody>
+                  {
+                    agentHistoryQuery?.data?.length === 0 ?
+                    <TableRow >
+                      <TableCell colSpan={5} className="font-medium text-center py-10">No Records found.</TableCell>
                     </TableRow>
-                  ))
-                }
+                    :
+                    agentHistoryQuery?.data?.map((item, index) => (
+                      <TableRow key={item.id}>
+                        <TableCell className="font-medium">{index + 1}</TableCell>
+                        <TableCell>{item.address}</TableCell>
+                        <TableCell>{getFormattedDateTime(item?.createdAt)}</TableCell>
+                        <TableCell>{item.status}</TableCell>
+                        <TableCell>
+                          {/* <a href={item.downloadLink} download>Download</a> */}
+                            {item?.downloadLink ? (
+                            <a
+                              href={item.downloadLink}
+                                download
+                                  onClick={() =>
+                                    handleCreateAuditLog(
+                                      "DOWNLOAD",
+                                      { zipUrl: item.downloadLink },
+                                      true
+                                    )
+                                  }
+                              >
+                                  Click to Download
+                                </a>
+                              ) : (
+                                ""
+                              )}
+                            </TableCell>
+                      </TableRow>
+                    ))
+                  }
 
-              </TableBody>
-            </Table>
+                </TableBody>
+              </Table>
+            }
           </div>
      
     // <div className="history-main-content">

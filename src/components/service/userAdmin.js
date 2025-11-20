@@ -817,3 +817,17 @@ export async function getAgentBrokerDetails(agentId) {
     "/users"
   )
 }
+export async function getAgentSearches(agentId) {
+  const payload = {
+    body: {
+      action: "getAgentSearches",
+      agentId
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in getAgentSearches",
+    "error in getAgentSearches",
+    "/users"
+  )
+}
