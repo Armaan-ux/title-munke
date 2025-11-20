@@ -13,7 +13,8 @@ export function InvoiceModal({ open, onClose, invoice }) {
   }, [])
   // if (!open) return null;
   // if(!invoice) return null
-
+  console.log("=================hgf>",)
+  const isAgentPayment = invoice?.plans?.[1]?.quantity > 0;
   return (
     <div ref={invoiceRef}>
       <div className="!w-full rounded-2xl bg-white p-6 shadow-lg flex flex-col gap-4">
@@ -80,6 +81,7 @@ export function InvoiceModal({ open, onClose, invoice }) {
 
           <div className="bg-[#fdf8f5] text-sm divide-y">
             {invoice?.plans?.map(plan => {
+              if(isAgentPayment && plan?.priceName === "Monthly Subscription Price") return null;
               return <div className="grid grid-cols-5 items-center px-3 py-2" key={plan?.priceId}>
                 <div className="col-span-2">
                   <p className="font-medium text-[#581b1b]">{plan?.priceName}</p>
@@ -102,7 +104,7 @@ export function InvoiceModal({ open, onClose, invoice }) {
             </div> */}
             <div className="flex justify-between gap-10 w-48">
               <p  >Subtotal</p>
-              <p>${invoice?.subtotal / 100}</p>
+              <p>${isAgentPayment ? ((invoice?.subtotal / 100) - 20) : ((invoice?.subtotal / 100))}</p>
             </div>
             <div className="flex justify-between gap-10 w-48">
               <p>Tax</p>
@@ -110,7 +112,7 @@ export function InvoiceModal({ open, onClose, invoice }) {
             </div>
             <div className="flex justify-between font-semibold border-t pt-2 gap-10 w-48">
               <p className="text-tertiary">Total</p>
-              <p className="text-secendary">${(invoice?.total / 100) + (invoice?.tax ? invoice?.tax : 0)}</p>
+              <p className="text-secendary">${(isAgentPayment ? ((invoice?.subtotal / 100) - 20) : ((invoice?.subtotal / 100))) + (invoice?.tax ? invoice?.tax : 0)}</p>
             </div>
           </div>
         </div>
