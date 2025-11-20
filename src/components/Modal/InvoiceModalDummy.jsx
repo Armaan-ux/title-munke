@@ -43,7 +43,7 @@ export function InvoiceModalDummy({ open, onClose, invoice }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mb-1">
+        <div className="grid grid-cols-2 gap-4 my-3">
           {/* <div className="border rounded-md p-3">
             <p className="font-semibold text-tertiary mb-1">
               Issued From
@@ -131,7 +131,7 @@ export function InvoiceModalDummy({ open, onClose, invoice }) {
         <>
         <Separator />
 
-        <DialogFooter className="flex justify-center gap-2 *:flex-1">
+        <DialogFooter className="flex justify-center gap-2 *:flex-1 mb-3">
           <Button onClick={() => onClose()} variant="outline" size="lg" >
             Close
           </Button>
