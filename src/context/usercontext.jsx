@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect, useContext } from "react";
 import { Auth } from "aws-amplify";
 import {
   getAdminDetails,
+  getAgentBrokerDetails,
   getSubscriptionDetails,
   updateAdmin,
   updateAgent,
@@ -27,16 +28,31 @@ export const UserProvider = ({ children }) => {
   const [paymentFailedModal, setPaymentFailedModal] = useState(false);
   const userType = user?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
   const [cardListingModal, setCardListingModal] = useState(false);
+  const agentBrokerDetailQuery = useQuery({
+      queryKey: ["agentBrokerDetail"],
+      queryFn: () => getAgentBrokerDetails(user?.attributes?.sub),
+      enabled: userType === "agent",
+      refetchOnWindowFocus: false,
+      staleTime: Infinity,
+      retry: false
+    })
+  const brokerId = agentBrokerDetailQuery?.data?.relationship?.brokerId;
+
   const subsDetailQuery = useQuery({
     queryKey: ["subcription-details"],
     queryFn: () => getSubscriptionDetails(user?.attributes?.sub, userType),
-    enabled: !!user?.attributes?.sub && !!userType,
+    enabled: !!user?.attributes?.sub && (userType === "broker" || userType === "individual"),
     refetchOnWindowFocus: false,
     staleTime: Infinity,
     retry: false
   })
 
-  console.log("subdata", subsDetailQuery?.data)
+  useEffect(() => {
+    if(agentBrokerDetailQuery?.isSuccess) {
+      getSubscriptionDetails(brokerId, "broker")
+      .then(subData => setUser(pre => ({...pre, brokerStatus: subData?.status, brokerId})))
+    }
+  }, [agentBrokerDetailQuery.isSuccess])
   useEffect(() => {
     if(subsDetailQuery?.isError) {
       setUser(pre => ({

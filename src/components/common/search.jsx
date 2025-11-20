@@ -29,7 +29,7 @@ export default function Search({isIndivisual=false}) {
   const [zipUrl, setZipUrl] = useState(null);
   const [isAgent, setIsAgent] = useState(false);
   const { user, setPaymentModal } = useUser();
-  const {userId:agentId, userType, status:brokerStatus} = useUserIdType();
+  const {userId:agentId, userType, status:brokerStatus, agentBrokerStatus} = useUserIdType();
   const ONE_AND_HALF_HOURS = 1.5 * 60 * 60 * 1000;
 
   const agentBrokerDetailQuery = useQuery({
@@ -110,7 +110,7 @@ export default function Search({isIndivisual=false}) {
     },
     []
   );
-
+  console.log({agentBrokerStatus})
   useEffect(() => {
     const storedStatus = localStorage.getItem("searchStatus");
     const storedTimestamp = localStorage.getItem("searchTimestamp");
@@ -160,14 +160,22 @@ export default function Search({isIndivisual=false}) {
 
   const handleSearch = async (e) => {
     if (e) e.preventDefault();
-    if(userType === "broker" && brokerStatus === "active") {
+
+    if(userType === "broker" && brokerStatus !== "active") {
       toast.error("Subscription required to access this feature.")
       return;
     }
+
+    else if(userType === "agent" && agentBrokerStatus !== "active") {
+      toast.error("Subscription required to access this feature.")
+      return;
+    }
+
     if(isIndivisual && !user?.isIndividualCardAdded) {
       setPaymentModal(true);
       return;
     }
+
     if (loading || !address.trim().length || !isChecked) return;
 
     setLoading(true);
