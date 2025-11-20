@@ -94,7 +94,7 @@ const IndividualDashboard = () => {
       </div>
       {/* <IndividualBilling /> */}
 
-      {paymentModal && (
+      {/* {paymentModal && (
         <PaymentMethodModal
           open={paymentModal}
           onOpenChange={() => setPaymentModal(false)}
@@ -115,7 +115,7 @@ const IndividualDashboard = () => {
           open={paymentFailedModal}
           onOpenChange={() => setPaymentFailedModal(false)}
         />
-      )}
+      )} */}
       {/* {memberModal && (
         <BecomeMemberModal
           open={memberModal}
