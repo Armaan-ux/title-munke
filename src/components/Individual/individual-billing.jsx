@@ -38,7 +38,8 @@ const IndividualBilling = () => {
   const [selectedInvoice, setSelectedInvoice] = useState({});
   const subcriptionDetailQuery = useQuery({
     queryKey: ["subcription-details"],
-    queryFn: () => getSubscriptionDetails(userId, userType)
+    queryFn: () => getSubscriptionDetails(userId, userType),
+    retry: false,
   })
   const invoiceListingQuery = useQuery({
       queryKey: ["listingInvoice"],
@@ -102,8 +103,35 @@ const IndividualBilling = () => {
 
       <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full h-content shadow-md">
         {subcriptionDetailQuery?.isLoading && <CenterLoader />}
-        {subcriptionDetailQuery?.isError && <ShowError />}
-        {subcriptionDetailQuery?.isSuccess &&
+        {subcriptionDetailQuery?.isError && 
+          <div className="flex gap-2.5 justify-between items-center w-full">
+            <ShowError message="You need to add payment method"/>
+            <Button
+                onClick={() => setPaymentModal(true)}
+                // className="w-[50%] bg-[#4B2E20] hover:bg-[#3a2218] text-white rounded-md py-2"
+                className="text-sm max-w-[10rem] w-full"
+                variant="secondary"
+              >
+                Add Payment Method
+              </Button>
+          </div>
+        }
+
+        {subcriptionDetailQuery?.isSuccess && subcriptionDetailQuery?.data?.payment_methods?.length === 0 && 
+          <div className="flex gap-2.5 justify-between items-center w-full">
+            <ShowError message="You need to add payment method"/>
+            <Button
+                onClick={() => setPaymentModal(true)}
+                // className="w-[50%] bg-[#4B2E20] hover:bg-[#3a2218] text-white rounded-md py-2"
+                className="text-sm max-w-[10rem] w-full"
+                variant="secondary"
+              >
+                Add Payment Method
+              </Button>
+          </div>
+        }
+
+        {subcriptionDetailQuery?.isSuccess && subcriptionDetailQuery?.data?.payment_methods?.length > 0 &&
           <CardContent className="w-full space-y-6">
             <div>
               <h2 className="text-xl !font-poppins font-semibold text-secondary">
@@ -153,102 +181,104 @@ const IndividualBilling = () => {
         }
       </div>
 
-      <div
-        className={`bg-white rounded-xl p-2 flex flex-col md:flex-row  gap-10 w-full h-content shadow-md mt-4 ${
-          invoiceListingQuery?.data?.invoices?.length === 0 ? "items-center justify-center" : ""
-        }`}
-      >
-        {invoiceListingQuery?.isError &&
-            <ShowError message={invoiceListingQuery?.error?.response?.data?.message}/>
-          }
-          {invoiceListingQuery?.isLoading && <CenterLoader />}
-          {invoiceListingQuery.isSuccess && invoiceListingQuery?.data?.invoices?.length > 0  &&
-          <div className="bg-white !p-4 rounded-xl w-full">
-            <div className="flex justify-between items-center gap-4 mb-6">
-              <p className="text-secondary font-medium text-xl">View History</p>
-              <Link to="/individual/billing-history" >
-                <Button
-                  variant="outline"
-                  >
-                  View More
-                </Button>
-              </Link>
-            </div>
-
-            <Table className="">
-              <TableHeader className="bg-[#F5F0EC]">
-                <TableRow>
-                  <TableHead >Sr. No.</TableHead>
-                  <TableHead>
-                    <p className="flex items-center gap-2">Invoice ID</p>
-                  </TableHead>
-                  <TableHead>
-                    <p className="flex items-center gap-2">Date</p>
-                  </TableHead>
-                  <TableHead>
-                    <p className="flex items-center gap-2">Amount</p>
-                  </TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-center" >Download</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {invoiceListingQuery?.data?.invoices?.slice(0, 5)?.map((invoice, index) => (
-                  <TableRow key={invoice.id}>
-                    <TableCell className="font-medium">{index + 1}</TableCell>
-                    <TableCell className="text-black font-medium" >{invoice?.id}</TableCell>
-                    <TableCell>{convertFromTimestamp(invoice?.created, "dateTime")}</TableCell>
-                    <TableCell>${invoice?.total / 100}</TableCell>
-                    <TableCell
-                      className={`${
-                        invoice?.status === "paid"
-                            ? "text-[#1E8221]"
-                            : invoice?.status === "open"
-                            ? "text-[#A2781E]"
-                            : "text-[#FF5F59]"
-                      } text-[13px] font-medium px-3 py-1 rounded-md`}
+      {invoiceListingQuery.isSuccess &&
+        <div
+          className={`bg-white rounded-xl p-2 flex flex-col md:flex-row  gap-10 w-full h-content shadow-md mt-4 ${
+            invoiceListingQuery?.data?.invoices?.length === 0 ? "items-center justify-center" : ""
+          }`}
+        >
+          {/* {invoiceListingQuery?.isError &&
+              <ShowError message={invoiceListingQuery?.error?.response?.data?.message}/>
+            }
+            {invoiceListingQuery?.isLoading && <CenterLoader />} */}
+            {invoiceListingQuery.isSuccess && invoiceListingQuery?.data?.invoices?.length > 0  &&
+            <div className="bg-white !p-4 rounded-xl w-full">
+              <div className="flex justify-between items-center gap-4 mb-6">
+                <p className="text-secondary font-medium text-xl">View History</p>
+                <Link to="/individual/billing-history" >
+                  <Button
+                    variant="outline"
                     >
-                      <div className="flex flow-row gap-2 items-center">
-                        <CircleCheck /> {invoice?.status}
-                      </div>
-                    </TableCell>
+                    View More
+                  </Button>
+                </Link>
+              </div>
 
-                    <TableCell className="text-center" >
-                        <Button variant="ghost" size="icon" 
-                          onClick={() => {setInvoiceModal(true); setSelectedInvoice(invoice)}}
-                        >
-                          <FileDown
-                            className="size-5 mx-auto"
-                            />
-                        </Button>
-                    </TableCell>
+              <Table className="">
+                <TableHeader className="bg-[#F5F0EC]">
+                  <TableRow>
+                    <TableHead >Sr. No.</TableHead>
+                    <TableHead>
+                      <p className="flex items-center gap-2">Invoice ID</p>
+                    </TableHead>
+                    <TableHead>
+                      <p className="flex items-center gap-2">Date</p>
+                    </TableHead>
+                    <TableHead>
+                      <p className="flex items-center gap-2">Amount</p>
+                    </TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-center" >Download</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-}
-         {invoiceListingQuery.isSuccess && invoiceListingQuery?.data?.invoices?.length === 0  &&
-          <div className="flex flex-col items-center justify-center text-center py-16 w-full gap-4">
-            <img
-              src="/search-icon.svg"
-              alt="invoice icon"
-              className="w-20 h-20"
-            />
+                </TableHeader>
+                <TableBody>
+                  {invoiceListingQuery?.data?.invoices?.slice(0, 5)?.map((invoice, index) => (
+                    <TableRow key={invoice.id}>
+                      <TableCell className="font-medium">{index + 1}</TableCell>
+                      <TableCell className="text-black font-medium" >{invoice?.id}</TableCell>
+                      <TableCell>{convertFromTimestamp(invoice?.created, "dateTime")}</TableCell>
+                      <TableCell>${invoice?.total / 100}</TableCell>
+                      <TableCell
+                        className={`${
+                          invoice?.status === "paid"
+                              ? "text-[#1E8221]"
+                              : invoice?.status === "open"
+                              ? "text-[#A2781E]"
+                              : "text-[#FF5F59]"
+                        } text-[13px] font-medium px-3 py-1 rounded-md`}
+                      >
+                        <div className="flex flow-row gap-2 items-center">
+                          <CircleCheck /> {invoice?.status}
+                        </div>
+                      </TableCell>
 
-            <h2 className="text-3xl font-semibold text-secondary mb-2">
-              No Invoice Yet
-            </h2>
+                      <TableCell className="text-center" >
+                          <Button variant="ghost" size="icon" 
+                            onClick={() => {setInvoiceModal(true); setSelectedInvoice(invoice)}}
+                          >
+                            <FileDown
+                              className="size-5 mx-auto"
+                              />
+                          </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+  }
+          {invoiceListingQuery.isSuccess && invoiceListingQuery?.data?.invoices?.length === 0  &&
+            <div className="flex flex-col items-center justify-center text-center py-16 w-full gap-4">
+              <img
+                src="/search-icon.svg"
+                alt="invoice icon"
+                className="w-20 h-20"
+              />
 
-            <p className="max-w-md text-md text-secondary">
-              It looks like you haven’t initiated any property searches yet.
-              Once you start exploring, your search invoice history records will
-              appear here.
-            </p>
-          </div>
-}
+              <h2 className="text-3xl font-semibold text-secondary mb-2">
+                No Invoice Yet
+              </h2>
 
-      </div>
+              <p className="max-w-md text-md text-secondary">
+                It looks like you haven’t initiated any property searches yet.
+                Once you start exploring, your search invoice history records will
+                appear here.
+              </p>
+            </div>
+  }
+
+        </div>
+      }
     </>
   );
 };
