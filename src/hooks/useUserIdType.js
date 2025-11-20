@@ -5,5 +5,5 @@ export function useUserIdType() {
     const userId = user?.attributes?.sub;
     const userType = user?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
     
-    return {userId, userType}
+    return {userId, userType, status: user?.status}
 }
