@@ -11,6 +11,8 @@ export function InvoiceModalDummy({ open, onClose, invoice }) {
   const {handleDownload, isDownloading} = usePdfDownload();
   const ref = useRef(null);
   // if (!open) return null;
+  console.log("invoice ==========>", JSON.parse(invoice?.search_data?.searchData ?? "{}"))
+  const searchData = JSON.parse(invoice?.search_data?.searchData ?? "{}");
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent  showCloseButton={false} className="!max-w-xl !w-full rounded-2xl bg-white p-6 shadow-lg">
@@ -69,7 +71,7 @@ export function InvoiceModalDummy({ open, onClose, invoice }) {
         </div>
 
         <div className="border rounded-md overflow-hidden mb-1">
-          {/* <div className={`bg-[#581b1b] text-white text-sm font-medium grid grid-cols-5 px-3 py-2 ${isDownloading ? "pb-6" : "py-2"}`}>
+          <div className={`bg-[#581b1b] text-white text-sm font-medium grid grid-cols-5 px-3 py-2 ${isDownloading ? "pb-6" : "py-2"}`}>
             <span className="col-span-2">Description</span>
             <span className="text-center">QTY</span>
             <span className="text-center">Price</span>
@@ -79,16 +81,16 @@ export function InvoiceModalDummy({ open, onClose, invoice }) {
           <div className="bg-[#fdf8f5] text-sm divide-y">
             <div className="grid grid-cols-5 items-center px-3 py-2">
               <div className="col-span-2">
-                <p className="font-medium text-[#581b1b]">Agent Seat Fees</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="font-medium text-[#581b1b]">{searchData?.address}</p>
+                {/* <p className="text-xs text-muted-foreground">
                   Billing Cycle: Sep To Aug
-                </p>
+                </p> */}
               </div>
-              <p className="text-center">10</p>
-              <p className="text-center">$25.00</p>
-              <p className="text-right">$225.00</p>
+              <p className="text-center">1</p>
+              <p className="text-center">${invoice?.subtotal / 100}</p>
+              <p className="text-right">${invoice?.subtotal / 100}</p>
             </div>
-            <div className="grid grid-cols-5 items-center px-3 py-2">
+            {/* <div className="grid grid-cols-5 items-center px-3 py-2">
               <div className="col-span-2">
                 <p className="font-medium text-[#581b1b]">Agent Seat Fees</p>
                 <p className="text-xs text-muted-foreground">
@@ -98,8 +100,8 @@ export function InvoiceModalDummy({ open, onClose, invoice }) {
               <p className="text-center">0</p>
               <p className="text-center">$0.00</p>
               <p className="text-right">$0.00</p>
-            </div>
-          </div> */}
+            </div> */}
+          </div>
 
           <div className="bg-[#fdf8f5] text-sm border-t px-3 py-3 space-y-1 flex flex-col items-end gap-2">
             {/* <div></div>
