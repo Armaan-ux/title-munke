@@ -202,7 +202,14 @@ function History() {
                         <TableCell className="font-medium">{index + 1}</TableCell>
                         <TableCell>{item.address}</TableCell>
                         <TableCell>{getFormattedDateTime(item?.createdAt)}</TableCell>
-                        <TableCell>{item.status}</TableCell>
+                        <TableCell>
+                          <span className={`${
+                        item?.status === "SUCCESS"
+                          ? "bg-[#E9F3E9] text-[#1E8221]"
+                          : item?.status === "Unconfirmed"
+                          ? "bg-[#FFF3D9] text-[#A2781E]"
+                          : "bg-[#FFE3E2] text-[#FF5F59]"} text-[13px] font-medium px-3 py-1 rounded-md`}>{item.status}</span>
+                        </TableCell>
                         <TableCell>
                           {/* <a href={item.downloadLink} download>Download</a> */}
                             {item?.downloadLink ? (
