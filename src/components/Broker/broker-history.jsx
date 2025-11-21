@@ -46,9 +46,13 @@ function History() {
     key: "createdAt",
     direction: "descending",
   });
-  const { user } = useUser();
+  const { user, invalidateSearchHistory, setInvalidateSearchHistory } = useUser();
   const navigate = useNavigate();
-
+  useEffect(() => {
+    if(invalidateSearchHistory) {
+      setHasMore(true);
+    }
+  }, [invalidateSearchHistory])
   const fetchSearchHistories = useCallback(async () => {
     if (loading || !hasMore) return;
     setLoading(true);
@@ -63,12 +67,14 @@ function History() {
       });
       const { items, nextToken: newNextToken } =
         response.data.listSearchHistories;
-      setSearchHistories((prev) => [...prev, ...items]);
+      const newSearchHis = items?.filter(history => !!!searchHistories?.find(value => value?.searchId === history?.searchId));
+      setSearchHistories((prev) => [...prev, ...newSearchHis]);
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
 
       const inProgress = items.filter((item) => item.status === "In Progress");
       setInProgressSearches((prev) => [...prev, ...inProgress]);
+      setInvalidateSearchHistory(false);
     } catch (error) {
       console.error("Error fetching search histories:", error);
     }
