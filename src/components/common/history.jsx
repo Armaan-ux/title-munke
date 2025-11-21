@@ -20,7 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getAgentSearches } from "../service/userAdmin";
+import { getAgentSearches, getSearchedStatus } from "../service/userAdmin";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { CenterLoader } from "./Loader";
 import ShowError from "./ShowError";
@@ -81,15 +81,16 @@ function History() {
 
   const checkSearchStatus = async (searchId, id) => {
     try {
-      const response = await axios.post(
-        "https://hwk77cjbdtmopznce6tneqknvi0rqvta.lambda-url.us-east-1.on.aws/",
-        {
-          mode: "CHECK_STATUS",
-          search_id: searchId,
-        }
-      );
+      // const response = await axios.post(
+      //   "https://hwk77cjbdtmopznce6tneqknvi0rqvta.lambda-url.us-east-1.on.aws/",
+      //   {
+      //     mode: "CHECK_STATUS",
+      //     search_id: searchId,
+      //   }
+      // );
+      const response = await getSearchedStatus(searchId)
 
-      const { status, zip_url } = response.data;
+      const { status, zip_url } = response;
 
       if (status === "SUCCESS") {
         await API.graphql({

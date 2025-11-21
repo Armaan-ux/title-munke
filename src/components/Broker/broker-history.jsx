@@ -118,7 +118,7 @@ function History() {
       // );
       const response = await getSearchedStatus(searchId)
 
-      const { status, zip_url } = response.data;
+      const { status, zip_url } = response;
 
       if (status === "SUCCESS") {
         await API.graphql({
