@@ -21,6 +21,7 @@ export const useUser = () => {
 export const UserProvider = ({ children }) => {
 
   const [user, setUser] = useState(null);
+  const [invalidateSearchHistory, setInvalidateSearchHistory] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [memberModal, setMemberModal] = useState(false);
@@ -166,7 +167,9 @@ export const UserProvider = ({ children }) => {
         setPaymentFailedModal,
         paymentFailedModal,
         cardListingModal, 
-        setCardListingModal
+        setCardListingModal,
+        invalidateSearchHistory, 
+        setInvalidateSearchHistory
       }}
     >
       {children}

@@ -28,7 +28,7 @@ export default function Search({isIndivisual=false}) {
   const [percentage, setPercentage] = useState(null);
   const [zipUrl, setZipUrl] = useState(null);
   const [isAgent, setIsAgent] = useState(false);
-  const { user, setPaymentModal } = useUser();
+  const { user, setPaymentModal, setInvalidateSearchHistory } = useUser();
   const {userId:agentId, userType, status:brokerStatus, agentBrokerStatus} = useUserIdType();
   const ONE_AND_HALF_HOURS = 1.5 * 60 * 60 * 1000;
 
@@ -160,7 +160,7 @@ export default function Search({isIndivisual=false}) {
 
   const handleSearch = async (e) => {
     if (e) e.preventDefault();
-
+    setInvalidateSearchHistory(true);
     if(userType === "broker" && brokerStatus !== "active") {
       toast.error("Subscription required to access this feature.")
       return;
@@ -264,6 +264,7 @@ export default function Search({isIndivisual=false}) {
           },
         })
       );
+      setInvalidateSearchHistory(true);
     } catch (err) {
       console.error("Error adding to DynamoDB:", err);
     }
