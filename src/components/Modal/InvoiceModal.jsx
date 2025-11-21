@@ -13,11 +13,11 @@ export function InvoiceModal({ open, onClose, invoice }) {
   }, [])
   // if (!open) return null;
   // if(!invoice) return null
-  console.log("=================hgf>",)
-  const isAgentPayment = invoice?.plans?.[1]?.quantity > 0;
+  const isAgentPayment = invoice?.plans?.find(plan => plan?.priceName === "Agent Seat Price")?.quantity > 0;
+  
   return (
-    <div ref={invoiceRef}>
-      <div className="!w-full rounded-2xl bg-white p-6 shadow-lg flex flex-col gap-4">
+    <div ref={invoiceRef} className={isDownloading ? "flex justify-center [&>div]:!w-[70%]" : ""}>
+      <div className="rounded-2xl bg-white p-6 shadow-lg flex flex-col gap-4">
         <div className="flex flex-row justify-between items-center">
           <img src="/Logo.svg" alt="Logo" className="h-20 w-20 mb-1" />
           <p className="text-3xl font-bold text-tertiary tracking-wide">
