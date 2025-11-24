@@ -16,10 +16,10 @@ export function InvoiceModal({ open, onClose, invoice }) {
   const isAgentPayment = invoice?.plans?.find(plan => plan?.priceName === "Agent Seat Price")?.quantity > 0;
   console.log("is  agent payment", isAgentPayment)
   return (
-    <div ref={invoiceRef} className={isDownloading ? "flex justify-center [&>div]:!w-[70%]" : ""}>
+    <div ref={invoiceRef}>
       <div className="rounded-2xl bg-white p-6 shadow-lg flex flex-col gap-4">
         <div className="flex flex-row justify-between items-center">
-          <img src="/Logo.svg" alt="Logo" className="h-20 w-20 mb-1" />
+          <img src="/Logo.svg" alt="Logo" className={`${isDownloading ? "h-30 w-30" : "h-20 w-20"} mb-1`} />
           <p className="text-3xl font-bold text-tertiary tracking-wide">
             INVOICE
           </p>
