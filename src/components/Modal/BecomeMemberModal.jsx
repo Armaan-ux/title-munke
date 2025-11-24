@@ -2,8 +2,10 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CircleCheck, X } from "lucide-react";
 import { useUser } from "@/context/usercontext";
+import { useNavigate } from "react-router-dom";
 
 const BecomeMemberModal = ({ open, onClose, setPaymentModal }) => {
+  const navigate = useNavigate();
   const {setUser} = useUser();
    if (!open) return null;
   const subscribeHandler = () => {
@@ -91,7 +93,7 @@ const BecomeMemberModal = ({ open, onClose, setPaymentModal }) => {
               </div>
 
               <div className="text-center space-y-3 flex items-center justify-center flex-col">
-                <button className="text-sm text-[#4B2E20] underline hover:text-[#3a2218]">
+                <button className="text-sm text-[#4B2E20] underline hover:text-[#3a2218]" onClick={() => navigate("/viewmore")}>
                   View more details
                 </button>
 
