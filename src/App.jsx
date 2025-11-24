@@ -21,6 +21,7 @@ import Home from "./components/Home";
 import ContactUs from "./components/Contactus";
 import Register from "./components/register";
 import RegisterIndividual from "./components/register-individual";
+import OrganizationRoleOverview from "./components/viewMore";
 
 function App() {
   const { isLoading } = useUser();
@@ -34,6 +35,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/viewmore" element={<OrganizationRoleOverview />} />
         <Route path="/contactus" element={<ContactUs />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
