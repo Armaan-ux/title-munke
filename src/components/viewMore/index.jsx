@@ -20,7 +20,7 @@ export default function OrganizationRoleOverview() {
         </p>
 
         {/* SECTION */}
-        <h2 className="text-xl font-semibold">Visibility and Structure</h2>
+        <h2 className="text-lg font-semibold">Visibility and Structure</h2>
 
         <p>
           Users with an Organization role can view all brokerages that are tied to their organization. 
@@ -48,7 +48,7 @@ export default function OrganizationRoleOverview() {
         </div>
 
         {/* Role Types */}
-        <h2 className="text-xl font-semibold">Role Types</h2>
+        <h2 className="text-lg font-semibold">Role Types</h2>
         <p>There are two organization-level roles:</p>
 
         {/* Organization Admin */}
@@ -90,7 +90,7 @@ export default function OrganizationRoleOverview() {
         </p>
 
         {/* Access Boundaries */}
-        <h2 className="text-xl font-semibold">Access Boundaries</h2>
+        <h2 className="text-lg font-semibold">Access Boundaries</h2>
 
         <p>
           Organization roles are strictly limited to the brokerages assigned to that specific 
@@ -99,7 +99,7 @@ export default function OrganizationRoleOverview() {
         </p>
 
         {/* Additional Notes */}
-        <h2 className="text-xl font-semibold">Additional Notes and Hierarchy Clarification</h2>
+        <h2 className="text-lg font-semibold">Additional Notes and Hierarchy Clarification</h2>
 
         <h3 className="text-lg font-semibold">Overall System Hierarchy</h3>
 
@@ -130,19 +130,19 @@ export default function OrganizationRoleOverview() {
         </div>
 
         {/* Critical Notes */}
-        <h2 className="text-xl font-semibold">Critical Implementation Notes</h2>
+        <h2 className="text-lg font-semibold">Critical Implementation Notes</h2>
         <p>To ensure strict separation of access levels:</p>
         {/* NUMBERED EXACTLY LIKE PDF */}
         <div className="space-y-4 ml-1">
           <div>
-            <h2 className="text-xl font-semibold">1. Enforce Organization Boundaries at Every Data Layer</h2>
+            <h2 className="text-lg font-semibold">1. Enforce Organization Boundaries at Every Data Layer</h2>
             All queries, AdivI endpoints, and drill-down views must be filtered by 
             organization_id unless the user is a Global Admin. This prevents leakage of 
             brokerages or agents across organizations.
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold">2. Reassignment Rules Must Validate Organization Ownershidiv</h2>
+            <h2 className="text-lg font-semibold">2. Reassignment Rules Must Validate Organization Ownershidiv</h2>
             When moving brokers or agents, the system must validate:
             <div className="space-y-1">
             <p>○ The origin brokerage belongs to the user’s organization</p>
@@ -152,20 +152,20 @@ export default function OrganizationRoleOverview() {
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold">3. Aggregated Metrics Should Never Include External Data</h2>
+            <h2 className="text-lg font-semibold">3. Aggregated Metrics Should Never Include External Data</h2>
             <p>Organization-level analytics and billing must aggregate only from the brokerages 
             assigned to that organization.</p>
             <p>Global Admins are the only users who should ever see system-wide totals.</p>
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold">4. Broker & Agent Roles Remain Unchanged</h2> 
+            <h2 className="text-lg font-semibold">4. Broker & Agent Roles Remain Unchanged</h2> 
             Organization-level roles simply layer on top of existing broker/agent functionality and 
             should not alter permissions for those lower roles.
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold">5. Audit Logging Recommendation (Optional but Ideal)</h2>
+            <h2 className="text-lg font-semibold">5. Audit Logging Recommendation (Optional but Ideal)</h2>
             For transparency and debugging—especially with reassignment and billing 
             permissions—implement simple activity logs for:
             <div className="space-y-1">
