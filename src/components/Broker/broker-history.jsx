@@ -35,7 +35,7 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { getSearchedStatus } from "../service/userAdmin";
 
-function History() {
+function History({isAll=false}) {
   const [searchHistories, setSearchHistories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -293,7 +293,7 @@ function History() {
                   </TableCell>
                 </TableRow>
               ) : (
-                sortedHistories?.map((item, index) => (
+                (isAll ? sortedHistories : sortedHistories?.slice(0,5))?.map((item, index) => (
                   <TableRow key={item.id}>
                     <TableCell className="font-medium">{index + 1}</TableCell>
                     <TableCell>{item.address}</TableCell>

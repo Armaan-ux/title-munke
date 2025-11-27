@@ -25,7 +25,7 @@ import { useUserIdType } from "@/hooks/useUserIdType";
 import { CenterLoader } from "./Loader";
 import ShowError from "./ShowError";
 
-function History() {
+function History({isAll=false}) {
   const queryClient = useQueryClient();
   const [searchHistories, setSearchHistories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -205,7 +205,7 @@ function History() {
                       <TableCell colSpan={5} className="font-medium text-center py-10">No Records found.</TableCell>
                     </TableRow>
                     :
-                    agentHistoryQuery?.data?.map((item, index) => (
+                    (isAll ? agentHistoryQuery?.data : agentHistoryQuery?.data?.slice(0, 5))?.map((item, index) => (
                       <TableRow key={item.id}>
                         <TableCell className="font-medium">{index + 1}</TableCell>
                         <TableCell>{item.address}</TableCell>

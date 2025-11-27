@@ -14,8 +14,12 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import BackBtn from "../back-btn";
-
+import BrokerHistory from "./broker-history";
+import SearchHistory from "@/components/Individual/search-history";
+import AgentHistory from "@/components/common/history";
+import { useUserIdType } from "@/hooks/useUserIdType";
 function HistoryListview() {
+  const {userType} = useUserIdType();
   const navigate = useNavigate();
   // const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -37,6 +41,7 @@ function HistoryListview() {
   ];
   const currentRoute  = useLocation();
   console.log('currentRoute', currentRoute)
+  // return <BrokerHistory isAll={true}/>
   return (
     <>
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
@@ -51,7 +56,10 @@ function HistoryListview() {
           <p className="text-lg text-secondary">Back</p>
         </div> */}
       </div>
-      <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
+      {userType === "broker" && <BrokerHistory isAll={true}/>}
+      {userType === "individual" && <SearchHistory isAll={true}/>}
+      {userType === "agent" && <AgentHistory isAll={true}/>}
+      <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary hidden">
         <div className="bg-white !p-4 rounded-xl">
           <Table className="">
             <TableHeader className="bg-[#F5F0EC]">
@@ -138,6 +146,7 @@ function HistoryListview() {
           )} */}
         </div>
       </div>
+      
     </>
   );
 }
