@@ -8,6 +8,7 @@ import { Amplify } from "aws-amplify";
 import { ToastContainer } from "react-toastify";
 import { awsmobile as awsconfig } from "./aws-config";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter } from "react-router-dom";
 // import { Buffer } from 'buffer'
 // import process from 'process/browser'
 
@@ -29,11 +30,13 @@ if (!("aws_cloud_logic_custom" in awsconfig)) {
 Amplify.configure(awsconfig);
 root.render(
   <>
-  <QueryClientProvider client={queryClient} > 
-    <UserProvider>
-      <App />
-      <ToastContainer />
-    </UserProvider>
+  <QueryClientProvider client={queryClient} >
+    <BrowserRouter>
+      <UserProvider>
+        <App />
+        <ToastContainer />
+      </UserProvider>
+    </BrowserRouter>
     </QueryClientProvider> 
   </>
 );

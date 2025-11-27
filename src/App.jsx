@@ -32,7 +32,7 @@ function App() {
   }
 
   return (
-    <Router>
+    // <Router>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/viewmore" element={<OrganizationRoleOverview />} />
@@ -92,7 +92,7 @@ function App() {
         </Route>
         <Route path="*" element={<Navigate to="/notfound" />} />
       </Routes>
-    </Router>
+    // </Router>
   );
 }
 

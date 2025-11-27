@@ -19,7 +19,7 @@ export const useUser = () => {
 };
 
 export const UserProvider = ({ children }) => {
-
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [invalidateSearchHistory, setInvalidateSearchHistory] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -146,7 +146,8 @@ export const UserProvider = ({ children }) => {
     setUser(null);
     setIsAuthenticated(false);
     localStorage?.clear()
-    window.location.href = "/login";
+    navigate("/login");
+    // window.location.href = "/login";
   };
 
   return (
