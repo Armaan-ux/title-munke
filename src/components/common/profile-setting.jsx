@@ -21,7 +21,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
   return (
     <div className="bg-[#F5F0EC] flex items-start justify-start text-secondary">
       {editProfile === true ? (
-        <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full h-[85vh] shadow-md">
+        <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full shadow-md">
           <div className="flex flex-col w-full">
             <div className="mb-5">
               <p className="text-xl font-medium">Edit Profile</p>
