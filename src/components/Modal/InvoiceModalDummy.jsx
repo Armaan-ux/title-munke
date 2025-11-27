@@ -18,7 +18,7 @@ export function InvoiceModalDummy({ open, onClose, invoice }) {
       <DialogContent  showCloseButton={false} className="!max-w-xl !w-full rounded-2xl bg-white p-6 shadow-lg">
         <div ref={ref} className={isDownloading ? "p-4 flex flex-col gap-4" : ""}>
           <div className="flex flex-row justify-between items-center">
-            <img src="/Logo.svg" alt="Logo" className={`${isDownloading ? "h-30 w-30" : "h-20 w-20"} mb-1`} />
+            <img src="/Logo.svg" alt="Logo" className={`h-30 w-30 mb-1`} />
             <p className="text-3xl font-bold text-tertiary tracking-wide">
               INVOICE
             </p>
@@ -44,18 +44,18 @@ export function InvoiceModalDummy({ open, onClose, invoice }) {
           </div>
 
           <div className="grid grid-cols-2 gap-4 my-3">
-            {/* <div className="border rounded-md p-3">
+            <div className="border rounded-md p-3">
               <p className="font-semibold text-tertiary mb-1">
                 Issued From
               </p>
               <p className="text-sm text-secondary">
-                123 Main St.
-                <br />
+                {invoice?.customer_support ?? "2041 Lawfer AvenueAllentown, PA US"}
+                {/* <br />
                 Hometown, USA
                 <br />
-                Tax ID 12-345689
+                Tax ID 12-345689 */}
               </p>
-            </div> */}
+            </div>
             <div className="border rounded-md p-3">
               <p className="font-semibold text-tertiary mb-1">
                 Billed To
