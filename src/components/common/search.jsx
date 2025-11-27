@@ -72,7 +72,6 @@ export default function Search({isIndivisual=false}) {
         //   { timeout: 10000 }
         // );
         const response = await getSearchedStatus(searchId);
-        console.log("response ==>", response)
         const { status, status_message, zip_url, percent_completion } = response
 
         if (isRestoring && status === "IN_PROGRESS") setLoading(true);
@@ -110,7 +109,7 @@ export default function Search({isIndivisual=false}) {
     },
     []
   );
-  console.log({agentBrokerStatus})
+
   useEffect(() => {
     const storedStatus = localStorage.getItem("searchStatus");
     const storedTimestamp = localStorage.getItem("searchTimestamp");

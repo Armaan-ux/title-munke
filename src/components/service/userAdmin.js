@@ -724,7 +724,7 @@ export async function addCard(userId, userType, action){
 }
 
 export async function getSubscriptionDetails(userId, userType){
-    if(!userId) return;
+
       const payload = {
       body: {
         // email: email,

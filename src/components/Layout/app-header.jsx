@@ -17,7 +17,7 @@ export default function AppHeader() {
   const headerTitle = roleRoutes.find((item) =>
     location.pathname.startsWith(item.link)
   )?.name;
-  console.log("user ================>", user)
+
   return (
     <div className="border rounded-xl px-4 lg:px-6 py-3 bg-white flex justify-between gap-4 items-center w-full text-secondary">
       <div className="flex items-center gap-2">

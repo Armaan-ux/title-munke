@@ -30,6 +30,7 @@ export const UserProvider = ({ children }) => {
   const [paymentFailedModal, setPaymentFailedModal] = useState(false);
   const userType = user?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
   const [cardListingModal, setCardListingModal] = useState(false);
+  console.log("userType", userType, user?.attributes?.sub);
   const agentBrokerDetailQuery = useQuery({
       queryKey: ["agentBrokerDetail"],
       queryFn: () => getAgentBrokerDetails(user?.attributes?.sub),
@@ -59,7 +60,7 @@ export const UserProvider = ({ children }) => {
       getSubscriptionDetails(brokerId, "broker")
       .then(subData => setUser(pre => ({...pre, brokerStatus: subData?.status, brokerId})))
     }
-  }, [agentBrokerDetailQuery.isSuccess])
+  }, [agentBrokerDetailQuery?.data])
 
   useEffect(() => {
     if(subsDetailQuery?.isError) {

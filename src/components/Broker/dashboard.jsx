@@ -53,7 +53,7 @@ const BrokerDashboard = () => {
     (agent) => agent.status === "INACTIVE"
   ).length;
 
-  console.log("paymentModal", paymentModal);
+
   return (
     <div className="my-4">
       {/* cards */}
