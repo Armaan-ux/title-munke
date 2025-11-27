@@ -32,7 +32,7 @@ export const UserProvider = ({ children }) => {
   const [cardListingModal, setCardListingModal] = useState(false);
   console.log("userType", userType, user?.attributes?.sub);
   const agentBrokerDetailQuery = useQuery({
-      queryKey: ["agentBrokerDetail"],
+      queryKey: ["agentBrokerDetail", user?.attributes?.sub],
       queryFn: () => getAgentBrokerDetails(user?.attributes?.sub),
       enabled: userType === "agent",
       refetchOnWindowFocus: false,
@@ -42,7 +42,7 @@ export const UserProvider = ({ children }) => {
   const brokerId = agentBrokerDetailQuery?.data?.relationship?.brokerId;
 
   const subsDetailQuery = useQuery({
-    queryKey: ["subcription-details"],
+    queryKey: ["subcription-details", user?.attributes?.sub, userType],
     queryFn: () => getSubscriptionDetails(user?.attributes?.sub, userType),
     enabled: !!user?.attributes?.sub && (userType === "broker" || userType === "individual"),
     refetchOnWindowFocus: false,
@@ -53,14 +53,14 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     if(userType === "agent")
       getAgentDetails(user?.attributes?.sub).then(res => console.log("agent", res))
-  }, [userType])
+  }, [user?.attributes?.sub, userType])
 
   useEffect(() => {
     if(agentBrokerDetailQuery?.isSuccess) {
       getSubscriptionDetails(brokerId, "broker")
       .then(subData => setUser(pre => ({...pre, brokerStatus: subData?.status, brokerId})))
     }
-  }, [agentBrokerDetailQuery?.data])
+  }, [agentBrokerDetailQuery?.data, agentBrokerDetailQuery?.isSuccess, brokerId])
 
   useEffect(() => {
     if(subsDetailQuery?.isError) {
@@ -86,7 +86,7 @@ export const UserProvider = ({ children }) => {
       }))
       setMemberModal(subsDetailQuery?.data?.status === "active" ? false : true)
     }
-  }, [subsDetailQuery?.data])
+  }, [subsDetailQuery?.data, subsDetailQuery?.isSuccess])
 
   useEffect(() => {
     const checkUserSession = async () => {

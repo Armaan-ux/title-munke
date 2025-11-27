@@ -49,7 +49,7 @@ const Billing = () => {
         setHelpUsImproveModal(false);
       } else
         toast.success(data?.message)
-      queryClient.invalidateQueries({queryKey: ["subcription-details"], exact: true})
+      queryClient.invalidateQueries({queryKey: ["subcription-details"]})
     },
     onError: (err) => {
       toast.error(err?.response?.data?.message ?? "Something went wrong.")
