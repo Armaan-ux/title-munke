@@ -5,6 +5,7 @@ import { Auth } from "aws-amplify";
 import { Eye, PencilLine, Upload } from "lucide-react";
 import React, { useState } from "react";
 import { Separator } from "../ui/separator";
+import { useSidebar } from "../ui/sidebar";
 // import "./index.css";
 
 const ProfileSetting = ({ setIsProfile, editProfile }) => {
@@ -17,11 +18,12 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
-
+  const { open } = useSidebar();
+  console.log("sidebar open", open);
   return (
     <div className="bg-[#F5F0EC] flex items-start justify-start text-secondary">
       {editProfile === true ? (
-        <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full shadow-md">
+        <div className="bg-white rounded-xl px-8 pt-8 pb-0 flex flex-col md:flex-row items-start gap-10 w-full shadow-md">
           <div className="flex flex-col w-full">
             <div className="mb-5">
               <p className="text-xl font-medium">Edit Profile</p>
@@ -115,92 +117,94 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
               <div>
                 <p className="text-md font-medium mt-5">Change Password</p>
               </div>
-              <form className="space-y-6 flex-1 w-full flex flex-row justify-between gap-5 mt-6">
-                <div className="w-full">
-                  <Label
-                    htmlFor="new-password"
-                    className="text-secondary text-sm"
-                  >
-                    Current Password
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      type="password"
-                      id="current-password"
-                      name="current-password"
-                      placeholder="Current password"
-                      className="font-medium  placeholder:font-normal mt-3 bg-white"
-                      value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
-                    />
-                    <Eye className="absolute right-3 top-1/2 -translate-y-1/2 text-tertiary text-500 w-4 h-4" />
+              <form>
+                <div className={`grid sm:grid-cols-1 ${ open ? "md:grid-cols-1" : "md:grid-cols-2"} ${ open ? "lg:grid-cols-2" : "lg:grid-cols-3"} xl:grid-cols-3 gap-6 mt-5 w-full`}>
+                  <div>
+                    <Label
+                      htmlFor="new-password"
+                      className="text-secondary text-sm"
+                    >
+                      Current Password
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        type="password"
+                        id="current-password"
+                        name="current-password"
+                        placeholder="Current password"
+                        className="font-medium  placeholder:font-normal mt-3 bg-white pr-9"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                      />
+                      <Eye className="absolute right-3 top-1/2 -translate-y-1/2 text-tertiary text-500 w-4 h-4" />
+                    </div>
                   </div>
-                </div>
 
-                <div className="w-full">
-                  <Label
-                    htmlFor="confirm-password"
-                    className="text-secondary text-sm"
-                  >
-                    New Password
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      type="password"
-                      id="new-password"
-                      name="new-password"
-                      placeholder="New password"
-                      className="font-medium  placeholder:font-normal mt-3 bg-white"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                    />
-                    <Eye className="absolute right-3 top-1/2 -translate-y-1/2 text-tertiary text-500 w-4 h-4" />
+                  <div>
+                    <Label
+                      htmlFor="confirm-password"
+                      className="text-secondary text-sm"
+                    >
+                      New Password
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        type="password"
+                        id="new-password"
+                        name="new-password"
+                        placeholder="New password"
+                        className="font-medium  placeholder:font-normal mt-3 bg-white pr-9"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                      />
+                      <Eye className="absolute right-3 top-1/2 -translate-y-1/2 text-tertiary text-500 w-4 h-4" />
+                    </div>
                   </div>
-                </div>
-                <div className="w-full">
-                  <Label
-                    htmlFor="confirm-password"
-                    className="text-secondary text-sm"
-                  >
-                    Confirm New Password
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      type="password"
-                      id="confirm-password"
-                      name="confirm-password"
-                      placeholder="Confirm new password"
-                      className="font-medium  placeholder:font-normal mt-3 bg-white "
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-                    <Eye className="absolute right-3 top-1/2 -translate-y-1/2 text-tertiary text-500 w-4 h-4" />
+                  <div>
+                    <Label
+                      htmlFor="confirm-password"
+                      className="text-secondary text-sm"
+                    >
+                      Confirm New Password
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        type="password"
+                        id="confirm-password"
+                        name="confirm-password"
+                        placeholder="Confirm new password"
+                        className="font-medium  placeholder:font-normal mt-3 bg-white pr-9"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                      />
+                      <Eye className="absolute right-3 top-1/2 -translate-y-1/2 text-tertiary text-500 w-4 h-4" />
+                    </div>
                   </div>
-                </div>
 
-                {isError && (
-                  <small className="text-red-600">
-                    Error in updating password
-                  </small>
-                )}
-                {isSuccess && (
-                  <small className="text-green-600">
-                    Password Changed Successfully!
-                  </small>
-                )}
+                  {isError && (
+                    <small className="text-red-600">
+                      Error in updating password
+                    </small>
+                  )}
+                  {isSuccess && (
+                    <small className="text-green-600">
+                      Password Changed Successfully!
+                    </small>
+                  )}
+                </div>
+                <div className="my-4 justify-end flex gap-4">
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    // className="bg-tertiary text-white hover:bg-[#9C3D26] hover:text-white rounded-md px-12"
+                    onClick={() => setIsProfile(false)}
+                  >
+                    Save Changes
+                  </Button>
+                </div>
               </form>
             </div>
 
-            <div className="pt-3 pb-1 border-t border-gray-200 justify-end flex gap-4">
-              <Button
-                variant="secondary"
-                size="lg"
-                // className="bg-tertiary text-white hover:bg-[#9C3D26] hover:text-white rounded-md px-12"
-                onClick={() => setIsProfile(false)}
-              >
-                Save Changes
-              </Button>
-            </div>
           </div>
         </div>
       ) : (

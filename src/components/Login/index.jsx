@@ -5,13 +5,14 @@ import ResetPassword from "../ResetPassword";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ChevronLeft, Loader } from "lucide-react";
+import { ArrowRight, ChevronLeft, Eye, EyeOff, Loader } from "lucide-react";
 import { motion } from "motion/react";
 import VerifyEmail from "../verify-email";
 import { useMutation } from "@tanstack/react-query";
 import { confirmEmail, resendConfirmationCode } from "../service/userAdmin";
 
 function Login() {
+  const [showPassword, setShowPassword] = useState(false);
   const { user, signIn } = useUser();
   const [isChecking, setIsChecking] = useState(false);
   const [username, setUsername] = useState("");
@@ -54,8 +55,8 @@ function Login() {
       setError("");
       setIsChecking(true);
       const { isResetRequired, user: signedInUser } = await signIn(
-        username,
-        password
+        username?.trim(),
+        password?.trim()
       );
 
       if (isResetRequired) {
@@ -148,19 +149,29 @@ function Login() {
                 onChange={(e) => setUsername(e.target.value)}
               />
             </div>
-            <div>
+            <div className="relative">
               <Label htmlFor="password" className="text-sm">
                 Password
               </Label>
               <Input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
                 value={password}
-                className="w-full border border-gray-300 focus:border-brown-500 text-gray-800 rounded-lg px-4 py-3 pr-10 focus:outline-none bg-white password-input"
+                className="bg-transparent"
                 required
                 onChange={(e) => setPassword(e.target.value)}
               />
+              <Button
+                variant="ghost"
+                type="button"
+                size="icon"
+                className="absolute right-3 bottom-[14px] cursor-pointer m-0 p-0 px-0 h-auto w-auto" 
+                onClick={() => setShowPassword(pre => !pre)}
+              >
+                {!showPassword && <Eye className="text-tertiary text-500 w-4 h-4"/>}
+                {showPassword && <EyeOff className="text-tertiary text-500 w-4 h-4" />}
+              </Button>
             </div>
             <div className="flex justify-end">
               <Link to="/forgot-password" className="text-sm hover:underline">

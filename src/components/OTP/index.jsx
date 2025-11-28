@@ -7,8 +7,10 @@ import "./index.css";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { Eye, EyeOff } from "lucide-react";
 
 function ResetPasswordWithOTP({ username }) {
+  const [showPassword, setShowPassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [otp, setOTP] = useState("");
   const [error, setError] = useState("");
@@ -42,16 +44,26 @@ function ResetPasswordWithOTP({ username }) {
               onChange={(e) => setOTP(e.target.value)}
             />
           </div>
-          <div>
+          <div className="relative">
             <Label for="password" className="text-base" >Reset Password</Label>
             <Input
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               name="password"
               value={newPassword}
               required
               onChange={(e) => setNewPassword(e.target.value)}
             />
+            <Button
+                variant="ghost"
+                type="button"
+                size="icon"
+                className="absolute right-3 bottom-[14px] cursor-pointer m-0 p-0 px-0 h-auto w-auto" 
+                onClick={() => setShowPassword(pre => !pre)}
+              >
+                {!showPassword && <Eye className="text-tertiary text-500 w-4 h-4"/>}
+                {showPassword && <EyeOff className="text-tertiary text-500 w-4 h-4" />}
+              </Button>
           </div>
           <Button
             onClick={() => handlePasswordReset()}
