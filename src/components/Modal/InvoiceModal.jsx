@@ -13,8 +13,7 @@ export function InvoiceModal({ open, onClose, invoice }) {
   }, [])
   // if (!open) return null;
   // if(!invoice) return null
-  const isAgentPayment = invoice?.plans?.find(plan => plan?.priceName === "Agent Seat Price")?.quantity > 0;
-  console.log("is  agent payment", isAgentPayment)
+  const isAgentPayment = invoice?.plans?.find(plan => plan?.priceName === "Agent Seat Fees")?.quantity > 0;
   return (
     <div ref={invoiceRef}>
       <div className="rounded-2xl bg-white p-6 shadow-lg flex flex-col gap-4">
@@ -81,8 +80,8 @@ export function InvoiceModal({ open, onClose, invoice }) {
 
           <div className="bg-[#fdf8f5] text-sm divide-y">
             {invoice?.plans?.map(plan => {
-              if(isAgentPayment && plan?.priceName === "Monthly Subscription Price") return null;
-              if(!isAgentPayment && plan?.priceName === "Agent Seat Price") return null;
+              if(isAgentPayment && plan?.priceName === "Monthly Subscription") return null;
+              if(!isAgentPayment && plan?.priceName === "Agent Seat Fees") return null;
               return <div className="grid grid-cols-5 items-center px-3 py-2" key={plan?.priceId}>
                 <div className="col-span-2">
                   <p className="font-medium text-[#581b1b]">{plan?.priceName}</p>
