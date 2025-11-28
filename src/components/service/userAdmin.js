@@ -832,3 +832,16 @@ export async function getAgentSearches(agentId) {
     "/users"
   )
 }
+export async function getAdminMetrics(agentId) {
+  const payload = {
+    body: {
+      action: "get-home",
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in get-home",
+    "error in get-home",
+    "/users"
+  )
+}

@@ -3,15 +3,26 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
+import { ChatService } from "../service/chat";
+import { useUserIdType } from "@/hooks/useUserIdType";
 
 const AIChatBot = () => {
   const [open, setOpen] = useState(false);
+  const {userId, userType} = useUserIdType()
   const [messages, setMessages] = useState([
     {
       from: "bot",
       text: "Hi 👋 I'm your AI Property Assistant! Type an address, PIN, or question below to begin your search.",
     },
   ]);
+  const chatMutation = useMutation({
+    mutationFn: (payload) => ChatService(payload),
+    onSuccess: (data) => {
+      setMessages(pre => ([...pre, {from: "bot", text: data?.answer}]))
+      console.log(data)
+    }
+  })
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -25,23 +36,28 @@ const AIChatBot = () => {
 
     const userMessage = { from: "user", text: input };
     setMessages((prev) => [...prev, userMessage]);
-    setInput("");
     setLoading(true);
-
+    chatMutation.mutate({
+      action: "query",
+      question: input,
+      agent_id: userType === "agent" ? "c4c89498-40f1-70a0-9ea7-a4e2315e512b" : "345874b8-4031-70c1-96c5-53b13ca4756f",
+      "top_k": 5
+    })
+    setInput("");
     try {
-      const { data } = await axios.post(
-        "https://title-munke-4.onrender.com/ask",
-        // "https://fq2vt0j2-8000.inc1.devtunnels.ms/ask",
-        { question: input },
-        { headers: { "Content-Type": "application/json" } }
-      );
-      console.log("Chatbot response data:", data);
+      // const { data } = await axios.post(
+      //   "https://title-munke-4.onrender.com/ask",
+      //   // "https://fq2vt0j2-8000.inc1.devtunnels.ms/ask",
+      //   { question: input },
+      //   { headers: { "Content-Type": "application/json" } }
+      // );
+      // console.log("Chatbot response data:", data);
 
-      const botReply =
-        data?.answer ||
-        "Sorry, I couldn’t get a response right now. Please try again.";
+      // const botReply =
+      //   data?.answer ||
+      //   "Sorry, I couldn’t get a response right now. Please try again.";
 
-      setMessages((prev) => [...prev, { from: "bot", text: botReply }]);
+      // setMessages((prev) => [...prev, { from: "bot", text: botReply }]);
     } catch (error) {
       console.error("Error communicating with chatbot:", error);
       setMessages((prev) => [
@@ -82,6 +98,7 @@ const AIChatBot = () => {
                       alt="Bot"
                       className="w-5 h-5 rounded-full object-cover"
                     />
+                    {msg?.an}
                   </div>
                 )}
 
@@ -99,7 +116,7 @@ const AIChatBot = () => {
               </div>
             ))}
 
-            {loading && (
+            {chatMutation?.isPending && (
               <div className="flex space-x-1 text-gray-500 text-sm italic">
                 <span className="animate-bounce">.</span>
                 <span
@@ -131,6 +148,7 @@ const AIChatBot = () => {
             <Button
               onClick={handleSend}
               className="bg-[#5C1F0E] text-white hover:bg-[#4b180b]"
+              disabled={chatMutation?.isPending}
             >
               Send
             </Button>

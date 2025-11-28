@@ -1,15 +1,21 @@
-import { ArrowDownToLine, BookUser, HatGlasses, Map, UserRound } from "lucide-react";
+import { ArrowDownToLine, BookUser, HatGlasses, Loader2, Map, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TimeFilter from "../common/time-filter";
 import { useState } from "react";
 import DateFilter from "../common/date-filter";
 import BrokerIndividualBusiness from "./broker-individual-business";
 import { Link, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { getAdminMetrics } from "../service/userAdmin";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("history");
   const [resetChildState, setResetChildState] = useState(null);
+  const metricQuery = useQuery({
+    queryKey: ['admin-metrics'],
+    queryFn: getAdminMetrics
+  })
   const handleTabChange = () => {
     if (resetChildState) {
       resetChildState(); // call child function
@@ -37,7 +43,12 @@ const AdminDashboard = () => {
         <div className="p-5 flex justify-between items-end ">
           <div>
             <p className="mb-4 text-secondary"> Total Brokers</p>
-            <p className="text-4xl font-semibold text-tertiary">0</p>
+            {metricQuery?.isSuccess && 
+            <p className="text-4xl font-semibold text-tertiary">
+              {metricQuery?.data?.results?.BROKER ?? "--"}
+            </p>
+            }
+            {metricQuery?.isLoading && <Loader2 className="w-6 h-10 animate-spin text-secondary" />}
           </div>
           <div className="bg-white rounded-full p-3.5">
             {/* <UserRound className="text-tertiary" /> */}
@@ -47,7 +58,8 @@ const AdminDashboard = () => {
         <div className="p-5 flex justify-between items-end ">
           <div>
             <p className="mb-4 text-secondary">Total Agents</p>
-            <p className="text-4xl font-semibold text-tertiary">0</p>
+            {metricQuery?.isSuccess && <p className="text-4xl font-semibold text-tertiary">{metricQuery?.data?.results?.AGENT ?? "--"}</p>}
+            {metricQuery?.isLoading && <Loader2 className="w-6 h-10 animate-spin text-secondary" />}
           </div>
           <div className="bg-white rounded-full p-3.5">
             {/* <HatGlasses className="text-tertiary" /> */}
