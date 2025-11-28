@@ -29,7 +29,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
               <p className="text-xl font-medium">Edit Profile</p>
             </div>
 
-            <div className="flex flex-row gap-10 pt-5 border-t border-gray-200 mb-2">
+            <div className={`flex gap-10 pt-5 border-t border-gray-200 mb-2 flex-col ${open ? "md:flex-col": "md:flex-row"} lg:flex-row`}>
               <div className="flex flex-col items-center gap-4">
                 <img
                   src="https://images.unsplash.com/photo-1607746882042-944635dfe10e"
