@@ -52,8 +52,8 @@ function MembershipOrCardAddedModalContainer() {
       setUser((pre) => ({ ...pre, isAddCard: true }));
       // setTimeout(() => setPaymentSuccessModal(false), 3000)
     }
-  }, [isCardAdded, isPaymentSuccessful]);
-  console.log(subcriptionDetailQuery.data)
+  }, [isCardAdded, isPaymentSuccessful, setUser, setPaymentModal, setPaymentSuccessModal]);
+
   if (!["individual", "broker"].includes(userType)) return null;
   const cards = subcriptionDetailQuery?.data?.payment_methods ?? [];
 

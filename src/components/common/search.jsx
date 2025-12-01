@@ -87,6 +87,7 @@ export default function Search({isIndivisual=false}) {
           localStorage.setItem("searchStatus", "SUCCESS");
           localStorage.setItem("searchTimestamp", Date.now().toString());
           if (zip_url) localStorage.setItem("zipUrl", zip_url);
+          setInvalidateSearchHistory(true);
         } else if (status === "IN_PROGRESS") {
           setProgress("Processing...");
           setPercentage(percent_completion || 0);
@@ -159,7 +160,7 @@ export default function Search({isIndivisual=false}) {
 
   const handleSearch = async (e) => {
     if (e) e.preventDefault();
-    setInvalidateSearchHistory(true);
+    // setInvalidateSearchHistory(true);
     if(userType === "broker" && brokerStatus !== "active") {
       toast.error("Subscription required to access this feature.")
       return;

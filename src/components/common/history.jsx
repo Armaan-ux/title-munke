@@ -1,5 +1,5 @@
 import { API } from "aws-amplify";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, use } from "react";
 import { listSearchHistories } from "@/graphql/queries";
 import axios from "axios";
 import { updateSearchHistory } from "@/graphql/mutations";
@@ -40,44 +40,52 @@ function History({isAll=false}) {
   const {userId} = useUserIdType()
 
   const agentHistoryQuery = useQuery({
-    queryKey: ["agentSearchHistory"],
-    queryFn: () => getAgentSearches(userId)
+    queryKey: ["agentSearchHistory", userId],
+    queryFn: () => getAgentSearches(userId),
+    staleTime: Infinity,
+    gcTimeout: Infinity,
   })
 
   useEffect(() => {
     if(invalidateSearchHistory) {
-      setHasMore(true);
+      agentHistoryQuery.refetch();
     }
-  }, [invalidateSearchHistory])
+  }, [invalidateSearchHistory, agentHistoryQuery])
 
-  const fetchSearchHistories = useCallback(async () => {
-    if (loading || !hasMore) return;
-
-    setLoading(true);
-    try {
-      const response = await API.graphql({
-        query: listSearchHistories,
-        variables: {
-          filter: { brokerId: { eq: user?.attributes?.sub } },
-          limit: FETCH_LIMIT,
-          nextToken,
-        },
-      });
-
-      const { items, nextToken: newNextToken } = response.data.listSearchHistories;
-      const newSearchHis = items?.filter(history => !!!searchHistories?.find(value => value?.searchId === history?.searchId));
-      setSearchHistories((prev) => [...prev, ...newSearchHis]);
-      setNextToken(newNextToken);
-      setHasMore(!!newNextToken);
-
-      const inProgress = items.filter((item) => item.status === "In Progress");
-      setInProgressSearches((prev) => [...prev, ...inProgress]);
+  useEffect(() => {
+    if(agentHistoryQuery?.data && agentHistoryQuery?.isSuccess) {
+      setSearchHistories(agentHistoryQuery?.data);
       setInvalidateSearchHistory(false);
-    } catch (error) {
-      console.error("Error fetching agent search histories:", error);
     }
-    setLoading(false);
-  }, [loading, hasMore, nextToken, user]);
+  }, [agentHistoryQuery?.data, agentHistoryQuery?.isSuccess, setInvalidateSearchHistory, agentHistoryQuery.dataUpdatedAt]);
+  // const fetchSearchHistories = useCallback(async () => {
+  //   if (loading || !hasMore) return;
+
+  //   setLoading(true);
+  //   try {
+  //     const response = await API.graphql({
+  //       query: listSearchHistories,
+  //       variables: {
+  //         filter: { brokerId: { eq: user?.attributes?.sub } },
+  //         limit: FETCH_LIMIT,
+  //         nextToken,
+  //       },
+  //     });
+
+  //     const { items, nextToken: newNextToken } = response.data.listSearchHistories;
+  //     const newSearchHis = items?.filter(history => !!!searchHistories?.find(value => value?.searchId === history?.searchId));
+  //     setSearchHistories((prev) => [...prev, ...newSearchHis]);
+  //     setNextToken(newNextToken);
+  //     setHasMore(!!newNextToken);
+
+  //     const inProgress = items.filter((item) => item.status === "In Progress");
+  //     setInProgressSearches((prev) => [...prev, ...inProgress]);
+  //     setInvalidateSearchHistory(false);
+  //   } catch (error) {
+  //     console.error("Error fetching agent search histories:", error);
+  //   }
+  //   setLoading(false);
+  // }, [loading, hasMore, nextToken, user]);
 
   const checkSearchStatus = async (searchId, id) => {
     try {
@@ -136,11 +144,11 @@ function History({isAll=false}) {
     }, INTERVALTIME);
 
     return () => clearInterval(interval);
-  }, [agentHistoryQuery.data]);
+  }, [agentHistoryQuery.data, checkSearchStatus, agentHistoryQuery.dataUpdatedAt]);
 
-  useEffect(() => {
-    if (user?.attributes?.sub) fetchSearchHistories();
-  }, [user, fetchSearchHistories]);
+  // useEffect(() => {
+  //   if (user?.attributes?.sub) fetchSearchHistories();
+  // }, [user, fetchSearchHistories]);
 
   const requestSort = (key) => {
     let direction = "ascending";
@@ -205,7 +213,8 @@ function History({isAll=false}) {
                       <TableCell colSpan={5} className="font-medium text-center py-10">No Records found.</TableCell>
                     </TableRow>
                     :
-                    (isAll ? agentHistoryQuery?.data : agentHistoryQuery?.data?.slice(0, 5))?.map((item, index) => (
+                    (isAll ? searchHistories : searchHistories?.slice(0, 5))?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                    ?.map((item, index) => (
                       <TableRow key={item.id}>
                         <TableCell className="font-medium">{index + 1}</TableCell>
                         <TableCell>{item.address}</TableCell>
