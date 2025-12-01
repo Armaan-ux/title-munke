@@ -1,4 +1,4 @@
-import { getFormattedDateTime } from "@/utils";
+import { convertFromTimestamp, getFormattedDateTime } from "@/utils";
 import {
   Table,
   TableBody,
@@ -10,6 +10,10 @@ import {
 import { Repeat2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { getListDemoReq } from "../service/userAdmin";
+import { CenterLoader } from "../common/Loader";
+import ShowError from "../common/ShowError";
 
 const dummyData = [
   {
@@ -107,6 +111,11 @@ const dummyData = [
 
 export default function DemoRequests() {
   const [activeTab, setActiveTab] = useState("pending");
+  const demoReqQuery = useQuery({
+    queryKey: ['getListDemoReq'],
+    queryFn: getListDemoReq
+  })
+
   return (
     <div className="bg-[#F5F0EC] rounded-lg px-7 py-4 my-4 text-secondary">
       <div className="space-x-3 mb-4">
@@ -134,52 +143,58 @@ export default function DemoRequests() {
 
       <div className="bg-white !p-4 rounded-xl">
         {activeTab === "pending" ? (
-          <Table className="">
-            <TableHeader className="bg-[#F5F0EC]">
-              <TableRow>
-                <TableHead className="text-center">Sr. No.</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Email / Phone No.</TableHead>
-                <TableHead>County</TableHead>
-                <TableHead>State</TableHead>
-                <TableHead>Date (Received)</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {dummyData?.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={9}
-                    className="font-medium text-center py-10"
-                  >
-                    No Records found.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                dummyData?.map((item, index) => (
-                  <TableRow key={item.id} >
-                    <TableCell className="font-medium text-center">{index + 1}</TableCell>
-                    <TableCell className="text-black font-medium" >{item.name}</TableCell>
-                    <TableCell>{item.email}</TableCell>
-                    <TableCell>{item.county}</TableCell>
-                    <TableCell>{item.state}</TableCell>
-                    <TableCell>
-                      {/* {new Date(item.createdAt).toLocaleDateString()} */}
-                      {item.createdAt}
-                    </TableCell>
-                    <TableCell>{item.description}</TableCell>
-                    <TableCell className="text-center" >
-                      <Button variant="ghost" size="icon" >
-                        <Repeat2 className="mx-auto size-5"  />
-                      </Button>
-                    </TableCell>
+          <>
+            {demoReqQuery?.isLoading && <CenterLoader />}
+            {demoReqQuery?.isError && <ShowError />}
+            {demoReqQuery?.isSuccess && 
+              <Table className="">
+                <TableHeader className="bg-[#F5F0EC]">
+                  <TableRow>
+                    <TableHead className="text-center">Sr. No.</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email / Phone No.</TableHead>
+                    <TableHead>County</TableHead>
+                    <TableHead>State</TableHead>
+                    <TableHead>Date (Received)</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead>Action</TableHead>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                </TableHeader>
+                <TableBody>
+                  {demoReqQuery?.data?.items?.length === 0 ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={9}
+                        className="font-medium text-center py-10"
+                      >
+                        No Records found.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    demoReqQuery?.data?.items?.map((item, index) => (
+                      <TableRow key={item.id} >
+                        <TableCell className="font-medium text-center">{index + 1}</TableCell>
+                        <TableCell className="text-black font-medium" >{item?.name}</TableCell>
+                        <TableCell>{item?.email}</TableCell>
+                        <TableCell>{item?.county}</TableCell>
+                        <TableCell>{item?.state}</TableCell>
+                        <TableCell>
+                          {/* {new Date(item.createdAt).toLocaleDateString()} */}
+                          {convertFromTimestamp(parseInt(new Date(item?.createdAt).getTime() / 1000), "monthDateYear")}
+                        </TableCell>
+                        <TableCell>{item?.additionalMessage}</TableCell>
+                        <TableCell className="text-center" >
+                          <Button variant="ghost" size="icon" >
+                            <Repeat2 className="mx-auto size-5"  />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            }
+          </>
         ) : (
           <Table className="">
             <TableHeader className="bg-[#F5F0EC]">

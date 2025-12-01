@@ -39,13 +39,25 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
-
+import { useMutation } from "@tanstack/react-query";
+import { demoRequest } from "../service/userAdmin";
+const defaultDemoData = {
+    name: "",
+    state: "",
+    email: "",
+    country: "",
+    additionalMessage: "",
+  }
 
 export default function Home() {
   const [openReportDialog, setOpenReportDialog] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [emblaRef] = useEmblaCarousel({ dragFree: true });
-
+  const [demoData, setDemoData] = useState(defaultDemoData)
+  const demoReqMutation = useMutation({
+    mutationFn: () => demoRequest(demoData),
+    onSuccess: () => setDemoData(defaultDemoData)
+  })
   const scrollToSection = (id) => {
     const section = document.getElementById(id);
     if (section) {
@@ -61,6 +73,10 @@ export default function Home() {
       window.removeEventListener("scroll", () => {});
     };
   }, []);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    demoReqMutation.mutate(demoData)
+  }
 
   return (
     <div>
@@ -553,13 +569,15 @@ export default function Home() {
             Discover how our solution works for your needs. Fill in your details
             to schedule a personalized demo and explore the features firsthand.
           </p>
-          <form action="" className="max-w-xl mx-auto">
+          <form onSubmit={handleSubmit} className="max-w-xl mx-auto">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 *:!rounded-[8px] *:placeholder:text-coffee-bg-foreground *:h-12 *:!border-[#977466] *:text-white">
               <Input
                 className="bg-transparent"
                 placeholder="Name"
                 label="Name"
                 required
+                value={demoData.name}
+                onChange={(e) => setDemoData(pre => ({...pre, name: e.target.value}))}
               />
               {/* <Input className="" placeholder="State" label="State" required /> */}
               {/* <Select>
@@ -580,6 +598,8 @@ export default function Home() {
                 label="State"
                 type="text"
                 required
+                value={demoData.state}
+                onChange={(e) => setDemoData(pre => ({...pre, state: e.target.value}))}
               />
               <Input
                 className="bg-transparent"
@@ -587,6 +607,8 @@ export default function Home() {
                 label="Email"
                 type="email"
                 required
+                value={demoData.email}
+                onChange={(e) => setDemoData(pre => ({...pre, email: e.target.value}))}
               />
               <Input
                 className="bg-transparent"
@@ -594,18 +616,23 @@ export default function Home() {
                 label="Country"
                 type="text"
                 required
+                value={demoData.country}
+                onChange={(e) => setDemoData(pre => ({...pre, country: e.target.value}))}
               />
               <Textarea
                 className="sm:col-span-2 placeholder:!text-[#A78B7F] placeholder:italic"
                 placeholder="Enter additional info here..."
                 label="Message"
                 required
+                value={demoData.additionalMessage}
+                onChange={(e) => setDemoData(pre => ({...pre, additionalMessage: e.target.value}))}
               />
             </div>
             <div className="flex justify-center">
               <Button
                 size="lg"
                 className="text-tertiary bg-coffee-bg-foreground hover:bg-coffee-bg-foreground/90 hover:scale-105"
+                disabled={demoReqMutation.isPending}
               >
                 Submit <ArrowRight />
               </Button>

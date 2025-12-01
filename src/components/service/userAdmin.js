@@ -845,3 +845,31 @@ export async function getAdminMetrics(agentId) {
     "/users"
   )
 }
+export async function getListDemoReq() {
+  const payload = {
+    body: {
+      action: "listDemoRequest",
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in listDemoRequest",
+    "error in listDemoRequest",
+    "/users"
+  )
+}
+
+export async function demoRequest(demoData) {
+  const payload = {
+    body: {
+      action: "CreateDemoRequest",
+      ...demoData
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in CreateDemoRequest",
+    "error in CreateDemoRequest",
+    "/forgot-password"
+  )
+}
