@@ -4,18 +4,23 @@ import { Separator } from "../ui/separator";
 import { ArrowDownToLine } from "lucide-react";
 import { convertFromTimestamp } from "@/utils";
 import { usePdfDownload } from "@/hooks/usePdfDownload";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 export function InvoiceModalDummy({ open, onClose, invoice }) {
-  console.log("invoice", invoice)
+
   const {handleDownload, isDownloading} = usePdfDownload();
   const ref = useRef(null);
+  useEffect(() => {
+      if(onClose) {
+        setTimeout(() => handleDownload(ref), 300);
+        setTimeout(onClose, 1000);
+      }
+    }, [])
   // if (!open) return null;
-  console.log("invoice ==========>", JSON.parse(invoice?.search_data?.searchData ?? "{}"))
   const searchData = JSON.parse(invoice?.search_data?.searchData ?? "{}");
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent  showCloseButton={false} className="!max-w-xl !w-full rounded-2xl bg-white p-6 shadow-lg">
+    // <Dialog open={open} onOpenChange={onClose}>
+    //   <DialogContent  showCloseButton={false} className="!max-w-xl !w-full rounded-2xl bg-white p-6 shadow-lg">
         <div ref={ref} className={isDownloading ? "p-4 flex flex-col gap-4" : ""}>
           <div className="flex flex-row justify-between items-center">
             <img src="/Logo.svg" alt="Logo" className={`h-30 w-30 mb-1`} />
@@ -145,7 +150,7 @@ export function InvoiceModalDummy({ open, onClose, invoice }) {
             </>
           }
         </div>
-      </DialogContent>
-    </Dialog>
+    //   </DialogContent>
+    // </Dialog>
   );
 }

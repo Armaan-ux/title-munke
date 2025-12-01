@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { CircleCheck, FileDown } from "lucide-react";
+import { CircleCheck, Eye, FileDown } from "lucide-react";
 import { convertFromTimestamp, getFormattedDateTime } from "@/utils";
 import { InvoiceModalDummy } from "@/components/Modal/InvoiceModalDummy";
 import { useQuery } from "@tanstack/react-query";
@@ -23,6 +23,7 @@ import { getInvoice, getSubscriptionDetails } from "../service/userAdmin";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { CenterLoader } from "../common/Loader";
 import ShowError from "../common/ShowError";
+import { Dialog, DialogContent } from "../ui/dialog";
 
 const IndividualBilling = () => {
   const navigate = useNavigate();
@@ -36,6 +37,7 @@ const IndividualBilling = () => {
     setCardListingModal
   } = useUser();
   const [selectedInvoice, setSelectedInvoice] = useState({});
+  const [invoiceHistoryModal, setInvoiceHistoryModal] = useState(false);
   const subcriptionDetailQuery = useQuery({
     queryKey: ["subcription-details"],
     queryFn: () => getSubscriptionDetails(userId, userType),
@@ -94,11 +96,24 @@ const IndividualBilling = () => {
         />
       )} */}
       {invoiceModal &&
-        <InvoiceModalDummy
-          open={invoiceModal}
-          onClose={() => {setInvoiceModal(false); setSelectedInvoice({})}}
-          invoice={selectedInvoice}
-        />
+        <div className="absolute left-[120%]">
+          <InvoiceModalDummy
+            open={invoiceModal}
+            onClose={() => {setInvoiceModal(false); setSelectedInvoice({})}}
+            invoice={selectedInvoice}
+          />
+        </div>
+      }
+      {
+        invoiceHistoryModal &&
+        <Dialog open={invoiceHistoryModal} onOpenChange={() => {setInvoiceHistoryModal(false); setSelectedInvoice({})}}>
+          <DialogContent  showCloseButton={false} className="!max-w-xl !w-full rounded-2xl bg-white p-6 shadow-lg">
+            <InvoiceModalDummy
+              open={invoiceHistoryModal}
+              invoice={selectedInvoice}
+            />
+          </DialogContent>
+        </Dialog>
       }
 
       <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full h-content shadow-md">
@@ -219,6 +234,7 @@ const IndividualBilling = () => {
                     </TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-center" >Download</TableHead>
+                    <TableHead className="text-center" >Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -250,6 +266,21 @@ const IndividualBilling = () => {
                               className="size-5 mx-auto"
                               />
                           </Button>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2 flex-row justify-center">
+                          <Button
+                            size="icon"
+                            // className="text-md"
+                            variant="ghost"
+                            onClick={() => {
+                              setInvoiceHistoryModal(true);
+                              setSelectedInvoice(invoice)
+                            }}
+                          >
+                            <Eye className="size-5" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}

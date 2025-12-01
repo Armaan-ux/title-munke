@@ -22,6 +22,8 @@ import { getInvoice, getSubscriptionDetails } from "../service/userAdmin";
 import { useUser } from "@/context/usercontext";
 import { CenterLoader } from "./Loader";
 import ShowError from "./ShowError";
+import { InvoiceModalDummy } from "../Modal/InvoiceModalDummy";
+import { Dialog, DialogContent } from "../ui/dialog";
 
 const BillingHistory = () => {
 
@@ -69,7 +71,7 @@ const BillingHistory = () => {
     <div className="relative">
       {invoiceModal && 
         <div className="absolute left-[120%]">
-          <InvoiceModal
+          <InvoiceModalDummy
             onClose={() => {
               setInvoiceModal(false);
               setSelectedInvoice({})
@@ -93,12 +95,23 @@ const BillingHistory = () => {
         onClose={() => setCancleSubscriptionSucessModal(false)}
       />
 
-      {invoiceHistoryModal &&
-        <InvoiceHistoryModal
+      {/* {invoiceHistoryModal &&
+        <InvoiceModalDummy
           open={invoiceHistoryModal}
           onClose={() => {setInvoiceHistoryModal(false); setSelectedInvoice({})}}
           invoice={selectInvoice}
         />
+      } */}
+      {
+        invoiceHistoryModal &&
+        <Dialog open={invoiceHistoryModal} onOpenChange={() => {setInvoiceHistoryModal(false); setSelectedInvoice({})}}>
+          <DialogContent  showCloseButton={false} className="!max-w-xl !w-full rounded-2xl bg-white p-6 shadow-lg">
+            <InvoiceModalDummy
+              open={invoiceHistoryModal}
+              invoice={selectInvoice}
+            />
+          </DialogContent>
+        </Dialog>
       }
 
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
