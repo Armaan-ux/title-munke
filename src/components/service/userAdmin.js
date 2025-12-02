@@ -53,7 +53,12 @@ export const CONSTANTS = { // should always be copied from title-munke-serverles
 
     PURCHASE_MEMBERSHIP: "subscribe",
     LIST_INVOICE: "listinvoice",
-    MEMBERSHIP_DETAIL: "subscription-details"
+    MEMBERSHIP_DETAIL: "subscription-details",
+    UPDATE_SUBSCRIPTION_STATUS: "update-subscription-status",
+    GET_AGENT_SEARCHES: "getAgentSearches",
+    GET_HOME: "get-home",
+    LIST_DEMO_REQUEST: "listDemoRequest",
+    CREATE_DEMO_REQUEST: "CreateDemoRequest",
   },
   USER_TYPES: {
     AGENT: "agent",
@@ -758,10 +763,11 @@ export async function getInvoice(userId, userType) {
 }
 
 export async function cancelSubscription(userId, userType, isCancel, reason) {
+  const action = CONSTANTS?.ACTIONS?.UPDATE_SUBSCRIPTION_STATUS
   const payload = {
     body: {
       userId,
-      action: "update-subscription-status",
+      action: action,
       userType,
       cancel_at_period_end: isCancel,
       reason
@@ -769,107 +775,114 @@ export async function cancelSubscription(userId, userType, isCancel, reason) {
   }
   return callUserAdminApi(
     payload,
-    "Success in update-subscription-status",
-    "error in update-subscription-status",
+    "Success in " + action,
+    "error in " + action,
     "/users"
   )
 }
 
 export async function getSearchedStatus(searchId) {
+  const action = CONSTANTS?.ACTIONS?.GET_SEARCH_STATUS
   const payload = {
     body: {
       searchId,
-      action: "GetSearchStatus",
+      action
     }
   }
   return callUserAdminApi(
     payload,
-    "Success in GetSearchStatus",
-    "error in GetSearchStatus",
+    "Success in " + action,
+    "error in " + action,
     "/users"
   )
 }
 export async function updateStatus(agentId) {
+  const action = CONSTANTS?.ACTIONS?.UPDATE_AGENT_STATUS
   const payload = {
     body: {
       status: "ACTIVE",
-      action: "updateAgentStatus",
+      action,
       agentId
     }
   }
   return callUserAdminApi(
     payload,
-    "Success in updateAgentStatus",
-    "error in updateAgentStatus",
+    "Success in " + action,
+    "error in " + action,
     "/users"
   )
 }
 export async function getAgentBrokerDetails(agentId) {
+  const action = CONSTANTS?.ACTIONS?.GET_AGENT_DETAILS
   const payload = {
     body: {
-      action: "getAgentDetails",
+      action,
       agentId
     }
   }
   return callUserAdminApi(
     payload,
-    "Success in getAgentDetails",
-    "error in getAgentDetails",
+    "Success in " + action,
+    "error in " + action,
     "/users"
   )
 }
 export async function getAgentSearches(agentId) {
+  const action = CONSTANTS?.ACTIONS?.GET_AGENT_SEARCHES
   const payload = {
     body: {
-      action: "getAgentSearches",
+      action,
       agentId
     }
   }
   return callUserAdminApi(
     payload,
-    "Success in getAgentSearches",
-    "error in getAgentSearches",
+    "Success in " + action,
+    "error in " + action,
     "/users"
   )
 }
 export async function getAdminMetrics(agentId) {
+  const action = CONSTANTS?.ACTIONS?.GET_HOME
   const payload = {
     body: {
-      action: "get-home",
+      action,
     }
   }
   return callUserAdminApi(
     payload,
-    "Success in get-home",
-    "error in get-home",
+    "Success in " + action,
+    "error in " + action,
     "/users"
   )
 }
 export async function getListDemoReq() {
+  const action = CONSTANTS?.ACTIONS?.LIST_DEMO_REQUEST
   const payload = {
     body: {
-      action: "listDemoRequest",
+      action,
     }
   }
   return callUserAdminApi(
     payload,
-    "Success in listDemoRequest",
-    "error in listDemoRequest",
+    "Success in " + action,
+    "error in " + action,
     "/users"
   )
 }
 
 export async function demoRequest(demoData) {
+  const action = CONSTANTS?.ACTIONS?.CREATE_DEMO_REQUEST
   const payload = {
     body: {
-      action: "CreateDemoRequest",
+      action,
       ...demoData
     }
   }
   return callUserAdminApi(
     payload,
-    "Success in CreateDemoRequest",
-    "error in CreateDemoRequest",
+    "Success in " + action,
+    "error in " + action,
     "/forgot-password"
   )
 }
