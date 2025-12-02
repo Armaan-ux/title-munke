@@ -2,8 +2,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
-import { useState } from "react";
 import { TEAMS } from "@/utils/constant";
 import {
   Select,
@@ -13,17 +11,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "../ui/label";
-
-export default function AddAdminModal({ open, onClose,title }) {
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const [teamStrength, setTeamStrength] = useState("")
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log({ fullName, email, message });
-  };
+import { zodResolver } from "@hookform/resolvers/zod";
+import { addAgentByAdminSchema, addBrokerByAdminSchema, baseUserSchema } from "@/formSchema";
+import { Controller, useForm } from "react-hook-form";
+import { FormValidationError } from "../common/FormValidationError";
+const formSchemas = {
+  admin: baseUserSchema,
+  agent: addAgentByAdminSchema,
+  broker: addBrokerByAdminSchema,
+};
+const submitText = {
+  agent: "Invite Agent",
+  broker: "Invite Broker",
+  admin: "Invite Admin",
+};
+export default function AddAdminModal({ open, onClose,title, userType,  }) {
+  const {control, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({
+      defaultValues: { fullName: "", email: "", message: "", ...(userType === "agent" && {brokerId: ""}), ...(userType === "broker" && {teamStrength: ""}) },
+      resolver: zodResolver(formSchemas[userType]),
+    });
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -35,62 +41,117 @@ export default function AddAdminModal({ open, onClose,title }) {
               </DialogTitle>
             </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit((data) => console.log(data))} className="space-y-4">
           <div>
             <label className="text-sm text-[#6B5E55] mb-1 block">Full Name</label>
-            <Input
-              type="text"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              placeholder="John Marks"
-              className="bg-white"
+            <Controller
+              name="fullName"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  placeholder="John Marks"
+                  className="h-[38px] bg-white border border-[#E6DFDB] text-secondary placeholder:text-[#B6AAA5] focus-visible:ring-0 focus-visible:ring-offset-0"
+                  {...field}
+                />
+              )}
             />
+            {errors.fullName && <FormValidationError message={errors.fullName.message} />}
           </div>
 
           <div>
             <label className="text-sm text-[#6B5E55] mb-1 block">Email Address</label>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="john@emailaddress.com"
-              className=" bg-white"
+            <Controller
+              name="email"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  placeholder="john@emailaddress.com"
+                  className="bg-white"
+                  {...field}
+                />
+              )}
             />
+            {errors.email && <FormValidationError message={errors.email.message} />}
           </div>
-          <div>
-              <Label htmlFor="role" className="text-sm text-[#6B5E55] mb-1 block">
-                Team Strength
-              </Label>
-              <Select
-                onValueChange={(val) =>
-                  setTeamStrength(val)
-                }
-                value={teamStrength}
-              >
-                <SelectTrigger className="mt-1 w-full !h-11">
-                  <SelectValue
-                    placeholder="Select strength"
-                    className="text-[#2c150f]"
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {TEAMS.map((item, index) => (
-                    <SelectItem key={index} value={item.toLowerCase()}>
-                      {item}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+
+          {userType === "agent" &&
+            <div>
+                <Label className="text-sm text-[#6B5E55] mb-1 block">
+                  Select Broker
+                </Label>
+                <Controller 
+                  name="brokerId"
+                  control={control}
+                  render={({field}) => (
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <SelectTrigger className="mt-1 w-full !h-11">
+                        <SelectValue
+                          placeholder="Select"
+                          className="text-[#2c150f]"
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {TEAMS.map((item, index) => (
+                          <SelectItem key={index} value={item.toLowerCase()}>
+                            {item}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.brokerId && <FormValidationError message={errors.brokerId.message} />}
             </div>
+          }
+
+          {userType === "broker" &&
+            <div>
+                <Label className="text-sm text-[#6B5E55] mb-1 block">
+                  Select Strength
+                </Label>
+                <Controller 
+                  name="teamStrength"
+                  control={control}
+                  render={({field}) => (
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <SelectTrigger className="mt-1 w-full !h-11">
+                        <SelectValue
+                          placeholder="Select"
+                          className="text-[#2c150f]"
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {TEAMS.map((item, index) => (
+                          <SelectItem key={index} value={item.toLowerCase()}>
+                            {item}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.teamStrength && <FormValidationError message={errors.teamStrength.message} />}
+            </div>
+          }
 
           <div>
             <label className="text-sm text-[#6B5E55] mb-1 block">Message (Optional)</label>
-            <Textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder=""
-              rows={10}
-              className=""
+            <Controller
+              name="message"
+              control={control}
+              render={({ field }) => (
+                <Textarea
+                  name="message"
+                  rows={10}
+                  {...field}
+                />
+              )}
             />
           </div>
 
@@ -106,12 +167,13 @@ export default function AddAdminModal({ open, onClose,title }) {
               Cancel
             </Button>
             <Button
+              disabled={isSubmitting}
               type="submit"
               variant="secondary"
               size="lg"
               // className="bg-[#550000] hover:bg-[#3D0000] text-white w-[50%]"
             >
-              Invite Agent
+              {submitText[userType]}
             </Button>
           </div>
         </form>

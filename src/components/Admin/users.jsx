@@ -106,7 +106,7 @@ function Admins() {
   }, []);
   return (
     <>
-     <AddAdminModal  open={isOpen} onClose={()=> setIsOpen(false)} title="Admin"  />
+     <AddAdminModal  open={isOpen} onClose={()=> setIsOpen(false)} title="Admin"  userType="admin"/>
     <div className="bg-white !p-4 rounded-xl">
       {/* <AddUserModal
         setIsOpen={setIsOpen}
@@ -344,7 +344,7 @@ function AdminBrokersList() {
         setIsOpen={setIsAgentCreationModalOpen}
         brokers={activeBrokers}
       /> */}
-      <AddAdminModal  open={isOpen} onClose={()=> setIsOpen(false)} title="Broker" />
+      <AddAdminModal  open={isOpen} onClose={()=> setIsOpen(false)} title="Broker" userType="broker" />
 
       <div>
         <div className="bg-white !p-4 rounded-xl">
@@ -501,7 +501,7 @@ function Agents() {
   }, []);
   return (
     <>
-     <AddAdminModal  open={isOpen} onClose={()=> setIsOpen(false)}  title="Agent" />
+     <AddAdminModal  open={isOpen} onClose={()=> setIsOpen(false)}  title="Agent" userType="agent"/>
     <div className="bg-white !p-4 rounded-xl">
       {/* <AddUserModal
         setIsOpen={setIsOpen}

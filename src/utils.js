@@ -1,6 +1,9 @@
 import { Auth } from "aws-amplify";
 import { formatInTimeZone, format, toZonedTime } from "date-fns-tz";
 import { createAuditLog } from "./components/service/userAdmin";
+export const queryKeys = {
+  adminsListing: "adminsListing",
+}
 const months = {
   0: "Jan",
   1: "Feb",
