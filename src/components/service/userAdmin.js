@@ -59,6 +59,8 @@ export const CONSTANTS = { // should always be copied from title-munke-serverles
     GET_HOME: "get-home",
     LIST_DEMO_REQUEST: "listDemoRequest",
     CREATE_DEMO_REQUEST: "CreateDemoRequest",
+    LIST_AGENTS: "listAgents",
+    LIST_BROKER_WITH_NAME: "listBrokerWithName"
   },
   USER_TYPES: {
     AGENT: "agent",
@@ -376,10 +378,11 @@ export async function getUnassignedAgents() {
     );
 }
 
-export async function listAdmins() {
+export async function listAdmins(nextToken) {
     const payload = {
       body: {
         action: CONSTANTS.ACTIONS.LIST_ADMINS,
+        nextToken
       },
     };
     return callUserAdminApi(
@@ -884,5 +887,48 @@ export async function demoRequest(demoData) {
     "Success in " + action,
     "error in " + action,
     "/forgot-password"
+  )
+}
+export async function getAgentListings(nextToken) {
+  const action = CONSTANTS?.ACTIONS?.LIST_AGENTS
+  const payload = {
+    body: {
+      action,
+      nextToken
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/users"
+  )
+}
+export async function getBrokerSelectListing() {
+  const action = CONSTANTS?.ACTIONS?.LIST_BROKER_WITH_NAME
+  const payload = {
+    body: {
+      action,
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/users"
+  )
+}
+export async function createUserByAdmin(newUserData) {
+  // const action = CONSTANTS?.ACTIONS?.LIST_BROKER_WITH_NAME
+  const payload = {
+    body: {
+      ...newUserData
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in ",
+    "error in ",
+    "/users"
   )
 }

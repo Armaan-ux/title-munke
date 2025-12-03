@@ -45,7 +45,7 @@ const AdminDashboard = () => {
             <p className="mb-4 text-secondary"> Total Brokers</p>
             {metricQuery?.isSuccess && 
             <p className="text-4xl font-semibold text-tertiary">
-              {metricQuery?.data?.results?.BROKER ?? "--"}
+              {metricQuery?.data?.BROKER ?? "--"}
             </p>
             }
             {metricQuery?.isLoading && <Loader2 className="w-6 h-10 animate-spin text-secondary" />}
@@ -58,7 +58,7 @@ const AdminDashboard = () => {
         <div className="p-5 flex justify-between items-end ">
           <div>
             <p className="mb-4 text-secondary">Total Agents</p>
-            {metricQuery?.isSuccess && <p className="text-4xl font-semibold text-tertiary">{metricQuery?.data?.results?.AGENT ?? "--"}</p>}
+            {metricQuery?.isSuccess && <p className="text-4xl font-semibold text-tertiary">{metricQuery?.data?.AGENT ?? "--"}</p>}
             {metricQuery?.isLoading && <Loader2 className="w-6 h-10 animate-spin text-secondary" />}
           </div>
           <div className="bg-white rounded-full p-3.5">

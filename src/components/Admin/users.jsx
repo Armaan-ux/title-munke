@@ -1,6 +1,5 @@
 import { API } from "aws-amplify";
 import { useState, useEffect } from "react";
-import { listAdmins } from "@/graphql/queries";
 // import "./index.css";
 import { getFormattedDateTime } from "@/utils";
 import { fetchAgentsWithSearchCount } from "@/components/service/broker";
@@ -28,9 +27,11 @@ import {
   CONSTANTS,
   deleteUser,
   getActiveBrokers,
+  getAgentListings,
   getBrokersWithSearchCount,
   getTotalBrokers,
   getTotalBrokerSearchesThisMonth,
+  listAdmins,
   updateBrokerStatus,
 } from "../service/userAdmin";
 import {
@@ -93,20 +94,29 @@ export default function Users() {
 function Admins() {
   const [isOpen, setIsOpen] = useState(false);
   const [admins, setAdmins] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [isAdminListLoading, setIsAdminListLoading] = useState(false);
+  const [nextToken, setNextToken] = useState(null);
 
-  useEffect(() => {
-    const getAdmins = async () => {
-      const response = await API.graphql({
-        query: listAdmins,
-      });
-      const { items } = response.data.listAdmins;
-      setAdmins(items);
-    };
-    getAdmins();
-  }, []);
+  const handleFetchAdminListing = async (isRefetch) => {
+    setIsAdminListLoading(true);
+    try {
+      const response = await listAdmins(isRefetch ? null : nextToken);
+      const {items, nextToken: newNextToken} = response;
+      setAdmins(pre => isRefetch ? items : [...pre, ...items]);
+      setNextToken(newNextToken);
+      setHasMore(!!newNextToken)
+    } catch (error) {
+      console.log(error)
+    }
+    setIsAdminListLoading(false);
+  }
+
+  useEffect(() => {handleFetchAdminListing()}, []);
+
   return (
     <>
-     <AddAdminModal  open={isOpen} onClose={()=> setIsOpen(false)} title="Admin"  userType="admin"/>
+     <AddAdminModal  open={isOpen} onClose={()=> setIsOpen(false)} title="Admin"  userType="admin" invalidateFun={() => handleFetchAdminListing(true)}/>
     <div className="bg-white !p-4 rounded-xl">
       {/* <AddUserModal
         setIsOpen={setIsOpen}
@@ -133,7 +143,7 @@ function Admins() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {admins?.length === 0 ? (
+          {admins?.length === 0 && !hasMore ? (
             <TableRow>
               <TableCell
                 colSpan={5}
@@ -174,6 +184,19 @@ function Admins() {
           )}
         </TableBody>
       </Table>
+      <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
+            {isAdminListLoading && <p>Loading...</p>}
+            {!hasMore && !isAdminListLoading && <p>No more data to load.</p>}
+            {admins?.length > 0 && hasMore && !isAdminListLoading && (
+              <Button
+                size="sm"
+                className=""
+                onClick={() => handleFetchAdminListing()}
+              >
+                Load More
+              </Button>
+            )}
+        </div>
     </div>
     </>
   );
@@ -231,15 +254,14 @@ function AdminBrokersList() {
     handleFetchBrokersWithSearchCount();
   }, []);
 
-  const handleFetchBrokersWithSearchCount = async () => {
-    if (isBrokerListLoading || !hasMore) return;
+  const handleFetchBrokersWithSearchCount = async (isRefetch) => {
 
     setIsBrokerListLoading(true);
     try {
-      const response = await getBrokersWithSearchCount(nextToken);
+      const response = await getBrokersWithSearchCount(isRefetch ? null : nextToken);
       const { updatedBrokers, nextToken: newNextToken } = response;
 
-      setBrokers((prev) => [...prev, ...updatedBrokers]);
+      setBrokers((prev) => isRefetch ? updatedBrokers : [...prev, ...updatedBrokers]);
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
     } catch (error) {
@@ -344,7 +366,7 @@ function AdminBrokersList() {
         setIsOpen={setIsAgentCreationModalOpen}
         brokers={activeBrokers}
       /> */}
-      <AddAdminModal  open={isOpen} onClose={()=> setIsOpen(false)} title="Broker" userType="broker" />
+      <AddAdminModal  open={isOpen} onClose={()=> setIsOpen(false)} title="Broker" userType="broker" invalidateFun={() => handleFetchBrokersWithSearchCount(true)}/>
 
       <div>
         <div className="bg-white !p-4 rounded-xl">
@@ -391,7 +413,7 @@ function AdminBrokersList() {
                     {/* <TableCell>
                       {getFormattedDateTime(item.lastLogin)}
                     </TableCell> */}
-                    {/* <TableCell>{item.email}</TableCell> */}
+                    <TableCell>{item.email}</TableCell>
                     <TableCell>
                       {" "}
                       <Badge
@@ -472,7 +494,7 @@ function AdminBrokersList() {
               <Button
                 size="sm"
                 className=""
-                onClick={handleFetchBrokersWithSearchCount}
+                onClick={() => handleFetchBrokersWithSearchCount()}
               >
                 Load More
               </Button>
@@ -487,21 +509,34 @@ function AdminBrokersList() {
 
 function Agents() {
   const [isOpen, setIsOpen] = useState(false);
-  const [admins, setAdmins] = useState([]);
+  const [agents, setAgents] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [isAgentListLoading, setIsAgentListLoading] = useState(false);
+  const [nextToken, setNextToken] = useState(null);
 
   useEffect(() => {
-    const getAdmins = async () => {
-      const response = await API.graphql({
-        query: listAdmins,
-      });
-      const { items } = response.data.listAdmins;
-      setAdmins(items);
-    };
-    getAdmins();
+    handleFetchAgentListing();
   }, []);
+
+  const handleFetchAgentListing = async (isRefetch) => {
+    
+    setIsAgentListLoading(true);
+    try {
+      const response = await getAgentListings(isRefetch? null : nextToken);
+      const { items, nextToken: newNextToken } = response;
+
+      setAgents((prev) => isRefetch ? items : [...prev, ...items]);
+      setNextToken(newNextToken);
+      setHasMore(!!newNextToken);
+    } catch (error) {
+      console.error("Error fetching search histories:", error);
+    }
+    setIsAgentListLoading(false);
+  };
+
   return (
     <>
-     <AddAdminModal  open={isOpen} onClose={()=> setIsOpen(false)}  title="Agent" userType="agent"/>
+     <AddAdminModal  open={isOpen} onClose={()=> setIsOpen(false)}  title="Agent" userType="agent" invalidateFun={() => handleFetchAgentListing(true)}/>
     <div className="bg-white !p-4 rounded-xl">
       {/* <AddUserModal
         setIsOpen={setIsOpen}
@@ -529,7 +564,7 @@ function Agents() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {admins?.length === 0 ? (
+          {agents?.length === 0 && !hasMore ? (
             <TableRow>
               <TableCell
                 colSpan={5}
@@ -539,11 +574,11 @@ function Agents() {
               </TableCell>
             </TableRow>
           ) : (
-            admins?.map((item, index) => (
-              <TableRow key={item.id}>
+            agents?.map((item, index) => (
+              <TableRow key={item?.id}>
                 <TableCell className="font-medium">{index + 1}</TableCell>
-                <TableCell className="text-black font-medium" >{item.name}</TableCell>
-                <TableCell>{item.email}</TableCell>
+                <TableCell className="text-black font-medium" >{item?.name}</TableCell>
+                <TableCell>{item?.email}</TableCell>
                 <TableCell>
                   <Badge
                     className={`${
@@ -575,6 +610,19 @@ function Agents() {
           )}
         </TableBody>
       </Table>
+       <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
+            {isAgentListLoading && <p>Loading...</p>}
+            {!hasMore && !isAgentListLoading && <p>No more data to load.</p>}
+            {agents?.length > 0 && hasMore && !isAgentListLoading && (
+              <Button
+                size="sm"
+                className=""
+                onClick={handleFetchAgentListing}
+              >
+                Load More
+              </Button>
+            )}
+        </div>
     </div>
     </>
   );
