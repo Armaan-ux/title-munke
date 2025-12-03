@@ -176,7 +176,7 @@ export default function DemoRequests() {
                         <TableCell className="font-medium text-center">{index + 1}</TableCell>
                         <TableCell className="text-black font-medium" >{item?.name}</TableCell>
                         <TableCell>{item?.email}</TableCell>
-                        <TableCell>{item?.county}</TableCell>
+                        <TableCell>{item?.country}</TableCell>
                         <TableCell>{item?.state}</TableCell>
                         <TableCell>
                           {/* {new Date(item.createdAt).toLocaleDateString()} */}

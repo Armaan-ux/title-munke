@@ -56,7 +56,7 @@ export const convertFromTimestamp = (timestamp, type) => {
       case "monthYear":
         return `${months[date.getMonth()]}, ${date.getFullYear()}`
       case "monthDateYear":
-        return `${months[date.getMonth()]} ${date?.getDate()}, ${date.getFullYear()}`
+        return `${months[date.getMonth()]} ${date?.getDate()?.toString()?.padStart(2, "0")}, ${date.getFullYear()}`
       default:
         return ""
     }
