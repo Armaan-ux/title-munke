@@ -15,21 +15,45 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { addAgentByAdminSchema, addBrokerByAdminSchema, baseUserSchema } from "@/formSchema";
 import { Controller, useForm } from "react-hook-form";
 import { FormValidationError } from "../common/FormValidationError";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { queryKeys } from "@/utils";
+import { createUserByAdmin, getBrokerSelectListing } from "../service/userAdmin";
+import { toast } from "react-toastify";
 const formSchemas = {
   admin: baseUserSchema,
   agent: addAgentByAdminSchema,
   broker: addBrokerByAdminSchema,
 };
+
 const submitText = {
   agent: "Invite Agent",
   broker: "Invite Broker",
   admin: "Invite Admin",
 };
-export default function AddAdminModal({ open, onClose,title, userType,  }) {
+
+
+export default function AddAdminModal({ open, onClose,title, userType, invalidateFun }) {
   const {control, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({
       defaultValues: { fullName: "", email: "", message: "", ...(userType === "agent" && {brokerId: ""}), ...(userType === "broker" && {teamStrength: ""}) },
       resolver: zodResolver(formSchemas[userType]),
     });
+
+  const brokerListingQuery = useQuery({
+    queryKey: [queryKeys?.brokerSelectListing],
+    queryFn: getBrokerSelectListing,
+    enabled: userType === "agent"
+  })
+
+  const newUserMutation = useMutation({
+    mutationFn: (payload) => createUserByAdmin(payload),
+    onSuccess: () => {
+      reset();
+      invalidateFun?.();
+    }, 
+    onError: (error) => {
+      toast.error(error?.response?.data?.error || "Something went wrong while adding new user. Please try again.");
+    },
+  });
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -41,7 +65,7 @@ export default function AddAdminModal({ open, onClose,title, userType,  }) {
               </DialogTitle>
             </DialogHeader>
 
-        <form onSubmit={handleSubmit((data) => console.log(data))} className="space-y-4">
+        <form onSubmit={handleSubmit(({fullName, ...rest}) => newUserMutation?.mutate({...rest, name: fullName, userType}))} className="space-y-4">
           <div>
             <label className="text-sm text-[#6B5E55] mb-1 block">Full Name</label>
             <Controller
@@ -94,9 +118,9 @@ export default function AddAdminModal({ open, onClose,title, userType,  }) {
                         />
                       </SelectTrigger>
                       <SelectContent>
-                        {TEAMS.map((item, index) => (
-                          <SelectItem key={index} value={item.toLowerCase()}>
-                            {item}
+                        {(brokerListingQuery?.data?.Items ?? [])?.map((item, index) => (
+                          <SelectItem key={index} value={item?.id}>
+                            {item?.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -167,7 +191,7 @@ export default function AddAdminModal({ open, onClose,title, userType,  }) {
               Cancel
             </Button>
             <Button
-              disabled={isSubmitting}
+              disabled={newUserMutation.isPending}
               type="submit"
               variant="secondary"
               size="lg"
