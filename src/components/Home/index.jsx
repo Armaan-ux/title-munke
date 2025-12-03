@@ -41,6 +41,10 @@ import { cn } from "@/lib/utils";
 
 import { useMutation } from "@tanstack/react-query";
 import { demoRequest } from "../service/userAdmin";
+import { Controller, useForm } from "react-hook-form";
+import { demoRequestSchema } from "@/formSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FormValidationError } from "../common/FormValidationError";
 const defaultDemoData = {
     name: "",
     state: "",
@@ -53,10 +57,13 @@ export default function Home() {
   const [openReportDialog, setOpenReportDialog] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [emblaRef] = useEmblaCarousel({ dragFree: true });
-  const [demoData, setDemoData] = useState(defaultDemoData)
+  const {control, handleSubmit, reset, formState: {errors}} = useForm({
+    defaultValues: defaultDemoData,
+     resolver: zodResolver(demoRequestSchema)
+  });
   const demoReqMutation = useMutation({
-    mutationFn: () => demoRequest(demoData),
-    onSuccess: () => setDemoData(defaultDemoData)
+    mutationFn: (payload) => demoRequest(payload),
+    onSuccess: () => reset()
   })
   const scrollToSection = (id) => {
     const section = document.getElementById(id);
@@ -73,10 +80,10 @@ export default function Home() {
       window.removeEventListener("scroll", () => {});
     };
   }, []);
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    demoReqMutation.mutate(demoData)
-  }
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   demoReqMutation.mutate(demoData)
+  // }
 
   return (
     <div>
@@ -569,16 +576,31 @@ export default function Home() {
             Discover how our solution works for your needs. Fill in your details
             to schedule a personalized demo and explore the features firsthand.
           </p>
-          <form onSubmit={handleSubmit} className="max-w-xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 *:!rounded-[8px] *:placeholder:text-coffee-bg-foreground *:h-12 *:!border-[#977466] *:text-white">
-              <Input
+          <form onSubmit={handleSubmit((data) => demoReqMutation.mutate(data))} className="max-w-xl mx-auto" autoComplete="off">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+              <div>
+                <Controller
+                  name="name"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      placeholder="Name"
+                      label="Name"
+                      className="bg-transparent !rounded-[8px] placeholder:text-coffee-bg-foreground h-12 *:!border-[#977466] text-white"
+                      {...field}
+                    />
+                  )}
+                />
+                {errors.name && <FormValidationError message={errors.name.message} />}
+              </div>
+              {/* <Input
                 className="bg-transparent"
                 placeholder="Name"
                 label="Name"
                 required
                 value={demoData.name}
                 onChange={(e) => setDemoData(pre => ({...pre, name: e.target.value}))}
-              />
+              /> */}
               {/* <Input className="" placeholder="State" label="State" required /> */}
               {/* <Select>
                   <SelectTrigger className="w-full !h-12 data-[placeholder]:!text-coffee-bg-foreground [&_svg]:!text-coffee-bg-foreground">
@@ -592,7 +614,22 @@ export default function Home() {
                     }
                   </SelectContent>
                 </Select> */}
-              <Input
+                <div>
+                  <Controller
+                    name="state"
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        placeholder="State"
+                        label="State"
+                        className="bg-transparent !rounded-[8px] placeholder:text-coffee-bg-foreground h-12 *:!border-[#977466] text-white"
+                        {...field}
+                      />
+                    )}
+                  />
+                  {errors.state && <FormValidationError message={errors.state.message} />}
+              </div>
+              {/* <Input
                 className="bg-transparent"
                 placeholder="State"
                 label="State"
@@ -600,33 +637,78 @@ export default function Home() {
                 required
                 value={demoData.state}
                 onChange={(e) => setDemoData(pre => ({...pre, state: e.target.value}))}
-              />
-              <Input
+              /> */}
+              <div>
+                <Controller
+                  name="email"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      placeholder="Email/Phone"
+                      label="Email/Phone"
+                      className="bg-transparent !rounded-[8px] placeholder:text-coffee-bg-foreground h-12 *:!border-[#977466] text-white"
+                      {...field}
+                    />
+                  )}
+                />
+                {errors.email && <FormValidationError message={errors.email.message} />}
+              </div>
+              {/* <Input
                 className="bg-transparent"
-                placeholder="Email"
+                placeholder="Email/Phone"
                 label="Email"
-                type="email"
+                type={Number(demoData.email) ? "text" : "email"}
                 required
                 value={demoData.email}
                 onChange={(e) => setDemoData(pre => ({...pre, email: e.target.value}))}
-              />
-              <Input
+              /> */}
+              <div>
+                <Controller
+                  name="country"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      placeholder="County"
+                      label="County"
+                      className="bg-transparent !rounded-[8px] placeholder:text-coffee-bg-foreground h-12 *:!border-[#977466] text-white"
+                      {...field}
+                    />
+                  )}
+                />
+                {errors.country && <FormValidationError message={errors.country.message} />}
+              </div>
+              {/* <Input
                 className="bg-transparent"
-                placeholder="Country"
+                placeholder="County"
                 label="Country"
                 type="text"
                 required
                 value={demoData.country}
                 onChange={(e) => setDemoData(pre => ({...pre, country: e.target.value}))}
-              />
-              <Textarea
+              /> */}
+              <div className="sm:col-span-2">
+                <Controller
+                  className="w-full"
+                  name="additionalMessage"
+                  control={control}
+                  render={({ field }) => (
+                    <Textarea
+                      placeholder="Message"
+                      label="Message"
+                      className="bg-transparent !rounded-[8px] h-12 *:!border-[#977466] text-white placeholder:!text-[#A78B7F] placeholder:italic"
+                      {...field}
+                    />
+                  )}
+                />
+              </div>
+              {/* <Textarea
                 className="sm:col-span-2 placeholder:!text-[#A78B7F] placeholder:italic"
                 placeholder="Enter additional info here..."
                 label="Message"
                 required
                 value={demoData.additionalMessage}
                 onChange={(e) => setDemoData(pre => ({...pre, additionalMessage: e.target.value}))}
-              />
+              /> */}
             </div>
             <div className="flex justify-center">
               <Button

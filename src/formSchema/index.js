@@ -28,3 +28,27 @@ export const addAgentByAdminSchema = baseUserSchema.extend({
 export const addBrokerByAdminSchema = baseUserSchema.extend({
   teamStrength: z.string().trim().nonempty("Team strength selection is required"),
 });
+
+export const demoRequestSchema = z.object({
+  name: z.string().trim().min(1, "Name is required"),
+  state: z.string().trim().nonempty("State is required"),
+  email: z
+    .string()
+    .trim()
+    .refine(
+      (value) =>
+        isEmail(value) || isPhone(value),
+      "Enter a valid email or phone number"
+    ),
+  country: z.string().trim().nonempty("County is required"),
+  additionalMessage: z.string().optional(),
+});
+
+// helpers
+const isEmail = (value) =>
+  /^\S+@\S+\.\S+$/.test(value);
+
+const isPhone = (value) => {
+  const cleaned = value.replace(/\D/g, ""); // keep only digits
+  return /^[6-9]\d{9}$/.test(cleaned);
+};
