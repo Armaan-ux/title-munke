@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { EyeIcon, PencilLine, PlusCircle, Trash2, UserPlus } from "lucide-react";
+import { ArchiveRestore, EyeIcon, PencilLine, PlusCircle, Trash2, UserPlus } from "lucide-react";
 import AddUserModal from "../Modal/AddUserModal";
 import AgentList from "../Modal/AgentList";
 import AddAgentByAdminModal from "../Modal/AddAgentByAdminModal";
@@ -32,6 +32,7 @@ import {
   getTotalBrokers,
   getTotalBrokerSearchesThisMonth,
   listAdmins,
+  reinviteUser,
   updateBrokerStatus,
 } from "../service/userAdmin";
 import {
@@ -47,6 +48,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "../ui/badge";
 import AddAdminModal from "../Modal/AddAdminModal";
+import { useDeleteUser } from "@/hooks/useDeleteUser";
+import { useRestoreUser } from "@/hooks/useRestoreUser";
+import { useMutation } from "@tanstack/react-query";
+import { useUserIdType } from "@/hooks/useUserIdType";
 
 const userTypes = [
   {
@@ -92,12 +97,15 @@ export default function Users() {
 }
 
 function Admins() {
+  const {userId} = useUserIdType();
   const [isOpen, setIsOpen] = useState(false);
   const [admins, setAdmins] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [isAdminListLoading, setIsAdminListLoading] = useState(false);
   const [nextToken, setNextToken] = useState(null);
-
+  const [selectedUser, setSelectedUser] = useState({});
+  const {deleteUserMutation} = useDeleteUser(() => handleFetchAdminListing(true));
+  const {restoreUserMutation} = useRestoreUser(() => handleFetchAdminListing(true));
   const handleFetchAdminListing = async (isRefetch) => {
     setIsAdminListLoading(true);
     try {
@@ -113,10 +121,20 @@ function Admins() {
   }
 
   useEffect(() => {handleFetchAdminListing()}, []);
+  const loading = deleteUserMutation.isPending || restoreUserMutation.isPending;
 
   return (
     <>
-     <AddAdminModal  open={isOpen} onClose={()=> setIsOpen(false)} title="Admin"  userType="admin" invalidateFun={() => handleFetchAdminListing(true)}/>
+     {isOpen && 
+      <AddAdminModal  
+          open={isOpen} 
+          onClose={()=> {setIsOpen(false); setSelectedUser({})}} 
+          title="Admin"  
+          userType="admin" 
+          invalidateFun={() => handleFetchAdminListing(true)}
+          selectedUser={selectedUser}
+        />
+     }
     <div className="bg-white !p-4 rounded-xl">
       {/* <AddUserModal
         setIsOpen={setIsOpen}
@@ -171,12 +189,25 @@ function Admins() {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2 flex-row">
-                    <Button size="icon" className="text-md" variant="ghost">
+                    <Button size="icon" className="text-md" variant="ghost" onClick={() => { setSelectedUser(item); setIsOpen(true)}}>
                       <PencilLine />
                     </Button>
-                    <Button size="icon" className="text-md" variant="ghost">
-                      <Trash2 />
-                    </Button>
+                    {userId !== item?.id &&
+                      <Button 
+                            size="icon" 
+                            className="text-md" 
+                            variant="ghost" 
+                            onClick={() => {
+                              if(item?.status === "DELETED")
+                                restoreUserMutation.mutate({userId: item.id, email: item.email, userType: "admin"})
+                              else
+                              deleteUserMutation.mutate({userId: item.id, email: item.email, userType: "admin"})
+                            }} 
+                            disabled={loading}
+                          >
+                            {item?.status === "DELETED" ? <ArchiveRestore /> : <Trash2 />}
+                      </Button>
+                    }
                   </div>
                 </TableCell>
               </TableRow>
@@ -224,7 +255,9 @@ function AdminBrokersList() {
   const [totalBrokerSearchThisMonthCount, setTotalBrokerSearchThisMonthCount] =
     useState(0);
   const [deletingBrokerId, setDeletingBrokerId] = useState(null);
-
+  const {deleteUserMutation} = useDeleteUser(() => handleFetchBrokersWithSearchCount(true));
+  const {restoreUserMutation} = useRestoreUser(() => handleFetchBrokersWithSearchCount(true));
+  const loadingDelete = deleteUserMutation.isPending || restoreUserMutation.isPending;
   const getBroker = async () => {
     try {
       setLoading(true);
@@ -442,9 +475,20 @@ function AdminBrokersList() {
                         <Button size="icon" className="text-md" variant="ghost" onClick={() => { setSelectedBroker(item); setIsOpen(true)}}>
                           <PencilLine />
                         </Button>
-                        <Button size="icon" className="text-md" variant="ghost">
-                          <Trash2 />
-                        </Button>
+                        <Button 
+                          size="icon" 
+                          className="text-md" 
+                          variant="ghost" 
+                          onClick={() => {
+                            if(item?.status === "DELETED")
+                              restoreUserMutation.mutate({userId: item.id, email: item.email, userType: "broker"})
+                            else
+                            deleteUserMutation.mutate({userId: item.id, email: item.email, userType: "broker"})
+                          }} 
+                          disabled={loadingDelete}
+                        >
+                          {item?.status === "DELETED" ? <ArchiveRestore /> : <Trash2 />}
+                    </Button>
                       </div>
 
                       {/* <div >
@@ -528,7 +572,15 @@ function Agents() {
   useEffect(() => {
     handleFetchAgentListing();
   }, []);
-
+  const {deleteUserMutation} = useDeleteUser(() => handleFetchAgentListing(true));
+  const {restoreUserMutation} = useRestoreUser(() => handleFetchAgentListing(true));
+  const reinviteMutation = useMutation({
+    mutationFn: (payload) => reinviteUser(payload),
+    onSuccess: () => {
+      toast.success("Reinvite sent successfully");
+      handleFetchAgentListing(true);
+    }
+  })
   const handleFetchAgentListing = async (isRefetch) => {
     
     setIsAgentListLoading(true);
@@ -544,7 +596,7 @@ function Agents() {
     }
     setIsAgentListLoading(false);
   };
-
+  const loading = deleteUserMutation.isPending || restoreUserMutation.isPending;
   return (
     <>
      {isOpen && 
@@ -611,17 +663,36 @@ function Agents() {
                   </Badge>
                 </TableCell>
                 <TableCell className="text-center" >
-                    <Button size="icon" className="text-md" variant="ghost">
+                    {item?.status === "UNCONFIRMED" &&
+                    <Button 
+                      size="icon" 
+                      className="text-md" 
+                      variant="ghost"
+                      onClick={() => reinviteMutation.mutate({email: item.email})}
+                      disabled={reinviteMutation.isPending}
+                    >
                       <UserPlus />
                     </Button>
+                  }
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2 flex-row">
                     <Button size="icon" className="text-md" variant="ghost" onClick={() => { setSelectedUser(item); setIsOpen(true)}}>
                       <PencilLine />
                     </Button>
-                    <Button size="icon" className="text-md" variant="ghost">
-                      <Trash2 />
+                    <Button 
+                      size="icon" 
+                      className="text-md" 
+                      variant="ghost" 
+                      onClick={() => {
+                        if(item?.status === "DELETED")
+                          restoreUserMutation.mutate({userId: item.id, email: item.email, userType: "agent"})
+                        else
+                        deleteUserMutation.mutate({userId: item.id, email: item.email, userType: "agent"})
+                      }} 
+                      disabled={loading}
+                    >
+                      {item?.status === "DELETED" ? <ArchiveRestore /> : <Trash2 />}
                     </Button>
                   </div>
                 </TableCell>

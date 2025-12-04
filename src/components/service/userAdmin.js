@@ -964,3 +964,63 @@ export async function updateAgentDetail(updatedData) {
     "/users"
   )
 }
+export async function updateAdminDetail(updatedData) {
+  const action = CONSTANTS?.ACTIONS?.ADMIN
+  const payload = {
+    body: {
+      action,
+      input: updatedData
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/users"
+  )
+}
+export async function deleteUserNew(userDta) {
+  const action = CONSTANTS?.ACTIONS?.DELETE_USER
+  const payload = {
+    body: {
+      action,
+      ...userDta
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/users"
+  )
+}
+export async function restoreUser(userDta) {
+  const action = CONSTANTS?.ACTIONS?.UNDELETE_USER
+  const payload = {
+    body: {
+      action,
+      ...userDta
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/users"
+  )
+}
+export async function reinviteUser(userDta) {
+  const action = CONSTANTS?.ACTIONS?.REINVITE
+  const payload = {
+    body: {
+      action,
+      ...userDta
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/users"
+  )
+}

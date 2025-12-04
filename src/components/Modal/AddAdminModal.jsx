@@ -17,7 +17,7 @@ import { Controller, useForm } from "react-hook-form";
 import { FormValidationError } from "../common/FormValidationError";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/utils";
-import { createUserByAdmin, getBrokerSelectListing, updateAgentDetail, updateBrokerDetail } from "../service/userAdmin";
+import { createUserByAdmin, getBrokerSelectListing, updateAdminDetail, updateAgentDetail, updateBrokerDetail } from "../service/userAdmin";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
 const formSchemas = {
@@ -94,6 +94,16 @@ export default function AddAdminModal({ open, onClose,title, userType, invalidat
       toast.error(error?.response?.data?.error || "Something went wrong while adding new user. Please try again.");
     },
   })
+  const updateAdminMutation = useMutation({
+    mutationFn: (payload) => updateAdminDetail(payload),
+    onSuccess: () => {
+      invalidateFun?.();
+      onClose();
+    }, 
+    onError: (error) => {
+      toast.error(error?.response?.data?.error || "Something went wrong while adding new user. Please try again.");
+    },
+  })
 
   const onSubmit = ({fullName, ...rest}) => {
     if(isUpdate && userType === "broker") {
@@ -104,10 +114,14 @@ export default function AddAdminModal({ open, onClose,title, userType, invalidat
       const {email} = rest
       updateAgentMutation?.mutate({email, name: fullName, id: selectedUser?.id});
     }
+    else if(isUpdate && userType === "admin") {
+      const {email} = rest
+      updateAdminMutation?.mutate({email, name: fullName, id: selectedUser?.id});
+    }
     else
       newUserMutation?.mutate({...rest, name: fullName, userType});
   }
-  const updateLoading = updateAgentMutation?.isPending || updateBrokerMutation?.isPending;
+  const updateLoading = updateAgentMutation?.isPending || updateBrokerMutation?.isPending || updateAdminMutation?.isPending;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
