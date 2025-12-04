@@ -52,6 +52,7 @@ import { useDeleteUser } from "@/hooks/useDeleteUser";
 import { useRestoreUser } from "@/hooks/useRestoreUser";
 import { useMutation } from "@tanstack/react-query";
 import { useUserIdType } from "@/hooks/useUserIdType";
+import { set } from "zod";
 
 const userTypes = [
   {
@@ -104,8 +105,8 @@ function Admins() {
   const [isAdminListLoading, setIsAdminListLoading] = useState(false);
   const [nextToken, setNextToken] = useState(null);
   const [selectedUser, setSelectedUser] = useState({});
-  const {deleteUserMutation} = useDeleteUser(() => handleFetchAdminListing(true));
-  const {restoreUserMutation} = useRestoreUser(() => handleFetchAdminListing(true));
+  const {deleteUserMutation} = useDeleteUser(() => {handleFetchAdminListing(true); setHasMore(true);});
+  const {restoreUserMutation} = useRestoreUser(() => {handleFetchAdminListing(true); setHasMore(true);});
   const handleFetchAdminListing = async (isRefetch) => {
     setIsAdminListLoading(true);
     try {
@@ -131,7 +132,7 @@ function Admins() {
           onClose={()=> {setIsOpen(false); setSelectedUser({})}} 
           title="Admin"  
           userType="admin" 
-          invalidateFun={() => handleFetchAdminListing(true)}
+          invalidateFun={() => {handleFetchAdminListing(true); setHasMore(true);}}
           selectedUser={selectedUser}
         />
      }
@@ -255,8 +256,8 @@ function AdminBrokersList() {
   const [totalBrokerSearchThisMonthCount, setTotalBrokerSearchThisMonthCount] =
     useState(0);
   const [deletingBrokerId, setDeletingBrokerId] = useState(null);
-  const {deleteUserMutation} = useDeleteUser(() => handleFetchBrokersWithSearchCount(true));
-  const {restoreUserMutation} = useRestoreUser(() => handleFetchBrokersWithSearchCount(true));
+  const {deleteUserMutation} = useDeleteUser(() => {handleFetchBrokersWithSearchCount(true); setHasMore(true);});
+  const {restoreUserMutation} = useRestoreUser(() => {handleFetchBrokersWithSearchCount(true); setHasMore(true);});
   const loadingDelete = deleteUserMutation.isPending || restoreUserMutation.isPending;
   const getBroker = async () => {
     try {
@@ -405,7 +406,7 @@ function AdminBrokersList() {
           open={isOpen} onClose={()=> {setIsOpen(false); setSelectedBroker({})}} 
           title="Broker" 
           userType="broker" 
-          invalidateFun={() => handleFetchBrokersWithSearchCount(true)} 
+          invalidateFun={() => {handleFetchBrokersWithSearchCount(true); setHasMore(true);}} 
           selectedUser={selectedBroker}
         />
     }
@@ -572,13 +573,14 @@ function Agents() {
   useEffect(() => {
     handleFetchAgentListing();
   }, []);
-  const {deleteUserMutation} = useDeleteUser(() => handleFetchAgentListing(true));
-  const {restoreUserMutation} = useRestoreUser(() => handleFetchAgentListing(true));
+  const {deleteUserMutation} = useDeleteUser(() => {handleFetchAgentListing(true); setHasMore(true);});
+  const {restoreUserMutation} = useRestoreUser(() => {handleFetchAgentListing(true); setHasMore(true);});
   const reinviteMutation = useMutation({
     mutationFn: (payload) => reinviteUser(payload),
     onSuccess: () => {
       toast.success("Reinvite sent successfully");
       handleFetchAgentListing(true);
+      setHasMore(true);
     }
   })
   const handleFetchAgentListing = async (isRefetch) => {
@@ -605,7 +607,7 @@ function Agents() {
         onClose={()=> {setIsOpen(false); setSelectedUser({})}}  
         title="Agent" 
         userType="agent" 
-        invalidateFun={() => handleFetchAgentListing(true)}
+        invalidateFun={() => {handleFetchAgentListing(true); setHasMore(true);}}
         selectedUser={selectedUser}
       />
      }

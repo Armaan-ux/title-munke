@@ -65,8 +65,8 @@ export default function AddAdminModal({ open, onClose,title, userType, invalidat
   const newUserMutation = useMutation({
     mutationFn: (payload) => createUserByAdmin(payload),
     onSuccess: () => {
-      reset();
       invalidateFun?.();
+      onClose();
     }, 
     onError: (error) => {
       toast.error(error?.response?.data?.error || "Something went wrong while adding new user. Please try again.");
