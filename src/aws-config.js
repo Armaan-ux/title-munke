@@ -10,8 +10,8 @@ export const awsmobile = {
     "aws_appsync_apiKey": "da2-63oekq56n5dd7led3mse2znziy",
     "aws_cognito_identity_pool_id": "us-east-1:ac9e152b-914f-43a9-808a-b825aaba9052",
     "aws_cognito_region": "us-east-1",
-    "aws_user_pools_id": "us-east-1_KePPSbau8",
-    "aws_user_pools_web_client_id": "4q98ujjntv4e3orll08e1dp6d7",
+    "aws_user_pools_id": "us-east-1_dWTgp3ixk",
+    "aws_user_pools_web_client_id": "39rcm9veqfhbm00j3ljbbpatsf",
     "oauth": {},
     "aws_cognito_username_attributes": [
         "EMAIL"
