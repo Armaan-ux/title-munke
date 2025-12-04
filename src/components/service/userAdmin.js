@@ -965,7 +965,7 @@ export async function updateAgentDetail(updatedData) {
   )
 }
 export async function updateAdminDetail(updatedData) {
-  const action = CONSTANTS?.ACTIONS?.ADMIN
+  const action = CONSTANTS?.ACTIONS?.UPDATE_ADMIN
   const payload = {
     body: {
       action,
