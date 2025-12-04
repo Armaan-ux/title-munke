@@ -3,7 +3,13 @@ import { formatInTimeZone, format, toZonedTime } from "date-fns-tz";
 import { createAuditLog } from "./components/service/userAdmin";
 export const queryKeys = {
   adminsListing: "adminsListing",
-  brokerSelectListing: "brokerSelectListing"
+  brokerSelectListing: "brokerSelectListing",
+  brokerListingForAdminDefault: "brokerListingForAdminDefault",
+  brokerMetricsAdmin: "brokerMetricsAdmin",
+  agentMetricsAdmin: "agentMetricsAdmin",
+  brokersAgentListingAdmin: "brokersAgentListingAdmin",
+  agentSearchesAdmin: "agentSearchesAdmin",
+  individualListingForAdmin: "individualListingForAdmin"
 }
 const months = {
   0: "Jan",

@@ -28,6 +28,7 @@ import BrokerBusiness from "./components/Admin/broker-business";
 import BrokerDetails from "./components/Admin/broker-details";
 import PropertySearch from "./components/Admin/property-search";
 import IndividualBusiness from "./components/Admin/individual-business";
+import PropertySearchIndividual from "./components/Admin/property-search-individual";
 
 export const adminRoutes = [
   { path: "admin", component: Admin },
@@ -36,6 +37,7 @@ export const adminRoutes = [
   { path: "admin/individual-business", component: IndividualBusiness },
   { path: "admin/broker-details/:id", component: BrokerDetails },
   { path: "admin/property-search/:id", component: PropertySearch },
+  { path: "admin/property-search-individual/:id", component: PropertySearchIndividual },
 
   { path: "admin/users", component: Users },
   { path: "admin/demo-requests", component: DemoRequests },

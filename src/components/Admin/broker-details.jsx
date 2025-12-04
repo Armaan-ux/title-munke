@@ -1,6 +1,6 @@
 import { useState } from "react";
 // import "./index.css";
-import { getFormattedDateTime } from "@/utils";
+import { getFormattedDateTime, queryKeys } from "@/utils";
 import {
   Table,
   TableBody,
@@ -20,19 +20,28 @@ import {
   Trash2,
   PencilLine,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import DateFilter from "../common/date-filter";
 import BackBtn from "../back-btn";
 import UserDetailHeader from "../user-detail-header";
+import { useQuery } from "@tanstack/react-query";
+import { getBrokerAgentsDetails } from "../service/userAdmin";
+import { CenterLoader } from "../common/Loader";
+import ShowError from "../common/ShowError";
 
 function BrokerDetails() {
   const navigate = useNavigate();
   // const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-
+  const {id} = useParams();
+  const brokersAgentListingAdminQuery = useQuery({
+    queryKey: [queryKeys.brokersAgentListingAdmin, id],
+    queryFn: () => getBrokerAgentsDetails(id, true),
+    enabled: !!id,
+  })
   const logs = [
     {
       id: "1",
@@ -121,52 +130,56 @@ function BrokerDetails() {
           </div>
             <DateFilter />
         </div>
-          <Table className="">
-            <TableHeader className="bg-[#F5F0EC]">
-              <TableRow>
-                <TableHead>Sr. No.</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Last Activity</TableHead>
-                <TableHead className="text-center" >Searches</TableHead>
-                <TableHead className="text-center" >Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="text-black" >  
-              {logs?.length === 0 ? (
+          {brokersAgentListingAdminQuery?.isLoading && <CenterLoader />}
+          {brokersAgentListingAdminQuery?.isError && <ShowError message={brokersAgentListingAdminQuery?.error?.response?.data?.message} />}
+          {brokersAgentListingAdminQuery?.isSuccess &&
+            <Table className="">
+              <TableHeader className="bg-[#F5F0EC]">
                 <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="font-medium text-center py-10"
-                  >
-                    No Records found.
-                  </TableCell>
+                  <TableHead>Sr. No.</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Last Activity</TableHead>
+                  <TableHead className="text-center" >Searches</TableHead>
+                  <TableHead className="text-center" >Action</TableHead>
                 </TableRow>
-              ) : (
-                logs?.map((item, index) => (
-                  <TableRow key={item.id} className="text-black" >
-                    <TableCell >{index + 1}</TableCell>
-                    <TableCell >{item.name}</TableCell>
-                    <TableCell>
-                      {getFormattedDateTime(item?.lastActivity)}
-                      </TableCell>
-                    <TableCell className="text-center" >{item?.searchCount}</TableCell>
-                    <TableCell className="text-center" >
-                        <Button
-                          size="icon"
-                          className="text-md"
-                          variant="ghost"
-                          onClick={() =>
-                            navigate("/admin/property-search/123")
-                          }
-                        >
-                          <Eye />
-                        </Button>
+              </TableHeader>
+              <TableBody className="text-black" >  
+                {brokersAgentListingAdminQuery?.data?.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={5}
+                      className="font-medium text-center py-10"
+                    >
+                      No Records found.
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : (
+                  brokersAgentListingAdminQuery?.data?.map((item, index) => (
+                    <TableRow key={item.id} className="text-black" >
+                      <TableCell >{index + 1}</TableCell>
+                      <TableCell >{item?.agentName}</TableCell>
+                      <TableCell>
+                        {getFormattedDateTime(item?.lastLogin)}
+                        </TableCell>
+                      <TableCell className="text-center" >{item?.totalSearches}</TableCell>
+                      <TableCell className="text-center" >
+                          <Button
+                            size="icon"
+                            className="text-md"
+                            variant="ghost"
+                            onClick={() =>
+                              navigate(`/admin/property-search/${item?.agentId}`)
+                            }
+                          >
+                            <Eye />
+                          </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          }
 
           {/* {!hasMore && <p>No more data to load.</p>}
           {logs?.length > 0 && hasMore && !loading && (

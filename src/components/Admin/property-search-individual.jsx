@@ -1,5 +1,3 @@
-import { useState } from "react";
-// import "./index.css";
 import { queryKeys } from "@/utils";
 import {
   Table,
@@ -10,11 +8,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import DateFilter from "../common/date-filter";
-import { Separator } from "../ui/separator";
 import BackBtn from "../back-btn";
 
 import AgentDetailHeader from "../common/AgentHeader";
@@ -24,7 +20,7 @@ import { CenterLoader } from "../common/Loader";
 import ShowError from "../common/ShowError";
 import { format } from "date-fns-tz";
 
-function PropertySearch() {
+function PropertySearchIndividual() {
   const {id} = useParams();
   const agentSearchesQuery = useQuery({
     queryKey: [queryKeys.agentSearchesAdmin, id],
@@ -103,4 +99,4 @@ function PropertySearch() {
   );
 }
 
-export default PropertySearch;
+export default PropertySearchIndividual;
