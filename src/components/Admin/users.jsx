@@ -205,6 +205,7 @@ function Admins() {
 function AdminBrokersList() {
   const [isBrokerListLoading, setIsBrokerListLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedBroker, setSelectedBroker] = useState({});
   const [isAgentCreationModalOpen, setIsAgentCreationModalOpen] =
     useState(false);
   const [isAgentListOpen, setIsAgentListOpen] = useState(false);
@@ -366,7 +367,15 @@ function AdminBrokersList() {
         setIsOpen={setIsAgentCreationModalOpen}
         brokers={activeBrokers}
       /> */}
-      <AddAdminModal  open={isOpen} onClose={()=> setIsOpen(false)} title="Broker" userType="broker" invalidateFun={() => handleFetchBrokersWithSearchCount(true)}/>
+      {isOpen && 
+        <AddAdminModal  
+          open={isOpen} onClose={()=> {setIsOpen(false); setSelectedBroker({})}} 
+          title="Broker" 
+          userType="broker" 
+          invalidateFun={() => handleFetchBrokersWithSearchCount(true)} 
+          selectedUser={selectedBroker}
+        />
+    }
 
       <div>
         <div className="bg-white !p-4 rounded-xl">
@@ -389,6 +398,7 @@ function AdminBrokersList() {
                 {/* <TableHead>Monthly Searches</TableHead>
                 <TableHead>Last Login</TableHead> */}
                 <TableHead>Email</TableHead>
+                <TableHead>Team Strength</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Action</TableHead>
                 {/* <TableHead>Agent List</TableHead> */}
@@ -414,6 +424,7 @@ function AdminBrokersList() {
                       {getFormattedDateTime(item.lastLogin)}
                     </TableCell> */}
                     <TableCell>{item.email}</TableCell>
+                    <TableCell>{item.teamStrength || "-"}</TableCell>
                     <TableCell>
                       {" "}
                       <Badge
@@ -428,7 +439,7 @@ function AdminBrokersList() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2 flex-row">
-                        <Button size="icon" className="text-md" variant="ghost">
+                        <Button size="icon" className="text-md" variant="ghost" onClick={() => { setSelectedBroker(item); setIsOpen(true)}}>
                           <PencilLine />
                         </Button>
                         <Button size="icon" className="text-md" variant="ghost">
@@ -513,7 +524,7 @@ function Agents() {
   const [hasMore, setHasMore] = useState(true);
   const [isAgentListLoading, setIsAgentListLoading] = useState(false);
   const [nextToken, setNextToken] = useState(null);
-
+  const [selectedUser, setSelectedUser] = useState({});
   useEffect(() => {
     handleFetchAgentListing();
   }, []);
@@ -536,7 +547,16 @@ function Agents() {
 
   return (
     <>
-     <AddAdminModal  open={isOpen} onClose={()=> setIsOpen(false)}  title="Agent" userType="agent" invalidateFun={() => handleFetchAgentListing(true)}/>
+     {isOpen && 
+      <AddAdminModal  
+        open={isOpen} 
+        onClose={()=> {setIsOpen(false); setSelectedUser({})}}  
+        title="Agent" 
+        userType="agent" 
+        invalidateFun={() => handleFetchAgentListing(true)}
+        selectedUser={selectedUser}
+      />
+     }
     <div className="bg-white !p-4 rounded-xl">
       {/* <AddUserModal
         setIsOpen={setIsOpen}
@@ -597,7 +617,7 @@ function Agents() {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2 flex-row">
-                    <Button size="icon" className="text-md" variant="ghost">
+                    <Button size="icon" className="text-md" variant="ghost" onClick={() => { setSelectedUser(item); setIsOpen(true)}}>
                       <PencilLine />
                     </Button>
                     <Button size="icon" className="text-md" variant="ghost">

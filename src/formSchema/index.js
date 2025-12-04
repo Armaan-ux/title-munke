@@ -21,10 +21,13 @@ export const baseUserSchema = z.object({
   message: z.string().trim().optional(),
 });
 
-export const addAgentByAdminSchema = baseUserSchema.extend({
-  brokerId: z.string().trim().nonempty("Broker selection is required"),
-});
 
+export const getAddAgentByAdminSchema = (isBrokerRequired) =>
+  baseUserSchema.extend({
+    brokerId: isBrokerRequired
+      ? z.string().trim().nonempty("Broker selection is required")
+      : z.string().trim().optional(),
+  });
 export const addBrokerByAdminSchema = baseUserSchema.extend({
   teamStrength: z.string().trim().nonempty("Team strength selection is required"),
 });

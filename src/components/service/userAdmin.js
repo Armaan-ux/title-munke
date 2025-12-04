@@ -60,7 +60,7 @@ export const CONSTANTS = { // should always be copied from title-munke-serverles
     LIST_DEMO_REQUEST: "listDemoRequest",
     CREATE_DEMO_REQUEST: "CreateDemoRequest",
     LIST_AGENTS: "listAgents",
-    LIST_BROKER_WITH_NAME: "listBrokerWithName"
+    LIST_BROKER_WITH_NAME: "listBrokerWithName",
   },
   USER_TYPES: {
     AGENT: "agent",
@@ -929,6 +929,38 @@ export async function createUserByAdmin(newUserData) {
     payload,
     "Success in ",
     "error in ",
+    "/users"
+  )
+}
+
+export async function updateBrokerDetail(updatedData) {
+  const action = CONSTANTS?.ACTIONS?.UPDATE_BROKER
+  const payload = {
+    body: {
+      action,
+      input: updatedData
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/users"
+  )
+}
+
+export async function updateAgentDetail(updatedData) {
+  const action = CONSTANTS?.ACTIONS?.UPDATE_AGENT
+  const payload = {
+    body: {
+      action,
+      input: updatedData
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
     "/users"
   )
 }
