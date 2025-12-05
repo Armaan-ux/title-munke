@@ -11,7 +11,7 @@ import { queryKeys } from "@/utils";
 
 const AdminDashboard = () => {
   
-  const navigate = useNavigate();
+  const [isDownload, setIsDoownload] = useState(false);
   const [activeTab, setActiveTab] = useState("history");
   const [resetChildState, setResetChildState] = useState(null);
   const metricQuery = useQuery({
@@ -20,22 +20,9 @@ const AdminDashboard = () => {
   })
   const handleTabChange = () => {
     if (resetChildState) {
-      resetChildState(); // call child function
+      resetChildState();
     }
   };
-  //   const [agents, setAgents] = useState([]);
-
-  //    const { user } = useUser();
-
-  //   useEffect(() => {
-  //       fetchAgentsWithSearchCount(user.attributes.sub).then(res => setAgents(res || []))
-  //   }, [])
-
-  //   const totalAgents = agents.length
-  //   const activeAgents = agents.filter(agent => agent.status === "ACTIVE").length
-  //   const inactiveAgents = agents.filter(agent => agent.status === "INACTIVE").length
-
-  //   console.log({totalAgents, activeAgents, inactiveAgents})
 
   return (
     <div className="my-4">
@@ -124,7 +111,7 @@ const AdminDashboard = () => {
             Individual
           </button>
         </div>
-        <DateFilter />
+        {/* <DateFilter /> */}
       </div>
 
       <div className="bg-[#F5F0EC] px-6 py-4 rounded-2xl ">
@@ -140,7 +127,7 @@ const AdminDashboard = () => {
             </p>
           </div>
           <div className="flex justify-between items-center gap-2">
-          <Button variant="outline"><ArrowDownToLine /> Download CSV</Button>
+          <Button variant="outline" onClick={() => setIsDoownload(true)}><ArrowDownToLine /> Download CSV</Button>
           <Link to={activeTab === "history" ? "/admin/broker-business" : "/admin/individual-business"}>
           <Button variant="outline"> View More </Button>
           </Link>
@@ -149,6 +136,8 @@ const AdminDashboard = () => {
         <BrokerIndividualBusiness
           activeTab={activeTab}
           onRegisterReset={setResetChildState}
+          isDownload={isDownload}
+          handleDownloadComplete={() => setIsDoownload(false)}         
         />
       </div>
     </div>

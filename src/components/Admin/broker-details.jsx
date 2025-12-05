@@ -42,20 +42,7 @@ function BrokerDetails() {
     queryFn: () => getBrokerAgentsDetails(id, true),
     enabled: !!id,
   })
-  const logs = [
-    {
-      id: "1",
-      name: "John Doe",
-      lastActivity: "2024-06-10 14:30",
-      searchCount: "20",
-    },
-    {
-      id: "2",
-      name: "Jane Smith",
-      searchCount: "15",
-      lastActivity: "2024-06-09 10:15",
-    },
-  ];
+ 
   return (
     <>
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">

@@ -64,6 +64,8 @@ export const CONSTANTS = { // should always be copied from title-munke-serverles
     LIST_INDIVIDUALS: "listIndividuals",
     INDIVIDUAL_SEARCHES: "getIndividualSearches",
     INDIVIDUAL_DETAILS: "getIndividualDetails",
+    DEMO_REQUEST_MARK_CONTACTED: "MarkContacted",
+    LIST_AUDIT_LOG_FOR_BROKER: "listAuditLogsForBroker"
   },
   USER_TYPES: {
     AGENT: "agent",
@@ -865,11 +867,12 @@ export async function getAdminMetrics(agentId) {
     "/users"
   )
 }
-export async function getListDemoReq() {
+export async function getListDemoReq(type) {
   const action = CONSTANTS?.ACTIONS?.LIST_DEMO_REQUEST
   const payload = {
     body: {
       action,
+      ...(type && {type})
     }
   }
   return callUserAdminApi(
@@ -1068,6 +1071,37 @@ export async function getIndividualDetails(userId) {
     body: {
       action,
       userId
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/users"
+  )
+}
+export async function markDemoRequestContacted(requestId) {
+  const action = CONSTANTS?.ACTIONS?.DEMO_REQUEST_MARK_CONTACTED
+  const payload = {
+    body: {
+      action,
+      requestId
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/users"
+  )
+}
+export async function getAuditLogsForBroker(brokerId, isAgent) {
+  const action = CONSTANTS?.ACTIONS?.LIST_AUDIT_LOG_FOR_BROKER
+  const payload = {
+    body: {
+      action,
+      brokerId,
+      isAgent
     }
   }
   return callUserAdminApi(

@@ -10,18 +10,31 @@ import { Link, useParams } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Eye } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { queryKeys } from "@/utils";
+import { getFormattedDateTime, queryKeys } from "@/utils";
 import { getIndividualListing } from "../service/userAdmin";
 import ShowError from "../common/ShowError";
 import { CenterLoader } from "../common/Loader";
+import { useEffect } from "react";
+import { useDownloadCsv } from "@/hooks/useDownloadCsv";
 
 
-export default function IndividualBusinessTable({limit}) {
+export default function IndividualBusinessTable({limit, isDownload, handleDownloadComplete}) {
   const individualListingQuery = useQuery({
     queryKey: [queryKeys.individualListingForAdmin],
     queryFn: () => getIndividualListing(true, limit),
   });
+  const {downloadCSV} = useDownloadCsv();
+  useEffect(() => {
+    if (isDownload && individualListingQuery?.data?.items?.length > 0 && handleDownloadComplete) {
+      const data = individualListingQuery?.data?.items?.map((item, idx) => (
+        {"Sr. No.": idx + 1, "Name": item?.name, "Property Search": item?.totalSearches, Business: `$${item?.revenue}`}
+      ))
+      downloadCSV(data);
+      setTimeout(handleDownloadComplete, 500)
+    }
+    else handleDownloadComplete?.();
 
+  }, [isDownload, individualListingQuery?.data?.items, downloadCSV, handleDownloadComplete]);
   return (
     <div>
       {individualListingQuery?.isLoading && <CenterLoader />}

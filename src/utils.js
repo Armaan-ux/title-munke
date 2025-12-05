@@ -11,6 +11,9 @@ export const queryKeys = {
   agentSearchesAdmin: "agentSearchesAdmin",
   individualListingForAdmin: "individualListingForAdmin",
   individualSearchesAdmin: "individualSearchesAdmin",
+  getListDemoReqContacted: "getListDemoReqContacted",
+  auditLogBroker: "auditLogBroker",
+  auditLogAgent: "auditLogAgent",
 }
 const months = {
   0: "Jan",

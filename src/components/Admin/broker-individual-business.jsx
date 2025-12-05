@@ -25,7 +25,7 @@ import { Link, useNavigate } from "react-router-dom";
 import BrokerBusinessTable from "./broker-business-table";
 import IndividualBusinessTable from "./individual-business-table";
 
-function BrokerIndividualBusiness({ activeTab, onRegisterReset }) {
+function BrokerIndividualBusiness({ activeTab, onRegisterReset, isDownload, handleDownloadComplete }) {
   const navigate = useNavigate();
   const [searchHistories, setSearchHistories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -168,9 +168,9 @@ function BrokerIndividualBusiness({ activeTab, onRegisterReset }) {
       <div className="bg-[#F5F0EC] rounded-lg text-secondary">
         <div className="bg-white !p-4 rounded-xl">
           {activeTab === "history" ? (
-           <BrokerBusinessTable />
+           <BrokerBusinessTable limit={5} handleDownloadComplete={handleDownloadComplete} isDownload={isDownload}/>
           ) : (
-            <IndividualBusinessTable limit={5} />
+            <IndividualBusinessTable limit={5} handleDownloadComplete={handleDownloadComplete} isDownload={isDownload} />
           )}
 
           {/* {searchHistories?.length === 0 && <p>No Records found.</p>} */}

@@ -25,31 +25,7 @@ import BackBtn from "../back-btn";
 import BrokerBusinessTable from "./broker-business-table";
 
 export default function BrokerBusiness() {
-  const navigate = useNavigate();
-  // const [logs, setLogs] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-
-  const logs = [
-    {
-      id: "1",
-      name: "John Doe",
-      agent: "Agent A",
-      searchCount: "20",
-      lastActivity: "2024-06-10 14:30",
-      business: "$500.00",
-      accountCreated: "2022-01-15",
-    },
-    {
-      id: "2",
-      name: "Jane Smith",
-      agent: "Agent B",
-      searchCount: "15",
-      lastActivity: "2024-06-09 10:15",
-      business: "$300.00",
-      accountCreated: "2021-11-20",
-    },
-  ];
+  const [isDownload, setIsDoownload] = useState(false);
   return (
     <>
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
@@ -76,13 +52,13 @@ export default function BrokerBusiness() {
           </div>
           <div className="flex justify-between items-center gap-2">
             <DateFilter />
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => setIsDoownload(true)}>
               <ArrowDownToLine /> Download CSV
             </Button>
           </div>
         </div>
         <div className="bg-white !p-4 rounded-xl">
-          <BrokerBusinessTable />
+          <BrokerBusinessTable isDownload={isDownload} handleDownloadComplete={() => setIsDoownload(false)}  />
           {/* {!hasMore && <p>No more data to load.</p>}
           {logs?.length > 0 && hasMore && !loading && (
             <button className="loadmore mt-4">Load More</button>

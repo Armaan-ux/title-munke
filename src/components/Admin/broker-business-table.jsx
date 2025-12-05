@@ -16,12 +16,27 @@ import { listBrokers } from "../service/userAdmin";
 import { useQuery } from "@tanstack/react-query";
 import { CenterLoader } from "../common/Loader";
 import ShowError from "../common/ShowError";
+import { useDownloadCsv } from "@/hooks/useDownloadCsv";
+import { useEffect } from "react";
 
-export default function BrokerBusinessTable(){
+export default function BrokerBusinessTable({limit, isDownload, handleDownloadComplete}) {
   const brokerListingQuery = useQuery({
     queryKey: [queryKeys.brokerListingForAdminDefault],
-    queryFn: () => listBrokers({withSearchCount: true, limit: 5})
+    queryFn: () => listBrokers({withSearchCount: true, limit})
   })
+  const {downloadCSV} = useDownloadCsv();
+  useEffect(() => {
+    if (isDownload && brokerListingQuery?.data?.items?.length > 0 && handleDownloadComplete) {
+      const data = brokerListingQuery?.data?.items?.map((item, idx) => (
+        {"Sr. No.": idx + 1, "Broker Name": item?.name, "Agent": item?.agentCount, "Search Count": item?.totalSearches, "Last Activity": 
+          getFormattedDateTime(item?.lastLogin), Business: `$${item?.revenue}`, "Account Created": getFormattedDateTime(item?.createdAt)}
+      ))
+      downloadCSV(data);
+      setTimeout(() => handleDownloadComplete?.(), 500)
+    }
+    else handleDownloadComplete?.();
+
+  }, [isDownload, brokerListingQuery?.data?.items, downloadCSV, handleDownloadComplete]);
     return(
         <div>
             {brokerListingQuery?.isLoading && <CenterLoader />}
@@ -77,7 +92,7 @@ export default function BrokerBusinessTable(){
                           {getFormattedDateTime(item?.lastLogin)}
                           {/* {convertFromTimestamp(item?.lastLogin)} */}
                         </TableCell>
-                        <TableCell className="text-center" >{item?.revenue}</TableCell>
+                        <TableCell className="text-center" >${item?.revenue}</TableCell>
                         <TableCell className="text-center" >
                           {getFormattedDateTime(item?.createdAt)}
                         </TableCell>
