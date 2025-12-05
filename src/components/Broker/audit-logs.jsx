@@ -5,7 +5,7 @@ import AuditLogsForAgents from "./audit-logs-agent";
 const AuditLogs = () => {
   const agentTypes = [
     {
-      name: "Brokers",
+      name: "Broker",
       id: "brokers",
     },
     {
