@@ -842,12 +842,14 @@ export async function getAgentBrokerDetails(agentId) {
     "/users"
   )
 }
-export async function getAgentSearches(agentId) {
+export async function getAgentSearches(agentId, fromDatetime, toDatetime) {
   const action = CONSTANTS?.ACTIONS?.GET_AGENT_SEARCHES
   const payload = {
     body: {
       action,
-      agentId
+      agentId,
+      ...(fromDatetime && {fromDatetime}),
+      ...(toDatetime && {toDatetime}),
     }
   }
   return callUserAdminApi(

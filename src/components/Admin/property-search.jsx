@@ -25,10 +25,11 @@ import ShowError from "../common/ShowError";
 import { format } from "date-fns-tz";
 
 function PropertySearch() {
+  const [date, setDate] = useState({fromDatetime: null, toDatetime: null});
   const {id} = useParams();
   const agentSearchesQuery = useQuery({
-    queryKey: [queryKeys.agentSearchesAdmin, id],
-    queryFn: () => getAgentSearches(id),
+    queryKey: [queryKeys.agentSearchesAdmin, id, date.fromDatetime, date.toDatetime],
+    queryFn: () => getAgentSearches(id, date?.fromDatetime, date?.toDatetime),
     enabled: !!id,
   })
   const agentMetricsAdminQeurry = useQuery({
@@ -52,7 +53,7 @@ function PropertySearch() {
                 Properties Searches
               </p>
             </div>
-            <DateFilter />
+            <DateFilter handleFilter={(fromDatetime, toDatetime) => setDate(pre => ({...pre, fromDatetime, toDatetime}))}/>
           </div>
           {agentSearchesQuery?.isLoading && <CenterLoader />}
           {agentSearchesQuery?.isError && <ShowError message={agentSearchesQuery?.error?.response?.data?.message}/>}
