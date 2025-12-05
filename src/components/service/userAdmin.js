@@ -149,14 +149,14 @@ export async function forgotPassword(email) {
     );
 }
 
-export async function getBrokerAgentsDetails(brokerId, withSearchCount = false, from, to) {
+export async function getBrokerAgentsDetails(brokerId, withSearchCount = false, fromDatetime, toDatetime) {
     const payload = {
       body: {
         brokerId: brokerId,
         withSearchCount: withSearchCount,
         action: CONSTANTS.ACTIONS.GET_BROKER_AGENTS_DETAILS,
-        ...(from && {from}),
-        ...(to && {to}),
+        ...(fromDatetime && {fromDatetime}),
+        ...(toDatetime && {toDatetime}),
       },
     };
     return callUserAdminApi(
@@ -406,8 +406,8 @@ export async function listBrokers(data) {
         action: CONSTANTS.ACTIONS.LIST_BROKERS,
         ...(limit && {limit}),
         ...(withSearchCount && {withSearchCount}),
-        ...(data?.from && {from: data.from}),
-        ...(data?.to && {to: data.to}),
+        ...(data?.from && {fromDatetime: data.from}),
+        ...(data?.to && {toDatetime: data.to}),
       },
     };
     return callUserAdminApi(
@@ -1038,14 +1038,14 @@ export async function reinviteUser(userDta) {
   )
 }
 
-export async function getIndividualListing(withSearchCount, limit, from, to) {
+export async function getIndividualListing(withSearchCount, limit, fromDatetime, toDatetime) {
   const action = CONSTANTS?.ACTIONS?.LIST_INDIVIDUALS
   const payload = {
     body: {
       action,
       ...(limit && {limit}),
-      ...(from && {from}),
-      ...(to && {to}),
+      ...(fromDatetime && {fromDatetime}),
+      ...(toDatetime && {toDatetime}),
       withSearchCount
     }
   }
@@ -1056,14 +1056,14 @@ export async function getIndividualListing(withSearchCount, limit, from, to) {
     "/users"
   )
 }
-export async function getIndividualSearches(userId, from, to) {
+export async function getIndividualSearches(userId, fromDatetime, toDatetime) {
   const action = CONSTANTS?.ACTIONS?.INDIVIDUAL_SEARCHES
   const payload = {
     body: {
       action,
       userId,
-      ...(from && {from}),
-      ...(to && {to})
+      ...(fromDatetime && {fromDatetime}),
+      ...(toDatetime && {toDatetime})
     }
   }
   return callUserAdminApi(

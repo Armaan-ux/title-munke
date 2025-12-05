@@ -34,7 +34,7 @@ export default function DateFilter({handleFilter}) {
         className="bg-[#550000] hover:bg-[#3D0000] text-white text-sm px-5 rounded-md flex items-center gap-2"
         onClick={() => {
           if(startDate && endDate)
-            handleFilter?.(new Date(startDate)?.toISOString(), new Date(endDate)?.toISOString())}
+            handleFilter?.(new Date(new Date(startDate)?.setHours(0, 0, 0, 0))?.toISOString(), new Date(new Date(endDate)?.setHours(23, 59, 59, 999))?.toISOString())}
         }
       >
         APPLY
