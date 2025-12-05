@@ -19,10 +19,10 @@ import ShowError from "../common/ShowError";
 import { useDownloadCsv } from "@/hooks/useDownloadCsv";
 import { useEffect } from "react";
 
-export default function BrokerBusinessTable({limit, isDownload, handleDownloadComplete}) {
+export default function BrokerBusinessTable({limit, isDownload, handleDownloadComplete, from, to}) {
   const brokerListingQuery = useQuery({
-    queryKey: [queryKeys.brokerListingForAdminDefault],
-    queryFn: () => listBrokers({withSearchCount: true, limit})
+    queryKey: [queryKeys.brokerListingForAdminDefault, limit, from, to],
+    queryFn: () => listBrokers({withSearchCount: true, limit, from, to}),
   })
   const {downloadCSV} = useDownloadCsv();
   useEffect(() => {

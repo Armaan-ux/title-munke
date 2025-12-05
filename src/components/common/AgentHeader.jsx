@@ -44,10 +44,12 @@ export default function AgentDetailHeader({data}) {
             <p className="font-semibold text-2xl text-[#2A1A14]">{data?.totalSearches ?? data?.searchCount}</p>
           </div>
 
-          {/* <div className="border border-[#E3D8D2] rounded-md p-4 max-w-[9rem] min-w-[8rem] w-full text-center bg-white xl:whitespace-nowrap">
+          {data?.revenue &&
+          <div className="border border-[#E3D8D2] rounded-md p-4 max-w-[9rem] min-w-[8rem] w-full text-center bg-white xl:whitespace-nowrap">
             <p className="text-[#6B5E55] ">Business</p>
             <p className="font-semibold text-2xl text-[#2A1A14]">${data?.revenue}</p>
-          </div> */}
+          </div>
+          }
 
           {/* <div className="flex gap-8 ml-2">
             <button className="text-[#6B5E55] hover:text-[#550000] cursor-pointer">

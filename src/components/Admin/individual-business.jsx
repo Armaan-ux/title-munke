@@ -3,8 +3,11 @@ import DateFilter from "../common/date-filter";
 import { Button } from "../ui/button";
 import IndividualBusinessTable from "./individual-business-table";
 import BackBtn from "../back-btn";
+import { useState } from "react";
 
 export default function IndividualBusiness() {
+   const [isDownload, setIsDoownload] = useState(false);
+   const [date, setDate] = useState({from: null, to: null});
     return(
             <>
               <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
@@ -21,14 +24,14 @@ export default function IndividualBusiness() {
                     </p>
                   </div>
                   <div className="flex justify-between items-center gap-4">
-                    <DateFilter />
-                    <Button variant="outline">
+                    <DateFilter handleFilter={(from, to) => setDate(pre => ({...pre, from, to}))}/>
+                    <Button variant="outline" onClick={() => setIsDoownload(true)}>
                       <ArrowDownToLine /> Download CSV
                     </Button>
                   </div>
                 </div>
                 <div className="bg-white !p-4 rounded-xl">
-                    <IndividualBusinessTable />
+                    <IndividualBusinessTable isDownload={isDownload} handleDownloadComplete={() => setIsDoownload(false)} from={date?.from} to={date?.to} />
                   {/* {!hasMore && <p>No more data to load.</p>}
                   {logs?.length > 0 && hasMore && !loading && (
                     <button className="loadmore mt-4">Load More</button>

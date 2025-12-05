@@ -18,10 +18,10 @@ import { useEffect } from "react";
 import { useDownloadCsv } from "@/hooks/useDownloadCsv";
 
 
-export default function IndividualBusinessTable({limit, isDownload, handleDownloadComplete}) {
+export default function IndividualBusinessTable({limit, isDownload, handleDownloadComplete, from, to}) {
   const individualListingQuery = useQuery({
-    queryKey: [queryKeys.individualListingForAdmin],
-    queryFn: () => getIndividualListing(true, limit),
+    queryKey: [queryKeys.individualListingForAdmin, limit, from, to],
+    queryFn: () => getIndividualListing(true, limit, from, to),
   });
   const {downloadCSV} = useDownloadCsv();
   useEffect(() => {

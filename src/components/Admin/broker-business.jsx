@@ -26,6 +26,8 @@ import BrokerBusinessTable from "./broker-business-table";
 
 export default function BrokerBusiness() {
   const [isDownload, setIsDoownload] = useState(false);
+  const [date, setDate] = useState({from: null, to: null});
+  console.log("date", date);
   return (
     <>
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
@@ -51,14 +53,14 @@ export default function BrokerBusiness() {
             </p>
           </div>
           <div className="flex justify-between items-center gap-2">
-            <DateFilter />
+            <DateFilter handleFilter={(from, to) => setDate(pre => ({...pre, from, to}))}/>
             <Button variant="outline" onClick={() => setIsDoownload(true)}>
               <ArrowDownToLine /> Download CSV
             </Button>
           </div>
         </div>
         <div className="bg-white !p-4 rounded-xl">
-          <BrokerBusinessTable isDownload={isDownload} handleDownloadComplete={() => setIsDoownload(false)}  />
+          <BrokerBusinessTable isDownload={isDownload} handleDownloadComplete={() => setIsDoownload(false)}  from={date?.from} to={date?.to}/>
           {/* {!hasMore && <p>No more data to load.</p>}
           {logs?.length > 0 && hasMore && !loading && (
             <button className="loadmore mt-4">Load More</button>

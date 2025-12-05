@@ -2,7 +2,7 @@ import { CalendarIcon, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
-export default function DateFilter() {
+export default function DateFilter({handleFilter}) {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
@@ -30,7 +30,13 @@ export default function DateFilter() {
         <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B5E55] pointer-events-none" />
       </div>
 
-      <Button className="bg-[#550000] hover:bg-[#3D0000] text-white text-sm px-5 rounded-md flex items-center gap-2">
+      <Button 
+        className="bg-[#550000] hover:bg-[#3D0000] text-white text-sm px-5 rounded-md flex items-center gap-2"
+        onClick={() => {
+          if(startDate && endDate)
+            handleFilter?.(new Date(startDate)?.toISOString(), new Date(endDate)?.toISOString())}
+        }
+      >
         APPLY
         <Search className="w-4 h-4" />
       </Button>

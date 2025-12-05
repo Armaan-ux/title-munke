@@ -33,13 +33,11 @@ import ShowError from "../common/ShowError";
 
 function BrokerDetails() {
   const navigate = useNavigate();
-  // const [logs, setLogs] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
+  const [date, setDate] = useState({from: null, to: null});
   const {id} = useParams();
   const brokersAgentListingAdminQuery = useQuery({
-    queryKey: [queryKeys.brokersAgentListingAdmin, id],
-    queryFn: () => getBrokerAgentsDetails(id, true),
+    queryKey: [queryKeys.brokersAgentListingAdmin, id, date?.from, date?.to],
+    queryFn: () => getBrokerAgentsDetails(id, true, date?.from, date?.to),
     enabled: !!id,
   })
  
@@ -115,7 +113,7 @@ function BrokerDetails() {
           <div className="flex items-center gap-6">
             <p className="text-secondary font-medium text-xl">All Agents</p>
           </div>
-            <DateFilter />
+            <DateFilter handleFilter={(from, to) => setDate(pre => ({...pre, from, to}))}/>
         </div>
           {brokersAgentListingAdminQuery?.isLoading && <CenterLoader />}
           {brokersAgentListingAdminQuery?.isError && <ShowError message={brokersAgentListingAdminQuery?.error?.response?.data?.message} />}

@@ -149,12 +149,14 @@ export async function forgotPassword(email) {
     );
 }
 
-export async function getBrokerAgentsDetails(brokerId, withSearchCount = false) {
+export async function getBrokerAgentsDetails(brokerId, withSearchCount = false, from, to) {
     const payload = {
       body: {
         brokerId: brokerId,
         withSearchCount: withSearchCount,
         action: CONSTANTS.ACTIONS.GET_BROKER_AGENTS_DETAILS,
+        ...(from && {from}),
+        ...(to && {to}),
       },
     };
     return callUserAdminApi(
@@ -403,7 +405,9 @@ export async function listBrokers(data) {
       body: {
         action: CONSTANTS.ACTIONS.LIST_BROKERS,
         ...(limit && {limit}),
-        ...(withSearchCount && {withSearchCount})
+        ...(withSearchCount && {withSearchCount}),
+        ...(data?.from && {from: data.from}),
+        ...(data?.to && {to: data.to}),
       },
     };
     return callUserAdminApi(
@@ -1034,12 +1038,14 @@ export async function reinviteUser(userDta) {
   )
 }
 
-export async function getIndividualListing(withSearchCount, limit) {
+export async function getIndividualListing(withSearchCount, limit, from, to) {
   const action = CONSTANTS?.ACTIONS?.LIST_INDIVIDUALS
   const payload = {
     body: {
       action,
       ...(limit && {limit}),
+      ...(from && {from}),
+      ...(to && {to}),
       withSearchCount
     }
   }
@@ -1050,12 +1056,14 @@ export async function getIndividualListing(withSearchCount, limit) {
     "/users"
   )
 }
-export async function getIndividualSearches(userId) {
+export async function getIndividualSearches(userId, from, to) {
   const action = CONSTANTS?.ACTIONS?.INDIVIDUAL_SEARCHES
   const payload = {
     body: {
       action,
-      userId
+      userId,
+      ...(from && {from}),
+      ...(to && {to})
     }
   }
   return callUserAdminApi(

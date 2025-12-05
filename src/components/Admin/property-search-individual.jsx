@@ -19,12 +19,14 @@ import { getIndividualDetails, getIndividualSearches } from "../service/userAdmi
 import { CenterLoader } from "../common/Loader";
 import ShowError from "../common/ShowError";
 import { format } from "date-fns-tz";
+import { useState } from "react";
 
 function PropertySearchIndividual() {
+  const [date, setDate] = useState({from: null, to: null});
   const {id} = useParams();
   const individualSearchesQuery = useQuery({
-    queryKey: [queryKeys.individualSearchesAdmin, id],
-    queryFn: () => getIndividualSearches(id),
+    queryKey: [queryKeys.individualSearchesAdmin, id, date.from, date.to],
+    queryFn: () => getIndividualSearches(id, date.from, date.to),
     enabled: !!id,
   })
   const individualMetricsAdminQeurry = useQuery({
@@ -49,7 +51,7 @@ function PropertySearchIndividual() {
                 Properties Searches
               </p>
             </div>
-            <DateFilter />
+            <DateFilter handleFilter={(from, to) => setDate(pre => ({...pre, from, to}))}/>
           </div>
           {individualSearchesQuery?.isLoading && <CenterLoader />}
           {individualSearchesQuery?.isError && <ShowError message={individualSearchesQuery?.error?.response?.data?.message}/>}
