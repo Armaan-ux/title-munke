@@ -1,7 +1,3 @@
-import { useState, useEffect } from "react";
-import { listAuditLogs } from "@/graphql/queries";
-// import "./index.css";
-import { useUser } from "@/context/usercontext";
 import { getFormattedDateTime, queryKeys } from "@/utils";
 import {
   Table,
@@ -11,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAuditLogsForBroker, getBrokerAgentsDetails } from "../service/userAdmin";
+import { getAuditLogsForBroker } from "../service/userAdmin";
 import { useQuery } from "@tanstack/react-query";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { CenterLoader } from "../common/Loader";
@@ -23,46 +19,6 @@ function AuditLogs() {
     queryKey: [queryKeys.auditLogBroker, userId],
     queryFn: () => getAuditLogsForBroker(userId, false)
   })
-  console.log("auditLogBrokerQuery", auditLogBrokerQuery?.data);
-  
-  const [logs, setLogs] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [nextToken, setNextToken] = useState(null);
-  const { user } = useUser();
-
-  const fetchLogs = async () => {
-    if (loading || !hasMore) return;
-
-    setLoading(true);
-    try {
-      const agentsData = await getBrokerAgentsDetails(user?.attributes?.sub);
-      if (agentsData.length === 0) {
-        setLoading(false);
-        return;
-      }
-      const response = await listAuditLogs({
-        userIds: agentsData.map((elem) => elem.agentId),
-        nextToken: nextToken,
-      });
-      const { items, nextToken: newNextToken } = response;
-
-      setLogs((prev) => [...prev, ...items]);
-      setNextToken(newNextToken);
-      if (items.length === 0) {
-        setHasMore(false);
-      } else {
-        setHasMore(!!newNextToken);
-      }
-    } catch (error) {
-      console.error("Error fetching search histories:", error);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    if (user?.attributes?.sub) fetchLogs();
-  }, [user]);
 
   return (
     <div className="bg-[#F5F0EC] rounded-lg text-secondary">
