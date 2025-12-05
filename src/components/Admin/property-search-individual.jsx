@@ -15,25 +15,32 @@ import BackBtn from "../back-btn";
 
 import AgentDetailHeader from "../common/AgentHeader";
 import { useQuery } from "@tanstack/react-query";
-import { getAgentSearches } from "../service/userAdmin";
+import { getIndividualDetails, getIndividualSearches } from "../service/userAdmin";
 import { CenterLoader } from "../common/Loader";
 import ShowError from "../common/ShowError";
 import { format } from "date-fns-tz";
 
 function PropertySearchIndividual() {
   const {id} = useParams();
-  const agentSearchesQuery = useQuery({
-    queryKey: [queryKeys.agentSearchesAdmin, id],
-    queryFn: () => getAgentSearches(id),
+  const individualSearchesQuery = useQuery({
+    queryKey: [queryKeys.individualSearchesAdmin, id],
+    queryFn: () => getIndividualSearches(id),
     enabled: !!id,
   })
+  const individualMetricsAdminQeurry = useQuery({
+      queryKey: [queryKeys.agentMetricsAdmin, id],
+      queryFn: () => getIndividualDetails(id),
+      enabled: !!id
+    })
 
   return (
     <>
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
         <BackBtn />
       </div>
-      <AgentDetailHeader />
+      {individualMetricsAdminQeurry?.isLoading && <div className="h-auto"><CenterLoader /></div>}
+      {individualMetricsAdminQeurry?.isError && <ShowError message={individualMetricsAdminQeurry?.error?.response?.data?.message} />}
+      {individualMetricsAdminQeurry?.isSuccess && <AgentDetailHeader data={individualMetricsAdminQeurry?.data}/>}
       <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
         <div className="bg-white !p-4 rounded-xl">
           <div className="flex justify-between items-center gap-4 mb-6">
@@ -44,9 +51,9 @@ function PropertySearchIndividual() {
             </div>
             <DateFilter />
           </div>
-          {agentSearchesQuery?.isLoading && <CenterLoader />}
-          {agentSearchesQuery?.isError && <ShowError message={agentSearchesQuery?.error?.response?.data?.message}/>}
-          {agentSearchesQuery?.isSuccess &&
+          {individualSearchesQuery?.isLoading && <CenterLoader />}
+          {individualSearchesQuery?.isError && <ShowError message={individualSearchesQuery?.error?.response?.data?.message}/>}
+          {individualSearchesQuery?.isSuccess &&
             <Table className="">
               <TableHeader className="bg-[#F5F0EC]">
                 <TableRow>
@@ -58,7 +65,7 @@ function PropertySearchIndividual() {
                 </TableRow>
               </TableHeader>
               <TableBody className="text-black" >
-                {agentSearchesQuery?.data?.length === 0 ? (
+                {individualSearchesQuery?.data?.length === 0 ? (
                   <TableRow>
                     <TableCell
                       colSpan={5}
@@ -68,7 +75,7 @@ function PropertySearchIndividual() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  agentSearchesQuery?.data?.map((item, index) => (
+                  individualSearchesQuery?.data?.map((item, index) => (
                     <TableRow key={item.id}>
                       <TableCell >{index + 1}</TableCell>
                       <TableCell >

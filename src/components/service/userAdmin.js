@@ -62,6 +62,8 @@ export const CONSTANTS = { // should always be copied from title-munke-serverles
     LIST_AGENTS: "listAgents",
     LIST_BROKER_WITH_NAME: "listBrokerWithName",
     LIST_INDIVIDUALS: "listIndividuals",
+    INDIVIDUAL_SEARCHES: "getIndividualSearches",
+    INDIVIDUAL_DETAILS: "getIndividualDetails",
   },
   USER_TYPES: {
     AGENT: "agent",
@@ -1029,12 +1031,43 @@ export async function reinviteUser(userDta) {
   )
 }
 
-export async function getIndividualListing(withSearchCount) {
+export async function getIndividualListing(withSearchCount, limit) {
   const action = CONSTANTS?.ACTIONS?.LIST_INDIVIDUALS
   const payload = {
     body: {
       action,
+      ...(limit && {limit}),
       withSearchCount
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/users"
+  )
+}
+export async function getIndividualSearches(userId) {
+  const action = CONSTANTS?.ACTIONS?.INDIVIDUAL_SEARCHES
+  const payload = {
+    body: {
+      action,
+      userId
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/users"
+  )
+}
+export async function getIndividualDetails(userId) {
+  const action = CONSTANTS?.ACTIONS?.INDIVIDUAL_DETAILS
+  const payload = {
+    body: {
+      action,
+      userId
     }
   }
   return callUserAdminApi(

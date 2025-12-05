@@ -71,7 +71,7 @@ export default function BrokerBusinessTable(){
                       <TableRow key={item.id}>
                         <TableCell className="font-medium">{index + 1}</TableCell>
                         <TableCell>{item.name}</TableCell>
-                        <TableCell className="text-center" >{item?.teamStrength}</TableCell>
+                        <TableCell className="text-center" >{item?.agentCount}</TableCell>
                         <TableCell className="text-center" >{item?.totalSearches}</TableCell>
                         <TableCell>
                           {getFormattedDateTime(item?.lastLogin)}

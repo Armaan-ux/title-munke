@@ -170,7 +170,7 @@ function BrokerIndividualBusiness({ activeTab, onRegisterReset }) {
           {activeTab === "history" ? (
            <BrokerBusinessTable />
           ) : (
-            <IndividualBusinessTable />
+            <IndividualBusinessTable limit={5} />
           )}
 
           {/* {searchHistories?.length === 0 && <p>No Records found.</p>} */}

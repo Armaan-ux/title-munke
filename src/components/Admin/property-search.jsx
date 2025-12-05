@@ -19,7 +19,7 @@ import BackBtn from "../back-btn";
 
 import AgentDetailHeader from "../common/AgentHeader";
 import { useQuery } from "@tanstack/react-query";
-import { getAgentSearches } from "../service/userAdmin";
+import { getAgentDetails, getAgentSearches } from "../service/userAdmin";
 import { CenterLoader } from "../common/Loader";
 import ShowError from "../common/ShowError";
 import { format } from "date-fns-tz";
@@ -31,13 +31,19 @@ function PropertySearch() {
     queryFn: () => getAgentSearches(id),
     enabled: !!id,
   })
-
+  const agentMetricsAdminQeurry = useQuery({
+    queryKey: [queryKeys.agentMetricsAdmin, id],
+    queryFn: () => getAgentDetails(id),
+    enabled: !!id
+  })
   return (
     <>
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
         <BackBtn />
       </div>
-      <AgentDetailHeader />
+      {agentMetricsAdminQeurry?.isLoading && <div className="h-auto"><CenterLoader /></div>}
+      {agentMetricsAdminQeurry?.isError && <ShowError message={agentMetricsAdminQeurry?.error?.response?.data?.message} />}
+      {agentMetricsAdminQeurry?.isSuccess && <AgentDetailHeader data={agentMetricsAdminQeurry?.data}/>}
       <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
         <div className="bg-white !p-4 rounded-xl">
           <div className="flex justify-between items-center gap-4 mb-6">

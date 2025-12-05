@@ -614,6 +614,21 @@ export default function Home() {
                     }
                   </SelectContent>
                 </Select> */}
+                  <div>
+                    <Controller
+                      name="email"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          placeholder="Email/Phone"
+                          label="Email/Phone"
+                          className="bg-transparent !rounded-[8px] placeholder:text-coffee-bg-foreground h-12 *:!border-[#977466] text-white"
+                          {...field}
+                        />
+                      )}
+                    />
+                    {errors.email && <FormValidationError message={errors.email.message} />}
+                </div>
                 <div>
                   <Controller
                     name="state"
@@ -638,21 +653,6 @@ export default function Home() {
                 value={demoData.state}
                 onChange={(e) => setDemoData(pre => ({...pre, state: e.target.value}))}
               /> */}
-              <div>
-                <Controller
-                  name="email"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      placeholder="Email/Phone"
-                      label="Email/Phone"
-                      className="bg-transparent !rounded-[8px] placeholder:text-coffee-bg-foreground h-12 *:!border-[#977466] text-white"
-                      {...field}
-                    />
-                  )}
-                />
-                {errors.email && <FormValidationError message={errors.email.message} />}
-              </div>
               {/* <Input
                 className="bg-transparent"
                 placeholder="Email/Phone"
@@ -693,7 +693,7 @@ export default function Home() {
                   control={control}
                   render={({ field }) => (
                     <Textarea
-                      placeholder="Message"
+                      placeholder="Enter additional info here..."
                       label="Message"
                       className="bg-transparent !rounded-[8px] h-12 *:!border-[#977466] text-white placeholder:!text-[#A78B7F] placeholder:italic"
                       {...field}

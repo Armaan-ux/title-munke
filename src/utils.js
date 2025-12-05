@@ -9,7 +9,8 @@ export const queryKeys = {
   agentMetricsAdmin: "agentMetricsAdmin",
   brokersAgentListingAdmin: "brokersAgentListingAdmin",
   agentSearchesAdmin: "agentSearchesAdmin",
-  individualListingForAdmin: "individualListingForAdmin"
+  individualListingForAdmin: "individualListingForAdmin",
+  individualSearchesAdmin: "individualSearchesAdmin",
 }
 const months = {
   0: "Jan",

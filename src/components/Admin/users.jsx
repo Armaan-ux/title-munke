@@ -180,9 +180,8 @@ function Admins() {
                 <TableCell>
                   <Badge
                     className={`${
-                      item?.status === "ACTIVE"
-                        ? "bg-[#E9F3E9] text-[#1E8221]"
-                        : "bg-[#FFF3D9] text-[#A2781E]"
+                      item?.status === "ACTIVE" ? "bg-[#E9F3E9] text-[#1E8221]"
+                        : (item?.status === "DELETED" ? " text-destructive/80 bg-destructive/20" : "bg-[#FFF3D9] text-[#A2781E]") 
                     } text-[13px] font-medium px-3 py-1 rounded-full`}
                   >
                     {item?.status}
@@ -463,10 +462,9 @@ function AdminBrokersList() {
                       {" "}
                       <Badge
                         className={`${
-                          item?.status === "ACTIVE"
-                            ? "bg-[#E9F3E9] text-[#1E8221]"
-                            : "bg-[#FFF3D9] text-[#A2781E]"
-                        } text-[13px] font-medium px-3 py-1 rounded-full`}
+                      item?.status === "ACTIVE" ? "bg-[#E9F3E9] text-[#1E8221]"
+                        : (item?.status === "DELETED" ? " text-destructive/80 bg-destructive/20" : "bg-[#FFF3D9] text-[#A2781E]") 
+                    } text-[13px] font-medium px-3 py-1 rounded-full`}
                       >
                         {item?.status}
                       </Badge>
@@ -656,9 +654,8 @@ function Agents() {
                 <TableCell>
                   <Badge
                     className={`${
-                      item?.status === "ACTIVE"
-                        ? "bg-[#E9F3E9] text-[#1E8221]"
-                        : "bg-[#FFF3D9] text-[#A2781E]"
+                      item?.status === "ACTIVE" ? "bg-[#E9F3E9] text-[#1E8221]"
+                        : (item?.status === "DELETED" ? " text-destructive/80 bg-destructive/20" : "bg-[#FFF3D9] text-[#A2781E]") 
                     } text-[13px] font-medium px-3 py-1 rounded-full`}
                   >
                     {item?.status}

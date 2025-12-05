@@ -16,10 +16,10 @@ import ShowError from "../common/ShowError";
 import { CenterLoader } from "../common/Loader";
 
 
-export default function IndividualBusinessTable() {
+export default function IndividualBusinessTable({limit}) {
   const individualListingQuery = useQuery({
     queryKey: [queryKeys.individualListingForAdmin],
-    queryFn: () => getIndividualListing(true),
+    queryFn: () => getIndividualListing(true, limit),
   });
 
   return (
