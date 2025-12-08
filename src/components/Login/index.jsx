@@ -158,7 +158,7 @@ function Login() {
                 id="password"
                 name="password"
                 value={password}
-                className="bg-transparent"
+                className="bg-transparent pr-9"
                 required
                 onChange={(e) => setPassword(e.target.value)}
               />
