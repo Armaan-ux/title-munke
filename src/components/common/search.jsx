@@ -261,6 +261,7 @@ export default function Search({isIndivisual=false}) {
             searchId,
             brokerId,
             username,
+            userType
           },
         })
       );
