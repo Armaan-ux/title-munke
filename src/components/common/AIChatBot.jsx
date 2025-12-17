@@ -6,7 +6,11 @@ import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { ChatService } from "../service/chat";
 import { useUserIdType } from "@/hooks/useUserIdType";
-
+const userKeys = {
+  individual: "user_id",
+  agent: "agent_id",
+  broker: "broker_id",
+}
 const AIChatBot = () => {
   const [open, setOpen] = useState(false);
   const {userId, userType} = useUserIdType()
@@ -40,7 +44,7 @@ const AIChatBot = () => {
     chatMutation.mutate({
       action: "query",
       question: input,
-      agent_id: userType === "agent" ? "c4c89498-40f1-70a0-9ea7-a4e2315e512b" : "345874b8-4031-70c1-96c5-53b13ca4756f",
+      [userKeys[userType]]: userId,
       "top_k": 5
     })
     setInput("");
