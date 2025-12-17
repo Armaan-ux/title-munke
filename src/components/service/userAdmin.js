@@ -1,4 +1,4 @@
-import { API } from 'aws-amplify';
+import { API, Auth } from 'aws-amplify';
 import { constants } from 'buffer';
 
 // const apiName = 'usersAdmin-dev';
@@ -6,6 +6,9 @@ const apiName = 'usersAdmin-dev';
 const userPath = '/users';
 const forgotPasswordPath = '/forgot-password';
 
+// const token = (await Auth.currentSession()).getIdToken().getJwtToken();
+
+// console.log("token===>", token);
 export const CONSTANTS = { // should always be copied from title-munke-serverless code
   ACTIONS: {
     REINVITE: "reinvite",
