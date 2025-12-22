@@ -74,7 +74,7 @@ export default function Search({isIndivisual=false}) {
         const response = await getSearchedStatus(searchId);
         const { status, status_message, zip_url, percent_completion } = response
 
-        if (isRestoring && status === "IN_PROGRESS") setLoading(true);
+        if (isRestoring && status === "In Progress") setLoading(true);
 
         if (status === "SUCCESS") {
           if(userType === "individual")
@@ -88,11 +88,11 @@ export default function Search({isIndivisual=false}) {
           localStorage.setItem("searchTimestamp", Date.now().toString());
           if (zip_url) localStorage.setItem("zipUrl", zip_url);
           setInvalidateSearchHistory(true);
-        } else if (status === "IN_PROGRESS") {
+        } else if (status === "In Progress") {
           setProgress("Processing...");
           setPercentage(percent_completion || 0);
           setMessage(status_message || "Search in progress...");
-          localStorage.setItem("searchStatus", "IN_PROGRESS");
+          localStorage.setItem("searchStatus", "In Progress");
           setTimeout(() => checkSearchStatus(searchId, false), 5000);
         } else if (["FAILED", "STOPPED"].includes(status)) {
           clearSearchState();
@@ -137,7 +137,7 @@ export default function Search({isIndivisual=false}) {
     }
 
     const storedSearchId = localStorage.getItem("searchId");
-    if (storedSearchId && storedStatus === "IN_PROGRESS") {
+    if (storedSearchId && storedStatus === "In Progress") {
       checkSearchStatus(storedSearchId, true);
     }
 
@@ -146,7 +146,7 @@ export default function Search({isIndivisual=false}) {
       localStorage.setItem("userLoggedIn", "true");
     } else if (!user && loggedIn) {
       localStorage.removeItem("userLoggedIn");
-      if (storedStatus !== "IN_PROGRESS") clearSearchState();
+      if (storedStatus !== "In Progress") clearSearchState();
     }
   }, [user, checkSearchStatus]);
 
@@ -188,7 +188,7 @@ export default function Search({isIndivisual=false}) {
     try {
       localStorage.setItem("searchAddress", address);
       localStorage.setItem("isChecked", isChecked);
-      localStorage.setItem("searchStatus", "IN_PROGRESS");
+      localStorage.setItem("searchStatus", "In Progress");
       localStorage.setItem("searchTimestamp", Date.now().toString());
 
       handleCreateAuditLog("SEARCH", { address }, isAgent);

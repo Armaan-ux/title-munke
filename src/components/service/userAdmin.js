@@ -862,11 +862,12 @@ export async function getAgentSearches(agentId, fromDatetime, toDatetime) {
     "/users"
   )
 }
-export async function getAdminMetrics(agentId) {
+export async function getAdminMetrics(data) {
   const action = CONSTANTS?.ACTIONS?.GET_HOME
   const payload = {
     body: {
       action,
+      ...data
     }
   }
   return callUserAdminApi(

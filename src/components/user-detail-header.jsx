@@ -34,8 +34,17 @@ export default function UserDetailHeader() {
             </p>
             <p className="text-tertiary text-sm">{brokerMetricsAdminQeurry?.data?.email}</p>
             <div className="flex items-center gap-2 text-sm mt-1">
-              <span className="w-2 h-2 bg-[#1E8221] rounded-full"></span>
-              <span className="text-[#1E8221]">{brokerMetricsAdminQeurry?.data?.status}</span>
+              <span className={`${
+                  brokerMetricsAdminQeurry?.data?.status === "ACTIVE" ? "bg-[#1E8221]"
+                    : (brokerMetricsAdminQeurry?.data?.status === "DELETED" ? " bg-destructive/80" : "bg-[#A2781E]") 
+                } w-2 h-2 rounded-full`}></span>
+              <span className={`${
+                  brokerMetricsAdminQeurry?.data?.status === "ACTIVE" ? "bg-[#E9F3E9] text-[#1E8221]"
+                    : (brokerMetricsAdminQeurry?.data?.status === "DELETED" ? " text-destructive/80 bg-destructive/20" : "bg-[#FFF3D9] text-[#A2781E]") 
+                } text-[13px] font-medium px-3 py-1 rounded-full`}
+                >
+                  {brokerMetricsAdminQeurry?.data?.status}
+              </span>
             </div>
           </div>
         </div>

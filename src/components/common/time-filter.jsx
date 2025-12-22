@@ -1,13 +1,12 @@
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-export default function TimeFilter() {
-  const [active, setActive] = useState("all");
+export default function TimeFilter({active, setActive}) {
+  // const [active, setActive] = useState("all");
 
   const buttons = [
-    { key: "all", label: "All Time" },
-    { key: "month", label: "This Month" },
-    { key: "week", label: "This Week" },
+    { key: "all_time", label: "All Time" },
+    { key: "this_month", label: "This Month" },
+    { key: "this_week", label: "This Week" },
   ];
 
   return (

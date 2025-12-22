@@ -1,13 +1,19 @@
-import { ArrowDownToLine } from "lucide-react";
+import { ArrowDownToLine, Loader2 } from "lucide-react";
 import DateFilter from "../common/date-filter";
 import { Button } from "../ui/button";
 import IndividualBusinessTable from "./individual-business-table";
 import BackBtn from "../back-btn";
 import { useState } from "react";
-
+import { getAdminMetrics } from "../service/userAdmin";
+import { useQuery } from "@tanstack/react-query";
+const userTimezone  = Intl.DateTimeFormat().resolvedOptions().timeZone;
 export default function IndividualBusiness() {
    const [isDownload, setIsDoownload] = useState(false);
    const [date, setDate] = useState({from: null, to: null});
+   const metricQuery = useQuery({
+    queryKey: ['admin-metrics', "all_time", userTimezone],
+    queryFn: () => getAdminMetrics({admin_dashboard_global_filter: "all_time", userTimezone })
+  })
     return(
             <>
               <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
@@ -20,7 +26,8 @@ export default function IndividualBusiness() {
                     <p
                       className={`bg-white text-tertiary font-semibold text-lg transition-all rounded-full px-10 py-3 `}
                     >
-                      $260.00
+                      {metricQuery?.isSuccess && <span>${metricQuery?.data?.totalBusinessRevenueForIndividual ?? "--"}</span>}
+                      {metricQuery?.isLoading && <Loader2 className="w-6 h-10 animate-spin text-secondary" />}
                     </p>
                   </div>
                   <div className="flex justify-between items-center gap-4">

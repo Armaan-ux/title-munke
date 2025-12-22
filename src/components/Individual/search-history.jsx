@@ -326,7 +326,7 @@ function SearchHistory({isAll=false}) {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2 flex-row">
-                        <Button
+                        {/* <Button
                           size="icon"
                           className="text-md"
                           variant="ghost"
@@ -340,7 +340,7 @@ function SearchHistory({isAll=false}) {
                           variant="ghost"
                         >
                           <Printer />
-                        </Button>
+                        </Button> */}
 
                         <Button
                           size="icon"

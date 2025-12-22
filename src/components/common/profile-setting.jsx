@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Auth } from "aws-amplify";
 import { Eye, PencilLine, Upload } from "lucide-react";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Separator } from "../ui/separator";
 import { useSidebar } from "../ui/sidebar";
 // import "./index.css";
@@ -19,7 +19,17 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const { open } = useSidebar();
-  console.log("sidebar open", open);
+  const fileInputRef = useRef(null);
+  const [preview, setPreView] = useState(null)
+  const handleClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setPreView(URL.createObjectURL(file))
+    console.log("Selected file:", file);
+  };
   return (
     <div className="bg-[#F5F0EC] flex items-start justify-start text-secondary">
       {editProfile === true ? (
@@ -32,14 +42,21 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
             <div className={`flex gap-10 pt-5 border-t border-gray-200 mb-2 flex-col ${open ? "md:flex-col": "md:flex-row"} lg:flex-row`}>
               <div className="flex flex-col items-center gap-4">
                 <img
-                  src="https://images.unsplash.com/photo-1607746882042-944635dfe10e"
+                  src={preview ?? "https://images.unsplash.com/photo-1607746882042-944635dfe10e"}
                   alt="Profile"
                   className="w-60 h-60 rounded-2xl object-cover"
+                />
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+                  accept="image/*"
                 />
                 <Button
                   variant="outline"
                   className="border-none text-secondary hover:bg-tertiary hover:text-white rounded-md px-6 w-full bg-coffee-bg-billing-foreground"
-                  onClick={() => setIsProfile(false)}
+                  onClick={handleClick}
                 >
                   <Upload /> Upload Image
                 </Button>

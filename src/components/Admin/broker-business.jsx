@@ -16,6 +16,7 @@ import {
   Eye,
   ChevronLeft,
   ArrowDownToLine,
+  Loader2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
@@ -23,11 +24,17 @@ import { Button } from "@/components/ui/button";
 import DateFilter from "../common/date-filter";
 import BackBtn from "../back-btn";
 import BrokerBusinessTable from "./broker-business-table";
+import { useQuery } from "@tanstack/react-query";
+import { getAdminMetrics } from "../service/userAdmin";
+const userTimezone  = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 export default function BrokerBusiness() {
   const [isDownload, setIsDoownload] = useState(false);
   const [date, setDate] = useState({from: null, to: null});
-  console.log("date", date);
+  const metricQuery = useQuery({
+    queryKey: ['admin-metrics', "all_time", userTimezone],
+    queryFn: () => getAdminMetrics({admin_dashboard_global_filter: "all_time", userTimezone })
+  })
   return (
     <>
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
@@ -49,7 +56,8 @@ export default function BrokerBusiness() {
             <p
               className={`bg-white text-tertiary font-semibold text-lg transition-all rounded-full px-10 py-3 `}
             >
-              $260.00
+              {metricQuery?.isSuccess && <span>${metricQuery?.data?.totalBusinessRevenue ?? "--"}</span>}
+              {metricQuery?.isLoading && <Loader2 className="w-6 h-10 animate-spin text-secondary" />}
             </p>
           </div>
           <div className="flex justify-between items-center gap-2">

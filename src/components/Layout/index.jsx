@@ -5,8 +5,10 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import AppHeader from "./app-header";
 import AIChatBot from "../common/AIChatBot";
 import MembershipOrCardAddedModalContainer from "../common/MembershipOrCardAddedModalContainer";
+import { useUserIdType } from "@/hooks/useUserIdType";
 
 function Layout() {
+  const {userType} = useUserIdType();
   return (
     <>
       <MembershipOrCardAddedModalContainer />
@@ -14,7 +16,7 @@ function Layout() {
         <AppSidebar />
         <main className="flex-1 md:pl-0 p-4 min-w-0">
           <AppHeader />
-          <AIChatBot />
+          {userType !== "admin" && <AIChatBot />}
           <Outlet />
         </main>
       </SidebarProvider>

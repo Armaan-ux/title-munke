@@ -334,7 +334,7 @@ function History({isAll=false}) {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2 flex-row justify-center">
-                        <Button
+                        {/* <Button
                           size="icon"
                           className="text-md"
                           variant="ghost"
@@ -348,7 +348,7 @@ function History({isAll=false}) {
                           variant="ghost"
                         >
                           <Printer />
-                        </Button>
+                        </Button> */}
 
                         <Button
                           size="icon"

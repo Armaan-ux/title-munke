@@ -8,15 +8,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getAdminMetrics, listBrokers } from "../service/userAdmin";
 import { queryKeys } from "@/utils";
-
+const userTimezone  = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const AdminDashboard = () => {
   
   const [isDownload, setIsDoownload] = useState(false);
   const [activeTab, setActiveTab] = useState("history");
+  const [active, setActive] = useState("all_time");
   const [resetChildState, setResetChildState] = useState(null);
   const metricQuery = useQuery({
-    queryKey: ['admin-metrics'],
-    queryFn: getAdminMetrics
+    queryKey: ['admin-metrics', active, userTimezone],
+    queryFn: () => getAdminMetrics({admin_dashboard_global_filter: active, userTimezone })
   })
   const handleTabChange = () => {
     if (resetChildState) {
@@ -26,7 +27,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="my-4">
-      <TimeFilter />
+      <TimeFilter active={active} setActive={(value) => setActive(value)}/>
       {/* cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 *:rounded-2xl *:bg-[#F5F0EC] my-4">
         <div className="p-5 flex justify-between items-end ">
@@ -58,7 +59,8 @@ const AdminDashboard = () => {
         <div className="p-5 flex justify-between items-end ">
           <div>
             <p className="mb-4 text-secondary"> Total Counties</p>
-            <p className="text-4xl font-semibold text-tertiary">0</p>
+            {metricQuery?.isSuccess && <p className="text-4xl font-semibold text-tertiary">{metricQuery?.data?.totalCounties ?? "--"}</p>}
+            {metricQuery?.isLoading && <Loader2 className="w-6 h-10 animate-spin text-secondary" />}
           </div>
           <div className="bg-white rounded-full p-3.5">
             {/* <Map className="text-tertiary" /> */}
@@ -68,7 +70,8 @@ const AdminDashboard = () => {
         <div className="p-5 flex justify-between items-end ">
           <div>
             <p className="mb-4 text-secondary"> Demo Requests</p>
-            <p className="text-4xl font-semibold text-tertiary">0</p>
+            {metricQuery?.isSuccess && <p className="text-4xl font-semibold text-tertiary">{metricQuery?.data?.demoRequestCount ?? "--"}</p>}
+            {metricQuery?.isLoading && <Loader2 className="w-6 h-10 animate-spin text-secondary" />}
           </div>
           <div className="bg-white rounded-full p-3.5">
              {/* <BookUser className="text-tertiary" /> */}
@@ -123,7 +126,12 @@ const AdminDashboard = () => {
             <p
               className={`bg-white text-tertiary font-semibold text-lg transition-all rounded-full px-10 py-3 `}
             >
-              $260.00
+             {metricQuery?.isSuccess && 
+              <p>
+                ${metricQuery?.data?.[activeTab === "history" ? "totalBusinessRevenue" : "totalBusinessRevenueForIndividual"] ?? "--"}
+              </p>
+            }
+              {metricQuery?.isLoading && <Loader2 className="w-6 h-10 animate-spin text-secondary" />}
             </p>
           </div>
           <div className="flex justify-between items-center gap-2">
