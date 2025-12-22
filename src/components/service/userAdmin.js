@@ -68,7 +68,10 @@ export const CONSTANTS = { // should always be copied from title-munke-serverles
     INDIVIDUAL_SEARCHES: "getIndividualSearches",
     INDIVIDUAL_DETAILS: "getIndividualDetails",
     DEMO_REQUEST_MARK_CONTACTED: "MarkContacted",
-    LIST_AUDIT_LOG_FOR_BROKER: "listAuditLogsForBroker"
+    LIST_AUDIT_LOG_FOR_BROKER: "listAuditLogsForBroker",
+    updateProfileDetails: "updateProfileDetails",
+    uploadProfileImageOnS3: "uploadProfileImageOnS3",
+    uploadProfileImageOnS3: "uploadProfileImageOnS3",
   },
   USER_TYPES: {
     AGENT: "agent",
@@ -1116,6 +1119,36 @@ export async function getAuditLogsForBroker(brokerId, isAgent) {
       action,
       brokerId,
       isAgent
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/users"
+  )
+}
+export async function updateProfileDetails(data) {
+  const action = CONSTANTS?.ACTIONS?.updateProfileDetails
+  const payload = {
+    body: {
+      action,
+      ...data
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/users"
+  )
+}
+export async function uploadProfileImageOnS3(data) {
+  const action = CONSTANTS?.ACTIONS?.uploadProfileImageOnS3
+  const payload = {
+    body: {
+      action,
+      ...data
     }
   }
   return callUserAdminApi(

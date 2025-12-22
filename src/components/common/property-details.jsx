@@ -1,13 +1,36 @@
 import { ChevronLeft } from "lucide-react";
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import BackBtn from "../back-btn";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "@/utils";
+import { getSearchedStatus } from "../service/userAdmin";
+import { format } from "date-fns-tz";
+import { CenterLoader } from "./Loader";
+import ShowError from "./ShowError";
+import { useDownloadCsv } from "@/hooks/useDownloadCsv";
 const PropertyDetails = () => {
   const navigate = useNavigate();
+  const {id} = useParams();
+  const {downloadCSV} = useDownloadCsv()
+  const propertyDetailQuery = useQuery({
+  queryKey: [queryKeys?.propertyDetail, id],
+  queryFn: () => getSearchedStatus(id),
+  refetchInterval: (query) => {
+    return query?.state?.data?.status === "In Progress"
+      ? 5000 // poll every 5 seconds
+      : false; // stop polling
+  },
+  enabled: !!id,
+});
+if(propertyDetailQuery?.isLoading) return <CenterLoader />
+if(propertyDetailQuery?.isError) return <ShowError message={propertyDetailQuery?.error?.response?.data?.message} />
+const pdfDocuments = propertyDetailQuery?.data?.documents?.filter(item => item?.type === "pdf") ?? [];
+
   return (
     <>
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
@@ -28,21 +51,26 @@ const PropertyDetails = () => {
             <div className="flex items-start justify-between mb-2">
               <div>
                 <p className="text-2xl mb-1 font-semibold text-[#4C0D0D]">
-                  2868 reading rd, Lehigh, Pennsylvania
+                  {propertyDetailQuery?.data?.address}, {propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.county_and_state}
                 </p>
                 <p className="text-sm text-[#8B8686] mt-1">
                   Searched on:
                   <span className="font-semibold text-[#4C0D0D]">
-                    Oct 7, 2025
+                   {propertyDetailQuery?.data?.propertySummary?.["Date of Search"]}
                   </span>
                   | Reference ID:
                   <span className="font-semibold text-[#4C0D0D]">
-                    SR-230145
+                    SR-230145(pending)
                   </span>
                 </p>
               </div>
-              <Badge className="bg-[#EAF7ED] text-[#3A9447] text-[13px] font-medium px-3 py-1 rounded-full">
-                Completed
+              <Badge  className={`${
+                  propertyDetailQuery?.data?.status === "SUCCESS"
+                    ? "bg-[#E9F3E9] text-[#1E8221]"
+                    : propertyDetailQuery?.data?.status === "Unconfirmed"
+                    ? "bg-[#FFF3D9] text-[#A2781E]"
+                    : "bg-[#FFE3E2] text-[#FF5F59]"} text-[13px] font-medium px-3 py-1 rounded-md`}>
+                {propertyDetailQuery?.data.status}
               </Badge>
             </div>
 
@@ -58,7 +86,7 @@ const PropertyDetails = () => {
                   <div>
                     <p className="font-semibold uppercase text-sm">Location</p>
                     <p className="text-[#7A7676]">
-                      Reading Rd, west of College
+                     {propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.property_information}
                     </p>
                   </div>
                   <div>
@@ -71,27 +99,27 @@ const PropertyDetails = () => {
                   </div>
                   <div>
                     <p className="font-semibold uppercase text-sm">Property</p>
-                    <p className="text-[#7A7676]">2868 reading rd</p>
+                    <p className="text-[#7A7676]">{propertyDetailQuery?.data?.address}</p>
                   </div>
                   <div>
                     <p className="font-semibold uppercase text-sm">County, State</p>
-                    <p className="text-[#7A7676]">Lehigh, Pennsylvania</p>
+                    <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.county_and_state}</p>
                   </div>
                   <div>
                     <p className="font-semibold uppercase text-sm">Municipality</p>
-                    <p className="text-[#7A7676]">City of Allentown</p>
+                    <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.municipality}</p>
                   </div>
                   <div>
                     <p className="font-semibold uppercase text-sm">PIN/Parcel</p>
-                    <p className="text-[#7A7676]">54869339781</p>
+                    <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.PIN}</p>
                   </div>
                   <div>
                     <p className="font-semibold uppercase text-sm">Span of Search</p>
-                    <p className="text-[#7A7676]">60 years</p>
+                    <p className="text-[#7A7676]">Pending</p>
                   </div>
                   <div>
                     <p className="font-semibold uppercase text-sm">Date of Search</p>
-                    <p className="text-[#7A7676]">September 09, 2025</p>
+                    <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.["Date of Search"]}</p>
                   </div>
                 </div>
 
@@ -99,18 +127,18 @@ const PropertyDetails = () => {
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div className="border border-[#F1EDEA] rounded-lg p-4 bg-[#FEFAF5]">
                       <p className="font-semibold uppercase">Current Owner</p>
-                      <p className="text-[#7A7676]">Congommen Holdings, LLC</p>
+                      <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.current_owner}</p>
                     </div>
                     <div className="border border-[#F1EDEA] rounded-lg p-4 bg-[#FEFAF5]">
                       <p className="font-semibold uppercase">Tax Assessment</p>
-                      <p className="text-[#7A7676]">$162900</p>
+                      <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.["Tax Assessment"]}</p>
                     </div>
                   </div>
 
                   <div className="border border-[#F1EDEA] rounded-lg p-4 text-[13px] bg-[#FEFAF5]">
                     <p className="font-semibold uppercase">Title Deed</p>
                     <p className="text-[#7A7676]">
-                      Deed recorded on 8/7/2024 at 3:29:18 PM
+                      {propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.title_deed}
                     </p>
                   </div>
                 </div>
@@ -126,47 +154,30 @@ const PropertyDetails = () => {
                           <th className="py-3 px-4">Sr. No.</th>
                           <th className="py-3 px-4">Document Type</th>
                           <th className="py-3 px-4">Date Recorded</th>
-                          <th className="py-3 px-4">Document ID</th>
-                          <th className="py-3 px-4">Progress</th>
+                          {/* <th className="py-3 px-4">Document ID</th> */}
+                          {/* <th className="py-3 px-4">Progress</th> */}
                           <th className="py-3 px-4 text-center">Actions</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {[
-                          {
-                            no: "01.",
-                            type: "Document 01",
-                            date: "01 Oct 2025",
-                            id: "DOC-9081",
-                          },
-                          {
-                            no: "02.",
-                            type: "Document 02",
-                            date: "01 Oct 2025",
-                            id: "DOC-9082",
-                          },
-                          {
-                            no: "03.",
-                            type: "Document 03",
-                            date: "30 Sep 2025",
-                            id: "DOC-9075",
-                          },
-                        ].map((item, i) => (
+                        {pdfDocuments?.map((item, i) => (
                           <tr
                             key={i}
                             className="border-t border-[#F1EDEA] text-[#4C0D0D]"
                           >
-                            <td className="py-3 px-4">{item.no}</td>
-                            <td className="py-3 px-4">{item.type}</td>
-                            <td className="py-3 px-4">{item.date}</td>
-                            <td className="py-3 px-4">{item.id}</td>
-                            <td className="py-3 px-4">
+                            <td className="py-3 px-4">{i + 1}</td>
+                            <td className="py-3 px-4 uppercase">Document {i + 1}</td>
+                            <td className="py-3 px-4">{format(item?.lastEdited, "dd MMM yyyy")}</td>
+                            {/* <td className="py-3 px-4">{item.id}</td> */}
+                            {/* <td className="py-3 px-4">
                               <div className="w-[100px] bg-[#EAF7ED] rounded-full h-[6px] overflow-hidden">
                                 <div className="bg-[#3A9447] h-[6px] w-[90%] rounded-full"></div>
                               </div>
-                            </td>
+                            </td> */}
                             <td className="py-3 px-4">
-                              <Eye className="w-4 h-4 text-[#4C0D0D] mx-auto" />
+                              <a href={item?.url} target="_blank" rel="noreferrer">
+                                <Eye className="w-4 h-4 text-[#4C0D0D] mx-auto" />
+                              </a>
                             </td>
                           </tr>
                         ))}
@@ -201,11 +212,18 @@ const PropertyDetails = () => {
             <Separator />
             <div className="flex justify-between items-center mt-4 text-[13px]">
               <p className="text-[#4C0D0D]">
-                Documents Completed:{" "}
-                <span className="font-semibold">3 of 3</span>
+                Total Documents Completed:{" "}
+                <span className="font-semibold">{pdfDocuments?.length ?? 0}</span>
                 <br />
                 Status:{" "}
-                <span className="text-[#3A9447] font-semibold">Completed</span>
+                <Badge  className={`${
+                  propertyDetailQuery?.data?.status === "SUCCESS"
+                    ? "bg-[#E9F3E9] text-[#1E8221]"
+                    : propertyDetailQuery?.data?.status === "Unconfirmed"
+                    ? "bg-[#FFF3D9] text-[#A2781E]"
+                    : "bg-[#FFE3E2] text-[#FF5F59]"} text-[13px] font-medium px-3 py-1 rounded-md`}>
+                {propertyDetailQuery?.data.status}
+              </Badge>
               </p>
 
               <div className="flex gap-3">

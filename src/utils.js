@@ -14,6 +14,8 @@ export const queryKeys = {
   getListDemoReqContacted: "getListDemoReqContacted",
   auditLogBroker: "auditLogBroker",
   auditLogAgent: "auditLogAgent",
+  propertyDetail: "propertyDetail",
+  getUserDetails: "getUserDetails",
 }
 const months = {
   0: "Jan",

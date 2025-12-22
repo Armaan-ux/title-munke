@@ -3,15 +3,34 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Auth } from "aws-amplify";
 import { Eye, PencilLine, Upload } from "lucide-react";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Separator } from "../ui/separator";
 import { useSidebar } from "../ui/sidebar";
-// import "./index.css";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getAdminDetails, updateProfileDetails, uploadProfileImageOnS3 } from "../service/userAdmin";
+import { toast } from "react-toastify";
+import { useUserIdType } from "@/hooks/useUserIdType";
+import { queryKeys } from "@/utils";
+const url = "https://titlemunke-dev.s3.us-east-1.amazonaws.com/profile-images/admin/2498f428-d0f1-70a1-9356-f84e71634f6ef436ca15-724f-4d57-a5c0-cd4fd377fbd9.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAQFC27MWJMGL3WAGE%2F20251222%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20251222T142431Z&X-Amz-Expires=300&X-Amz-Signature=5092ff338755165fbda5ceb589d8ccb97f9858d58b5f8833a5f8eb8800f8d4fc&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject"
+const uploadToS3 = async (uploadUrl, file) => {
+  const type = file.type;
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": type, // very important
+    },
+    body: file, // raw file
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to upload to S3");
+  }
+};
 
 const ProfileSetting = ({ setIsProfile, editProfile }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
-
+  const {userId, userType, email: userEmail} = useUserIdType();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -20,16 +39,51 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
   const [currentPassword, setCurrentPassword] = useState("");
   const { open } = useSidebar();
   const fileInputRef = useRef(null);
-  const [preview, setPreView] = useState(null)
+  const [preview, setPreView] = useState(null);
+  const [profileImage,setProfileImage] = useState(null);
   const handleClick = () => {
     fileInputRef.current?.click();
   };
-
+  const getUserDetail = useQuery({
+    queryKey: [queryKeys.getUserDetails, userId],
+    queryFn: () => getAdminDetails(userId)
+  })
+  useEffect(() => {
+    if(getUserDetail.isSuccess) {
+      setName(getUserDetail.data?.attributes?.name)
+      setEmail(getUserDetail.data?.attributes?.email)
+      setPhone(getUserDetail.data?.attributes?.phone_number)
+    }
+  }, [getUserDetail.isSuccess, getUserDetail.data])
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+    setProfileImage(file);
     setPreView(URL.createObjectURL(file))
-    console.log("Selected file:", file);
   };
+  const updateProfileMutation = useMutation({
+    mutationFn: (payload) => updateProfileDetails(payload),
+    onSuccess: (data) => {
+      toast.success(data?.message)
+    }
+  })
+
+  const S3ApiMutation = useMutation({
+    mutationFn: (payload) => uploadProfileImageOnS3(payload),
+    onSuccess: (data) => {
+      console.log("data", data)
+    }
+  });
+  
+  const handleProfileChange = (e) => {
+    e.preventDefault();
+    const payload = {userId, userType, name, phoneNumber: phone, email: userEmail};
+    updateProfileMutation?.mutate(payload);
+    // if(!!profileImage) {
+    //   const fileName = profileImage.name;
+    //   const fileType = profileImage.type;
+    //   S3ApiMutation.mutate({fileName, fileType, userId, userType})
+    // }
+  }
   return (
     <div className="bg-[#F5F0EC] flex items-start justify-start text-secondary">
       {editProfile === true ? (
@@ -62,7 +116,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                 </Button>
               </div>
 
-              <form className="space-y-6 flex-1 w-full">
+              <form className="space-y-6 flex-1 w-full"  onSubmit={handleProfileChange}>
                 <div className="mb-9">
                   <Label
                     htmlFor="current-password"
@@ -71,6 +125,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                     Name
                   </Label>
                   <Input
+                    required
                     type="text"
                     id="phone"
                     name="username"
@@ -89,6 +144,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                     Phone Number
                   </Label>
                   <Input
+                    required
                     type="text"
                     id="phone"
                     name="phone"
@@ -107,6 +163,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                     Email id
                   </Label>
                   <Input
+                    disabled
                     type="text"
                     id="email"
                     name="email"
@@ -121,8 +178,8 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                   <Button
                     variant="secondary"
                     // className="bg-tertiary text-white hover:bg-[#9C3D26] hover:text-white rounded-md px-12 mb-6 w-[20%]"
+                    disabled={updateProfileMutation.isPending}
                     size="lg"
-                    onClick={() => setIsProfile(false)}
                   >
                     Save Changes
                   </Button>
