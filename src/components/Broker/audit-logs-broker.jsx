@@ -32,7 +32,6 @@ function AuditLogs() {
                 <TableHead>Sr. No.</TableHead>
                 {/* <TableHead>Action</TableHead> */}
                 <TableHead>Details</TableHead>
-                <TableHead>Email</TableHead>
                 <TableHead>Time</TableHead>
               </TableRow>
             </TableHeader>
@@ -52,7 +51,6 @@ function AuditLogs() {
                     <TableCell className="font-medium">{index + 1}</TableCell>
                     {/* <TableCell className="font-medium">{item.action}</TableCell> */}
                     <TableCell>{item?.detail?.replace(/[{}"]/g, "")}</TableCell>
-                    <TableCell>{item.email}</TableCell>
                     <TableCell>{getFormattedDateTime(item?.createdAt)}</TableCell>
                   </TableRow>
                 ))

@@ -76,7 +76,7 @@ const pdfDocuments = propertyDetailQuery?.data?.documents?.filter(item => item?.
 
              <Separator />
 
-            <div className="mt-6 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5">
+            <div className="mt-6 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5 opacity-25">
               <div>
                 <p className="font-semibold text-lg text-[#4C0D0D] mb-2">
                   Description
@@ -233,8 +233,8 @@ const pdfDocuments = propertyDetailQuery?.data?.documents?.filter(item => item?.
                 >
                   Download CSV
                 </Button>
-                <Button className="bg-[#4C0D0D] text-white hover:bg-[#4C0D0D]/90 px-5 rounded-lg">
-                  Download All as ZIP
+                <Button className="bg-[#4C0D0D] text-white hover:bg-[#4C0D0D]/90 px-5 rounded-lg" disabled={!propertyDetailQuery?.data?.zip_url}>
+                  <a href={propertyDetailQuery?.data?.zip_url} target="_blank" rel="noreferrer">Download All as ZIP</a>
                 </Button>
               </div>
             </div>

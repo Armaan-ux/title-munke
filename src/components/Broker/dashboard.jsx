@@ -50,7 +50,7 @@ const BrokerDashboard = () => {
     (agent) => agent.status === "ACTIVE"
   ).length;
   const inactiveAgents = agents.filter(
-    (agent) => agent.status === "INACTIVE"
+    (agent) => agent.status === "UNCONFIRMED"
   ).length;
 
 

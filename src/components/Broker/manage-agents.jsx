@@ -12,6 +12,7 @@ import {
   assignAgent,
   getTopPerformerAgent,
   getUnassignedAgents,
+  reinviteUser,
 } from "@/components/service/userAdmin";
 import { useUser } from "@/context/usercontext";
 import { fetchAgentsWithSearchCount } from "@/components/service/broker";
@@ -39,6 +40,7 @@ import {
   UserPlus,
   Eye,
   Trash2,
+  ArchiveRestore,
 } from "lucide-react";
 import { API } from "aws-amplify";
 import { listAgents } from "@/graphql/queries";
@@ -47,6 +49,9 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import AddAgentByBrokerModal from "@/components/Modal/AddAgentByBrokerModal";
 import { useNavigate } from "react-router-dom";
+import { useDeleteUser } from "@/hooks/useDeleteUser";
+import { useRestoreUser } from "@/hooks/useRestoreUser";
+import { useMutation } from "@tanstack/react-query";
 
 const agentTypes = [
   {
@@ -148,6 +153,16 @@ function Agents() {
     }
   }, [user]);
 
+  const [selectedUser, setSelectedUser] = useState({});
+  const {deleteUserMutation} = useDeleteUser(fetchData);
+  const {restoreUserMutation} = useRestoreUser(fetchData);
+  const reinviteMutation = useMutation({
+    mutationFn: (payload) => reinviteUser(payload),
+    onSuccess: () => {
+      toast.success("Reinvitation sent successfully");
+    }
+  })
+
   useEffect(() => {
     if (user?.attributes?.sub) {
       fetchData();
@@ -164,7 +179,7 @@ function Agents() {
         : agents.filter(
             (agent) => agent.status !== CONSTANTS.USER_STATUS.DELETED
           );
-      setFilteredAgents(filtered);
+      setFilteredAgents(agents);
     }
   }, [agents, showDeleted]);
 
@@ -262,8 +277,9 @@ function Agents() {
       />
       <AddAgentByBrokerModal
         open={addAgent}
-        onOpenChange={() => setAddAgent(false)}
+        onOpenChange={() => {setAddAgent(false); setSelectedUser({})}}
         setUser={setAgents}
+        selectedUser={selectedUser}
       />
       {/* <div className="flex items-center gap-2 justify-end mb-3">
         <Checkbox
@@ -283,12 +299,12 @@ function Agents() {
             All Agents
           </p>
           <div className="relative w-full sm:w-[220px]">
-            <Input
+            {/* <Input
               type="text"
               placeholder="Search"
               className="h-[40px] rounded-md pl-8 border border-[#E2DAD5] bg-white text-[#4C0D0D] placeholder:text-[#B6AAA5] focus-visible:ring-0 focus-visible:ring-offset-0"
-            />
-            <svg
+            /> */}
+            {/* <svg
               xmlns="http://www.w3.org/2000/svg"
               className="absolute left-2.5 top-3 h-4 w-4 text-[#B6AAA5]"
               fill="none"
@@ -301,7 +317,7 @@ function Agents() {
                 strokeLinejoin="round"
                 d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z"
               />
-            </svg>
+            </svg> */}
           </div>
         </div>
 
@@ -382,7 +398,7 @@ function Agents() {
                       className={`${
                         item?.status === "ACTIVE"
                           ? "bg-[#E9F3E9] text-[#1E8221]"
-                          : item?.status === "Unconfirmed"
+                          : item?.status === "UNCONFIRMED"
                           ? "bg-[#FFF3D9] text-[#A2781E]"
                           : "bg-[#FFE3E2] text-[#FF5F59]"
                       } text-[13px] font-medium px-3 py-1 rounded-md`}
@@ -391,23 +407,25 @@ function Agents() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center">
-                    <UserPlus
-                      className="w-5 h-5 mx-auto"
-                      // className={` text-sm`}
-                      disabled={
-                        item.status !== "UNCONFIRMED" || !!reinvitingAgentId
-                      }
-                      onClick={() => handleReinvite(item)}
-                      // variant="outline"
-                      // size="sm"
-                    />
+                    {item.status === "UNCONFIRMED" && 
+                      <UserPlus
+                        className="w-5 h-5 mx-auto"
+                        // className={` text-sm`}
+                        disabled={
+                          reinviteMutation?.isPending
+                        }
+                        onClick={() => reinviteMutation?.mutate({email: item?.email})}
+                        // variant="outline"
+                        // size="sm"
+                      />
+                    }
                     {/* {reinvitingAgentId === item.id
                         ? "Sending..."
                         : "Reinvite"} */}
                   </TableCell>
                   <TableCell className="text-center" >
                     <div className="">
-                      <Button size="icon" className="text-sm" variant="ghost">
+                      <Button size="icon" className="text-sm" variant="ghost" onClick={() => {setAddAgent(true); setSelectedUser(item)}}>
                         <PencilLine />
                       </Button>
                       <Button
@@ -420,8 +438,19 @@ function Agents() {
                       >
                         <Eye />
                       </Button>
-                      <Button size="icon" className="text-sm" variant="ghost">
-                        <Trash2 />
+                      <Button 
+                          size="icon" 
+                          className="text-md" 
+                          variant="ghost" 
+                          onClick={() => {
+                            if(item?.status === "DELETED")
+                              restoreUserMutation.mutate({userId: item.id, email: item.email, userType: "agent"})
+                            else
+                            deleteUserMutation.mutate({userId: item.id, email: item.email, userType: "agent"})
+                          }} 
+                          disabled={deleteUserMutation?.isLoading || restoreUserMutation?.isLoading}
+                        >
+                          {item?.status === "DELETED" ? <ArchiveRestore /> : <Trash2 />}
                       </Button>
                       {/* {item.status !== "UNCONFIRMED" && (
                         <>

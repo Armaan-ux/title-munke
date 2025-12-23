@@ -567,8 +567,8 @@ export async function listAuditLogs(isAgent, userIds, nextToken) {
     const payload = {
       body: {
         isAgent: isAgent,
-        userIds: userIds,
-        nextToken: nextToken,
+       ...( userIds && {userIds: userIds}),
+       ...( nextToken && {nextToken: nextToken}),
         action: CONSTANTS.ACTIONS.LIST_AUDIT_LOGS,
       },
     };

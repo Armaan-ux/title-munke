@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { X } from "lucide-react";
 import { useUserIdType } from "@/hooks/useUserIdType";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { newAgentSchema } from "@/formSchema";
@@ -26,13 +26,38 @@ import { createAgentForBroker } from "../service/agent";
 import { toast } from "react-toastify";
 import { useUser } from "@/context/usercontext";
 import { handleCreateAuditLog } from "@/utils";
-export default function AddAgentByBrokerModal({ open, onOpenChange, setUser }) {
+import { useMutation } from "@tanstack/react-query";
+import { updateBrokerDetail } from "../service/userAdmin";
+export default function AddAgentByBrokerModal({ open, onOpenChange, setUser, selectedUser }) {
   const {user} = useUser();
   const { userId } = useUserIdType();
   const {control, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({
     defaultValues: { name: "", email: "", searchLimit: 10 },
     resolver: zodResolver(newAgentSchema),
   });
+
+  const isUpdate = !!selectedUser?.id;
+  
+  useEffect(() => {
+    if (isUpdate) {
+      reset({
+        fullName: selectedUser?.name || "",
+        email: selectedUser?.email || "",
+        searchLimit: selectedUser?.searchLimit || "",
+      });
+    }
+  }, [selectedUser, reset, isUpdate]);
+
+const updateBrokerMutation = useMutation({
+    mutationFn: (payload) => updateBrokerDetail(payload),
+    onSuccess: () => {
+      // invalidateFun?.();
+      onOpenChange();
+    }, 
+    onError: (error) => {
+      toast.error(error?.response?.data?.error || "Something went wrong while adding new user. Please try again.");
+    },
+  })
 
   const onSubmit = async (data) => {
       try {

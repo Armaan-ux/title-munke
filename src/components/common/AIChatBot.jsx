@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { X } from "lucide-react";
+import { Maximize2, Minus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
@@ -14,6 +14,7 @@ const userKeys = {
 }
 const AIChatBot = () => {
   const [open, setOpen] = useState(false);
+  const [isIncreaseSize, setIsIncreaseSize] = useState(false);
   const outsideRef = useRef(null);
   const {userId, userType} = useUserIdType()
   const [messages, setMessages] = useState([
@@ -25,7 +26,7 @@ const AIChatBot = () => {
   const chatMutation = useMutation({
     mutationFn: (payload) => ChatService(payload),
     onSuccess: (data) => {
-      setMessages(pre => ([...pre, {from: "bot", text: data?.answer, sources: data?.sources}]))
+      setMessages(pre => ([...pre, {from: "bot", text: data?.answer, source: data?.source_file_url}]))
       console.log(data)
     }
   })
@@ -47,6 +48,7 @@ const AIChatBot = () => {
       action: "query",
       question: input,
       [userKeys[userType]]: userId,
+      userType,
       "top_k": 5
     })
     setInput("");
@@ -81,20 +83,25 @@ const AIChatBot = () => {
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
       {open && (
-        <div className="w-80 md:w-96 bg-white shadow-2xl rounded-2xl overflow-hidden border border-gray-200 animate-in slide-in-from-bottom-4 duration-300" ref={outsideRef}>
+        <div className={`w-80 ${isIncreaseSize ? "md:w-120" : "md:w-96"} bg-white shadow-2xl rounded-2xl overflow-hidden border border-gray-200 animate-in slide-in-from-bottom-4 duration-300`} ref={outsideRef}>
           <div className="bg-[#5C1F0E] text-white px-4 py-3 flex justify-between items-center">
             <p className="font-semibold">Munke Assist</p>
-            <button onClick={() => setOpen(false)}>
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex gap-2.5 items-center">
+              <button onClick={() => setIsIncreaseSize(pre => !pre)}>
+                <Maximize2 className="w-5 h-5"/>
+              </button>
+              <button onClick={() => setOpen(false)}>
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
-          <div className="p-4 space-y-3 max-h-80 overflow-y-auto">
+          <div className={`p-4 space-y-3 ${isIncreaseSize ? "max-h-96" : "max-h-80"} overflow-y-auto`}>
             {messages.map((msg, index) => (
               <div
                 key={index}
                 className={`flex items-end gap-2 ${msg.from === "bot" ? "flex-col" : "flex-row"} ${
-                  msg.from === "user" ? "justify-end" : "justify-start"
+                  msg.from === "user" ? "justify-start" : "justify-end"
                 }`}
               >
 
@@ -120,16 +127,15 @@ const AIChatBot = () => {
                 {msg.from === "user" && <div className="w-8" />}
                 <div className="flex flex-col gap-2.5 overflow-x-auto">
                   {msg?.from === "bot" &&
-                    msg?.sources?.length > 0 &&
-                    msg?.sources?.map((item, ind) => (
                       <a
-                        key={ind}
-                        href={item?.file_path}
+                        rel="noreferrer"
+                        target="_blank"
+                        href={msg?.source}
                         className="break-all whitespace-normal text-blue-600 underline"
                       >
-                        {item?.file_path}
+                        {msg?.source}
                       </a>
-                    ))}
+                    }
                 </div>
               </div>
             ))}

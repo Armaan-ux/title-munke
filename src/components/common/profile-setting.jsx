@@ -6,20 +6,17 @@ import { Eye, PencilLine, Upload } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { Separator } from "../ui/separator";
 import { useSidebar } from "../ui/sidebar";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAdminDetails, updateProfileDetails, uploadProfileImageOnS3 } from "../service/userAdmin";
 import { toast } from "react-toastify";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { queryKeys } from "@/utils";
-const url = "https://titlemunke-dev.s3.us-east-1.amazonaws.com/profile-images/admin/2498f428-d0f1-70a1-9356-f84e71634f6ef436ca15-724f-4d57-a5c0-cd4fd377fbd9.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAQFC27MWJMGL3WAGE%2F20251222%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20251222T142431Z&X-Amz-Expires=300&X-Amz-Signature=5092ff338755165fbda5ceb589d8ccb97f9858d58b5f8833a5f8eb8800f8d4fc&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject"
 const uploadToS3 = async (uploadUrl, file) => {
   const type = file.type;
-  const res = await fetch(url, {
+  const binaryData = await file.arrayBuffer()
+  const res = await fetch(uploadUrl, {
     method: "PUT",
-    headers: {
-      "Content-Type": type, // very important
-    },
-    body: file, // raw file
+    body: JSON.stringify(file), // raw file
   });
 
   if (!res.ok) {
@@ -30,6 +27,7 @@ const uploadToS3 = async (uploadUrl, file) => {
 const ProfileSetting = ({ setIsProfile, editProfile }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
+  const queryClient = useQueryClient();
   const {userId, userType, email: userEmail} = useUserIdType();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -63,14 +61,30 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
   const updateProfileMutation = useMutation({
     mutationFn: (payload) => updateProfileDetails(payload),
     onSuccess: (data) => {
-      toast.success(data?.message)
+      if(!profileImage) {
+        toast.success(data?.message);
+        queryClient.invalidateQueries([queryKeys.getUserDetails]);
+        setIsProfile(false)
+      }
+    }
+  })
+
+  const uploadToS3ApiMutation = useMutation({
+    mutationFn: (uploadUrl) => uploadToS3(uploadUrl, profileImage),
+    onSuccess: () => {
+      if(profileImage) {
+        toast.success("Profile changed successfully");
+        queryClient.invalidateQueries([queryKeys.getUserDetails]);
+        setProfileImage(null);
+        setIsProfile(false)
+      }
     }
   })
 
   const S3ApiMutation = useMutation({
     mutationFn: (payload) => uploadProfileImageOnS3(payload),
     onSuccess: (data) => {
-      console.log("data", data)
+      uploadToS3ApiMutation.mutate(data?.uploadUrl)
     }
   });
   
@@ -78,11 +92,11 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
     e.preventDefault();
     const payload = {userId, userType, name, phoneNumber: phone, email: userEmail};
     updateProfileMutation?.mutate(payload);
-    // if(!!profileImage) {
-    //   const fileName = profileImage.name;
-    //   const fileType = profileImage.type;
-    //   S3ApiMutation.mutate({fileName, fileType, userId, userType})
-    // }
+    if(!!profileImage) {
+      const fileName = profileImage.name;
+      const fileType = profileImage.type;
+      S3ApiMutation.mutate({fileName, fileType, userId, userType})
+    }
   }
   return (
     <div className="bg-[#F5F0EC] flex items-start justify-start text-secondary">
@@ -96,7 +110,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
             <div className={`flex gap-10 pt-5 border-t border-gray-200 mb-2 flex-col ${open ? "md:flex-col": "md:flex-row"} lg:flex-row`}>
               <div className="flex flex-col items-center gap-4">
                 <img
-                  src={preview ?? "https://images.unsplash.com/photo-1607746882042-944635dfe10e"}
+                  src={preview ?? getUserDetail?.data?.profileImageUrl}
                   alt="Profile"
                   className="w-60 h-60 rounded-2xl object-cover"
                 />
@@ -298,7 +312,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
           <div className="flex flex-col md:flex-row items-start gap-10 mt-6">
             <div className="flex flex-col items-center gap-4">
               <img
-                src="https://images.unsplash.com/photo-1607746882042-944635dfe10e"
+                src={getUserDetail?.data?.profileImageUrl}
                 alt="Profile"
                 className="w-60 h-60 rounded-2xl object-cover"
               />
@@ -315,7 +329,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                   name="name"
                   placeholder="Current password"
                   className="bg-[#F5F0EC] text-tertiary font-normal border-none focus-visible:ring-0 mt-5 pointer-events-none"
-                  value={"John Doe"}
+                  value={getUserDetail.data?.attributes?.name ?? ""}
                 />
               </div>
 
@@ -329,7 +343,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                   name="phone"
                   placeholder="New password"
                   className="bg-[#F5F0EC] text-tertiary font-normal border-none focus-visible:ring-0 mt-5 pointer-events-none"
-                  value={"+1 658 658 4878"}
+                  value={getUserDetail.data?.attributes?.phone_number ?? ""}
                   //   onChange={(e) => setNewpassword(e.target.value)}
                 />
               </div>
@@ -344,7 +358,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                   name="email"
                   placeholder="Confirm new password"
                   className="bg-[#F5F0EC] text-tertiary font-normal border-none focus-visible:ring-0 mt-5 pointer-events-none"
-                  value={"john@email.com"}
+                  value={getUserDetail.data?.attributes?.email ?? ""}
                   //   onChange={(e) => setConfirmpassword(e.target.value)}
                 />
               </div>

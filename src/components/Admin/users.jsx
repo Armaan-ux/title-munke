@@ -576,7 +576,7 @@ function Agents() {
   const reinviteMutation = useMutation({
     mutationFn: (payload) => reinviteUser(payload),
     onSuccess: () => {
-      toast.success("Reinvite sent successfully");
+      toast.success("Reinvitation sent successfully");
       handleFetchAgentListing(true);
       setHasMore(true);
     }
