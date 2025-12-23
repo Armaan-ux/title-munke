@@ -125,7 +125,7 @@ const AIChatBot = () => {
                 </div>
 
                 {msg.from === "user" && <div className="w-8" />}
-                <div className="flex flex-col gap-2.5 overflow-x-auto">
+                {/* <div className="flex flex-col gap-2.5 overflow-x-auto">
                   {msg?.from === "bot" &&
                       <a
                         rel="noreferrer"
@@ -136,12 +136,12 @@ const AIChatBot = () => {
                         {msg?.source}
                       </a>
                     }
-                </div>
+                </div> */}
               </div>
             ))}
 
             {chatMutation?.isPending && (
-              <div className="flex space-x-1 text-gray-500 text-sm italic">
+              <div className="flex space-x-1 text-gray-500 text-sm italic justify-end">
                 <span className="animate-bounce">.</span>
                 <span
                   className="animate-bounce"
