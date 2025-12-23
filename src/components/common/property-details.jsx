@@ -76,7 +76,7 @@ const pdfDocuments = propertyDetailQuery?.data?.documents?.filter(item => item?.
 
              <Separator />
 
-            <div className="mt-6 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5 opacity-25">
+            <div className="mt-6 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5">
               <div>
                 <p className="font-semibold text-lg text-[#4C0D0D] mb-2">
                   Description
