@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import AddUserModal from "@/components/Modal/AddUserModal";
 import {
   reinviteAgent,
@@ -98,6 +98,8 @@ export default function ManageAgents() {
 function Agents() {
   const navigate = useNavigate();
   const { user } = useUser();
+  const fileInputRef = useRef(null);
+  const [profileImage, setProfileImage] = useState(null)
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [agents, setAgents] = useState([]);
@@ -265,7 +267,10 @@ function Agents() {
       }
     }
   };
-  console.log("user status =====>", user.status)
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setProfileImage(file);
+  };
   return (
     <>
       <AddUserModal
@@ -275,12 +280,15 @@ function Agents() {
         setUser={setAgents}
         agents={agents} // Pass agents to check for duplicates
       />
-      <AddAgentByBrokerModal
-        open={addAgent}
-        onOpenChange={() => {setAddAgent(false); setSelectedUser({})}}
-        setUser={setAgents}
-        selectedUser={selectedUser}
-      />
+      {addAgent &&
+        <AddAgentByBrokerModal
+          open={addAgent}
+          onOpenChange={() => {setAddAgent(false); setSelectedUser({});}}
+          setUser={setAgents}
+          selectedUser={selectedUser}
+          invalidateFun={fetchData}
+        />
+      }
       {/* <div className="flex items-center gap-2 justify-end mb-3">
         <Checkbox
           id="show-deleted-checkbox"
@@ -330,10 +338,17 @@ function Agents() {
             <Download className="w-4 h-4" />
             Download Template
           </Button>
-
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+            accept=".xls,.xlsx"
+          />
           <Button
             variant="outline"
             className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
+            onClick={() => fileInputRef.current?.click()}
           >
             <Upload className="w-4 h-4" />
             Upload Template

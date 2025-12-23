@@ -100,8 +100,8 @@ const AIChatBot = () => {
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`flex items-end gap-2 ${msg.from === "bot" ? "flex-col" : "flex-row"} ${
-                  msg.from === "user" ? "justify-start" : "justify-end"
+                className={`flex items-end gap-2 ${msg.from === "bot" ? "flex-col items-start" : "flex-row"} ${
+                  msg.from === "user" ? "justify-end" : "justify-start"
                 }`}
               >
 

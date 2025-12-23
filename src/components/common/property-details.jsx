@@ -76,13 +76,13 @@ const pdfDocuments = propertyDetailQuery?.data?.documents?.filter(item => item?.
 
              <Separator />
 
-            <div className="mt-6 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5">
+            <div className={`mt-6 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5`}>
               <div>
                 <p className="font-semibold text-lg text-[#4C0D0D] mb-2">
                   Description
                 </p>
 
-                <div className="grid grid-cols-3 gap-8 text-sm text-[#4C0D0D]">
+                <div className={`grid grid-cols-3 gap-8 text-sm text-[#4C0D0D] ${propertyDetailQuery?.data?.status !== "SUCCESS" ? "opacity-25 pointer-events-none" : ""}`}>
                   <div>
                     <p className="font-semibold uppercase text-sm">Location</p>
                     <p className="text-[#7A7676]">
@@ -123,7 +123,7 @@ const pdfDocuments = propertyDetailQuery?.data?.documents?.filter(item => item?.
                   </div>
                 </div>
 
-                <div className="mt-4 space-y-2">
+                <div className={`mt-4 space-y-2 ${propertyDetailQuery?.data?.status !== "SUCCESS" ? "opacity-25 pointer-events-none" : ""}`}>
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div className="border border-[#F1EDEA] rounded-lg p-4 bg-[#FEFAF5]">
                       <p className="font-semibold uppercase">Current Owner</p>
@@ -142,6 +142,8 @@ const pdfDocuments = propertyDetailQuery?.data?.documents?.filter(item => item?.
                     </p>
                   </div>
                 </div>
+
+
                 <div className="mt-8">
                   <p className="font-semibold text-lg text-[#4C0D0D] mb-3">
                     Document Processing Status
@@ -230,6 +232,10 @@ const pdfDocuments = propertyDetailQuery?.data?.documents?.filter(item => item?.
                 <Button
                   variant="outline"
                   className="border border-[#4C0D0D] text-[#4C0D0D] hover:bg-[#4C0D0D]/5 px-5 rounded-lg"
+                  disabled={propertyDetailQuery?.data?.status !== "SUCCESS"}
+                  onClick={() => downloadCSV(pdfDocuments?.map?.((item, index) => (
+                    {"Sr. No.": index + 1, "Document Type": `Document ${index + 1}`, "Date Recorded": format(item?.lastEdited, "dd MMM yyyy"), "Download Link": item?.url}
+                  )))}
                 >
                   Download CSV
                 </Button>

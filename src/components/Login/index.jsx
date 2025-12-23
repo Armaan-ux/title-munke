@@ -9,7 +9,7 @@ import { ArrowRight, ChevronLeft, Eye, EyeOff, Loader } from "lucide-react";
 import { motion } from "motion/react";
 import VerifyEmail from "../verify-email";
 import { useMutation } from "@tanstack/react-query";
-import { confirmEmail, resendConfirmationCode } from "../service/userAdmin";
+import { confirmEmail, resendConfirmationCode, updateUserStatus } from "../service/userAdmin";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -63,7 +63,10 @@ function Login() {
         setIsReset(true);
         return;
       }
-
+      console.log("==========>", signedInUser)
+      const userId = signedInUser?.attributes?.sub;
+      const userType = signedInUser?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
+      await updateUserStatus({userId, userType})
       if (
         signedInUser &&
         signedInUser.signInUserSession &&

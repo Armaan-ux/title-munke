@@ -6,12 +6,12 @@ import { convertFromTimestamp } from "@/utils";
 import { usePdfDownload } from "@/hooks/usePdfDownload";
 import { useEffect, useRef } from "react";
 
-export function InvoiceModalDummy({ open, onClose, invoice }) {
+export function InvoiceModalDummy({ open, onClose, invoice, isPrint=true }) {
 
   const {handleDownload, isDownloading} = usePdfDownload();
   const ref = useRef(null);
   useEffect(() => {
-      if(onClose) {
+      if(onClose && isPrint) {
         setTimeout(() => handleDownload(ref), 300);
         setTimeout(onClose, 1000);
       }

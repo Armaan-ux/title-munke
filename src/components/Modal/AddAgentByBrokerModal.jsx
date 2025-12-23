@@ -27,8 +27,8 @@ import { toast } from "react-toastify";
 import { useUser } from "@/context/usercontext";
 import { handleCreateAuditLog } from "@/utils";
 import { useMutation } from "@tanstack/react-query";
-import { updateBrokerDetail } from "../service/userAdmin";
-export default function AddAgentByBrokerModal({ open, onOpenChange, setUser, selectedUser }) {
+import { updateAgentDetail } from "../service/userAdmin";
+export default function AddAgentByBrokerModal({ open, onOpenChange, setUser, selectedUser, invalidateFun }) {
   const {user} = useUser();
   const { userId } = useUserIdType();
   const {control, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({
@@ -41,18 +41,18 @@ export default function AddAgentByBrokerModal({ open, onOpenChange, setUser, sel
   useEffect(() => {
     if (isUpdate) {
       reset({
-        fullName: selectedUser?.name || "",
+        name: selectedUser?.agentName || "",
         email: selectedUser?.email || "",
         searchLimit: selectedUser?.searchLimit || "",
       });
     }
   }, [selectedUser, reset, isUpdate]);
 
-const updateBrokerMutation = useMutation({
-    mutationFn: (payload) => updateBrokerDetail(payload),
+const updateAgentMutation = useMutation({
+    mutationFn: (payload) => updateAgentDetail(payload),
     onSuccess: () => {
-      // invalidateFun?.();
       onOpenChange();
+      invalidateFun();
     }, 
     onError: (error) => {
       toast.error(error?.response?.data?.error || "Something went wrong while adding new user. Please try again.");
@@ -62,6 +62,10 @@ const updateBrokerMutation = useMutation({
   const onSubmit = async (data) => {
       try {
         const { name, email, searchLimit } = data;
+        if(isUpdate) {
+          updateAgentMutation.mutate({ name, email, searchLimit, id: selectedUser?.id })
+          return;
+        }
           const response = await createAgentForBroker(
            userId,
             name,
@@ -196,7 +200,7 @@ const updateBrokerMutation = useMutation({
               Cancel
             </Button>
             <Button className="h-[38px] w-[50%] px-5 bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[14px] font-medium rounded-md" disabled={isSubmitting}>
-              Invite Agent
+              {isUpdate ? "Update Agent" : "Invite Agent"}
             </Button>
           </div>
         </form>

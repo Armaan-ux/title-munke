@@ -16,7 +16,7 @@ const uploadToS3 = async (uploadUrl, file) => {
   const binaryData = await file.arrayBuffer()
   const res = await fetch(uploadUrl, {
     method: "PUT",
-    body: JSON.stringify(file), // raw file
+    body: file, // raw file
   });
 
   if (!res.ok) {

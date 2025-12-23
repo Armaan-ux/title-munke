@@ -24,9 +24,12 @@ import { getAgentSearches, getSearchedStatus } from "../service/userAdmin";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { CenterLoader } from "./Loader";
 import ShowError from "./ShowError";
+import { useNavigate } from "react-router-dom";
+import { Eye, View } from "lucide-react";
 
 function History({isAll=false}) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [searchHistories, setSearchHistories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -204,6 +207,7 @@ function History({isAll=false}) {
                     <TableHead>Date / Time</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Download Link</TableHead>
+                    <TableHead>Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -247,6 +251,7 @@ function History({isAll=false}) {
                                 ""
                               )}
                             </TableCell>
+                            <TableCell onClick={() => navigate(`/agent/property-details/${item?.searchId}`)}><Eye /></TableCell>
                       </TableRow>
                     ))
                   }

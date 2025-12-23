@@ -72,6 +72,7 @@ export const CONSTANTS = { // should always be copied from title-munke-serverles
     updateProfileDetails: "updateProfileDetails",
     uploadProfileImageOnS3: "uploadProfileImageOnS3",
     uploadProfileImageOnS3: "uploadProfileImageOnS3",
+    UPDATE_USER_STATUS:"updateUserStatusCommon"
   },
   USER_TYPES: {
     AGENT: "agent",
@@ -1145,6 +1146,21 @@ export async function updateProfileDetails(data) {
 }
 export async function uploadProfileImageOnS3(data) {
   const action = CONSTANTS?.ACTIONS?.uploadProfileImageOnS3
+  const payload = {
+    body: {
+      action,
+      ...data
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/users"
+  )
+}
+export async function updateUserStatus(data) {
+  const action = CONSTANTS?.ACTIONS?.UPDATE_USER_STATUS
   const payload = {
     body: {
       action,

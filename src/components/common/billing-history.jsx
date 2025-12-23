@@ -109,6 +109,8 @@ const BillingHistory = () => {
             <InvoiceModalDummy
               open={invoiceHistoryModal}
               invoice={selectInvoice}
+              onClose={() => {setInvoiceHistoryModal(false); setSelectedInvoice({})}}
+              isPrint={false}
             />
           </DialogContent>
         </Dialog>
