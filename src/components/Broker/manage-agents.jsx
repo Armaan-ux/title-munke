@@ -13,6 +13,7 @@ import {
   getTopPerformerAgent,
   getUnassignedAgents,
   reinviteUser,
+  bulkAgentUpload,
 } from "@/components/service/userAdmin";
 import { useUser } from "@/context/usercontext";
 import { fetchAgentsWithSearchCount } from "@/components/service/broker";
@@ -112,6 +113,21 @@ function Agents() {
   const [pendingSearch, setPendingSearch] = useState(0);
   const [topPerformer, setTopPerformer] = useState("");
   const [addAgent, setAddAgent] = useState(false);
+  const bulkUploadMutation = useMutation({
+    mutationFn: (file) => bulkAgentUpload(file),
+    onSuccess: () => {
+      toast("File uploaded successfully");
+      if (fileInputRef?.current?.value) {
+        fileInputRef.current.value = "";
+      }
+    },
+    onError: (err) => {
+      toast(err?.response?.data?.message);
+      if (fileInputRef?.current?.value) {
+        fileInputRef.current.value = "";
+      }
+    }
+  })
 
   const fetchData = useCallback(async () => {
     if (user?.attributes?.sub) {
@@ -269,7 +285,8 @@ function Agents() {
   };
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    setProfileImage(file);
+    // setProfileImage(file);
+    bulkUploadMutation.mutate(file)
   };
   return (
     <>
@@ -346,6 +363,7 @@ function Agents() {
             accept=".xls,.xlsx"
           />
           <Button
+            disabled={bulkUploadMutation.isPending}
             variant="outline"
             className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
             onClick={() => fileInputRef.current?.click()}
@@ -448,7 +466,7 @@ function Agents() {
                         className="text-sm"
                         variant="ghost"
                         onClick={() =>
-                          navigate(`/broker/agent-property-details/123`)
+                          navigate(`/broker/agent-property-details/${item?.id}`)
                         }
                       >
                         <Eye />

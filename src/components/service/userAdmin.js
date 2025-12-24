@@ -71,8 +71,8 @@ export const CONSTANTS = { // should always be copied from title-munke-serverles
     LIST_AUDIT_LOG_FOR_BROKER: "listAuditLogsForBroker",
     updateProfileDetails: "updateProfileDetails",
     uploadProfileImageOnS3: "uploadProfileImageOnS3",
-    uploadProfileImageOnS3: "uploadProfileImageOnS3",
-    UPDATE_USER_STATUS:"updateUserStatusCommon"
+    UPDATE_USER_STATUS:"updateUserStatusCommon",
+    ADD_BROKER_BULK:"add-broker-bulk",
   },
   USER_TYPES: {
     AGENT: "agent",
@@ -1159,6 +1159,7 @@ export async function uploadProfileImageOnS3(data) {
     "/users"
   )
 }
+
 export async function updateUserStatus(data) {
   const action = CONSTANTS?.ACTIONS?.UPDATE_USER_STATUS
   const payload = {
@@ -1173,4 +1174,24 @@ export async function updateUserStatus(data) {
     "error in " + action,
     "/users"
   )
+}
+
+export async function bulkAgentUpload(file) {
+  const action = CONSTANTS?.ACTIONS?.ADD_BROKER_BULK;
+
+  const formData = new FormData();
+  formData.append("action", action);
+  formData.append("file", file); // File object from input
+
+  const payload = {
+    body: formData,
+    headers: {}
+  };
+
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "Error in " + action,
+    "/users"
+  );
 }
