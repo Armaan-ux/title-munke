@@ -82,7 +82,7 @@ const pdfDocuments = propertyDetailQuery?.data?.documents?.filter(item => item?.
                   Description
                 </p>
 
-                <div className={`grid grid-cols-3 gap-8 text-sm text-[#4C0D0D] ${propertyDetailQuery?.data?.status !== "SUCCESS" ? "opacity-25 pointer-events-none" : ""}`}>
+                <div className={`grid grid-cols-3 gap-8 text-sm text-[#4C0D0D] ${propertyDetailQuery?.data?.status !== "SUCCESS" ? "opacity-5 pointer-events-none" : ""}`}>
                   <div>
                     <p className="font-semibold uppercase text-sm">Location</p>
                     <p className="text-[#7A7676]">
@@ -123,7 +123,7 @@ const pdfDocuments = propertyDetailQuery?.data?.documents?.filter(item => item?.
                   </div>
                 </div>
 
-                <div className={`mt-4 space-y-2 ${propertyDetailQuery?.data?.status !== "SUCCESS" ? "opacity-25 pointer-events-none" : ""}`}>
+                <div className={`mt-4 space-y-2 ${propertyDetailQuery?.data?.status !== "SUCCESS" ? "opacity-5 pointer-events-none" : ""}`}>
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div className="border border-[#F1EDEA] rounded-lg p-4 bg-[#FEFAF5]">
                       <p className="font-semibold uppercase">Current Owner</p>
