@@ -199,7 +199,7 @@ const updateAgentMutation = useMutation({
             >
               Cancel
             </Button>
-            <Button className="h-[38px] w-[50%] px-5 bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[14px] font-medium rounded-md" disabled={isSubmitting}>
+            <Button className="h-[38px] w-[50%] px-5 bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[14px] font-medium rounded-md" disabled={isSubmitting || updateAgentMutation?.isPending}>
               {isUpdate ? "Update Agent" : "Invite Agent"}
             </Button>
           </div>
