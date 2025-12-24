@@ -69,7 +69,7 @@ export const brokerRoutes = [
   { path: "broker/property-details/:id", component: BrokerPropertyDetails },
   {
     path: "broker/agent-property-details/:id",
-    component: AgentPropertyDetails,
+    component: PropertySearch,
   },
   { path: "broker/billing-history", component: BillingHistory },
   { path: "broker/email-template", component: EmailTemplate },
