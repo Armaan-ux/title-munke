@@ -192,7 +192,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                   <Button
                     variant="secondary"
                     // className="bg-tertiary text-white hover:bg-[#9C3D26] hover:text-white rounded-md px-12 mb-6 w-[20%]"
-                    disabled={updateProfileMutation.isPending}
+                    disabled={updateProfileMutation.isPending || uploadToS3ApiMutation?.isPending || S3ApiMutation?.isPending}
                     size="lg"
                   >
                     Save Changes
