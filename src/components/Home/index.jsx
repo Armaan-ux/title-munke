@@ -45,6 +45,7 @@ import { Controller, useForm } from "react-hook-form";
 import { demoRequestSchema } from "@/formSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormValidationError } from "../common/FormValidationError";
+import { toast } from "react-toastify";
 const defaultDemoData = {
     name: "",
     state: "",
@@ -63,7 +64,10 @@ export default function Home() {
   });
   const demoReqMutation = useMutation({
     mutationFn: (payload) => demoRequest(payload),
-    onSuccess: () => reset()
+    onSuccess: () => {
+      reset();
+      toast.success("Demo request successfully")
+    }
   })
   const scrollToSection = (id) => {
     const section = document.getElementById(id);
