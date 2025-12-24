@@ -11,6 +11,7 @@ import {
 } from "../components/service/userAdmin";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { handleCreateAuditLog } from "@/utils";
 
 const UserContext = createContext();
 
@@ -143,6 +144,7 @@ export const UserProvider = ({ children }) => {
   };
 
   const signOut = async () => {
+    await handleCreateAuditLog("logout", { detail: `${userType} logged out successfully` }, userType === "agent");
     await Auth.signOut();
     setUser(null);
     setIsAuthenticated(false);

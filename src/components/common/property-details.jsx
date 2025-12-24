@@ -7,13 +7,15 @@ import { Eye } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import BackBtn from "../back-btn";
 import { useQuery } from "@tanstack/react-query";
-import { queryKeys } from "@/utils";
+import { handleCreateAuditLog, queryKeys } from "@/utils";
 import { getSearchedStatus } from "../service/userAdmin";
 import { format } from "date-fns-tz";
 import { CenterLoader } from "./Loader";
 import ShowError from "./ShowError";
 import { useDownloadCsv } from "@/hooks/useDownloadCsv";
+import { useUserIdType } from "@/hooks/useUserIdType";
 const PropertyDetails = () => {
+  const {userType} = useUserIdType();
   const navigate = useNavigate();
   const {id} = useParams();
   const {downloadCSV} = useDownloadCsv()
@@ -239,7 +241,9 @@ const pdfDocuments = propertyDetailQuery?.data?.documents?.filter(item => item?.
                 >
                   Download CSV
                 </Button>
-                <Button className="bg-[#4C0D0D] text-white hover:bg-[#4C0D0D]/90 px-5 rounded-lg" disabled={!propertyDetailQuery?.data?.zip_url}>
+                <Button className="bg-[#4C0D0D] text-white hover:bg-[#4C0D0D]/90 px-5 rounded-lg" disabled={!propertyDetailQuery?.data?.downloadLink} 
+                  onClick={() =>  handleCreateAuditLog("DOWNLOAD",{ zipUrl: propertyDetailQuery?.data?.downloadLink }, userType === "agent")}
+                >
                   <a href={propertyDetailQuery?.data?.zip_url} target="_blank" rel="noreferrer">Download All as ZIP</a>
                 </Button>
               </div>
