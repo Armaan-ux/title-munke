@@ -10,6 +10,12 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "../ui/badge";
+import { useUserIdType } from "@/hooks/useUserIdType";
+import { useQuery } from "@tanstack/react-query";
+import { listAuditLogsByUserId } from "../service/userAdmin";
+import { CenterLoader } from "../common/Loader";
+
+import { queryKeys } from "@/utils";
 
 const dummyData = [
   {
@@ -36,6 +42,16 @@ const dummyData = [
 ];
 
 export default function AuditLogs() {
+
+  const {userId} = useUserIdType();
+  const {data: auditLogs, isPending: isLogsPending} = useQuery({
+    queryKey: [queryKeys.listAuditLogsByUserId],
+    queryFn: () => listAuditLogsByUserId(userId),
+    skip: !userId
+  })
+  const logs = auditLogs?.data?.items || []
+
+
     return (
        <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
       
@@ -45,28 +61,43 @@ export default function AuditLogs() {
               <TableHeader className="bg-[#F5F0EC]" >
                 <TableRow>
                   <TableHead className="w-[100px]">Sr. No.</TableHead>
-                  <TableHead>Date / Time</TableHead>
-                  <TableHead>Action Performed</TableHead>
+                  {/* <TableHead>Action Performed</TableHead> */}
                   <TableHead>Details</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>Date & Time</TableHead>
+                  {/* <TableHead>Status</TableHead> */}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {
-                  dummyData?.length === 0 ?
+                  isLogsPending ?
+                  <TableRow >
+                    <TableCell colSpan={5} className="font-medium text-center py-10"><CenterLoader /></TableCell>
+                  </TableRow>
+                  :
+                  logs?.length === 0 ?
                   <TableRow >
                     <TableCell colSpan={5} className="font-medium text-center py-10">No Records found.</TableCell>
                   </TableRow>
                   :
-                  dummyData?.map((item, index) => (
+                  logs?.map((item, index) => (
                     <TableRow key={item.id}>
                       <TableCell className="font-medium">{index + 1}</TableCell>
+                      {/* <TableCell>{item.action}</TableCell> */}
+                      <TableCell className="whitespace-pre-wrap" >
+                        {(() => {
+                          try {
+                            const parsed = JSON.parse(item.detail);
+                            return typeof parsed === "object" && parsed !== null
+                              ? Object.values(parsed).join(", ")
+                              : item.detail;
+                          } catch {
+                            return item.detail;
+                          }
+                        })()}
+                      </TableCell>
                       <TableCell>{getFormattedDateTime(item?.createdAt)}</TableCell>
-                      <TableCell>{item.action}</TableCell>
-                      <TableCell>{item.details}</TableCell>
                       {/* <TableCell>{item.status}</TableCell> */}
-                      <TableCell>
-                        {/* {item.status} */}
+                      {/* <TableCell>
                           <Badge  className={`!text-sm ${item?.status === "Success" || item?.status === "Completed"
                             ? "bg-[#E9F3E9] text-[#1E8221]" :
                             item?.status === "Updated" ?
@@ -74,7 +105,7 @@ export default function AuditLogs() {
                             : "bg-[#FFF3D9] text-[#A2781E]"} text-[13px] font-medium px-3 py-1 rounded-full`}>
                           {item?.status}
                         </Badge>
-                      </TableCell>
+                      </TableCell> */}
                     </TableRow> 
                   ))
                 }

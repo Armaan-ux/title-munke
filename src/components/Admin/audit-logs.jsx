@@ -89,7 +89,7 @@ function AuditLogs() {
                       <TableHead className="w-[100px]">Sr. No.</TableHead>
                       <TableHead>Details</TableHead>
                       <TableHead>Email</TableHead>
-                      <TableHead>Time</TableHead>
+                      <TableHead>Date & Time</TableHead>
                       {/* <TableHead>Action</TableHead> */}
                     </TableRow>
                   </TableHeader>

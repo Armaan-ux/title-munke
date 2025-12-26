@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getFormattedDateTime } from "@/utils";
+import { getFormattedDateTime, queryKeys } from "@/utils";
 import {
   Table,
   TableBody,
@@ -9,22 +9,36 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { useUserIdType } from "@/hooks/useUserIdType";
+import { useQuery } from "@tanstack/react-query";
+import { listAuditLogsByUserId } from "../service/userAdmin";
+import Loader from "../Loader";
+import { CenterLoader } from "../common/Loader";
 
 function AuditLogs() {
   //   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const {userId} = useUserIdType();
 
-  const logs = [
-    {
-      id: "1",
-      detail: "Agent logged in successfully",
-      email: "6Wv6o@example.com",
-      status: "Success",
-      date: "2023-03-01T00:00:00.000Z",
-      action: "Login",
-    },
-  ];
+  // const logs = [
+  //   {
+  //     id: "1",
+  //     detail: " logged in successfully",
+  //     email: "6Wv6o@example.com",
+  //     status: "Success",
+  //     date: "2023-03-01T00:00:00.000Z",
+  //     action: "Login",
+  //   },
+  // ];
+
+  const {data: auditLogs, isPending: isLogsPending} = useQuery({
+    queryKey: [queryKeys.listAuditLogsByUserId],
+    queryFn: () => listAuditLogsByUserId(userId),
+    skip: !userId
+  })
+  const logs = auditLogs?.data?.items || []
+
 
   return (
     <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
@@ -36,11 +50,24 @@ function AuditLogs() {
               <TableHead>Date & Time </TableHead>
               <TableHead>Action Performed</TableHead>
               <TableHead>Details</TableHead>
-              <TableHead>Status</TableHead>
+              {/* <TableHead>Status</TableHead> */}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {logs?.length === 0 ? (
+            
+            
+            {
+            isLogsPending  ? 
+            <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="font-medium text-center py-10"
+                >
+                  <CenterLoader />
+                </TableCell>
+              </TableRow>
+              :
+            logs?.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={5}
@@ -54,11 +81,22 @@ function AuditLogs() {
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">{index + 1}</TableCell>
                   <TableCell className="font-medium">
-                    {getFormattedDateTime(item.date)}
+                    {getFormattedDateTime(item.createdAt)}
                   </TableCell>
                   <TableCell>{item?.action}</TableCell>
-                  <TableCell>{item.detail}</TableCell>
                   <TableCell>
+  {(() => {
+    try {
+      const parsed = JSON.parse(item.detail);
+      return typeof parsed === "object" && parsed !== null
+        ? Object.values(parsed).join(", ")
+        : item.detail;
+    } catch {
+      return item.detail;
+    }
+  })()}
+</TableCell>
+                  {/* <TableCell>
                     <Badge
                       className={`${
                         item?.status === "Success" ||
@@ -69,7 +107,7 @@ function AuditLogs() {
                     >
                       {item?.status}
                     </Badge>
-                  </TableCell>
+                  </TableCell> */}
                 </TableRow>
               ))
             )}

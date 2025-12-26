@@ -81,9 +81,9 @@ const AIChatBot = () => {
   };
   useOnClickOutside(outsideRef, () => setOpen(false))
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3" ref={outsideRef} >
       {open && (
-        <div className={`w-80 ${isIncreaseSize ? "md:w-120" : "md:w-96"} bg-white shadow-2xl rounded-2xl overflow-hidden border border-gray-200 animate-in slide-in-from-bottom-4 duration-300`} ref={outsideRef}>
+        <div className={`w-80 ${isIncreaseSize ? "md:w-120" : "md:w-96"} bg-white shadow-2xl rounded-2xl overflow-hidden border border-gray-200 animate-in slide-in-from-bottom-4 duration-300`} >
           <div className="bg-[#5C1F0E] text-white px-4 py-3 flex justify-between items-center">
             <p className="font-semibold">Munke Assist</p>
             <div className="flex gap-2.5 items-center">
@@ -96,7 +96,7 @@ const AIChatBot = () => {
             </div>
           </div>
 
-          <div className={`p-4 space-y-3 ${isIncreaseSize ? "max-h-96" : "max-h-80"} overflow-y-auto`}>
+          <div className={`p-4 space-y-3 ${isIncreaseSize ? "max-h-[32rem]" : "max-h-80"} overflow-y-auto`}>
             {messages.map((msg, index) => (
               <div
                 key={index}
@@ -124,7 +124,7 @@ const AIChatBot = () => {
                   {msg.text}
                 </div>
 
-                {msg.from === "user" && <div className="w-8" />}
+                {/* {msg.from === "user" && <div className="w-8" />} */}
                 {/* <div className="flex flex-col gap-2.5 overflow-x-auto">
                   {msg?.from === "bot" &&
                       <a
@@ -141,16 +141,16 @@ const AIChatBot = () => {
             ))}
 
             {chatMutation?.isPending && (
-              <div className="flex space-x-1 text-gray-500 text-sm italic justify-end">
-                <span className="animate-bounce">.</span>
+              <div className="flex space-x-1 text-gray-500 text-sm italic justify-start p-3 pb-0">
+                <span className="animate-bounce font-bold text-2xl">.</span>
                 <span
-                  className="animate-bounce"
+                  className="animate-bounce font-bold text-2xl"
                   style={{ animationDelay: "0.2s" }}
                 >
                   .
                 </span>
                 <span
-                  className="animate-bounce"
+                  className="animate-bounce font-bold text-2xl"
                   style={{ animationDelay: "0.4s" }}
                 >
                   .

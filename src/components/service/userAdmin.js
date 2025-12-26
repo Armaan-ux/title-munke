@@ -73,6 +73,10 @@ export const CONSTANTS = { // should always be copied from title-munke-serverles
     uploadProfileImageOnS3: "uploadProfileImageOnS3",
     UPDATE_USER_STATUS:"updateUserStatusCommon",
     ADD_BROKER_BULK:"add-broker-bulk",
+    LIST_TOTAL_SEARCHES_BY_USER_ID: "listTotalSearchesByUserId",
+    LIST_TOTAL_AUDIT_LOGS_BY_USER_ID: "listTotalAuditLogsByUserId",
+    LIST_AUDIT_LOGS_BY_USER_ID: "listAuditLogsByUserId",
+
   },
   USER_TYPES: {
     AGENT: "agent",
@@ -89,11 +93,28 @@ export const CONSTANTS = { // should always be copied from title-munke-serverles
   }
 };
 
+
+async function getAuthToken() {
+  try {
+    return (await Auth?.currentSession())?.getIdToken()?.getJwtToken();
+  } catch (error) {
+    console.error("Error getting auth token:", error);
+    return null;
+  }
+}
+
 async function callUserAdminApi(payload, successMessage, errorMessage, path = userPath) {
   try {
     // The Amplify API library automatically looks up the endpoint from aws-exports.js
     // and, most importantly, signs the request with the current user's credentials.
-    const response = await API.post(apiName, path, payload);
+    const response = await API.post(apiName, path, {
+      ...payload,
+      headers: {
+        "Content-Type": "application/json",
+        ...(await getAuthToken()) ? 
+        { "Authorization": "Bearer " + (await getAuthToken()) } : {},
+      }
+    });
     console.log(successMessage, response);
     return response;
   } catch (error) {
@@ -1192,6 +1213,57 @@ export async function bulkAgentUpload(file) {
     payload,
     "Success in " + action,
     "Error in " + action,
-    "/users"
+  );
+}
+
+export async function listTotalAuditLogsByUserId(userId) {
+  const action = CONSTANTS?.ACTIONS?.LIST_TOTAL_AUDIT_LOGS_BY_USER_ID;
+
+
+  const payload = {
+    body: {
+      action,
+      userId
+    }
+  };
+
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "Error in " + action,
+  );
+}
+export async function listTotalSearchesByUserId(userId) {
+  const action = CONSTANTS?.ACTIONS?.LIST_TOTAL_SEARCHES_BY_USER_ID;
+
+  const payload = {
+    body: {
+      action,
+      userId
+    }
+  };
+
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "Error in " + action,
+  );
+}
+
+
+export async function listAuditLogsByUserId(userId) {
+  const action = CONSTANTS?.ACTIONS?.LIST_AUDIT_LOGS_BY_USER_ID;
+
+  const payload = {
+    body: {
+      action,
+      userId
+    }
+  };
+
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "Error in " + action,
   );
 }

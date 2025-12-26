@@ -110,7 +110,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
             <div className={`flex gap-10 pt-5 border-t border-gray-200 mb-2 flex-col ${open ? "md:flex-col": "md:flex-row"} lg:flex-row`}>
               <div className="flex flex-col items-center gap-4">
                 <img
-                  src={preview ?? getUserDetail?.data?.profileImageUrl}
+                  src={preview || getUserDetail?.data?.profileImageUrl || "/dummy-profile.png"}
                   alt="Profile"
                   className="w-60 h-60 rounded-2xl object-cover"
                 />
@@ -312,7 +312,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
           <div className="flex flex-col md:flex-row items-start gap-10 mt-6">
             <div className="flex flex-col items-center gap-4">
               <img
-                src={getUserDetail?.data?.profileImageUrl}
+                src={getUserDetail?.data?.profileImageUrl || "/dummy-profile.png"}
                 alt="Profile"
                 className="w-60 h-60 rounded-2xl object-cover"
               />

@@ -16,6 +16,9 @@ export const queryKeys = {
   auditLogAgent: "auditLogAgent",
   propertyDetail: "propertyDetail",
   getUserDetails: "getUserDetails",
+  listTotalSearchesByUserId: "listTotalSearchesByUserId",
+  listTotalAuditLogsByUserId: "listTotalAuditLogsByUserId",
+  listAuditLogsByUserId: "listAuditLogsByUserId"
 }
 const months = {
   0: "Jan",

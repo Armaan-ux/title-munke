@@ -11,11 +11,34 @@ import SubscriptionFailedModal from "@/components/Modal/SubscriptionFailedModal"
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import IndividualBilling from "./individual-billing";
 
+
+import { useUserIdType } from "@/hooks/useUserIdType";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "@/utils";
+import { listTotalAuditLogsByUserId, listTotalSearchesByUserId } from "@/components/service/userAdmin";
+
 const IndividualDashboard = () => {
   const navigate = useNavigate();
   const [agents, setAgents] = useState([]);
   const [searchParams] = useSearchParams();
   const isCardAdded = searchParams.get("isCardAdded");
+
+
+  const {userId} = useUserIdType();
+
+  const {data: agentSearches} = useQuery({
+    queryKey: [queryKeys.listTotalSearchesByUserId],
+    queryFn: () => listTotalSearchesByUserId(userId),
+    skip: !userId
+  })
+
+  const {data: agentAuditLogs} = useQuery({
+    queryKey: [queryKeys.listTotalAuditLogsByUserId],
+    queryFn: () => listTotalAuditLogsByUserId(userId),
+    skip: !userId
+  })
+
+
   useEffect(() => {
     if(isCardAdded) {
       setPaymentModal(false);
@@ -48,7 +71,6 @@ const IndividualDashboard = () => {
   const inactiveAgents = agents.filter(
     (agent) => agent.status === "INACTIVE"
   ).length;
-  console.log("user ===> ", user?.pool?.clientId)
   return (
     <div className="my-4">
       {/* cards */}
@@ -57,7 +79,7 @@ const IndividualDashboard = () => {
           <div>
             <p className="mb-4 text-coffee-light font-medium"> Total Search</p>
             <p className="text-4xl font-semibold text-tertiary">
-              {totalAgents}
+              {agentSearches?.data?.totalSearches}
             </p>
           </div>
           <div className="bg-white rounded-full p-3.5">
@@ -68,7 +90,7 @@ const IndividualDashboard = () => {
           <div>
             <p className="mb-4 text-coffee-light font-medium"> Audit Logs</p>
             <p className="text-4xl font-semibold text-tertiary">
-              {activeAgents}
+              {agentAuditLogs?.data?.totalAuditLogs}
             </p>
           </div>
           <div className="bg-white rounded-full p-3.5">

@@ -40,11 +40,11 @@ export default function AppHeader() {
         {/* <img src="/dummy-profile.png" alt="profile" className="w-11" /> */}
         {/* <ShieldUser /> */}
         <img
-          src={getUserDetail?.data?.profileImageUrl ?? "/dummy-profile.png"}
+          src={getUserDetail?.data?.profileImageUrl || "/dummy-profile.png"}
           alt="User"
           className="w-10 h-10 rounded-full object-cover"
         />
-        <p>{getUserDetail?.data?.attributes?.name ?? ""}</p>
+        <p>{getUserDetail?.data?.attributes?.name || ""}</p>
       </div>
     </div>
   );

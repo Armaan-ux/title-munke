@@ -4,19 +4,36 @@ import { Button } from "@/components/ui/button";
 import History from "@/components/common/history";
 import Search from "@/components/common/search";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "@/utils";
+import { listTotalAuditLogsByUserId, listTotalSearchesByUserId } from "@/components/service/userAdmin";
+import { useUserIdType } from "@/hooks/useUserIdType";
 
 const BrokerDashboard = () => {
 
+  const {userId} = useUserIdType();
+
+  const {data: agentSearches} = useQuery({
+    queryKey: [queryKeys.listTotalSearchesByUserId],
+    queryFn: () => listTotalSearchesByUserId(userId),
+    skip: !userId
+  })
+
+  const {data: agentAuditLogs} = useQuery({
+    queryKey: [queryKeys.listTotalAuditLogsByUserId],
+    queryFn: () => listTotalAuditLogsByUserId(userId),
+    skip: !userId
+  })
 
   return (
     <div className="my-4" >
 
         {/* cards */}
-        {/* <div className="flex *:basis-1/2 gap-5 *:rounded-2xl *:bg-[#F5F0EC] mb-4" >
+        <div className="flex *:basis-1/2 gap-5 *:rounded-2xl *:bg-[#F5F0EC] mb-4" >
           <div className="p-5 flex justify-between items-end " >
             <div>
               <p className="mb-4 text-secondary" > Total Searches</p>
-              <p className="text-4xl font-semibold text-tertiary" >23</p>
+              <p className="text-4xl font-semibold text-tertiary" >{agentSearches?.data?.totalSearches}</p>
             </div>
             <div className="bg-white rounded-full p-3.5" >
               <FileSearch2 className="text-tertiary" />
@@ -25,13 +42,13 @@ const BrokerDashboard = () => {
           <div className="p-5 flex justify-between items-end " >
             <div>
               <p className="mb-4 text-secondary" > Audit Logs</p>
-              <p className="text-4xl font-semibold text-tertiary" >23</p>
+              <p className="text-4xl font-semibold text-tertiary" >{agentAuditLogs?.data?.totalAuditLogs}</p>
             </div>
             <div className="bg-white rounded-full p-3.5" >
               <Logs className="text-tertiary" />
             </div>
           </div>
-        </div> */}
+        </div>
 
         {/* Search */}
         <Search />

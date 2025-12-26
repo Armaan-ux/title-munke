@@ -33,7 +33,7 @@ function AuditLogsAgent() {
                 {/* <TableHead>Action</TableHead> */}
                 <TableHead>Details</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Time</TableHead>
+                <TableHead>Date & Time</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

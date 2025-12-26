@@ -66,7 +66,10 @@ export default function Home() {
     mutationFn: (payload) => demoRequest(payload),
     onSuccess: () => {
       reset();
-      toast.success("Demo request successfully")
+      toast.success("Request submitted successfully")
+    },
+    onError: () => {
+      toast.error("Request submission failed")
     }
   })
   const scrollToSection = (id) => {
@@ -719,8 +722,10 @@ export default function Home() {
                 size="lg"
                 className="text-tertiary bg-coffee-bg-foreground hover:bg-coffee-bg-foreground/90 hover:scale-105"
                 disabled={demoReqMutation.isPending}
-              >
-                Submit <ArrowRight />
+              > {
+                demoReqMutation.isPending ? "Submitting..." : "Submit"
+              }
+                 <ArrowRight />
               </Button>
             </div>
           </form>
