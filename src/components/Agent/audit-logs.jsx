@@ -16,6 +16,7 @@ import { listAuditLogsByUserId } from "../service/userAdmin";
 import { CenterLoader } from "../common/Loader";
 
 import { queryKeys } from "@/utils";
+import { valueFromStringifyObject } from "@/lib/utils";
 
 const dummyData = [
   {
@@ -84,7 +85,8 @@ export default function AuditLogs() {
                       <TableCell className="font-medium">{index + 1}</TableCell>
                       {/* <TableCell>{item.action}</TableCell> */}
                       <TableCell className="whitespace-pre-wrap" >
-                        {(() => {
+                        {valueFromStringifyObject(item.detail)}
+                        {/* {(() => {
                           try {
                             const parsed = JSON.parse(item.detail);
                             return typeof parsed === "object" && parsed !== null
@@ -93,7 +95,7 @@ export default function AuditLogs() {
                           } catch {
                             return item.detail;
                           }
-                        })()}
+                        })()} */}
                       </TableCell>
                       <TableCell>{getFormattedDateTime(item?.createdAt)}</TableCell>
                       {/* <TableCell>{item.status}</TableCell> */}

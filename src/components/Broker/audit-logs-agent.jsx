@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { CenterLoader } from "../common/Loader";
 import ShowError from "../common/ShowError";
+import { valueFromStringifyObject } from "@/lib/utils";
 
 function AuditLogsAgent() {
   const {userId} = useUserIdType();
@@ -51,7 +52,7 @@ function AuditLogsAgent() {
                   <TableRow key={item.id}>
                     <TableCell className="font-medium">{index + 1}</TableCell>
                     {/* <TableCell className="font-medium">{item.action}</TableCell> */}
-                    <TableCell>{item?.detail?.replace(/[{}"]/g, "")}</TableCell>
+                    <TableCell>{valueFromStringifyObject(item?.detail)}</TableCell>
                     <TableCell>{item.email}</TableCell>
                     <TableCell>{getFormattedDateTime(item?.createdAt)}</TableCell>
                   </TableRow>

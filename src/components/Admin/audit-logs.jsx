@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button";
 import { listAuditLogs } from "../service/userAdmin";
+import { valueFromStringifyObject } from "@/lib/utils";
 
 function AuditLogs() {
   const [logs, setLogs] = useState([]);
@@ -103,7 +104,7 @@ function AuditLogs() {
                       logs?.map((item, index) => (
                         <TableRow key={item.id}>
                           <TableCell className="font-medium">{index + 1}</TableCell>
-                          <TableCell className="break-all break-words whitespace-break-spaces max-w-sm min-w-[300px]" >{item?.detail?.replace(/[{}"]/g, "")}</TableCell>
+                          <TableCell className="break-all break-words whitespace-break-spaces max-w-sm min-w-[300px]" >{valueFromStringifyObject(item?.detail)}</TableCell>
                           <TableCell>{item.email}</TableCell>
                           <TableCell>{getFormattedDateTime(item?.createdAt)}</TableCell>
                           {/* <TableCell>{item.action}</TableCell> */}

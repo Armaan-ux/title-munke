@@ -13,8 +13,19 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Card } from "../ui/card";
 import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
-import { useQuery } from "@tanstack/react-query";
-import { getSubscriptionDetails } from "../service/userAdmin";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { deleteStripeCard, getSubscriptionDetails } from "../service/userAdmin";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 function MembershipOrCardAddedModalContainer() {
   const { pathname } = useLocation();
@@ -45,6 +56,20 @@ function MembershipOrCardAddedModalContainer() {
     queryFn: () => getSubscriptionDetails(userId, userType),
     enabled: cardListingModal && !!userId
   })
+
+
+  const deleteCardMutation = useMutation({
+    mutationFn: (pmId) => deleteStripeCard(pmId),
+    onSuccess: () => {
+      setCardListingModal(false);
+      toast.success("Card deleted successfully");
+    },
+    onError: () => {
+      toast.error("Failed to delete card");
+    }
+  })
+
+
   useEffect(() => {
     if (isCardAdded || isPaymentSuccessful) {
       setPaymentModal(false);
@@ -71,8 +96,8 @@ function MembershipOrCardAddedModalContainer() {
       >
           <DialogContent className="relative w-[400px] rounded-2xl p-0 border-none overflow-visible bg-transparent z-50">
             <RadioGroup
-                value={0}
-                onValueChange={() => console.log("called")}
+                // value={0}
+                // onValueChange={() => console.log("called")}
                 className="space-y-3 bg-white px-4 py-8 rounded-md max-h-[500px] overflow-y-auto"
               >
                 {/* <Card className="flex flex-row items-center justify-between px-5 py-3 rounded-xl border hover:border-gray-400 transition">
@@ -108,13 +133,34 @@ function MembershipOrCardAddedModalContainer() {
                       <RadioGroupItem value={ind} />
                     </div>
                   </Card>
-                  {/* <div className="flex items-center justify-between gap-3">
-                    <Pencil
-                      className="w-4 h-4 text-secondary cursor-pointer"
-                      onClick={() => ""}
-                    />
-                    <Trash2 className="w-4 h-4 text-secondary cursor-pointer" />
-                  </div> */}
+                  {
+                    cards?.length > 1 &&
+                    <div className="flex items-center justify-between gap-3">
+                      <AlertDialog>
+                        <AlertDialogTrigger>
+                           <Button variant="ghost" size="icon" >
+                            <Trash2 className="w-4 h-4 text-secondary cursor-pointer" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="!font-poppins" >Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction 
+                              // disabled={deleteCardMutation.isPending}
+                              onClick={() => deleteCardMutation.mutate(value?.id)}
+                            >Continue</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                   
+                  </div>
+                  }
                 </div>
                 ))}
                 <Button

@@ -14,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { listAuditLogsByUserId } from "../service/userAdmin";
 import Loader from "../Loader";
 import { CenterLoader } from "../common/Loader";
+import { valueFromStringifyObject } from "@/lib/utils";
 
 function AuditLogs() {
   //   const [logs, setLogs] = useState([]);
@@ -85,16 +86,7 @@ function AuditLogs() {
                   </TableCell>
                   <TableCell>{item?.action}</TableCell>
                   <TableCell>
-  {(() => {
-    try {
-      const parsed = JSON.parse(item.detail);
-      return typeof parsed === "object" && parsed !== null
-        ? Object.values(parsed).join(", ")
-        : item.detail;
-    } catch {
-      return item.detail;
-    }
-  })()}
+                {valueFromStringifyObject(item?.detail)}
 </TableCell>
                   {/* <TableCell>
                     <Badge
