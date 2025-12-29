@@ -107,13 +107,13 @@ async function callUserAdminApi(payload, successMessage, errorMessage, path = us
   try {
     // The Amplify API library automatically looks up the endpoint from aws-exports.js
     // and, most importantly, signs the request with the current user's credentials.
+    const token = await getAuthToken();
     const response = await API.post(apiName, path, {
       ...payload,
-      headers: {
+      headers: payload.headers || {
         "Content-Type": "application/json",
-        ...(await getAuthToken()) ? 
-        { "Authorization": "Bearer " + (await getAuthToken()) } : {},
-      }
+        ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+      },
     });
     console.log(successMessage, response);
     return response;
