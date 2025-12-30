@@ -1,4 +1,4 @@
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Loader2 } from "lucide-react";
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import { CenterLoader } from "./Loader";
 import ShowError from "./ShowError";
 import { useDownloadCsv } from "@/hooks/useDownloadCsv";
 import { useUserIdType } from "@/hooks/useUserIdType";
+import GoogleMapView from "./google-map";
+import StreetView from "./street-view";
 const PropertyDetails = () => {
   const {userType} = useUserIdType();
   const navigate = useNavigate();
@@ -84,64 +86,78 @@ const pdfDocuments = propertyDetailQuery?.data?.documents?.filter(item => item?.
                   Description
                 </p>
 
-                <div className={`grid grid-cols-3 gap-8 text-sm text-[#4C0D0D] ${propertyDetailQuery?.data?.status !== "SUCCESS" ? "opacity-5 pointer-events-none" : ""}`}>
-                  <div>
-                    <p className="font-semibold uppercase text-sm">Location</p>
-                    <p className="text-[#7A7676]">
-                     {propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.property_information}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="font-semibold uppercase text-sm">Lots</p>
-                    <p className="text-[#7A7676]">#91 (W 34 ft), #92 (all)</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold uppercase text-sm">Area</p>
-                    <p className="text-[#7A7676]">Allentown, Lehigh County</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold uppercase text-sm">Property</p>
-                    <p className="text-[#7A7676]">{propertyDetailQuery?.data?.address}</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold uppercase text-sm">County, State</p>
-                    <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.county_and_state}</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold uppercase text-sm">Municipality</p>
-                    <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.municipality}</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold uppercase text-sm">PIN/Parcel</p>
-                    <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.PIN}</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold uppercase text-sm">Span of Search</p>
-                    <p className="text-[#7A7676]">Pending</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold uppercase text-sm">Date of Search</p>
-                    <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.["Date of Search"]}</p>
-                  </div>
-                </div>
-
-                <div className={`mt-4 space-y-2 ${propertyDetailQuery?.data?.status !== "SUCCESS" ? "opacity-5 pointer-events-none" : ""}`}>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="border border-[#F1EDEA] rounded-lg p-4 bg-[#FEFAF5]">
-                      <p className="font-semibold uppercase">Current Owner</p>
-                      <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.current_owner}</p>
+                <div className="relative">
+                  {propertyDetailQuery?.data?.status === "In Progress" && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center z-10 backdrop-blur-[3px]">
+                      <p className="text-xl font-semibold text-[#4C0D0D]">
+                        Processing... {propertyDetailQuery?.data?.percent_completion || 0}%
+                      </p>
+                      {propertyDetailQuery?.data?.status_message && (
+                        <p className="text-sm text-[#4C0D0D] mt-2">
+                          {propertyDetailQuery?.data?.status_message}
+                        </p>
+                      )}
                     </div>
-                    <div className="border border-[#F1EDEA] rounded-lg p-4 bg-[#FEFAF5]">
-                      <p className="font-semibold uppercase">Tax Assessment</p>
-                      <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.["Tax Assessment"]}</p>
+                  )}
+                  <div className={`grid grid-cols-3 gap-8 text-sm text-[#4C0D0D] ${propertyDetailQuery?.data?.status !== "SUCCESS" ? "opacity-5 pointer-events-none" : ""}`}>
+                    <div>
+                      <p className="font-semibold uppercase text-sm">Location</p>
+                      <p className="text-[#7A7676]">
+                       {propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.property_information}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="font-semibold uppercase text-sm">Lots</p>
+                      <p className="text-[#7A7676]">#91 (W 34 ft), #92 (all)</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold uppercase text-sm">Area</p>
+                      <p className="text-[#7A7676]">Allentown, Lehigh County</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold uppercase text-sm">Property</p>
+                      <p className="text-[#7A7676]">{propertyDetailQuery?.data?.address}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold uppercase text-sm">County, State</p>
+                      <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.county_and_state}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold uppercase text-sm">Municipality</p>
+                      <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.municipality}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold uppercase text-sm">PIN/Parcel</p>
+                      <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.PIN}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold uppercase text-sm">Span of Search</p>
+                      <p className="text-[#7A7676]">Pending</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold uppercase text-sm">Date of Search</p>
+                      <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.["Date of Search"]}</p>
                     </div>
                   </div>
 
-                  <div className="border border-[#F1EDEA] rounded-lg p-4 text-[13px] bg-[#FEFAF5]">
-                    <p className="font-semibold uppercase">Title Deed</p>
-                    <p className="text-[#7A7676]">
-                      {propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.title_deed}
-                    </p>
+                  <div className={`mt-4 space-y-2 ${propertyDetailQuery?.data?.status !== "SUCCESS" ? "opacity-5 pointer-events-none" : ""}`}>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="border border-[#F1EDEA] rounded-lg p-4 bg-[#FEFAF5]">
+                        <p className="font-semibold uppercase">Current Owner</p>
+                        <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.current_owner}</p>
+                      </div>
+                      <div className="border border-[#F1EDEA] rounded-lg p-4 bg-[#FEFAF5]">
+                        <p className="font-semibold uppercase">Tax Assessment</p>
+                        <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.["Tax Assessment"]}</p>
+                      </div>
+                    </div>
+
+                    <div className="border border-[#F1EDEA] rounded-lg p-4 text-[13px] bg-[#FEFAF5]">
+                      <p className="font-semibold uppercase">Title Deed</p>
+                      <p className="text-[#7A7676]">
+                        {propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.title_deed}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -186,6 +202,17 @@ const pdfDocuments = propertyDetailQuery?.data?.documents?.filter(item => item?.
                           </tr>
                         ))}
                       </tbody>
+                      {
+                        propertyDetailQuery?.data?.status === "In Progress" && (
+                          <tr>
+                            <td colSpan={5} className="py-3 px-4">
+                              <p className="text-center text-[#4C0D0D] flex items-center justify-between mx-auto w-fit">
+                                Loading ... <Loader2 className="ml-2 w-4 h-4 mx-auto animate-spin" />
+                              </p>
+                            </td>
+                          </tr>
+                        )
+                      }
                     </table>
                   </div>
                 </div>
@@ -193,21 +220,29 @@ const pdfDocuments = propertyDetailQuery?.data?.documents?.filter(item => item?.
 
               <div className="flex flex-col gap-4">
                 <div className="rounded-xl overflow-hidden border border-[#F1EDEA]">
-                  <img
+                  {/* <img
                     src="/property.png"
                     alt="Property"
                     width={300}
                     height={270}
                     className="object-cover w-full h-[270px]"
+                  /> */}
+                  <StreetView
+                    lat={propertyDetailQuery?.data?.latitude}
+                    lng={propertyDetailQuery?.data?.longitude}
                   />
                 </div>
                 <div className="rounded-xl overflow-hidden border border-[#F1EDEA]">
-                  <img
+                  {/* <img
                     src="/map-geo.png"
                     alt="Map"
                     width={300}
                     height={270}
                     className="object-cover w-full h-[270px]"
+                  /> */}
+                  <GoogleMapView
+                    lat={propertyDetailQuery?.data?.latitude}
+                    lng={propertyDetailQuery?.data?.longitude}
                   />
                 </div>
               </div>

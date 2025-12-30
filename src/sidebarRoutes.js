@@ -2,22 +2,6 @@ import { BookUser, LayoutDashboard, Logs, Settings, UserRound } from "lucide-rea
 
 export const routes = {
   agent: [
-    // {
-    //   link: "/agent/search",
-    //   name: "Search",
-    //   class: "fas fa-search",
-    // },
-
-    // {
-    //   link: "/agent/history",
-    //   name: "View Search History",
-    //   class: "fas fa-history",
-    // },
-    // {
-    //   link: "/agent/setting",
-    //   name: "Setting",
-    //   class: "fas fa-cog",
-    // },
     {
       link: "/agent/dashboard",
       name: "Dashboard",
@@ -69,46 +53,15 @@ export const routes = {
       class: "fas fa-person",
       icon: Settings
     },
-    // {
-    //   link: "/admin/manage-admins",
-    //   name: "Manage Admins",
-    //   class: "fas fa-person",
-    // },
-    // {
-    //   link: "/admin/brokers",
-    //   name: "Admin Broker List",
-    //   class: "fas fa-history",
-    // },
-    // {
-    //   link: "/admin/searchHistory",
-    //   name: "All Search History",
-    //   class: "fas fa-search",
-    // },
-    // {
-    //   link: "/admin/setting",
-    //   name: "Setting",
-    //   class: "fas fa-cog",
-    // },
-    // {
-    //   link: "/admin/audit-log",
-    //   name: "Audit Logs",
-    //   class: "fas fa-clipboard-list",
-    // },
+
   ],
   broker: [
     {
-      // link: "/broker/search",
       link: "/broker/dashboard",
       name: "Dashboard",
       class: "fas fa-search",
       icon: LayoutDashboard
     },
-
-    // {
-    //   link: "/broker/history",
-    //   name: "View Search History",
-    //   class: "fas fa-history",
-    // },
 
     {
       link: "/broker/manage-agents",
@@ -116,18 +69,13 @@ export const routes = {
       class: "fas fa-person",
       icon: UserRound
     },
-    // {
-    //   link: "/broker/manage-not-assigned-agents",
-    //   name: "Not Assigned Agents",
-    //   class: "fas fa-users",
-    // },
     {
       link: "/broker/agent-audit-log",
       name: "Audit Logs",
       class: "fas fa-clipboard-list",
       icon: Logs
     },
-        {
+    {
       link: "/broker/setting",
       name: "Settings",
       class: "fas fa-cog",
@@ -141,12 +89,6 @@ export const routes = {
       class: "fas fa-search",
       icon: LayoutDashboard
     },
-    // {
-    //   link: "/individual/property-search",
-    //   name: "Property Search",
-    //   class: "fas fa-search",
-    //   icon: LayoutDashboard
-    // },
     {
       link: "/individual/agent-audit-log",
       name: "Audit Logs",

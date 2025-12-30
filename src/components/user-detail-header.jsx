@@ -24,7 +24,7 @@ export default function UserDetailHeader() {
     <div className="bg-[#F5F0EC] rounded-lg py-5 px-7 my-4 text-secondary flex justify-between items-center ">
         <div className="flex items-center gap-4">
           <img
-            src="/agent-2.png"
+            src={brokerMetricsAdminQeurry?.data?.signedUrl || "/dummy-profile.png"}
             alt="User"
             className="size-22 rounded-full object-cover"
           />

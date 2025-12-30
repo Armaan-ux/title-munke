@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function CardAddedSuccessModal({
   open,
@@ -13,9 +14,15 @@ export default function CardAddedSuccessModal({
   onFailed,
 }) {
    if (!open) return null;
+   const navigate = useNavigate();
   const subscribeHandler = () => {
     // onFailed();
     onOpenChange();
+
+    //clear all query params using react router
+    //dynamically get current url
+    navigate(window.location.pathname, { replace: true });
+
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

@@ -105,9 +105,11 @@ function AlertDialogDescription({
 
 function AlertDialogAction({
   className,
+   variant = 'outline',
+  size = 'default',
   ...props
 }) {
-  return (<AlertDialogPrimitive.Action className={cn(buttonVariants(), className)} {...props} />);
+  return (<AlertDialogPrimitive.Action className={cn(buttonVariants({ variant, size }), className)} {...props} />);
 }
 
 function AlertDialogCancel({

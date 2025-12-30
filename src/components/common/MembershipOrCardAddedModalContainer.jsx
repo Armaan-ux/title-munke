@@ -26,6 +26,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { toast } from "react-toastify";
+import { useQueryClient } from "@tanstack/react-query";
+import { CenterLoader } from "./Loader";
 
 function MembershipOrCardAddedModalContainer() {
   const { pathname } = useLocation();
@@ -46,6 +49,7 @@ function MembershipOrCardAddedModalContainer() {
   } = useUser();
 
   
+  const queryClient = useQueryClient();
   const { userId,userType } = useUserIdType();
   const [searchParams] = useSearchParams();
   const isCardAdded = searchParams.get("isCardAdded");
@@ -61,7 +65,8 @@ function MembershipOrCardAddedModalContainer() {
   const deleteCardMutation = useMutation({
     mutationFn: (pmId) => deleteStripeCard(pmId),
     onSuccess: () => {
-      setCardListingModal(false);
+      queryClient.invalidateQueries({ queryKey: ["subcription-details"] });
+      // setCardListingModal(false);
       toast.success("Card deleted successfully");
     },
     onError: () => {
@@ -98,7 +103,8 @@ function MembershipOrCardAddedModalContainer() {
             <RadioGroup
                 // value={0}
                 // onValueChange={() => console.log("called")}
-                className="space-y-3 bg-white px-4 py-8 rounded-md max-h-[500px] overflow-y-auto"
+                defaultValue={cards?.find(c => c.isDefault)?.id}
+                className="space-y-3 bg-white px-4 py-8 rounded-md max-h-[500px] overflow-y-auto "
               >
                 {/* <Card className="flex flex-row items-center justify-between px-5 py-3 rounded-xl border hover:border-gray-400 transition">
                   <div className="flex items-center gap-3">
@@ -116,6 +122,13 @@ function MembershipOrCardAddedModalContainer() {
                   <RadioGroupItem value="paypal" />
                 </Card> */}
 
+                {
+                  (deleteCardMutation?.isPending || subcriptionDetailQuery?.isLoading) &&
+                  <div className="absolute inset-0 w-full h-full backdrop-blur-xs z-50">
+                  <CenterLoader className="m-auto" />
+                </div>
+                }
+
                 {cards?.map((value, ind) => (
                   <div className="flex items-center justify-center gap-2" key={ind}>
                   <Card className="flex flex-row items-center justify-between px-5 py-3 rounded-xl border hover:border-gray-400 transition w-[85%]">
@@ -130,7 +143,7 @@ function MembershipOrCardAddedModalContainer() {
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem value={ind} />
+                      <RadioGroupItem value={value?.id} />
                     </div>
                   </Card>
                   {
@@ -150,11 +163,14 @@ function MembershipOrCardAddedModalContainer() {
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
                             <AlertDialogAction 
                               // disabled={deleteCardMutation.isPending}
                               onClick={() => deleteCardMutation.mutate(value?.id)}
-                            >Continue</AlertDialogAction>
+                              variant="secondary"
+                              >
+                              Continue
+                              </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
