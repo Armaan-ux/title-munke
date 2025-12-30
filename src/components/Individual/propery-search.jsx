@@ -111,7 +111,7 @@ function ProperySearchListView() {
                           className="text-md"
                           variant="ghost"
                           onClick={() =>
-                            navigate("/individual/property-details/123")
+                            navigate("/individual/dashboard/property-details/123")
                           }
                         >
                           <Eye />

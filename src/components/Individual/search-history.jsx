@@ -347,7 +347,7 @@ function SearchHistory({isAll=false}) {
                           className="text-md"
                           variant="ghost"
                           onClick={() =>
-                            navigate(`/individual/property-details/${item?.searchId}`)
+                            navigate(`/individual/dashboard/property-details/${item?.searchId}`)
                           }
                         >
                           <Eye />

@@ -26,6 +26,7 @@ import { CenterLoader } from "./Loader";
 import ShowError from "./ShowError";
 import { useNavigate } from "react-router-dom";
 import { Eye, View } from "lucide-react";
+import { Button } from "../ui/button";
 
 function History({isAll=false}) {
   const queryClient = useQueryClient();
@@ -207,7 +208,7 @@ function History({isAll=false}) {
                     <TableHead>Date / Time</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Download Link</TableHead>
-                    <TableHead>Action</TableHead>
+                    <TableHead className="text-center" >Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -251,7 +252,12 @@ function History({isAll=false}) {
                                 ""
                               )}
                             </TableCell>
-                            <TableCell onClick={() => navigate(`/agent/property-details/${item?.searchId}`)}><Eye /></TableCell>
+                            <TableCell className="text-center" onClick={() => navigate(`/agent/dashboard/property-details/${item?.searchId}`)}>
+                              <Button variant="ghost" size="icon" className=" mx-auto" >
+
+                                <Eye/>
+                              </Button>
+                            </TableCell>
                       </TableRow>
                     ))
                   }

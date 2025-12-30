@@ -466,7 +466,7 @@ function Agents() {
                         className="text-sm"
                         variant="ghost"
                         onClick={() =>
-                          navigate(`/broker/agent-property-details/${item?.id}`)
+                          navigate(`/broker/manage-agents/agent-property-details/${item?.id}`)
                         }
                       >
                         <Eye />

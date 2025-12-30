@@ -33,11 +33,11 @@ import PropertySearchIndividual from "./components/Admin/property-search-individ
 export const adminRoutes = [
   { path: "admin", component: Admin },
   { path: "admin/dashboard", component: AdminDashboard },
-  { path: "admin/broker-business", component: BrokerBusiness },
-  { path: "admin/individual-business", component: IndividualBusiness },
-  { path: "admin/broker-details/:id", component: BrokerDetails },
-  { path: "admin/property-search/:id", component: PropertySearch },
-  { path: "admin/property-search-individual/:id", component: PropertySearchIndividual },
+  { path: "admin/dashboard/broker-business", component: BrokerBusiness },
+  { path: "admin/dashboard/individual-business", component: IndividualBusiness },
+  { path: "admin/dashboard/broker-details/:id", component: BrokerDetails },
+  { path: "admin/dashboard/property-search/:id", component: PropertySearch },
+  { path: "admin/dashboard/property-search-individual/:id", component: PropertySearchIndividual },
 
   { path: "admin/users", component: Users },
   { path: "admin/demo-requests", component: DemoRequests },
@@ -53,8 +53,8 @@ export const adminRoutes = [
 export const agentRoutes = [
   { path: "agent", component: Agent },
   { path: "agent/dashboard", component: AgentDashboard },
-  { path: "agent/search-history", component: HistoryListview },
-  { path: "agent/property-details/:id", component: BrokerPropertyDetails },
+  { path: "agent/dashboard/search-history", component: HistoryListview },
+  { path: "agent/dashboard/property-details/:id", component: BrokerPropertyDetails },
   { path: "agent/audit-logs", component: AuditLogs },
   { path: "agent/setting", component: AgentSetting },
 ];
@@ -62,18 +62,18 @@ export const agentRoutes = [
 export const brokerRoutes = [
   { path: "broker", component: Broker },
   { path: "broker/dashboard", component: BrokerDashboard },
-  { path: "broker/search-history", component: HistoryListview },
+  { path: "broker/dashboard/search-history", component: HistoryListview },
+  { path: "broker/dashboard/property-details/:id", component: BrokerPropertyDetails },
   { path: "broker/manage-agents", component: ManageAgents },
   { path: "broker/agent-audit-log", component: AuditLogsForBroker },
   { path: "broker/setting", component: BrokerSettings },
-  { path: "broker/property-details/:id", component: BrokerPropertyDetails },
   {
-    path: "broker/agent-property-details/:id",
+    path: "broker/manage-agents/agent-property-details/:id",
     component: PropertySearch,
   },
-  { path: "broker/billing-history", component: BillingHistory },
+  { path: "broker/setting/billing-history", component: BillingHistory },
   { path: "broker/email-template", component: EmailTemplate },
- 
+
   // { path: "broker/search", component: Search },
   // { path: "broker/history", component: BrokerHistory },
   // { path: "broker/setting", component: BrokerSetting },
@@ -85,14 +85,14 @@ export const brokerRoutes = [
 export const individualRoutes = [
   { path: "individual", component: Individual },
   { path: "individual/dashboard", component: IndividualDashboard },
-  { path: "individual/search-history", component: HistoryListview },
+  { path: "individual/dashboard/search-history", component: HistoryListview },
   // { path: "individual/property-search", component: ProperySearchListView },
   {
-    path: "individual/property-details/:id",
+    path: "individual/dashboard/property-details/:id",
     component: IndividualPropertyDetails,
   },
   { path: "individual/agent-audit-log", component: AuditLogsForIndividual },
   { path: "individual/setting", component: IndividualSettings },
-  { path: "individual/billing-history", component: BillingHistory },
+  { path: "individual/setting/billing-history", component: BillingHistory },
   { path: "individual/email-template", component: EmailTemplate },
 ];

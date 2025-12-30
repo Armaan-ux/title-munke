@@ -136,7 +136,7 @@ const AdminDashboard = () => {
           </div>
           <div className="flex justify-between items-center gap-2">
           <Button variant="outline" onClick={() => setIsDoownload(true)}><ArrowDownToLine /> Download CSV</Button>
-          <Link to={activeTab === "history" ? "/admin/broker-business" : "/admin/individual-business"}>
+          <Link to={activeTab === "history" ? "/admin/dashboard/broker-business" : "/admin/dashboard/individual-business"}>
           <Button variant="outline"> View More </Button>
           </Link>
           </div>

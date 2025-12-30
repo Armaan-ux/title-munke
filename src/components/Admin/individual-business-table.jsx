@@ -80,7 +80,7 @@ export default function IndividualBusinessTable({limit, isDownload, handleDownlo
                     ${item?.revenue}
                   </TableCell>
                   <TableCell className="text-center">
-                    <Link to={`/admin/property-search-individual/${item?.id}`}>
+                    <Link to={`/admin/dashboard/property-search-individual/${item?.id}`}>
                       <Button size="icon" className="text-md" variant="ghost">
                         <Eye />
                       </Button>

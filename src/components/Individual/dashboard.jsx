@@ -104,7 +104,7 @@ const IndividualDashboard = () => {
       <div className="bg-[#F5F0EC] p-6 rounded-2xl ">
         <div className="flex justify-between items-center gap-4 mb-6">
           <p className="text-secondary font-medium text-xl">Search History</p>
-          <Link to="/individual/search-history">
+          <Link to="/individual/dashboard/search-history">
             <Button
               variant="outline"
               >

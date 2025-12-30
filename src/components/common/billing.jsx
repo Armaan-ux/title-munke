@@ -203,7 +203,7 @@ const Billing = () => {
                   </p>
                   <button
                     className="text-sm text-secondary font-medium mt-1 hover:underline mr-90"
-                    onClick={() => navigate("/broker/billing-history")}
+                    onClick={() => navigate("/broker/setting/billing-history")}
                   >
                     View
                   </button>

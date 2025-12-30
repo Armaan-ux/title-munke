@@ -90,7 +90,7 @@ function App() {
             />
           ))}
         </Route>
-        <Route path="*" element={<Navigate to="/notfound" />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     // </Router>
   );

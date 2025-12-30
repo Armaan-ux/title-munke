@@ -153,7 +153,7 @@ function BrokerDetails() {
                             className="text-md"
                             variant="ghost"
                             onClick={() =>
-                              navigate(`/admin/property-search/${item?.agentId}`)
+                              navigate(`/admin/dashboard/property-search/${item?.agentId}`)
                             }
                           >
                             <Eye />

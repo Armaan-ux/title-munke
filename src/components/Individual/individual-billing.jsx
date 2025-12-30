@@ -212,7 +212,7 @@ const IndividualBilling = () => {
             <div className="bg-white !p-4 rounded-xl w-full">
               <div className="flex justify-between items-center gap-4 mb-6">
                 <p className="text-secondary font-medium text-xl">View History</p>
-                <Link to="/individual/billing-history" >
+                <Link to="/individual/setting/billing-history" >
                   <Button
                     variant="outline"
                     >

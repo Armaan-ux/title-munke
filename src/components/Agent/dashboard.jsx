@@ -57,7 +57,7 @@ const BrokerDashboard = () => {
         <div className="bg-[#F5F0EC] p-6 rounded-2xl " >
           <div className="flex justify-between items-center gap-4 mb-6" >
             <p className="text-secondary font-medium text-xl" >Search History</p>
-            <Link to="/agent/search-history">
+            <Link to="/agent/dashboard/search-history">
             <Button variant="outline" > View More </Button>
             </Link>
           </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useUser } from '../context/usercontext';
+import NotFound from './NotFound';
 
 const ProtectedRoute = ({ children, allowedGroups }) => {
     const { user } = useUser();
@@ -13,7 +14,7 @@ const ProtectedRoute = ({ children, allowedGroups }) => {
 
     if (!allowedGroups.some((group) => userGroups.includes(group))) {
         // If the user is logged in but not authorized for this route, redirect to NotFound
-        return <Navigate to="/notfound" />;
+        return <NotFound />;
     }
 
     // If the user is authorized, render the children
