@@ -14,7 +14,7 @@ import { Card } from "../ui/card";
 import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { deleteStripeCard, getSubscriptionDetails } from "../service/userAdmin";
+import { deleteStripeCard, getSubscriptionDetails, markDefaultPaymentMethod } from "../service/userAdmin";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -62,6 +62,18 @@ function MembershipOrCardAddedModalContainer() {
   })
 
 
+  const markDefaultCardMutation = useMutation({
+    mutationFn: (pmId) => markDefaultPaymentMethod(pmId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subcription-details"] });
+      toast.success("Default card marked successfully");
+    },
+    onError: () => {
+      toast.error("Failed to mark default card");
+    }
+  })
+
+
   const deleteCardMutation = useMutation({
     mutationFn: (pmId) => deleteStripeCard(pmId),
     onSuccess: () => {
@@ -102,7 +114,7 @@ function MembershipOrCardAddedModalContainer() {
           <DialogContent className="relative w-[400px] rounded-2xl p-0 border-none overflow-visible bg-transparent z-50">
             <RadioGroup
                 // value={0}
-                // onValueChange={() => console.log("called")}
+                onValueChange={(pmId) => markDefaultCardMutation.mutate(pmId)}
                 defaultValue={cards?.find(c => c.isDefault)?.id}
                 className="space-y-3 bg-white px-4 py-8 rounded-md max-h-[500px] overflow-y-auto "
               >
@@ -123,7 +135,7 @@ function MembershipOrCardAddedModalContainer() {
                 </Card> */}
 
                 {
-                  (deleteCardMutation?.isPending || subcriptionDetailQuery?.isLoading) &&
+                  (deleteCardMutation?.isPending || subcriptionDetailQuery?.isLoading || markDefaultCardMutation?.isPending) &&
                   <div className="absolute inset-0 w-full h-full backdrop-blur-xs z-50">
                   <CenterLoader className="m-auto" />
                 </div>

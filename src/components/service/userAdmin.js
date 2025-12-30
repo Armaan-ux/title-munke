@@ -76,7 +76,12 @@ export const CONSTANTS = { // should always be copied from title-munke-serverles
     LIST_TOTAL_SEARCHES_BY_USER_ID: "listTotalSearchesByUserId",
     LIST_TOTAL_AUDIT_LOGS_BY_USER_ID: "listTotalAuditLogsByUserId",
     LIST_AUDIT_LOGS_BY_USER_ID: "listAuditLogsByUserId",
-    DELETE_STRIPE_CARD: "deleteStripeCard"
+    DELETE_STRIPE_CARD: "deleteStripeCard",
+    EMAIL_PREFERENCE_WEEKLY_REPORT: "emailPreferenceWeeklyReport",
+    MARK_DEFAULT_PAYMENT_METHOD: "markDefaultPaymentMethod",
+    FETCH_EMAIL_PREFERENCE: "fetchEmailPreference",
+    EMAIL_PREFERENCE_SEARCH_COMPLETE: "emailPreferenceSearchComplete",
+
 
   },
   USER_TYPES: {
@@ -1285,3 +1290,71 @@ export async function deleteStripeCard(pmId) {
     "Error in " + action,
   );
 }
+
+export async function emailPreferenceWeeklyReport(emailPreference) { // will recevie true or false only
+  const action = CONSTANTS?.ACTIONS?.EMAIL_PREFERENCE_WEEKLY_REPORT;
+
+  const payload = {
+    body: {
+      action,
+      emailPreference
+    }
+  };
+
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "Error in " + action,
+  );
+}
+
+export async function emailPreferenceSearchComplete(emailPreference) { // will recevie true or false only
+  const action = CONSTANTS?.ACTIONS?.EMAIL_PREFERENCE_SEARCH_COMPLETE;
+
+  const payload = {
+    body: {
+      action,
+      emailPreference
+    }
+  };
+
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "Error in " + action,
+  );
+}
+
+export async function markDefaultPaymentMethod(pmId) {
+  const action = CONSTANTS?.ACTIONS?.MARK_DEFAULT_PAYMENT_METHOD;
+
+  const payload = {
+    body: {
+      action,
+      paymentMethodId: pmId
+    }
+  };
+
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "Error in " + action,
+  );
+}
+
+export async function fetchEmailPreference() {
+  const action = CONSTANTS?.ACTIONS?.FETCH_EMAIL_PREFERENCE;
+
+  const payload = {
+    body: {
+      action,
+    }
+  };
+
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "Error in " + action,
+  );
+}
+
