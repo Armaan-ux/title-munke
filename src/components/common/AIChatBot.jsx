@@ -96,7 +96,7 @@ const AIChatBot = () => {
             </div>
           </div>
 
-          <div className={`p-4 space-y-3 ${isIncreaseSize ? "max-h-[32rem]" : "max-h-80"} overflow-y-auto`}>
+          <div className={`p-4 space-y-3 ${isIncreaseSize ? "max-h-[32rem]" : "max-h-80"} h-full overflow-y-auto`}>
             {messages.map((msg, index) => (
               <div
                 key={index}
@@ -121,21 +121,21 @@ const AIChatBot = () => {
                     />
                   </div>
                 )}
-                  {msg.text}
-                </div>
-
-                {/* {msg.from === "user" && <div className="w-8" />} */}
-                {/* <div className="flex flex-col gap-2.5 overflow-x-auto">
-                  {msg?.from === "bot" &&
+                  {msg.text} <br />
+                  {msg?.from === "bot" && msg?.source &&
                       <a
                         rel="noreferrer"
                         target="_blank"
                         href={msg?.source}
-                        className="break-all whitespace-normal text-blue-600 underline"
+                        className="break-all whitespace-normal text-blue-600 underline text-xs "
                       >
                         {msg?.source}
                       </a>
                     }
+                </div>
+
+                {/* {msg.from === "user" && <div className="w-8" />} */}
+                {/* <div className="flex flex-col gap-2.5 overflow-x-auto">
                 </div> */}
               </div>
             ))}
