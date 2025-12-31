@@ -53,6 +53,7 @@ import { useNavigate } from "react-router-dom";
 import { useDeleteUser } from "@/hooks/useDeleteUser";
 import { useRestoreUser } from "@/hooks/useRestoreUser";
 import { useMutation } from "@tanstack/react-query";
+import * as XLSX from "xlsx";
 
 const agentTypes = [
   {
@@ -114,12 +115,13 @@ function Agents() {
   const [topPerformer, setTopPerformer] = useState("");
   const [addAgent, setAddAgent] = useState(false);
   const bulkUploadMutation = useMutation({
-    mutationFn: (file) => bulkAgentUpload(file),
+    mutationFn: (data) => bulkAgentUpload(data),
     onSuccess: () => {
-      toast("File uploaded successfully");
+      toast("Agents added successfully");
       if (fileInputRef?.current?.value) {
         fileInputRef.current.value = "";
       }
+      fetchData();
     },
     onError: (err) => {
       toast(err?.response?.data?.message);
@@ -285,8 +287,27 @@ function Agents() {
   };
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    // setProfileImage(file);
-    bulkUploadMutation.mutate(file)
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const data = new Uint8Array(evt.target.result);
+      const workbook = XLSX.read(data, { type: "array" });
+
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+
+      const json = XLSX.utils.sheet_to_json(worksheet, {
+        defval: null,
+      });
+      console.log("json data:", json);
+      bulkUploadMutation.mutate({agents: json, brokerId: user.attributes.sub});
+    };
+
+    reader.readAsArrayBuffer(file);
+
+    setProfileImage(file);
+    // bulkUploadMutation.mutate(file)
   };
   return (
     <>
@@ -348,6 +369,7 @@ function Agents() {
 
         {/* Right Section */}
         <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <a href="https://title-search-storage.s3.us-east-1.amazonaws.com/Bulk+Upload+Template.xlsx">
           <Button
             variant="outline"
             className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
@@ -355,6 +377,7 @@ function Agents() {
             <Download className="w-4 h-4" />
             Download Template
           </Button>
+          </a>
           <input
             type="file"
             ref={fileInputRef}

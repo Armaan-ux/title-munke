@@ -81,6 +81,8 @@ export const CONSTANTS = { // should always be copied from title-munke-serverles
     MARK_DEFAULT_PAYMENT_METHOD: "markDefaultPaymentMethod",
     FETCH_EMAIL_PREFERENCE: "fetchEmailPreference",
     EMAIL_PREFERENCE_SEARCH_COMPLETE: "emailPreferenceSearchComplete",
+    ADD_BULK_AGENTS: "addBulkAgents",
+
 
 
   },
@@ -114,13 +116,15 @@ async function callUserAdminApi(payload, successMessage, errorMessage, path = us
     // The Amplify API library automatically looks up the endpoint from aws-exports.js
     // and, most importantly, signs the request with the current user's credentials.
     const token = await getAuthToken();
-    const response = await API.post(apiName, path, {
+    const params = {
       ...payload,
       headers: payload.headers || {
         "Content-Type": "application/json",
         ...(token ? { "Authorization": `Bearer ${token}` } : {}),
       },
-    });
+    };
+    console.log("API Call Params:", params);
+    const response = await API.post(apiName, path, params);
     console.log(successMessage, response);
     return response;
   } catch (error) {
@@ -1203,16 +1207,11 @@ export async function updateUserStatus(data) {
   )
 }
 
-export async function bulkAgentUpload(file) {
-  const action = CONSTANTS?.ACTIONS?.ADD_BROKER_BULK;
-
-  const formData = new FormData();
-  formData.append("action", action);
-  formData.append("file", file); // File object from input
+export async function bulkAgentUpload(data) {
+  const action = CONSTANTS?.ACTIONS?.ADD_BULK_AGENTS;
 
   const payload = {
-    body: formData,
-    headers: {}
+    body: {...data, action},
   };
 
   return callUserAdminApi(
