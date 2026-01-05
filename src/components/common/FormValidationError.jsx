@@ -1,5 +1,5 @@
-export function FormValidationError({message}) {
+export function FormValidationError({message, color}) {
     return (
-        <span className="text-destructive text-sm">*{message}</span>
+        <span className={`${color ? color : "text-destructive"} text-sm`}>*{message}</span>
     )
 }

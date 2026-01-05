@@ -3,10 +3,11 @@ import { Maximize2, Minus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
-import { useMutation } from "@tanstack/react-query";
-import { ChatService } from "../service/chat";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { ChatService, getDefaultAiModel } from "../service/chat";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { useOnClickOutside } from 'usehooks-ts'
+import { queryKeys } from "@/utils";
 const userKeys = {
   individual: "user_id",
   agent: "agent_id",
@@ -23,6 +24,10 @@ const AIChatBot = () => {
       text: "Hi 👋 I'm your AI Property Assistant! Type an address, PIN, or question below to begin your search.",
     },
   ]);
+  // const defualtAiModelQuery = useQuery({
+  //   queryKey: [queryKeys.defaultAiModel],
+  //   queryFn: () => getDefaultAiModel()
+  // })
   const chatMutation = useMutation({
     mutationFn: (payload) => ChatService(payload),
     onSuccess: (data) => {

@@ -82,7 +82,7 @@ export const CONSTANTS = { // should always be copied from title-munke-serverles
     FETCH_EMAIL_PREFERENCE: "fetchEmailPreference",
     EMAIL_PREFERENCE_SEARCH_COMPLETE: "emailPreferenceSearchComplete",
     ADD_BULK_AGENTS: "addBulkAgents",
-
+    CHANGE_PASSWORD_OF_USER: "changePasswordOfUser"
 
 
   },
@@ -110,17 +110,27 @@ async function getAuthToken() {
     return null;
   }
 }
+async function getAccessToken() {
+  try {
+    return (await Auth?.currentSession())?.getAccessToken()?.getJwtToken();
+  } catch (error) {
+    console.error("Error getting access token:", error);
+    return null;
+  }
+}
 
 async function callUserAdminApi(payload, successMessage, errorMessage, path = userPath) {
   try {
     // The Amplify API library automatically looks up the endpoint from aws-exports.js
     // and, most importantly, signs the request with the current user's credentials.
     const token = await getAuthToken();
+    const accessToken = await getAccessToken();
     const params = {
       ...payload,
       headers: payload.headers || {
         "Content-Type": "application/json",
         ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+        ...(accessToken ? { "X-Access-Token": `${accessToken}` } : {}),
       },
     };
     console.log("API Call Params:", params);
@@ -1357,3 +1367,19 @@ export async function fetchEmailPreference() {
   );
 }
 
+export async function changePassword(data) {
+  const action = CONSTANTS?.ACTIONS?.CHANGE_PASSWORD_OF_USER;
+
+  const payload = {
+    body: {
+      action,
+      ...data
+    }
+  };
+
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "Error in " + action,
+  );
+}

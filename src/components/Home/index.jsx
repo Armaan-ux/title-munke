@@ -598,7 +598,7 @@ export default function Home() {
                     />
                   )}
                 />
-                {errors.name && <FormValidationError message={errors.name.message} />}
+                {errors.name && <FormValidationError message={errors.name.message} color={"text-[#e09a9d]"}/>}
               </div>
               {/* <Input
                 className="bg-transparent"
@@ -634,7 +634,7 @@ export default function Home() {
                         />
                       )}
                     />
-                    {errors.email && <FormValidationError message={errors.email.message} />}
+                    {errors.email && <FormValidationError message={errors.email.message} color={"text-[#e09a9d]"}/>}
                 </div>
                 <div>
                   <Controller
@@ -649,7 +649,7 @@ export default function Home() {
                       />
                     )}
                   />
-                  {errors.state && <FormValidationError message={errors.state.message} />}
+                  {errors.state && <FormValidationError message={errors.state.message} color={"text-[#e09a9d]"}/>}
               </div>
               {/* <Input
                 className="bg-transparent"
@@ -682,7 +682,7 @@ export default function Home() {
                     />
                   )}
                 />
-                {errors.country && <FormValidationError message={errors.country.message} />}
+                {errors.country && <FormValidationError message={errors.country.message} color={"text-[#e09a9d]"}/>}
               </div>
               {/* <Input
                 className="bg-transparent"

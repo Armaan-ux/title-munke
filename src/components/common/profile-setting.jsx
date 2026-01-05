@@ -2,12 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Auth } from "aws-amplify";
-import { Eye, PencilLine, Upload } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, PencilLine, Upload } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { Separator } from "../ui/separator";
 import { useSidebar } from "../ui/sidebar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getAdminDetails, updateProfileDetails, uploadProfileImageOnS3 } from "../service/userAdmin";
+import { changePassword, getAdminDetails, updateProfileDetails, uploadProfileImageOnS3 } from "../service/userAdmin";
 import { toast } from "react-toastify";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { queryKeys } from "@/utils";
@@ -25,6 +25,7 @@ const uploadToS3 = async (uploadUrl, file) => {
 };
 
 const ProfileSetting = ({ setIsProfile, editProfile }) => {
+  const [showPassword, setShowPassword] = useState({currentShow: false, newShow: false, confirmShow: false});
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
   const queryClient = useQueryClient();
@@ -98,12 +99,42 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
       S3ApiMutation.mutate({fileName, fileType, userId, userType})
     }
   }
+
+  const changePasswordMutation = useMutation({
+    mutationFn: () => changePassword({currentPassword, newPassword}),
+    onSuccess: () => {
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      toast.success("Password changed successfully");
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.message || "Error in changing password");
+    }
+  })
+
+  const handlePasswordChange = (e) => {
+    e.preventDefault();
+    if(currentPassword.trim() === "" || newPassword.trim() === "" || confirmPassword.trim() === "") {
+      toast.error("Please fill all the fields");
+      return;
+    }
+    if(newPassword !== confirmPassword) {
+      toast.error("New password and confirm password do not match");
+      return;
+    }
+    changePasswordMutation.mutate();
+  }
+
   return (
     <div className="bg-[#F5F0EC] flex items-start justify-start text-secondary">
       {editProfile === true ? (
         <div className="bg-white rounded-xl px-8 pt-8 pb-0 flex flex-col md:flex-row items-start gap-10 w-full shadow-md">
           <div className="flex flex-col w-full">
-            <div className="mb-5">
+            <div className="mb-5 flex items-center gap-4">
+              <Button type="ghost" variant="secondary" onClick={() => setIsProfile(false)}>
+                <ArrowLeft />
+              </Button>
               <p className="text-xl font-medium">Edit Profile</p>
             </div>
 
@@ -205,7 +236,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
               <div>
                 <p className="text-md font-medium mt-5">Change Password</p>
               </div>
-              <form>
+              <form onSubmit={handlePasswordChange}>
                 <div className={`grid sm:grid-cols-1 ${ open ? "md:grid-cols-1" : "md:grid-cols-2"} ${ open ? "lg:grid-cols-2" : "lg:grid-cols-3"} xl:grid-cols-3 gap-6 mt-5 w-full`}>
                   <div>
                     <Label
@@ -216,7 +247,8 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                     </Label>
                     <div className="relative">
                       <Input
-                        type="password"
+                        required
+                        type={showPassword.currentShow ? "text" : "password"}
                         id="current-password"
                         name="current-password"
                         placeholder="Current password"
@@ -224,7 +256,23 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                       />
-                      <Eye className="absolute right-3 top-1/2 -translate-y-1/2 text-tertiary text-500 w-4 h-4" />
+                      <Button 
+                        type="button" 
+                        variant="ghost"
+                        className="!p-0 absolute right-3 top-1/2 -translate-y-1/2 "
+                        onClick={() => setShowPassword(pre => ({...pre, currentShow: !pre.currentShow}))}
+                      >
+                         {!showPassword.currentShow &&
+                          <Eye 
+                            className="text-tertiary text-500 w-4 h-4"
+                          />
+                        }
+                        {showPassword.currentShow &&
+                          <EyeOff 
+                            className="text-tertiary text-500 w-4 h-4"
+                          />
+                        }
+                      </Button>
                     </div>
                   </div>
 
@@ -237,7 +285,8 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                     </Label>
                     <div className="relative">
                       <Input
-                        type="password"
+                        required
+                        type={showPassword.newShow ? "text" : "password"}
                         id="new-password"
                         name="new-password"
                         placeholder="New password"
@@ -245,7 +294,23 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                       />
-                      <Eye className="absolute right-3 top-1/2 -translate-y-1/2 text-tertiary text-500 w-4 h-4" />
+                      <Button 
+                        type="button" 
+                        variant="ghost"
+                        className="!p-0 absolute right-3 top-1/2 -translate-y-1/2 "
+                        onClick={() => setShowPassword(pre => ({...pre, newShow: !pre.newShow}))}
+                      >
+                         {!showPassword.newShow &&
+                          <Eye 
+                            className="text-tertiary text-500 w-4 h-4"
+                          />
+                        }
+                        {showPassword.newShow &&
+                          <EyeOff 
+                            className="text-tertiary text-500 w-4 h-4"
+                          />
+                        }
+                      </Button>
                     </div>
                   </div>
                   <div>
@@ -257,7 +322,8 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                     </Label>
                     <div className="relative">
                       <Input
-                        type="password"
+                        required
+                        type={showPassword.confirmShow ? "text" : "password"}
                         id="confirm-password"
                         name="confirm-password"
                         placeholder="Confirm new password"
@@ -265,7 +331,23 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                       />
-                      <Eye className="absolute right-3 top-1/2 -translate-y-1/2 text-tertiary text-500 w-4 h-4" />
+                      <Button 
+                        type="button" 
+                        variant="ghost"
+                        className="!p-0 absolute right-3 top-1/2 -translate-y-1/2 "
+                        onClick={() => setShowPassword(pre => ({...pre, confirmShow: !pre.confirmShow}))}
+                      >
+                         {!showPassword.confirmShow &&
+                          <Eye 
+                            className="text-tertiary text-500 w-4 h-4"
+                          />
+                        }
+                        {showPassword.confirmShow &&
+                          <EyeOff 
+                            className="text-tertiary text-500 w-4 h-4"
+                          />
+                        }
+                      </Button>
                     </div>
                   </div>
 
@@ -285,7 +367,8 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                     variant="secondary"
                     size="lg"
                     // className="bg-tertiary text-white hover:bg-[#9C3D26] hover:text-white rounded-md px-12"
-                    onClick={() => setIsProfile(false)}
+                    // onClick={() => setIsProfile(false)}
+                    disabled={changePasswordMutation.isPending}
                   >
                     Save Changes
                   </Button>
@@ -362,7 +445,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                   //   onChange={(e) => setConfirmpassword(e.target.value)}
                 />
               </div>
-              <div>
+              {/* <div>
                 <Label htmlFor="confirm-password" className="">
                   Password
                 </Label>
@@ -378,7 +461,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                   />
                   <Eye className="absolute right-3 top-1/2 -translate-y-1/2 text-tertiary text-500 w-4 h-4" />
                 </div>
-              </div>
+              </div> */}
               {isError && (
                 <small className="text-red-600">
                   Error in updating password
