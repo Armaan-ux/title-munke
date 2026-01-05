@@ -7,16 +7,28 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Separator } from "../ui/separator";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { changeDefaultAiModel } from "../service/chat";
 import { toast } from "react-toastify";
+import { useUserIdType } from "@/hooks/useUserIdType";
+import { queryKeys } from "@/utils";
 
-export default function OtherSetting({aiModels=[], selectedModel=""}) {
+export default function OtherSetting({aiModels=[1,2], selectedModel=""}) {
+  const queryClient = useQueryClient()
+  const {userId, userType} = useUserIdType();
   const [defaultAiModel, setDefaultAiModel] = useState("");
   const changeDefaultAiModelMutation = useMutation({
-    mutationFn: () => changeDefaultAiModel(defaultAiModel),
+    mutationFn: () => changeDefaultAiModel(
+      {
+        action: "save_llm_by_admin",
+        llm_name: defaultAiModel,
+        admin_id: userId,
+        userType
+      },
+    ),
     onSuccess: () => {
       toast.success("Default AI Model changed successfully");
+      queryClient.invalidateQueries({queryKey: [queryKeys.defaultAiModel]});
     },
     onError: (err) => {
       toast.error(err?.response?.data?.message || "Failed to change Default AI Model");

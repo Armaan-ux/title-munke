@@ -24,10 +24,14 @@ const AIChatBot = () => {
       text: "Hi 👋 I'm your AI Property Assistant! Type an address, PIN, or question below to begin your search.",
     },
   ]);
-  // const defualtAiModelQuery = useQuery({
-  //   queryKey: [queryKeys.defaultAiModel],
-  //   queryFn: () => getDefaultAiModel()
-  // })
+  const defualtAiModelQuery = useQuery({
+    queryKey: [queryKeys.defaultAiModel],
+    queryFn: () => getDefaultAiModel({
+    action: "get_llm_by_admin",
+    admin_id: userId,
+    userType
+  })
+  })
   const chatMutation = useMutation({
     mutationFn: (payload) => ChatService(payload),
     onSuccess: (data) => {
@@ -54,7 +58,8 @@ const AIChatBot = () => {
       question: input,
       [userKeys[userType]]: userId,
       userType,
-      "top_k": 5
+      "top_k": 5,
+      "model_name": defualtAiModelQuery?.data?.[0]?.data?.llm_name
     })
     setInput("");
     try {

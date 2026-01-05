@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import ProfileSetting from "@/components/common/profile-setting";
 import OtherSetting from "@/components/common/other-setting";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/utils";
 import { getAiModels, getDefaultAiModel } from "../service/chat";
+import { useUserIdType } from "@/hooks/useUserIdType";
 
 const agentTypes = [
   {
@@ -19,15 +20,21 @@ const agentTypes = [
 export default function AdminSettings() {
   const [activeTab, setActiveTab] = useState(agentTypes[0]);
  const [editProfile, setIsProfile] = useState(false);
-//  const aiModelQuery = useQuery({
-//     queryKey: [queryKeys.aiModelListing],
-//     queryFn: getAiModels
-//  })
+ const {userId, userType} = useUserIdType();
+ const aiModelQuery = useQuery({
+    queryKey: [queryKeys.aiModelListing],
+    queryFn: () => getAiModels({action: "get_llm_list", user_id: userId, userType}),
+ })
 
-// const defualtAiModelQuery = useQuery({
-//     queryKey: [queryKeys.defaultAiModel],
-//     queryFn: () => getDefaultAiModel()
-//   })
+const defualtAiModelQuery = useQuery({
+    queryKey: [queryKeys.defaultAiModel],
+    queryFn: () => getDefaultAiModel({
+    action: "get_llm_by_admin",
+    admin_id: userId,
+    userType
+  })
+  })
+  console.log("defualtAiModelQuery", defualtAiModelQuery?.data?.[0]?.data?.llm_name);
 
   return (
     <div className="bg-[#F5F0EC] rounded-lg px-7 py-4 my-4 text-secondary">
@@ -47,7 +54,7 @@ export default function AdminSettings() {
       </div>}
 
       {activeTab.id === "profile" && <ProfileSetting setIsProfile={setIsProfile}  editProfile={editProfile} />}
-      {activeTab.id === "others" && <OtherSetting />}
+      {activeTab.id === "others" && <OtherSetting aiModels={aiModelQuery.data?.data || [] } selectedModel={defualtAiModelQuery?.data?.[0]?.data?.llm_name} />}
     </div>
   );
 }
