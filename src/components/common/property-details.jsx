@@ -132,7 +132,7 @@ const pdfDocuments = propertyDetailQuery?.data?.documents?.filter(item => item?.
                     </div>
                     <div>
                       <p className="font-semibold uppercase text-sm">Span of Search</p>
-                      <p className="text-[#7A7676]">Pending</p>
+                      <p className="text-[#7A7676]">{propertyDetailQuery?.data?.span_of_search || ""}</p>
                     </div>
                     <div>
                       <p className="font-semibold uppercase text-sm">Date of Search</p>
