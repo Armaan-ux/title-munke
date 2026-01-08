@@ -291,6 +291,7 @@ export default function Search({isIndivisual=false}) {
           onChange={(e) => setAddress(e.target.value)}
           disabled={loading}
         />
+        <div className="!mt-3 text-gray-500">Format: 123 Hill St</div>
       </div>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full max-w-4xl mb-6 flex-wrap">
         <div className="flex items-center gap-3">
