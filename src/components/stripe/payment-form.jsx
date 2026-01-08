@@ -107,6 +107,7 @@ export default function PaymentSetup() {
   const options = {
     clientSecret,
     appearance,
+    disableDevtools: true,
   };
 
   return (
