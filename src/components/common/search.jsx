@@ -273,7 +273,7 @@ export default function Search({isIndivisual=false}) {
 
   return (
     <form
-      className="p-4 md:p-10  rounded-xl bg-[#F5F0EC]  mb-4 flex flex-col items-center"
+      className="p-4 md:px-10 md:py-5  rounded-xl bg-[#F5F0EC]  mb-4 flex flex-col items-center"
       onSubmit={handleSearch}
     >
       <img
@@ -292,7 +292,7 @@ export default function Search({isIndivisual=false}) {
           disabled={loading}
         />
       </div>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full max-w-4xl mb-6 flex-wrap">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full max-w-4xl mb-6 ">
         <div className="flex items-center gap-3">
           <Checkbox
             id="checkbox"
@@ -309,7 +309,7 @@ export default function Search({isIndivisual=false}) {
         <Button
           variant="secondary"
           type="submit"
-          className="h-[54px] w-full md:w-[20rem] rounded-lg  bg-gradient-to-b from-[#550000] to-[#3D2014] !opacity-80 "
+          className="h-[54px] w-full max-w-[20rem] rounded-lg  bg-gradient-to-b from-[#550000] to-[#3D2014] !opacity-80 "
           size="lg"
           disabled={loading || !address.trim().length || !isChecked}
         >

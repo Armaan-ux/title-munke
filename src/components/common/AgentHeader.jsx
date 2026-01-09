@@ -53,7 +53,7 @@ export default function AgentDetailHeader({data}) {
             <p className="font-semibold text-2xl text-[#2A1A14]">{data?.totalSearches ?? data?.searchCount}</p>
           </div>
 
-          {data?.revenue &&
+          {typeof data?.revenue === "number" &&
           <div className="border border-[#E3D8D2] rounded-md p-4 max-w-[9rem] min-w-[8rem] w-full text-center bg-white xl:whitespace-nowrap">
             <p className="text-[#6B5E55] ">Business</p>
             <p className="font-semibold text-2xl text-[#2A1A14]">${data?.revenue}</p>
