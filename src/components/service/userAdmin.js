@@ -241,7 +241,8 @@ async function createUser(userData) {
   return callUserAdminApi(
     { body: userData },
     'Successfully created user:',
-    'Error creating user:'
+    'Error creating user:',
+    "/add-user-common"
   );
 }
 
@@ -1227,7 +1228,7 @@ export async function getAuditLogsForBroker(brokerId, isAgent) {
   const action = CONSTANTS?.ACTIONS?.LIST_AUDIT_LOG_FOR_BROKER
   const payload = {
     body: {
-      brokerId,
+      userId: brokerId,
       isAgent
     }
   }
