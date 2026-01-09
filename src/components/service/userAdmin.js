@@ -1,5 +1,6 @@
 import { API, Auth } from 'aws-amplify';
 import { constants } from 'buffer';
+import path from 'path';
 
 // const apiName = 'usersAdmin-dev';
 const apiName = 'usersAdmin-dev';
@@ -118,7 +119,72 @@ async function getAccessToken() {
     return null;
   }
 }
+async function callGetUserAdminApi(
+  payload,
+  successMessage,
+  errorMessage,
+  path = userPath
+) {
+  try {
+    const token = await getAuthToken();
+    const accessToken = await getAccessToken();
 
+    const params = {
+      headers: payload.headers || {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(accessToken ? { "X-Access-Token": accessToken } : {}),
+      },
+
+      // 👇 body keys converted to query params
+      queryStringParameters: payload.body || {},
+    };
+
+    console.log("API GET Params:", params);
+
+    const response = await API.get(apiName, path, params);
+
+    console.log(successMessage, response);
+    return response;
+  } catch (error) {
+    const errorData = error.response?.data || error;
+    console.error(errorMessage, errorData);
+    throw error;
+  }
+}
+async function callDeleteUserAdminApi(
+  payload,
+  successMessage,
+  errorMessage,
+  path = userPath
+) {
+  try {
+    const token = await getAuthToken();
+    const accessToken = await getAccessToken();
+
+    const params = {
+      headers: payload.headers || {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(accessToken ? { "X-Access-Token": accessToken } : {}),
+      },
+
+      // 👇 body keys converted to query params
+      queryStringParameters: payload.body || {},
+    };
+
+    console.log("API GET Params:", params);
+
+    const response = await API.delete(apiName, path, params);
+
+    console.log(successMessage, response);
+    return response;
+  } catch (error) {
+    const errorData = error.response?.data || error;
+    console.error(errorMessage, errorData);
+    throw error;
+  }
+}
 async function callUserAdminApi(payload, successMessage, errorMessage, path = userPath) {
   try {
     // The Amplify API library automatically looks up the endpoint from aws-exports.js
@@ -135,6 +201,31 @@ async function callUserAdminApi(payload, successMessage, errorMessage, path = us
     };
     console.log("API Call Params:", params);
     const response = await API.post(apiName, path, params);
+    console.log(successMessage, response);
+    return response;
+  } catch (error) {
+    // Improved error logging to show server-side error messages if available
+    const errorData = error.response ? error.response.data : error;
+    console.error(errorMessage, errorData);
+    throw error; // Re-throw to allow calling functions to handle if needed
+  }
+}
+async function callPutUserAdminApi(payload, successMessage, errorMessage, path = userPath) {
+  try {
+    // The Amplify API library automatically looks up the endpoint from aws-exports.js
+    // and, most importantly, signs the request with the current user's credentials.
+    const token = await getAuthToken();
+    const accessToken = await getAccessToken();
+    const params = {
+      ...payload,
+      headers: payload.headers || {
+        "Content-Type": "application/json",
+        ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+        ...(accessToken ? { "X-Access-Token": `${accessToken}` } : {}),
+      },
+    };
+    console.log("API Call Params:", params);
+    const response = await API.put(apiName, path, params);
     console.log(successMessage, response);
     return response;
   } catch (error) {
@@ -170,13 +261,13 @@ export async function reinviteAgent(email) {
   const payload = {
     body: {
       email: email,
-      action: CONSTANTS.ACTIONS.REINVITE,
     },
   };
   return callUserAdminApi(
     payload,
     'Success in reinviteUser:',
-    'Error in reinviteUser:'
+    'Error in reinviteUser:',
+    "/reinvite"
   );
 }
 
@@ -184,7 +275,6 @@ export async function forgotPassword(email) {
   const payload = {
     body: {
       email: email,
-      action: CONSTANTS.ACTIONS.FORGOT_PASSWORD,
     },
     // headers: {Authorization: "", "Content-Type": "application/json"},
   };
@@ -193,7 +283,7 @@ export async function forgotPassword(email) {
     payload,
     'Success in forgotPassword:',
     'Error in forgotPassword:',
-    forgotPasswordPath
+    "/forgot-password"
   );
 }
 
@@ -202,15 +292,15 @@ export async function getBrokerAgentsDetails(brokerId, withSearchCount = false, 
     body: {
       brokerId: brokerId,
       withSearchCount: withSearchCount,
-      action: CONSTANTS.ACTIONS.GET_BROKER_AGENTS_DETAILS,
       ...(fromDatetime && { fromDatetime }),
       ...(toDatetime && { toDatetime }),
     },
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     'Success in getBrokerAgentsDetails:',
-    'Error in getBrokerAgentsDetails:'
+    'Error in getBrokerAgentsDetails:',
+    "/get-broker-agent-details"
   );
 }
 
@@ -218,13 +308,13 @@ export async function getBrokerDetails(brokerId) {
   const payload = {
     body: {
       brokerId: brokerId,
-      action: CONSTANTS.ACTIONS.GET_BROKER_DETAILS,
     },
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     'Success in getBrokerDetails:',
-    'Error in getBrokerDetails:'
+    'Error in getBrokerDetails:',
+    "/get-broker-details"
   );
 }
 
@@ -232,13 +322,13 @@ export async function getAgentDetails(agentId) {
   const payload = {
     body: {
       agentId: agentId,
-      action: CONSTANTS.ACTIONS.GET_AGENT_DETAILS,
     },
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     'Success in getAgentDetails:',
-    'Error in getAgentDetails:'
+    'Error in getAgentDetails:',
+    "/get-agent-details"
   );
 }
 
@@ -246,29 +336,30 @@ export async function getAdminDetails(adminId) {
   const payload = {
     body: {
       adminId: adminId,
-      action: CONSTANTS.ACTIONS.GET_ADMIN_DETAILS,
     },
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     'Success in getAdminDetails:',
-    'Error in getAdminDetails:'
+    'Error in getAdminDetails:',
+    "/get-admin-details"
   );
 }
 
 export async function getAgentsTotalSearches(brokerId, fromDatetime, toDatetime) {
+  console.log({fromDatetime, toDatetime})
   const payload = {
     body: {
       brokerId: brokerId,
-      action: CONSTANTS.ACTIONS.GET_AGENTS_TOTAL_SEARCHES_FOR_BROKER,
-      fromDatetime: fromDatetime,
-      toDatetime: toDatetime,
+      ...(fromDatetime && {fromDatetime: fromDatetime}),
+      ...(toDatetime && {toDatetime: toDatetime}),
     },
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     'Success in getAgentsTotalSearches:',
-    'Error in getAgentsTotalSearches:'
+    'Error in getAgentsTotalSearches:',
+    "/get-agent-total-searches-for-broker"
   );
 }
 
@@ -276,15 +367,15 @@ export async function getBrokerTotalSearches(brokerId, fromDatetime, toDatetime)
   const payload = {
     body: {
       brokerId: brokerId,
-      action: CONSTANTS.ACTIONS.GET_BROKER_SEARCHES,
-      fromDatetime: fromDatetime,
-      toDatetime: toDatetime,
+      ...(fromDatetime && {fromDatetime: fromDatetime}),
+      ...(toDatetime && {fromDatetime: toDatetime}),
     },
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     'Success in getBrokerTotalSearches:',
-    'Error in getBrokerTotalSearches:'
+    'Error in getBrokerTotalSearches:',
+    "/get-broker-searches"
   );
 }
 
@@ -292,26 +383,26 @@ export async function getBrokersWithSearchCount(nextToken) {
   const payload = {
     body: {
       nextToken: nextToken,
-      action: CONSTANTS.ACTIONS.GET_BROKERS_WITH_SEARCH_COUNT,
     },
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     'Success in getBrokersWithSearchCount:',
-    'Error in getBrokersWithSearchCount:'
+    'Error in getBrokersWithSearchCount:',
+    "/get-broker-with-search-count"
   );
 }
 
 export async function getTotalBrokers() {
   const payload = {
     body: {
-      action: CONSTANTS.ACTIONS.GET_TOTAL_BROKERS,
     },
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     'Success in getTotalBrokers:',
-    'Error in getTotalBrokers:'
+    'Error in getTotalBrokers:',
+    "/get-total-brokers"
   );
 }
 
@@ -320,13 +411,13 @@ export async function updateBrokerStatus(brokerId, status) {
     body: {
       brokerId: brokerId,
       status: status,
-      action: CONSTANTS.ACTIONS.UPDATE_BROKER_STATUS,
     },
   };
-  return callUserAdminApi(
+  return callPutUserAdminApi(
     payload,
     'Success in updateBrokerStatus:',
-    'Error in updateBrokerStatus:'
+    'Error in updateBrokerStatus:',
+    "/update-broker-status"
   );
 }
 
@@ -335,13 +426,13 @@ export async function updateBroker(brokerId, input) {
     body: {
       brokerId: brokerId,
       input: input,
-      action: CONSTANTS.ACTIONS.UPDATE_BROKER,
     },
   };
-  return callUserAdminApi(
+  return callPutUserAdminApi(
     payload,
     'Success in updateBroker:',
-    'Error in updateBroker:'
+    'Error in updateBroker:',
+    "/update-broker"
   );
 }
 
@@ -350,13 +441,13 @@ export async function updateAgent(agentId, input) {
     body: {
       agentId: agentId,
       input: input,
-      action: CONSTANTS.ACTIONS.UPDATE_AGENT,
     },
   };
-  return callUserAdminApi(
+  return callPutUserAdminApi(
     payload,
     'Success in updateAgent:',
-    'Error in updateAgent:'
+    'Error in updateAgent:',
+    "/update-agent"
   );
 }
 
@@ -365,26 +456,26 @@ export async function updateAdmin(adminId, input) {
     body: {
       adminId: adminId,
       input: input,
-      action: CONSTANTS.ACTIONS.UPDATE_ADMIN,
     },
   };
-  return callUserAdminApi(
+  return callPutUserAdminApi(
     payload,
     'Success in updateAdmin:',
-    'Error in updateAdmin:'
+    'Error in updateAdmin:',
+    "/update-admin"
   );
 }
 
 export async function getTotalBrokerSearchesThisMonth() {
   const payload = {
     body: {
-      action: CONSTANTS.ACTIONS.GET_TOTAL_BROKER_SEARCHES_THIS_MONTH,
     },
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     'Success in getTotalBrokerSearchesThisMonth:',
-    'Error in getTotalBrokerSearchesThisMonth:'
+    'Error in getTotalBrokerSearchesThisMonth:',
+    "/get-total-broker-searches-this-month"
   );
 }
 
@@ -393,13 +484,13 @@ export async function getAgentTotalSearchesThisMonth(agentId) {
   const payload = {
     body: {
       agentId: agentId,
-      action: CONSTANTS.ACTIONS.GET_AGENT_TOTAL_SEARCHES_THIS_MONTH
     },
   };
-  const data = await callUserAdminApi(
+  const data = await callGetUserAdminApi(
     payload,
     'Success in getAgentTotalSearchesThisMonth:',
-    'Error in getAgentTotalSearchesThisMonth:'
+    'Error in getAgentTotalSearchesThisMonth:',
+    "/get-agent-total-searches-this-month"
   );
   return data.totalSearches;
 }
@@ -408,42 +499,42 @@ export async function getPendingAgentSearches(brokerId, fromDatetime, toDatetime
   const payload = {
     body: {
       brokerId: brokerId,
-      action: CONSTANTS.ACTIONS.GET_PENDING_AGENT_SEARCHES,
       fromDatetime: fromDatetime,
       toDatetime: toDatetime,
     },
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     'Success in getPendingAgentSearches:',
-    'Error in getPendingAgentSearches:'
+    'Error in getPendingAgentSearches:',
+    "/get-pending-agent-searches"
   );
 }
 
 export async function getUnassignedAgents() {
   const payload = {
     body: {
-      action: CONSTANTS.ACTIONS.GET_UNASSIGNED_AGENTS,
     },
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     'Success in getUnassignedAgents:',
-    'Error in getUnassignedAgents:'
+    'Error in getUnassignedAgents:',
+    "/get-unassigned-agents"
   );
 }
 
 export async function listAdmins(nextToken) {
   const payload = {
     body: {
-      action: CONSTANTS.ACTIONS.LIST_ADMINS,
       nextToken
     },
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     'Success in listAdmins:',
-    'Error in listAdmins:'
+    'Error in listAdmins:',
+    "/list-admins"
   );
 }
 
@@ -451,17 +542,17 @@ export async function listBrokers(data) {
   const { withSearchCount, limit } = data || {}
   const payload = {
     body: {
-      action: CONSTANTS.ACTIONS.LIST_BROKERS,
       ...(limit && { limit }),
       ...(withSearchCount && { withSearchCount }),
       ...(data?.from && { fromDatetime: data.from }),
       ...(data?.to && { toDatetime: data.to }),
     },
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     'Success in listBrokers:',
-    'Error in listBrokers:'
+    'Error in listBrokers:',
+    "/list-brokers"
   );
 }
 
@@ -469,13 +560,13 @@ export async function getTopPerformerAgent(brokerId) {
   const payload = {
     body: {
       brokerId: brokerId,
-      action: CONSTANTS.ACTIONS.GET_TOP_PERFORMER_AGENT,
     },
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     'Success in getTopPerformerAgent:',
-    'Error in getTopPerformerAgent:'
+    'Error in getTopPerformerAgent:',
+    "/get-top-performer-agent"
   );
 }
 
@@ -483,7 +574,6 @@ export async function UnassignAgent(agentId) {
   const payload = {
     body: {
       agentId: agentId,
-      action: CONSTANTS.ACTIONS.UNASSIGN_AGENT,
     },
   };
   return callUserAdminApi(
@@ -505,7 +595,8 @@ export async function assignAgent(agentId, name, brokerId) {
   return callUserAdminApi(
     payload,
     'Success in assignAgent:',
-    'Error in assignAgent:'
+    'Error in assignAgent:',
+    "/assign-agent"
   );
 }
 
@@ -514,26 +605,26 @@ export async function updateAgentStatus(agentId, status) {
     body: {
       agentId: agentId,
       status: status,
-      action: CONSTANTS.ACTIONS.UPDATE_AGENT_STATUS,
     },
   };
-  return callUserAdminApi(
+  return callPutUserAdminApi(
     payload,
     'Success in updateAgentStatus:',
-    'Error in updateAgentStatus:'
+    'Error in updateAgentStatus:',
+    "/update-agent-status"
   );
 }
 
 export async function getActiveBrokers() {
   const payload = {
     body: {
-      action: CONSTANTS.ACTIONS.GET_ACTIVE_BROKERS,
     },
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     'Success in getActiveBrokers:',
-    'Error in getActiveBrokers:'
+    'Error in getActiveBrokers:',
+    "/get-active-brokers"
   );
 }
 
@@ -546,13 +637,13 @@ export async function createSearchHistoryForUser(userId, userType, address, sear
       status: status,
       searchId: searchId,
       downloadLink: downloadLink,
-      action: CONSTANTS.ACTIONS.CREATE_SEARCH_HISTORY,
     },
   };
   return callUserAdminApi(
     payload,
     'Success in createSearchHistoryForUser:',
-    'Error in createSearchHistoryForUser:'
+    'Error in createSearchHistoryForUser:',
+    "/create-search-history"
   );
 }
 
@@ -564,13 +655,13 @@ export async function updateSearchHistory(id, status, downloadLink) {
         status: status,
         downloadLink: downloadLink,
       },
-      action: CONSTANTS.ACTIONS.UPDATE_SEARCH_HISTORY,
     },
   };
-  return callUserAdminApi(
+  return callPutUserAdminApi(
     payload,
     'Success in updateSearchHistory:',
-    'Error in updateSearchHistory:'
+    'Error in updateSearchHistory:',
+    "/update-search-history"
   );
 }
 
@@ -578,13 +669,13 @@ export async function getSearchStatus(searchId) {
   const payload = {
     body: {
       searchId: searchId,
-      action: CONSTANTS.ACTIONS.GET_SEARCH_STATUS,
     },
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     'Success in getSearchStatus:',
-    'Error in getSearchStatus:'
+    'Error in getSearchStatus:',
+    "/get-search-status"
   );
 }
 
@@ -595,13 +686,13 @@ export async function listSearchHistories({ userType, brokerId, userId, nextToke
       brokerId,
       userId,
       nextToken,
-      action: CONSTANTS.ACTIONS.LIST_SEARCH_HISTORIES,
     },
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     'Success in listSearchHistories:',
-    'Error in listSearchHistories:'
+    'Error in listSearchHistories:',
+    "/list-search-histories"
   );
 }
 
@@ -611,13 +702,13 @@ export async function listAuditLogs(isAgent, userIds, nextToken) {
       isAgent: isAgent,
       ...(userIds && { userIds: userIds }),
       ...(nextToken && { nextToken: nextToken }),
-      action: CONSTANTS.ACTIONS.LIST_AUDIT_LOGS,
     },
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     'Success in listAuditLogs:',
-    'Error in listAuditLogs:'
+    'Error in listAuditLogs:',
+    "/list-audit-logs"
   );
 }
 
@@ -628,13 +719,13 @@ export async function initiateSearch(pin, parnum, address, tax_assessment) {
       parnum: parnum,
       address: address,
       tax_assessment: tax_assessment,
-      action: CONSTANTS.ACTIONS.INITIATE_SEARCH,
     },
   };
   return callUserAdminApi(
     payload,
     'Success in initiateSearch:',
-    'Error in initiateSearch:'
+    'Error in initiateSearch:',
+    "/initiate-search"
   );
 }
 
@@ -642,13 +733,13 @@ export async function titleSearch(address) {
   const payload = {
     body: {
       address: address,
-      action: CONSTANTS.ACTIONS.TITLE_SEARCH,
     },
   };
   return callUserAdminApi(
     payload,
     'Success in titleSearch:',
-    'Error in titleSearch:'
+    'Error in titleSearch:',
+    "/title-search"
   );
 }
 
@@ -659,13 +750,13 @@ export async function sendEmailMessage(name, email, subject, detail) {
       email: email,
       subject: subject,
       detail: detail,
-      action: CONSTANTS.ACTIONS.SEND_EMAIL_MESSAGE,
     },
   };
   return callUserAdminApi(
     payload,
     'Success in sendEmailMessage:',
-    'Error in sendEmailMessage:'
+    'Error in sendEmailMessage:',
+    "/send-email-message"
   );
 }
 
@@ -691,7 +782,6 @@ export async function undeleteUser(userId, email, userType) {
       userId: userId,
       email: email,
       userType: userType,
-      action: CONSTANTS.ACTIONS.UNDELETE_USER,
     },
   };
   return callUserAdminApi(
@@ -709,13 +799,13 @@ export async function createAuditLog(userId, email, log_action, detail, isAgent)
       log_action: log_action,
       detail: detail,
       isAgent: isAgent,
-      action: CONSTANTS.ACTIONS.CREATE_AUDIT_LOG,
     },
   };
   return callUserAdminApi(
     payload,
     'Success in createAuditLog:',
-    'Error in createAuditLog:'
+    'Error in createAuditLog:',
+    "/create-audit-log"
   );
 }
 
@@ -723,11 +813,10 @@ export async function registerUser({ name, email, password, userType, teamStreng
   const payload = {
     body: {
       name,
-      email,
+      emailOfUser: email,
       password,
       userType,
       teamStrength,
-      action: CONSTANTS.ACTIONS.REGISTER_USER,
     },
     headers: { Authorization: "", "Content-Type": "" },
   };
@@ -735,7 +824,7 @@ export async function registerUser({ name, email, password, userType, teamStreng
     payload,
     'Success in registerUser:',
     'Error in registerUser:',
-    '/register'
+    '/register-user'
   );
 }
 
@@ -743,9 +832,8 @@ export async function confirmEmail({ code, email, userType }) {
   const payload = {
     body: {
       code: code,
-      email: email,
+      emailOfUser: email,
       userType: userType,
-      action: CONSTANTS.ACTIONS.CONFIRM_EMAIL,
     },
     headers: { Authorization: "", "Content-Type": "" }
   };
@@ -753,15 +841,14 @@ export async function confirmEmail({ code, email, userType }) {
     payload,
     'Success in confirmCode:',
     'Error in confirmCode:',
-    '/register/confirm-email'
+    '/confirm-email'
   );
 }
 
 export async function resendConfirmationCode(email) {
   const payload = {
     body: {
-      email: email,
-      action: CONSTANTS.ACTIONS.RESEND_CONFIRMATION_CODE,
+      emailOfUser: email,
     },
     headers: { Authorization: "", "Content-Type": "" }
   };
@@ -769,7 +856,7 @@ export async function resendConfirmationCode(email) {
     payload,
     'Success in resendConfirmationCode:',
     'Error in resendConfirmationCode:',
-    '/register/resend-code'
+    '/resend-confirmation-code'
   );
 }
 
@@ -787,7 +874,7 @@ export async function addCard(userId, userType, action) {
     payload,
     'Success in subscriber:',
     'Error in subscriber:',
-    '/users'
+    '/addCard'
   );
 }
 
@@ -797,15 +884,14 @@ export async function getSubscriptionDetails(userId, userType) {
     body: {
       // email: email,
       userId,
-      action: CONSTANTS.ACTIONS.MEMBERSHIP_DETAIL,
       userType
     },
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     'Success in subscriber:',
     'Error in subscriber:',
-    '/users'
+    '/subscription-details'
   );
 }
 
@@ -813,15 +899,14 @@ export async function getInvoice(userId, userType) {
   const payload = {
     body: {
       userId,
-      action: CONSTANTS?.ACTIONS?.LIST_INVOICE,
       userType,
     }
   };
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     "Successs in listinvoice",
     "Error in listinvoice",
-    "/users"
+    "/list-invoice"
   )
 }
 
@@ -830,17 +915,16 @@ export async function cancelSubscription(userId, userType, isCancel, reason) {
   const payload = {
     body: {
       userId,
-      action: action,
       userType,
       cancel_at_period_end: isCancel,
       reason
     }
   }
-  return callUserAdminApi(
+  return callPutUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/update-subscription-status"
   )
 }
 
@@ -849,14 +933,13 @@ export async function getSearchedStatus(searchId) {
   const payload = {
     body: {
       searchId,
-      action
     }
   }
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/get-search-status"
   )
 }
 export async function updateStatus(agentId) {
@@ -879,62 +962,58 @@ export async function getAgentBrokerDetails(agentId) {
   const action = CONSTANTS?.ACTIONS?.GET_AGENT_DETAILS
   const payload = {
     body: {
-      action,
       agentId
     }
   }
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/get-agent-details"
   )
 }
 export async function getAgentSearches(agentId, fromDatetime, toDatetime) {
   const action = CONSTANTS?.ACTIONS?.GET_AGENT_SEARCHES
   const payload = {
     body: {
-      action,
       agentId,
       ...(fromDatetime && { fromDatetime }),
       ...(toDatetime && { toDatetime }),
     }
   }
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/get-agent-searches"
   )
 }
 export async function getAdminMetrics(data) {
   const action = CONSTANTS?.ACTIONS?.GET_HOME
   const payload = {
     body: {
-      action,
       ...data
     }
   }
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/get-home"
   )
 }
 export async function getListDemoReq(type) {
   const action = CONSTANTS?.ACTIONS?.LIST_DEMO_REQUEST
   const payload = {
     body: {
-      action,
       ...(type && { type })
     }
   }
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/list-demo-request"
   )
 }
 
@@ -942,7 +1021,6 @@ export async function demoRequest(demoData) {
   const action = CONSTANTS?.ACTIONS?.CREATE_DEMO_REQUEST
   const payload = {
     body: {
-      action,
       ...demoData
     }
   }
@@ -950,22 +1028,21 @@ export async function demoRequest(demoData) {
     payload,
     "Success in " + action,
     "error in " + action,
-    "/forgot-password"
+    "/create-demo-request"
   )
 }
 export async function getAgentListings(nextToken) {
   const action = CONSTANTS?.ACTIONS?.LIST_AGENTS
   const payload = {
     body: {
-      action,
       nextToken
     }
   }
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/list-agents",
   )
 }
 export async function getBrokerSelectListing() {
@@ -1017,15 +1094,14 @@ export async function updateAgentDetail(updatedData) {
   const action = CONSTANTS?.ACTIONS?.UPDATE_AGENT
   const payload = {
     body: {
-      action,
       input: updatedData
     }
   }
-  return callUserAdminApi(
+  return callPutUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/update-agent"
   )
 }
 export async function updateAdminDetail(updatedData) {
@@ -1047,37 +1123,34 @@ export async function deleteUserNew(userDta) {
   const action = CONSTANTS?.ACTIONS?.DELETE_USER
   const payload = {
     body: {
-      action,
       ...userDta
     }
   }
-  return callUserAdminApi(
+  return callDeleteUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/delete-user"
   )
 }
-export async function restoreUser(userDta) {
+export async function restoreUser(userData) {
   const action = CONSTANTS?.ACTIONS?.UNDELETE_USER
   const payload = {
     body: {
-      action,
-      ...userDta
+      ...userData
     }
   }
-  return callUserAdminApi(
+  return callPutUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/undelete-user"
   )
 }
 export async function reinviteUser(userDta) {
   const action = CONSTANTS?.ACTIONS?.REINVITE
   const payload = {
     body: {
-      action,
       ...userDta
     }
   }
@@ -1085,7 +1158,7 @@ export async function reinviteUser(userDta) {
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/reinvite"
   )
 }
 
@@ -1093,57 +1166,53 @@ export async function getIndividualListing(withSearchCount, limit, fromDatetime,
   const action = CONSTANTS?.ACTIONS?.LIST_INDIVIDUALS
   const payload = {
     body: {
-      action,
       ...(limit && { limit }),
       ...(fromDatetime && { fromDatetime }),
       ...(toDatetime && { toDatetime }),
       withSearchCount
     }
   }
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/list-individuals"
   )
 }
 export async function getIndividualSearches(userId, fromDatetime, toDatetime) {
   const action = CONSTANTS?.ACTIONS?.INDIVIDUAL_SEARCHES
   const payload = {
     body: {
-      action,
       userId,
       ...(fromDatetime && { fromDatetime }),
       ...(toDatetime && { toDatetime })
     }
   }
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/get-individual-searches"
   )
 }
 export async function getIndividualDetails(userId) {
   const action = CONSTANTS?.ACTIONS?.INDIVIDUAL_DETAILS
   const payload = {
     body: {
-      action,
       userId
     }
   }
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/get-individual-details"
   )
 }
 export async function markDemoRequestContacted(requestId) {
   const action = CONSTANTS?.ACTIONS?.DEMO_REQUEST_MARK_CONTACTED
   const payload = {
     body: {
-      action,
       requestId
     }
   }
@@ -1151,45 +1220,43 @@ export async function markDemoRequestContacted(requestId) {
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/mark-contacted"
   )
 }
 export async function getAuditLogsForBroker(brokerId, isAgent) {
   const action = CONSTANTS?.ACTIONS?.LIST_AUDIT_LOG_FOR_BROKER
   const payload = {
     body: {
-      action,
       brokerId,
       isAgent
     }
   }
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/list-audit-logs-by-user-id"
   )
 }
 export async function updateProfileDetails(data) {
   const action = CONSTANTS?.ACTIONS?.updateProfileDetails
   const payload = {
     body: {
-      action,
-      ...data
+      ...data,
+      emailOfUser: data?.email
     }
   }
-  return callUserAdminApi(
+  return callPutUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/update-profile-details"
   )
 }
 export async function uploadProfileImageOnS3(data) {
   const action = CONSTANTS?.ACTIONS?.uploadProfileImageOnS3
   const payload = {
     body: {
-      action,
       ...data
     }
   }
@@ -1197,7 +1264,7 @@ export async function uploadProfileImageOnS3(data) {
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/upload-profile-image-on-s3"
   )
 }
 
@@ -1205,15 +1272,14 @@ export async function updateUserStatus(data) {
   const action = CONSTANTS?.ACTIONS?.UPDATE_USER_STATUS
   const payload = {
     body: {
-      action,
       ...data
     }
   }
-  return callUserAdminApi(
+  return callPutUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/update-user-status-common"
   )
 }
 
@@ -1221,13 +1287,14 @@ export async function bulkAgentUpload(data) {
   const action = CONSTANTS?.ACTIONS?.ADD_BULK_AGENTS;
 
   const payload = {
-    body: {...data, action},
+    body: {...data},
   };
 
   return callUserAdminApi(
     payload,
     "Success in " + action,
     "Error in " + action,
+    "/add-bulk-agents"
   );
 }
 
@@ -1237,15 +1304,15 @@ export async function listTotalAuditLogsByUserId(userId) {
 
   const payload = {
     body: {
-      action,
       userId
     }
   };
 
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     "Success in " + action,
     "Error in " + action,
+    "/list-total-audit-logs-by-user-id"
   );
 }
 export async function listTotalSearchesByUserId(userId) {
@@ -1253,15 +1320,15 @@ export async function listTotalSearchesByUserId(userId) {
 
   const payload = {
     body: {
-      action,
       userId
     }
   };
 
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     "Success in " + action,
     "Error in " + action,
+    "/list-total-searches-by-user-id"
   );
 }
 
@@ -1271,15 +1338,15 @@ export async function listAuditLogsByUserId(userId) {
 
   const payload = {
     body: {
-      action,
       userId
     }
   };
 
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     "Success in " + action,
     "Error in " + action,
+    "/list-audit-logs-by-user-id"
   );
 }
 
@@ -1288,15 +1355,15 @@ export async function deleteStripeCard(pmId) {
 
   const payload = {
     body: {
-      action,
       paymentMethodId: pmId
     }
   };
 
-  return callUserAdminApi(
+  return callDeleteUserAdminApi(
     payload,
     "Success in " + action,
     "Error in " + action,
+    "/delete-stripe-card"
   );
 }
 
@@ -1305,7 +1372,6 @@ export async function emailPreferenceWeeklyReport(emailPreference) { // will rec
 
   const payload = {
     body: {
-      action,
       emailPreference
     }
   };
@@ -1314,6 +1380,7 @@ export async function emailPreferenceWeeklyReport(emailPreference) { // will rec
     payload,
     "Success in " + action,
     "Error in " + action,
+    "/email-preference-weekly-report"
   );
 }
 
@@ -1322,7 +1389,6 @@ export async function emailPreferenceSearchComplete(emailPreference) { // will r
 
   const payload = {
     body: {
-      action,
       emailPreference
     }
   };
@@ -1331,6 +1397,7 @@ export async function emailPreferenceSearchComplete(emailPreference) { // will r
     payload,
     "Success in " + action,
     "Error in " + action,
+    "/email-preference-search-complete"
   );
 }
 
@@ -1339,7 +1406,6 @@ export async function markDefaultPaymentMethod(pmId) {
 
   const payload = {
     body: {
-      action,
       paymentMethodId: pmId
     }
   };
@@ -1348,6 +1414,7 @@ export async function markDefaultPaymentMethod(pmId) {
     payload,
     "Success in " + action,
     "Error in " + action,
+    "/mark-default-payment-method"
   );
 }
 
@@ -1356,14 +1423,14 @@ export async function fetchEmailPreference() {
 
   const payload = {
     body: {
-      action,
     }
   };
 
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     "Success in " + action,
     "Error in " + action,
+    "/fetch-email-preference"
   );
 }
 
@@ -1372,7 +1439,6 @@ export async function changePassword(data) {
 
   const payload = {
     body: {
-      action,
       ...data
     }
   };
@@ -1381,5 +1447,6 @@ export async function changePassword(data) {
     payload,
     "Success in " + action,
     "Error in " + action,
+    "/change-password-of-user"
   );
 }

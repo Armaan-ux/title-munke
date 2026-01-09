@@ -169,7 +169,7 @@ const updateAgentMutation = useMutation({
                   </SelectTrigger>
 
                   <SelectContent className="text-secondary">
-                    {[10, 20, 30, 50, 100].map((limit) => (
+                    {["10", "20", "30", "50", "100"].map((limit) => (
                       <SelectItem key={limit} value={limit}>
                         {limit}
                       </SelectItem>

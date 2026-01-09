@@ -145,8 +145,8 @@ function Agents() {
           await Promise.all([
             getAgentsTotalSearches(
               user.attributes.sub,
-              currentMonthStart,
-              nextMonthStart
+              currentMonthStart.toISOString(),
+              nextMonthStart.toISOString()
             ),
             fetchAgentsWithSearchCount(user.attributes.sub),
             getPendingAgentSearches(user.attributes.sub),
@@ -396,9 +396,10 @@ function Agents() {
           </Button>
 
           <Button
-            onClick={() => setAddAgent(user?.status === "active")}
+            // onClick={() => setAddAgent(user?.status === "active")}
+            onClick={() => setAddAgent(true)}
             className="h-[36px] bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[13px] font-medium rounded-md flex items-center gap-1.5 px-3"
-            disabled={user?.status !== "active"}
+            // disabled={user?.status !== "active"}
           >
             <PlusCircle className="w-4 h-4" />
             Add Agent
