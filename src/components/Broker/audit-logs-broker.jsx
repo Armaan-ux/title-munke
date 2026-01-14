@@ -37,7 +37,7 @@ function AuditLogs() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {auditLogBrokerQuery?.data?.items?.length === 0 ? (
+              {auditLogBrokerQuery?.data?.data?.items?.length === 0 ? (
                 <TableRow>
                   <TableCell
                     colSpan={5}
@@ -47,7 +47,7 @@ function AuditLogs() {
                   </TableCell>
                 </TableRow>
               ) : (
-                auditLogBrokerQuery?.data?.items?.map((item, index) => (
+                auditLogBrokerQuery?.data?.data?.items?.map((item, index) => (
                   <TableRow key={item.id}>
                     <TableCell className="font-medium">{index + 1}</TableCell>
                     {/* <TableCell className="font-medium">{item.action}</TableCell> */}

@@ -88,7 +88,7 @@ function PropertySearchIndividual() {
                         {" "}
                         <Badge
                           className={`${
-                            item?.status === "Successful"
+                            item?.status === "SUCCESS"
                               ? "bg-[#E9F3E9] text-[#1E8221]"
                               : "bg-[#FFF3D9] text-[#A2781E]"
                           } text-[13px] font-medium px-3 py-1 rounded-full`}

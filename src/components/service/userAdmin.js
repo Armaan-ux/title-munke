@@ -875,7 +875,7 @@ export async function addCard(userId, userType, action) {
     payload,
     'Success in subscriber:',
     'Error in subscriber:',
-    '/addCard'
+    '/add-card'
   );
 }
 

@@ -38,7 +38,7 @@ function AuditLogsAgent() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {auditLogAgentQuery?.data?.items?.length === 0 ? (
+              {auditLogAgentQuery?.data?.data?.items?.length === 0 ? (
                 <TableRow>
                   <TableCell
                     colSpan={5}
@@ -48,7 +48,7 @@ function AuditLogsAgent() {
                   </TableCell>
                 </TableRow>
               ) : (
-                auditLogAgentQuery?.data?.items?.map((item, index) => (
+                auditLogAgentQuery?.data?.data?.items?.map((item, index) => (
                   <TableRow key={item.id}>
                     <TableCell className="font-medium">{index + 1}</TableCell>
                     {/* <TableCell className="font-medium">{item.action}</TableCell> */}
