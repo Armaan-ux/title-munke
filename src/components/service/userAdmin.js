@@ -169,13 +169,13 @@ async function callDeleteUserAdminApi(
         ...(accessToken ? { "X-Access-Token": accessToken } : {}),
       },
 
-      // 👇 body keys converted to query params
-      queryStringParameters: payload.body || {},
+      // ✅ SEND AS BODY
+      body: payload.body || {},
     };
 
-    console.log("API GET Params:", params);
+    console.log("API DELETE Params:", params);
 
-    const response = await API.delete(apiName, path, params);
+    const response = await API.del(apiName, path, params);
 
     console.log(successMessage, response);
     return response;
@@ -1053,11 +1053,11 @@ export async function getBrokerSelectListing() {
       action,
     }
   }
-  return callUserAdminApi(
+  return callGetUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,
-    "/users"
+    "/list-broker-name"
   )
 }
 export async function createUserByAdmin(newUserData) {
@@ -1071,7 +1071,7 @@ export async function createUserByAdmin(newUserData) {
     payload,
     "Success in ",
     "error in ",
-    "/users"
+    "/add-user-common"
   )
 }
 
