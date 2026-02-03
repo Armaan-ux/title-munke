@@ -18,7 +18,7 @@ import { useLocation } from "react-router-dom";
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 function PaymentForm() {
-  const {user} = useUser()
+  const {user, setUser} = useUser()
   const {pathname} = useLocation();
   const [type, setType] = useState("");
   const  userClickedRef = useRef(false);
@@ -40,6 +40,7 @@ function PaymentForm() {
           window.location.origin + `${pathname}?isPaymentSuccessful=true`,
       },
     });
+    setUser((pre) => ({ ...pre, isAddCard: false }));
 
     if (error) {
       toast.error(error?.message || "Something went wrong.");

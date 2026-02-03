@@ -5,7 +5,7 @@ import SubscriptionSuccessModal from "../Modal/SubscriptionSuccessModal";
 import CardAddedSuccessModal from "../Modal/CardAddedSuccessModal";
 import SubscriptionFailedModal from "../Modal/SubscriptionFailedModal";
 import { useUserIdType } from "@/hooks/useUserIdType";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
 import { Dialog } from "../ui/dialog";
 import { DialogContent } from "@radix-ui/react-dialog";
@@ -32,7 +32,7 @@ import { CenterLoader } from "./Loader";
 
 function MembershipOrCardAddedModalContainer() {
   const { pathname } = useLocation();
-  console.log("location", pathname);
+  const navigate = useNavigate();
   const {
     user,
     setUser,
@@ -92,9 +92,12 @@ function MembershipOrCardAddedModalContainer() {
       setPaymentModal(false);
       setPaymentSuccessModal(true);
       setUser((pre) => ({ ...pre, isAddCard: true }));
-      // setTimeout(() => setPaymentSuccessModal(false), 3000)
+      const id = setTimeout(() => {
+        navigate(pathname, { replace: true });
+      }, 3000);
+      return () => clearTimeout(id);
     }
-  }, [isCardAdded, isPaymentSuccessful, setUser, setPaymentModal, setPaymentSuccessModal]);
+  }, [isCardAdded, isPaymentSuccessful, setUser, setPaymentModal, setPaymentSuccessModal, navigate, pathname]);
 
   if (!["individual", "broker"].includes(userType)) return null;
   const cards = subcriptionDetailQuery?.data?.payment_methods ?? [];
@@ -102,7 +105,7 @@ function MembershipOrCardAddedModalContainer() {
   return (
     <div>
       {cardListingModal && 
-        <Dialog open={cardListingModal} onOpenChange={() => setCardListingModal(false)}>
+        <Dialog open={cardListingModal} onOpenChange={() => {setCardListingModal(false); setUser((pre) => ({ ...pre, isAddCard: false }));}}>
           <div
         className="fixed inset-0 z-40 flex items-center justify-center"
         style={{
@@ -193,7 +196,7 @@ function MembershipOrCardAddedModalContainer() {
                 ))}
                 <Button
                     className="text-sm text-secondary bg-[#FDF6EE] hover:underline hover:bg-secondary hover:text-primary-foreground"
-                    onClick={() => {setPaymentModal(true); setCardListingModal(false) }}
+                    onClick={() => {setPaymentModal(true); setCardListingModal(false); setUser((pre) => ({ ...pre, isAddCard: true }));}}
                   >
                     + Add New Credit / Debit Card
                   </Button>

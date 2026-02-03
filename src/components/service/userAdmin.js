@@ -862,12 +862,11 @@ export async function resendConfirmationCode(email) {
 }
 
 
-export async function addCard(userId, userType, action) {
+export async function addCard(userId, userType, endpoint) {
   const payload = {
     body: {
       // email: email,
       userId,
-      action: action,
       userType
     },
   };
@@ -875,7 +874,7 @@ export async function addCard(userId, userType, action) {
     payload,
     'Success in subscriber:',
     'Error in subscriber:',
-    '/add-card'
+    `/${endpoint}`
   );
 }
 
