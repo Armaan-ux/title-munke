@@ -22,6 +22,7 @@ import ContactUs from "./components/Contactus";
 import Register from "./components/register";
 import RegisterIndividual from "./components/register-individual";
 import OrganizationRoleOverview from "./components/viewMore";
+import Pricing from './components/Pricing'
 
 function App() {
   const { isLoading } = useUser();
@@ -42,6 +43,7 @@ function App() {
         <Route path="/register/individual" element={<RegisterIndividual />} />
         <Route path="/forgot-password" element={<ForgetPassword />} />
         <Route path="/notfound" element={<NotFound />} />
+        <Route path="/pricing" element={<Pricing />} />
         <Route path="/" element={<Layout />}>
           {adminRoutes.map(({ path, component: Component }) => (
             <Route

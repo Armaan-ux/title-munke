@@ -4,6 +4,7 @@ export const navItems = [
   { name: "How It Works", path: "how-it-works" },
   { name: "Sample Report", path: "report-preview" },
   { name: "Counties", path: "counties" },
+  { name: "Pricing", path: "/pricing" },
   // { name: "Previous Searches", path: "previous-searches" },
 ]
 
@@ -61,6 +62,35 @@ export const keyFeatures = [
       description: "A clean, intuitive workspace that keeps everything in one place."
     },
     
+]
+
+
+export const flexiblePricing = [
+  {
+    background: '/individual-bg.png',
+    icon: '/individual.svg',
+    title: 'Individual Agent',
+    subTitle: 'Simple. Focused. Independent.',
+    headline: 'Perfect for independent professionals',
+    content: 'Built for solo agents who value speed, clarity, and simplicity. Run title searches effortlessly without unnecessary complexity—just what you need, when you need it.'
+  },
+  {
+    background: '/broker-bg.png',
+    icon: '/broker.svg',
+    title: 'Broker',
+    subTitle: 'Manage more. Stress less.',
+    headline: 'Made for growing brokerages',
+    content: 'Designed for brokers managing multiple agents and higher activity. Streamline workflows, stay organized, and scale operations smoothly as your business expands.'
+  },
+  {
+    background: '/broker-bg.png',
+    icon: '/organization.svg',
+    title: 'Organization',
+    subTitle: 'Powering large-scale operations',
+    headline: 'BEST FOR SCALE',
+    content: 'Built for enterprise teams, investors, and high-volume organizations. A robust solution tailored for complex workflows, advanced needs, and long-term growth.'
+  }
+
 ]
 
 

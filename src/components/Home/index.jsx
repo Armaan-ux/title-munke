@@ -5,6 +5,7 @@ import {
   ArrowUp,
   CircleCheck,
   Download,
+  MoveRight,
 } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import {
@@ -20,6 +21,7 @@ import { useEffect, useState } from "react";
 import {
   aboutUsListItems,
   faq,
+  flexiblePricing,
   howItWorksSteps,
   keyFeatures,
   sampleReportItems,
@@ -136,6 +138,7 @@ export default function Home() {
               AI-powered title searches delivered with speed and accuracy.
               Helping brokers and agents make confident decisions.
             </p>
+            
             <div className="space-x-3">
               <Link to="/login">
                 <Button className="hover:scale-105" size="lg" variant="outline">
@@ -571,6 +574,65 @@ export default function Home() {
             </motion.div>
           ))}
         </div>
+      </section>
+
+
+      {/* Flexible Pricing for Every Scale */}
+      <section className="bg-gradient-to-t from-[#FFFFFF] to-[#FFF8EB] py-20">
+          <div className="max-w-[1280px] mx-auto px-4">
+            <h2 className="text-h2 text-center text-secondary mb-6">Flexible Pricing for Every Scale</h2>
+            <p className="text-center max-w-[1000px] mx-auto mb-10 text-body text-coffee-light">
+              Whether you're an individual agent or an enterprise operation, Title Munke offers transparent pricing designed to grow with your business.
+            </p>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+              {flexiblePricing.map((item, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.5,
+                      delay: index * 0.1,
+                      ease: "easeOut",
+                    }}
+                    viewport={{ once: true, amount: 0.4 }}
+                    style={{
+                      backgroundImage: `url(${item.background})`,
+                      backgroundRepeat: "no-repeat",
+                      backgroundPosition: "top",
+                      backgroundSize: "100% 130px",
+                    }}
+                    className="flex flex-col items-center bg-white p-5 md:p-10 rounded-[20px] border-3 border-[#E8D0A7] shadow-[0px_4px_14px_0px_#D7C4B666] hover:shadow-[0px_28px_34px_0px_#D7C4B666] transition-shadow"
+                  >
+                    <img src={item.icon} className="h-auto mb-5" alt={item.title} />
+                    <div className="text-2xl font-semibold text-secondary text-center mb-0">
+                      {item.title}
+                    </div>
+                    <p className="text-center text-secondary">
+                      {item.subTitle}
+                    </p>
+
+                    <img src="/divider.png" className="h-auto my-4" alt="divider" />
+
+                    <div className="text-xl font-semibold text-secondary text-left w-full mb-4">
+                      {item.headline}
+                    </div>
+                    <p className="text-secondary leading-relaxed">
+                      {item.content}
+                    </p>
+
+                    <div className="mt-auto pt-8 w-full">
+                      <Button
+                        className="hover:scale-105 w-full bg-[#5D4135] hover:bg-[#5D4135]"
+                        size="lg">
+                          Know More <MoveRight />
+                      </Button>
+                    </div>
+                  </motion.div>
+                ))}
+            </div>
+          </div>
       </section>
 
       {/* Request a Demo */}

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { navItems } from "@/utils/constant";
 import { ArrowRight, Menu } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Sheet,
   SheetClose,
@@ -14,11 +14,21 @@ import {
 } from "@/components/ui/sheet"
 
 export default function Navbar() {
+  const navigate = useNavigate()
 
     const scrollToSection = (id) => {
-      const section = document.getElementById(id);
-      if (section) {
-        section.scrollIntoView({ behavior: "smooth", block: "start" });
+      if(id === '/pricing') {
+        navigate(id);
+      }
+      else {
+        navigate('/')
+        setTimeout(()=> {
+          const section = document.getElementById(id);
+          if (section) {
+            section.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 100)
+        
       }
     };
 
@@ -29,7 +39,7 @@ export default function Navbar() {
         <nav className="flex justify-between items-center gap-4 md:gap-12 max-w-[1280px] mx-auto px-4">
           <img src="/Logo.svg" alt="logo" className="w-16 md:w-20 h-auto" />
           
-          <div className="hidden lg:flex justify-end flex-1 gap-6 xl:gap-12 max-w-[60rem]">
+          <div className="hidden lg:flex justify-end flex-1 gap-6 xl:gap-12 max-w-[64rem]">
             <ul className="flex items-center gap-2 justify-between flex-1">
               {navItems.map((item) => (
                 <li 
