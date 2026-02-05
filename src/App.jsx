@@ -23,6 +23,8 @@ import Register from "./components/register";
 import RegisterIndividual from "./components/register-individual";
 import OrganizationRoleOverview from "./components/viewMore";
 import Pricing from './components/Pricing'
+import SubscriptionLogin from "./components/SubscriptionLogin";
+import SubscriptionPayment from "./components/common/SubscriptionPayment";
 
 function App() {
   const { isLoading } = useUser();
@@ -39,6 +41,8 @@ function App() {
         <Route path="/viewmore" element={<OrganizationRoleOverview />} />
         <Route path="/contactus" element={<ContactUs />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/subscription-login" element={<SubscriptionLogin />} />
+        <Route path="/subscription-payment" element={<SubscriptionPayment />} />
         <Route path="/register" element={<Register />} />
         <Route path="/register/individual" element={<RegisterIndividual />} />
         <Route path="/forgot-password" element={<ForgetPassword />} />

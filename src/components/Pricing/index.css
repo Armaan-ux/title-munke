@@ -1,0 +1,36 @@
+.card-info-parent {
+    position: absolute;
+    right: 25px;
+    top: -12px;
+}
+.card-info {   
+    background: #5d4135;
+    border-radius: 0 0 5px 5px;
+    height: 56px;
+    clip-path: polygon(100% 0%, 100% 51%, 100% 100%, 51% 73%, 0 100%, 0 0);
+    padding: 10px 20px; 	
+}
+.card-info-parent::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 15px;
+    left: -9px;
+    top: 4px;
+    transform: rotate(45deg);
+    z-index: -9;
+    border: 9px solid;
+    border-color: transparent transparent transparent #2b201c;
+}
+.card-info-parent::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 15px;
+    right: -9px;
+    top: 4px;
+    transform: rotate(-45deg);
+    z-index: -9;
+    border: 9px solid;
+    border-color: transparent  #2b201c transparent transparent;
+}

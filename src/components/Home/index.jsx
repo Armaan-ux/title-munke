@@ -576,7 +576,6 @@ export default function Home() {
         </div>
       </section>
 
-
       {/* Flexible Pricing for Every Scale */}
       <section className="bg-gradient-to-t from-[#FFFFFF] to-[#FFF8EB] py-20">
           <div className="max-w-[1280px] mx-auto px-4">
