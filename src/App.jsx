@@ -22,9 +22,11 @@ import ContactUs from "./components/Contactus";
 import Register from "./components/register";
 import RegisterIndividual from "./components/register-individual";
 import OrganizationRoleOverview from "./components/viewMore";
-import Pricing from './components/Pricing'
+import Pricing from "./components/Pricing";
 import SubscriptionLogin from "./components/SubscriptionLogin";
 import SubscriptionPayment from "./components/common/SubscriptionPayment";
+import SubscriptionSignup from "./components/SubscriptionSignup";
+import SubscriptionCardDetails from "./components/common/SubscriptionCardDetails";
 
 function App() {
   const { isLoading } = useUser();
@@ -36,68 +38,73 @@ function App() {
 
   return (
     // <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/viewmore" element={<OrganizationRoleOverview />} />
-        <Route path="/contactus" element={<ContactUs />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/subscription-login" element={<SubscriptionLogin />} />
-        <Route path="/subscription-payment" element={<SubscriptionPayment />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/register/individual" element={<RegisterIndividual />} />
-        <Route path="/forgot-password" element={<ForgetPassword />} />
-        <Route path="/notfound" element={<NotFound />} />
-        <Route path="/pricing" element={<Pricing />} />
-        <Route path="/" element={<Layout />}>
-          {adminRoutes.map(({ path, component: Component }) => (
-            <Route
-              key={path}
-              path={path}
-              element={
-                <ProtectedRoute allowedGroups={["admin"]}>
-                  <Component />
-                </ProtectedRoute>
-              }
-            />
-          ))}
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/viewmore" element={<OrganizationRoleOverview />} />
+      <Route path="/contactus" element={<ContactUs />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/subscription-signup" element={<SubscriptionSignup />} />
+      <Route path="/subscription-login" element={<SubscriptionLogin />} />
+      <Route path="/subscription-payment" element={<SubscriptionPayment />} />
+      <Route
+        path="/subscription-card-details"
+        element={<SubscriptionCardDetails />}
+      />
+      <Route path="/register" element={<Register />} />
+      <Route path="/register/individual" element={<RegisterIndividual />} />
+      <Route path="/forgot-password" element={<ForgetPassword />} />
+      <Route path="/notfound" element={<NotFound />} />
+      <Route path="/pricing" element={<Pricing />} />
+      <Route path="/" element={<Layout />}>
+        {adminRoutes.map(({ path, component: Component }) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              <ProtectedRoute allowedGroups={["admin"]}>
+                <Component />
+              </ProtectedRoute>
+            }
+          />
+        ))}
 
-          {agentRoutes.map(({ path, component: Component }) => (
-            <Route
-              key={path}
-              path={path}
-              element={
-                <ProtectedRoute allowedGroups={["agent"]}>
-                  <Component />
-                </ProtectedRoute>
-              }
-            />
-          ))}
+        {agentRoutes.map(({ path, component: Component }) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              <ProtectedRoute allowedGroups={["agent"]}>
+                <Component />
+              </ProtectedRoute>
+            }
+          />
+        ))}
 
-          {brokerRoutes.map(({ path, component: Component }) => (
-            <Route
-              key={path}
-              path={path}
-              element={
-                <ProtectedRoute allowedGroups={["broker"]}>
-                  <Component />
-                </ProtectedRoute>
-              }
-            />
-          ))}
-          {individualRoutes.map(({ path, component: Component }) => (
-            <Route
-              key={path}
-              path={path}
-              element={
-                // <ProtectedRoute allowedGroups={["individual"]}>
-                  <Component />
-                // </ProtectedRoute>
-              }
-            />
-          ))}
-        </Route>
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+        {brokerRoutes.map(({ path, component: Component }) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              <ProtectedRoute allowedGroups={["broker"]}>
+                <Component />
+              </ProtectedRoute>
+            }
+          />
+        ))}
+        {individualRoutes.map(({ path, component: Component }) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              // <ProtectedRoute allowedGroups={["individual"]}>
+              <Component />
+              // </ProtectedRoute>
+            }
+          />
+        ))}
+      </Route>
+      <Route path="*" element={<NotFound />} />
+    </Routes>
     // </Router>
   );
 }

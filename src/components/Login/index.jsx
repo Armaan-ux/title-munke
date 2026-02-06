@@ -9,7 +9,11 @@ import { ArrowRight, ChevronLeft, Eye, EyeOff, Loader } from "lucide-react";
 import { motion } from "motion/react";
 import VerifyEmail from "../verify-email";
 import { useMutation } from "@tanstack/react-query";
-import { confirmEmail, resendConfirmationCode, updateUserStatus } from "../service/userAdmin";
+import {
+  confirmEmail,
+  resendConfirmationCode,
+  updateUserStatus,
+} from "../service/userAdmin";
 import { handleCreateAuditLog } from "@/utils";
 
 function Login() {
@@ -33,7 +37,7 @@ function Login() {
       user.signInUserSession.idToken.payload["cognito:groups"]
     ) {
       navigate(
-        "/" + user.signInUserSession.idToken.payload["cognito:groups"][0]
+        "/" + user.signInUserSession.idToken.payload["cognito:groups"][0],
       );
     }
   }, [user, navigate]);
@@ -57,7 +61,7 @@ function Login() {
       setIsChecking(true);
       const { isResetRequired, user: signedInUser } = await signIn(
         username?.trim(),
-        password?.trim()
+        password?.trim(),
       );
 
       if (isResetRequired) {
@@ -65,9 +69,16 @@ function Login() {
         return;
       }
       const userId = signedInUser?.attributes?.sub;
-      const userType = signedInUser?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
-      await handleCreateAuditLog("login", { detail: `${userType} logged in successfully` }, userType==="agent");
-      await updateUserStatus({userId, userType})
+      const userType =
+        signedInUser?.signInUserSession?.idToken?.payload[
+          "cognito:groups"
+        ]?.[0];
+      await handleCreateAuditLog(
+        "login",
+        { detail: `${userType} logged in successfully` },
+        userType === "agent",
+      );
+      await updateUserStatus({ userId, userType });
       if (
         signedInUser &&
         signedInUser.signInUserSession &&
@@ -86,7 +97,7 @@ function Login() {
         }
       } else {
         setError(
-          "User groups not available in the response. Please try again."
+          "User groups not available in the response. Please try again.",
         );
       }
     } catch (error) {
@@ -132,11 +143,12 @@ function Login() {
             <p className="text-[26px] font-semibold">Welcome Back</p>
             <p className="text-[#554536]">Please enter your details to login</p>
           </div>
+          <div className="border-t border-gray-200 mb-6 mt-4"></div>
           <form
             className="space-y-4 text-secondary"
             onSubmit={(e) => {
-              e.preventDefault()
-              handleLogin()
+              e.preventDefault();
+              handleLogin();
             }}
           >
             <div>
@@ -170,11 +182,15 @@ function Login() {
                 variant="ghost"
                 type="button"
                 size="icon"
-                className="absolute right-3 bottom-[14px] cursor-pointer m-0 p-0 px-0 h-auto w-auto" 
-                onClick={() => setShowPassword(pre => !pre)}
+                className="absolute right-3 bottom-[14px] cursor-pointer m-0 p-0 px-0 h-auto w-auto"
+                onClick={() => setShowPassword((pre) => !pre)}
               >
-                {!showPassword && <Eye className="text-tertiary text-500 w-4 h-4"/>}
-                {showPassword && <EyeOff className="text-tertiary text-500 w-4 h-4" />}
+                {!showPassword && (
+                  <Eye className="text-tertiary text-500 w-4 h-4" />
+                )}
+                {showPassword && (
+                  <EyeOff className="text-tertiary text-500 w-4 h-4" />
+                )}
               </Button>
             </div>
             <div className="flex justify-end">

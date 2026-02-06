@@ -3,17 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/usercontext";
 import ResetPassword from "../ResetPassword";
 import { Button } from "@/components/ui/button";
-import {
-  Check,
-  CreditCard,
-  Eye,
-  EyeOff,
-  UserRoundCheck,
-} from "lucide-react";
-
+import { Check, CreditCard, Eye, EyeOff, UserRoundCheck } from "lucide-react";
+import CardAddedSuccessModal from "../Modal/CardAddedSuccessModal";
 
 function SubscriptionLogin() {
-   
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { user, signIn } = useUser();
@@ -40,7 +33,6 @@ function SubscriptionLogin() {
     }
   }, [user, navigate]);
 
-
   if (isReset) return <ResetPassword username={username} password={password} />;
 
   return (
@@ -56,7 +48,7 @@ function SubscriptionLogin() {
       <div className="relative z-10 mx-auto flex min-h-[978px] max-w-[970px] items-center justify-center px-4 py-10">
         <div className="grid w-full grid-cols-1 overflow-hidden rounded-2xl bg-[#fffaf3] shadow-2xl md:grid-cols-[30%_70%]">
           {/* LEFT */}
-          <div className="hidden flex-col  justify-center align-center bg-gradient-to-b from-[#FFFDFA] to-[#EDDDC0] p-10 md:flex">
+          <div className="hidden flex-col justify-center align-center bg-gradient-to-b from-[#FFFDFA] to-[#EDDDC0] p-10 md:flex">
             <div>
               <div className="flex  gap-3 flex-col">
                 <img src="/Logo.svg" className="h-40 w-40" alt="logo" />
@@ -95,80 +87,28 @@ function SubscriptionLogin() {
           </div>
 
           {/* RIGHT */}
-          <div className="flex items-center justify-center p-6 sm:p-10 bg-[url('/bg-signin.png')]">
-            <div className="w-full max-w-lg ">
-              {/* stepper */}
-              <div className="flex items-center justify-center mb-5">
-                <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
-                  {/* Active Step */}
-                  <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4 py-2 text-xs font-medium text-white">
-                    <UserRoundCheck />
-                    Info.
-                  </div>
-
-                  {/* Connector */}
-                  <div className="mx-3 h-[2px] w-20 bg-[#BEA998]" />
-
-                  {/* Inactive Step */}
-                  <div className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium text-[#7a5a49]">
-                    <CreditCard />
-                    Add Card
-                  </div>
-                </div>
-              </div>
-
+          <div className="flex items-center justify-center p-6 sm:p-10 bg-[url('/bg-signin.png')] md:py-[100px]">
+            <div className="w-full max-w-sm">
               <div className="border-2 border-[#e6d6c3] rounded-3xl p-4 bg-[#FFFFFF] ">
                 <h3 className="text-2xl font-semibold text-[#3b1f12]">
-                  Create Your account
+                  Welcome
                 </h3>
                 <p className="mt-1 text-sm text-[#7a5a49]">
-                  Start your secure onboarding.
+                  Please enter your details to Log in.
                 </p>
 
+                <div className="border-t border-gray-200 mb-6 mt-4"></div>
                 <form className="mt-6 space-y-4">
                   <div>
-                    <label className="text-sm text-[#3b1f12]">
-                      Name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      className="mt-1 w-full rounded-md border border-[#e6d6c3] bg-transparent px-3 py-2 text-sm outline-none focus:border-[#3b1f12]"
-                      placeholder="john title munke"
-                    />
-                  </div>
-                  <div>
-                    <div className="relative">
-                      <label className="text-sm text-[#3b1f12]">
-                        Phone Number <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        className="mt-1 w-full rounded-md border border-[#e6d6c3] bg-transparent px-3 py-2 text-sm outline-none focus:border-[#3b1f12]"
-                        placeholder="(212) 555-0199"
-                      />
-                      <div
-                        variant="ghost"
-                        type="button"
-                        size="icon"
-                        className="absolute right-3 bottom-[14px] cursor-pointer m-0 p-0 px-0 h-auto w-auto"
-                        onClick={() => setShowPassword((pre) => !pre)}
-                      >
-                        <Check className="text-green-500  w-4 h-4" />
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-sm text-[#3b1f12]">
-                      Email <span className="text-red-500">*</span>
-                    </label>
+                    <label className="text-sm text-[#3b1f12]">Email</label>
                     <input
                       className="mt-1 w-full rounded-md border border-[#e6d6c3] bg-transparent px-3 py-2 text-sm outline-none focus:border-[#3b1f12]"
                       placeholder="john@titlemunke.com"
                     />
                   </div>
-                  <div className="flex gap-4">
+                  <div>
                     <div className="relative">
-                      <label className="text-sm text-[#3b1f12]">
-                        Password <span className="text-red-500">*</span>
-                      </label>
+                      <label className="text-sm text-[#3b1f12]">Password</label>
                       <div className="flex items-center">
                         <input
                           type={showPassword ? "text" : "password"}
@@ -191,58 +131,31 @@ function SubscriptionLogin() {
                         </Button>
                       </div>
                     </div>
-                    <div className="relative">
-                      <label className="text-sm text-[#3b1f12]">
-                        Confirm Password <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type={showConfirmPassword ? "text" : "password"}
-                        className="mt-1 w-full rounded-md border border-[#e6d6c3] bg-transparent px-3 py-2 pr-10 text-sm outline-none focus:border-[#3b1f12]"
-                        placeholder="••••••••"
-                      />
-                      <Button
-                        variant="ghost"
-                        type="button"
-                        size="icon"
-                        className="absolute right-3 bottom-[14px] cursor-pointer m-0 p-0 px-0 h-auto w-auto"
-                        onClick={() => setShowConfirmPassword((pre) => !pre)}
-                      >
-                        {!showConfirmPassword && (
-                          <Eye className="text-tertiary text-500 w-4 h-4" />
-                        )}
-                        {showConfirmPassword && (
-                          <EyeOff className="text-tertiary text-500 w-4 h-4" />
-                        )}
-                      </Button>
-                    </div>
                   </div>
 
-                  <div className="flex items-start gap-2 mb-10 ">
-                    <input
-                      type="checkbox"
-                      id="terms"
-                      className="mt-1 h-4 w-4 rounded border-[#d8c3ab] text-[#3b1f12] focus:ring-[#3b1f12]"
-                    />
-                    <label htmlFor="terms" className="text-sm text-[#3b1f12]">
-                      I agree to the
-                      <a href="/terms" className="font-medium underline">
-                        Terms and Conditions
-                      </a>
-                      .
+                  <div className="flex justify-end gap-2 mb-10 ">
+                    <label
+                      htmlFor="terms"
+                      className="text-sm text-[#3b1f12] underline"
+                    >
+                      Forgot Password?
                     </label>
                   </div>
 
-                  <button className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white" onClick={navigate('/subscription-payment')}>
-                    Continue →
+                  <button
+                    className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
+                    onClick={navigate("/subscription-payment")}
+                  >
+                    Log In →
                   </button>
-
+                  <div className="border-t border-gray-200 mb-6 mt-4"></div>
                   <p className="pt-4 text-center text-xs text-[#7a5a49]">
                     Already have an account?{" "}
                     <a
-                      href="/subscription-payment"
+                      href="/subscription-signup"
                       className="font-medium text-[#3b1f12] hover:underline"
                     >
-                      Log In
+                      Sign up
                     </a>
                   </p>
                 </form>
