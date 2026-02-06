@@ -64,17 +64,17 @@ const Pricing = () => {
     {
       id: "membership",
       title: "Subscription",
-      price: "$200",
+      price: "$20",
       subtitle: "/ month",
       features: [
         " Full access to the platform",
-        "40 searches included per month",
+        "2 free searches included",
         "Reduced search cost at $5 per search",
-        "Additional searches billed at a reduced rate of $7.50 each",
+        "Additional searches billed at a reduced rate of $12.50 each",
         "Search history and saved searches",
         "Monthly usage-based invoice",
       ],
-      note: "Once included searches are exhausted, additional searches continue automatically at the overage rate ($7.50 per search).",
+      note: "Once included searches are exhausted, additional searches continue automatically at the overage rate ($12.50 per search).",
       recommended: true,
       description:
         "Unlock exclusive benefits, discounted pricing, and priority access.",
@@ -82,7 +82,7 @@ const Pricing = () => {
     {
       id: "payasyougo",
       title: "Pay as You Go",
-      price: "$10",
+      price: "$15",
       subtitle: "/ Search",
       features: [
         "Full access to all platform features",
@@ -119,7 +119,7 @@ const Pricing = () => {
           )}
 
           <div>
-            <h3 className="text-2xl font-semibold text-secondary">{title}</h3>
+            <div className="text-2xl font-semibold text-secondary font-poppins">{title}</div>
 
             <p className="mt-2 text-sm leading-5 text-[#554536]">
               {description}
