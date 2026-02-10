@@ -1,14 +1,22 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {  useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../../context/usercontext";
-import ResetPassword from "../ResetPassword";
 import { Button } from "@/components/ui/button";
-import { Check, CreditCard, Eye, EyeOff, UserRoundCheck } from "lucide-react";
-import CardAddedSuccessModal from "../Modal/CardAddedSuccessModal";
+import {
+  ArrowRight,
+  Eye,
+  EyeOff,
+  Loader,
+} from "lucide-react";
+import { Input } from "../ui/input";
+import { Label } from "@/components/ui/label";
+import { useMutation } from "@tanstack/react-query";
+import { resendConfirmationCode, updateUserStatus } from "../service/userAdmin";
+import { handleCreateAuditLog } from "@/utils";
+import { motion } from "motion/react";
 
 function SubscriptionLogin() {
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { user, signIn } = useUser();
   const [isChecking, setIsChecking] = useState(false);
   const [username, setUsername] = useState("");
@@ -19,21 +27,94 @@ function SubscriptionLogin() {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (
-      user &&
-      user.signInUserSession &&
-      user.signInUserSession.idToken &&
-      user.signInUserSession.idToken.payload &&
-      user.signInUserSession.idToken.payload["cognito:groups"]
-    ) {
-      navigate(
-        "/" + user.signInUserSession.idToken.payload["cognito:groups"][0],
-      );
-    }
-  }, [user, navigate]);
+  // useEffect(() => {
+  //   if (
+  //     user &&
+  //     user.signInUserSession &&
+  //     user.signInUserSession.idToken &&
+  //     user.signInUserSession.idToken.payload &&
+  //     user.signInUserSession.idToken.payload["cognito:groups"]
+  //   ) {
+  //     navigate(
+  //       "/" + user.signInUserSession.idToken.payload["cognito:groups"][0],
+  //     );
+  //   }
+  // }, [user, navigate]);
 
-  if (isReset) return <ResetPassword username={username} password={password} />;
+  // if (isReset) return <ResetPassword username={username} password={password} />;
+
+  const resendCodeMutation = useMutation({
+    // mutationFn: code => confirmEmail({code: code, email: formData.email, userType: formData.role}),
+    mutationFn: (email) => resendConfirmationCode(email),
+    onSuccess: () => {
+      // navigate("/login");
+      setShowCodeInput(true);
+    },
+    onError: (error) => {
+      console.log("error", error);
+      // setError(error.response?.data?.error || error.response?.data?.message || "Something went wrong. Please try again later.")
+    },
+  });
+
+  const handleLogin = async () => {
+    try {
+      setError("");
+      setIsChecking(true);
+      const { isResetRequired, user: signedInUser } = await signIn(
+        username?.trim(),
+        password?.trim(),
+      );
+
+      if (isResetRequired) {
+        setIsReset(true);
+        return;
+      }
+      const userId = signedInUser?.attributes?.sub;
+      const userType =
+        signedInUser?.signInUserSession?.idToken?.payload[
+          "cognito:groups"
+        ]?.[0];
+      await handleCreateAuditLog(
+        "login",
+        { detail: `${userType} logged in successfully` },
+        userType === "agent",
+      );
+      await updateUserStatus({ userId, userType });
+      if (
+        signedInUser &&
+        signedInUser.signInUserSession &&
+        signedInUser.signInUserSession.idToken &&
+        signedInUser.signInUserSession.idToken.payload &&
+        signedInUser.signInUserSession.idToken.payload["cognito:groups"]
+      ) {
+        const groups =
+          signedInUser.signInUserSession.idToken.payload["cognito:groups"];
+        if (groups.includes("admin")) {
+          navigate("/admin");
+        } else if (groups.includes("agent")) {
+          navigate("/agent");
+        } else if (groups.includes("broker")) {
+          navigate("/broker");
+        }
+      } else {
+        setError(
+          "User groups not available in the response. Please try again.",
+        );
+      }
+    } catch (error) {
+      console.log("error ", error);
+      if (error.name === "UserNotConfirmedException") {
+        // setError("Your email is not confirmed. Please enter the verification code sent to your email.");
+        resendCodeMutation.mutate(username);
+
+        // setShowCodeInput(true); // <-- State variable to show confirmation code input
+        return;
+      }
+      setError(error.message || "Login failed");
+    } finally {
+      setIsChecking(false);
+    }
+  };
 
   return (
     <div className="relative min-h-dvh w-full overflow-hidden bg-[#2b140c]">
@@ -87,7 +168,21 @@ function SubscriptionLogin() {
           </div>
 
           {/* RIGHT */}
-          <div className="flex items-center justify-center p-6 sm:p-10 bg-[url('/bg-signin.png')] md:py-[100px]">
+          <motion.div 
+            
+             
+                              initial={{ opacity: 0, y: 20 }}
+                              whileInView={{ opacity: 1, y: 0 }}
+                              transition={{
+                                duration: 0.5,
+                                delay: 0.1,
+                                ease: "easeOut",
+                              }}
+                              viewport={{ once: true, amount: 0.4 }} 
+          
+          
+          
+          className="flex items-center justify-center p-6 sm:p-10 bg-[url('/bg-signin.png')] md:py-[100px]">
             <div className="w-full max-w-sm">
               <div className="border-2 border-[#e6d6c3] rounded-3xl p-4 bg-[#FFFFFF] ">
                 <h3 className="text-2xl font-semibold text-[#3b1f12]">
@@ -98,70 +193,108 @@ function SubscriptionLogin() {
                 </p>
 
                 <div className="border-t border-gray-200 mb-6 mt-4"></div>
-                <form className="mt-6 space-y-4">
+                <form className="mt-6 space-y-4"   onSubmit={(e) => {
+              e.preventDefault();
+              handleLogin();
+            }}>
                   <div>
-                    <label className="text-sm text-[#3b1f12]">Email</label>
-                    <input
-                      className="mt-1 w-full rounded-md border border-[#e6d6c3] bg-transparent px-3 py-2 text-sm outline-none focus:border-[#3b1f12]"
-                      placeholder="john@titlemunke.com"
+                    <Label htmlFor="username" className="text-sm">
+                      Email
+                    </Label>
+                    <Input
+                      type="text"
+                      id="username"
+                      name="username"
+                      value={username}
+                      className="bg-transparent"
+                      required
+                      onChange={(e) => setUsername(e.target.value)}
                     />
                   </div>
                   <div>
                     <div className="relative">
-                      <label className="text-sm text-[#3b1f12]">Password</label>
-                      <div className="flex items-center">
-                        <input
-                          type={showPassword ? "text" : "password"}
-                          className="mt-1 w-full rounded-md border border-[#e6d6c3] bg-transparent mb-1 px-3 py-2 pr-10 text-sm outline-none focus:border-[#3b1f12]"
-                          placeholder="••••••••"
-                        />
-                        <Button
-                          variant="ghost"
-                          type="button"
-                          size="icon"
-                          className="absolute right-3 bottom-[14px] cursor-pointer m-0 p-0 px-0 h-auto w-auto"
-                          onClick={() => setShowPassword((pre) => !pre)}
-                        >
-                          {!showPassword && (
-                            <Eye className="text-tertiary text-500 w-4 h-4" />
-                          )}
-                          {showPassword && (
-                            <EyeOff className="text-tertiary text-500 w-4 h-4" />
-                          )}
-                        </Button>
-                      </div>
+                      <Label htmlFor="password" className="text-sm">
+                        Password
+                      </Label>
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        id="password"
+                        name="password"
+                        value={password}
+                        className="bg-transparent pr-9"
+                        required
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                      <Button
+                        variant="ghost"
+                        type="button"
+                        size="icon"
+                        className="absolute right-3 bottom-[14px] cursor-pointer m-0 p-0 px-0 h-auto w-auto"
+                        onClick={() => setShowPassword((pre) => !pre)}
+                      >
+                        {!showPassword && (
+                          <Eye className="text-tertiary text-500 w-4 h-4" />
+                        )}
+                        {showPassword && (
+                          <EyeOff className="text-tertiary text-500 w-4 h-4" />
+                        )}
+                      </Button>
                     </div>
                   </div>
 
                   <div className="flex justify-end gap-2 mb-10 ">
-                    <label
-                      htmlFor="terms"
-                      className="text-sm text-[#3b1f12] underline"
+                    <Link
+                      to="/forgot-password"
+                      className="text-sm hover:underline"
                     >
                       Forgot Password?
-                    </label>
+                    </Link>
                   </div>
 
-                  <button
-                    className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
-                    onClick={navigate("/subscription-payment")}
+                  <Button
+                    disabled={isChecking || !username || !password}
+                    // type="button"
+                    className="w-full"
+                    variant="secondary"
+                    size="lg"
                   >
-                    Log In →
-                  </button>
+                    Login
+                    {isChecking ? (
+                      <Loader className="animate-spin" />
+                    ) : (
+                      <ArrowRight />
+                    )}
+                  </Button>
+                  <style jsx>{`
+                    input.password-input {
+                      -webkit-text-security: disc;
+                      text-security: disc;
+                      font-size: 20px;
+                      color: #5c4033; /* brown */
+                    }
+                    input.password-input::placeholder {
+                      color: #aaa;
+                    }
+                  `}</style>
+                  {error && (
+                    <div className="text-red-500 text-center text-sm font-medium">
+                      {error}
+                    </div>
+                  )}
                   <div className="border-t border-gray-200 mb-6 mt-4"></div>
                   <p className="pt-4 text-center text-xs text-[#7a5a49]">
                     Already have an account?{" "}
-                    <a
-                      href="/subscription-signup"
+                    <Link
+                      to="/pricing"
                       className="font-medium text-[#3b1f12] hover:underline"
                     >
                       Sign up
-                    </a>
+                    </Link>
                   </p>
                 </form>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

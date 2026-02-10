@@ -43,11 +43,11 @@ function App() {
       <Route path="/viewmore" element={<OrganizationRoleOverview />} />
       <Route path="/contactus" element={<ContactUs />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/subscription-signup" element={<SubscriptionSignup />} />
+      <Route path="/subscription-signup/:userType/:planId" element={<SubscriptionSignup />} />
       <Route path="/subscription-login" element={<SubscriptionLogin />} />
-      <Route path="/subscription-payment" element={<SubscriptionPayment />} />
+      <Route path="/subscription-payment/:planId" element={<SubscriptionPayment />} />
       <Route
-        path="/subscription-card-details"
+        path="/subscription-card-details/:planId"
         element={<SubscriptionCardDetails />}
       />
       <Route path="/register" element={<Register />} />

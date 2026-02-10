@@ -810,16 +810,24 @@ export async function createAuditLog(userId, email, log_action, detail, isAgent)
   );
 }
 
-export async function registerUser({ name, email, password, userType, teamStrength }) {
+export async function registerUser({ name, email,contact, password, userType,planType, teamStrength }) {
+  const body = {
+    name,
+    emailOfUser: email,
+    password,
+    userType,
+    teamStrength,
+  };
+
+  if (contact) body.contact = contact;
+  if (planType) body.planType = planType;
+
   const payload = {
-    body: {
-      name,
-      emailOfUser: email,
-      password,
-      userType,
-      teamStrength,
+    body,
+    headers: {
+      Authorization: "",
+      "Content-Type": "",
     },
-    headers: { Authorization: "", "Content-Type": "" },
   };
   return callUserAdminApi(
     payload,
@@ -862,12 +870,13 @@ export async function resendConfirmationCode(email) {
 }
 
 
-export async function addCard(userId, userType, endpoint) {
+export async function addCard(userId, userType, endpoint,planId) {
   const payload = {
     body: {
       // email: email,
       userId,
-      userType
+      userType,
+      ...(planId && {planType:planId})
     },
   };
   return callUserAdminApi(
@@ -879,7 +888,6 @@ export async function addCard(userId, userType, endpoint) {
 }
 
 export async function getSubscriptionDetails(userId, userType) {
-
   const payload = {
     body: {
       // email: email,

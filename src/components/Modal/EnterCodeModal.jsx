@@ -1,9 +1,12 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { ArrowRight,Loader } from "lucide-react";
+import { useState } from "react";
 
-export function EnterCodeModal({ open, onOpenChange, onVerify, onResend }) {
+export function EnterCodeModal({ open, onOpenChange, onVerify, onResend ,confirmCodeMutation }) {
+console.log("confirmCodeMutation.error.response",confirmCodeMutation.error)
+const [code, setCode] = useState("");
   if (!open) return null;
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <div
@@ -52,18 +55,36 @@ export function EnterCodeModal({ open, onOpenChange, onVerify, onResend }) {
           {/* Input */}
           <input
             type="text"
-            maxLength={4}
-            placeholder="XXXX"
+            maxLength={6}
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="XXXXXX"
             className="w-full rounded-lg border border-[#E8D9CC] px-4 py-2 text-center text-lg tracking-widest outline-none focus:ring-2 focus:ring-[#5A0A0A]"
           />
 
           {/* Button */}
           <Button
-            onClick={onVerify}
+            onClick={() => onVerify(code)}
+              disabled={!open || confirmCodeMutation.isPending}
             className="mt-5 w-full rounded-lg bg-gradient-to-r from-[#5A0A0A] to-[#2C0A0A] py-3 text-white text-sm hover:opacity-90"
           >
-            Verify →
+               {confirmCodeMutation.isPending ? (
+          <>
+            Verifying <Loader className="animate-spin ml-2" size={18} />
+          </>
+        ) : (
+          <>
+            Verify <ArrowRight size={18} className="ml-2" />
+          </>
+        )}
           </Button>
+             {confirmCodeMutation.isError && (
+        <p className="text-red-500 text-center text-sm font-medium mt-4">
+          {confirmCodeMutation.error.response?.data?.error ||
+            confirmCodeMutation.error.response?.data?.message ||
+            "Something went wrong. Please try again."}
+        </p>
+      )}
         </DialogContent>
       </div>
     </Dialog>

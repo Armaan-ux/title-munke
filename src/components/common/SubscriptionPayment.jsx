@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../../context/usercontext";
 import ResetPassword from "../ResetPassword";
 import { Input } from "@/components/ui/input";
@@ -31,38 +31,40 @@ import { PaymentDetailsModal } from "../Modal/PaymentDetailsModal";
 import SubscriptionSuccessModal from "../Modal/SubscriptionSuccessModal";
 
 function SubscriptionPayment() {
+  const { planId } = useParams();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { user, signIn } = useUser();
+  const { user, setUser, signIn } = useUser();
   const [isChecking, setIsChecking] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isReset, setIsReset] = useState(false);
   const [showPaymentDetails, setShowPaymentDetails] = useState(false);
-
+const [paymentMethod, setPaymentMethod] = useState("");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (
-      user &&
-      user.signInUserSession &&
-      user.signInUserSession.idToken &&
-      user.signInUserSession.idToken.payload &&
-      user.signInUserSession.idToken.payload["cognito:groups"]
-    ) {
-      navigate(
-        "/" + user.signInUserSession.idToken.payload["cognito:groups"][0],
-      );
-    }
-  }, [user, navigate]);
+console.log("user",user);
 
   const submitHandler = () => {
-    navigate("/subscription-card-details");
+    console.log("paymentMethod", paymentMethod);
+    // debugger;
+    if(paymentMethod === "card") {
+      // setUser(pre => ({...pre, isAddCard: true}))
+      navigate(`/subscription-card-details/${planId}`);
+      return;
+    }
+    navigate("/subscription-login");
   };
 
-  if (isReset) return <ResetPassword username={username} password={password} />;
+  // if (isReset) return <ResetPassword username={username} password={password} />;
 
+
+const skipPaymentHandler = () => {
+navigate(
+        "/" + user.signInUserSession.idToken.payload["cognito:groups"][0],
+      );
+}
   return (
     <>
       <PaymentDetailsModal
@@ -122,7 +124,20 @@ function SubscriptionPayment() {
             </div>
 
             {/* RIGHT */}
-            <div className="flex items-center justify-center p-6 sm:p-10 bg-[url('/bg-signin.png')]">
+            <motion.div 
+            
+             
+                              initial={{ opacity: 0, y: 20 }}
+                              whileInView={{ opacity: 1, y: 0 }}
+                              transition={{
+                                duration: 0.5,
+                                delay: 0.1,
+                                ease: "easeOut",
+                              }}
+                              viewport={{ once: true, amount: 0.4 }} 
+            
+            
+            className="flex items-center justify-center p-6 sm:p-10 bg-[url('/bg-signin.png')]">
               <div className="w-full max-w-lg ">
                 {/* stepper */}
                 <div className="flex items-center justify-center mb-5">
@@ -186,8 +201,8 @@ function SubscriptionPayment() {
                   {/* Payment Options */}
                   <div className="space-y-3 mb-6">
                     <RadioGroup
-                      //   value={selected}
-                      //   onValueChange={setSelected}
+                    value={paymentMethod}
+  onValueChange={setPaymentMethod}
                       className="space-y-3"
                     >
                       {/* Apple Pay Option */}
@@ -207,21 +222,21 @@ function SubscriptionPayment() {
                             Add New Credit / Debit Card
                           </span>
                         </div>
-                        <RadioGroupItem value="apple" />
+                        <RadioGroupItem value="card" />
                       </Card>
                     </RadioGroup>
                   </div>
 
                   {/* Skip Payment Link */}
-                  <div className="text-center mb-8">
-                    <button className="inline-flex items-center gap-2 text-sm font-medium text-[#550000] hover:text-secondary-700 underline">
+                  <div className="text-center mb-8" >
+                    <button onClick={skipPaymentHandler} className="inline-flex items-center gap-2 text-sm font-medium text-[#550000] hover:text-secondary-700 underline">
                       Skip Payment Method
                       <ArrowRight />
                     </button>
                   </div>
 
                   {/* Bottom Actions */}
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div onClick={()=>navigate(-1)} className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <button className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900">
                       <ArrowLeft /> Back
                     </button>
@@ -247,7 +262,7 @@ function SubscriptionPayment() {
                   </p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>

@@ -67,6 +67,7 @@ export const keyFeatures = [
 
 export const flexiblePricing = [
   {
+    key: "agent",
     background: '/individual-bg.png',
     icon: '/individual.svg',
     title: 'Individual Agent',
@@ -75,6 +76,7 @@ export const flexiblePricing = [
     content: 'Built for solo agents who value speed, clarity, and simplicity. Run title searches effortlessly without unnecessary complexity—just what you need, when you need it.'
   },
   {
+    key: "broker",
     background: '/broker-bg.png',
     icon: '/broker.svg',
     title: 'Broker',
@@ -83,6 +85,7 @@ export const flexiblePricing = [
     content: 'Designed for brokers managing multiple agents and higher activity. Streamline workflows, stay organized, and scale operations smoothly as your business expands.'
   },
   {
+    key: "organization",
     background: '/broker-bg.png',
     icon: '/organization.svg',
     title: 'Organization',
@@ -92,6 +95,161 @@ export const flexiblePricing = [
   }
 
 ]
+export const pricingPlansIndividual = [
+    {
+      id: "EXPLORE_PLAN",
+      title: "Explore Platform",
+      price: "$0",
+      subtitle: "",
+      features: [
+        "First search free",
+        "View-only access to dashboards and workflows",
+        "Preview property data and platform features",
+        "No credit card required to start",
+      ],
+      note: "To continue using the platform after first search, select Pay As You Go or a Subscription plan.",
+      recommended: false,
+      description:
+        "Get a guided look at how Title Munke works before making any commitment.",
+    },
+    {
+      id: "PROFESSIONAL_PLAN",
+      title: "Subscription",
+      price: "$20",
+      subtitle: "/ month",
+      features: [
+        " Full access to the platform",
+        "2 free searches included",
+        "Reduced search cost at $5 per search",
+        "Additional searches billed at a reduced rate of $12.50 each",
+        "Search history and saved searches",
+        "Monthly usage-based invoice",
+      ],
+      note: "Once included searches are exhausted, additional searches continue automatically at the overage rate ($12.50 per search).",
+      recommended: true,
+      description:
+        "Unlock exclusive benefits, discounted pricing, and priority access.",
+    },
+    {
+      id: "PAY_AS_YOU_GO",
+      title: "Pay as You Go",
+      price: "$15",
+      subtitle: "/ Search",
+      features: [
+        "Full access to all platform features",
+        "Instant invoice generated after search completion ",
+        "Access to search history and results",
+      ],
+      note: "Note: You are charged only when a search returns results. Unsuccessful searches are not billed.",
+      recommended: false,
+      description:
+        "Order reports only when you need them — no subscriptions required.",
+    },
+  ];
+export  const pricingPlansBroker = [
+    {
+      id: "EXPLORE_PLAN",
+      title: "Explore Platform",
+      price: "$0",
+      subtitle: "",
+      features: [
+        "View-only access to dashboards and workflows",
+        "Preview property data and platform features",
+        "No credit card required to start",
+      ],
+      note: "To continue using the platform after first search, select Pay As You Go or a Subscription plan.",
+      recommended: false,
+      description:
+        "Get a guided look at how Title Munke works before making any commitment.",
+    },
+    {
+      id: "PROFESSIONAL_PLAN",
+      title: "Subscription",
+      price: "$10.00",
+      subtitle: "/ month",
+      features: [
+        "Full access to all platform features",
+        "$10 per seat / month (Each seat includes 2 searches)",
+        "Add and manage brokers & agents",
+        "Usage-based billing with automatic overage charges",
+        "Additional searches billed at a reduced rate of $7.50 each",
+        "View invoices, users, and search history",
+      ],
+      note: "Note:  After your organization’s included searches are exhausted, Additional searches are charged automatically at $7.50 each.",
+      recommended: true,
+      description:
+        "Unlock exclusive benefits, discounted pricing, and priority access.",
+    },
+    {
+      id: "PAY_AS_YOU_GO",
+      title: "Pay as You Go",
+      price: "$10",
+      subtitle: "/ Search",
+      features: [
+        "Add and manage agents",
+        "Automatic invoice generated for each successful search (broker & agents)",
+        "Broker and agents charged $10 per successful search",
+        "Can view agents search history and their invoices",
+        "Search history and report download",
+      ],
+      note: "Note: You are charged only when a search returns results. Unsuccessful searches are not billed.",
+      recommended: false,
+      description:
+        "Order reports only when you need them — no subscriptions required.",
+    },
+  ];
+export const pricingPlansOrganization = [
+    {
+      id: "EXPLORE_PLAN",
+      title: "Explore Platform",
+      price: "$0",
+      subtitle: "",
+      features: [
+        "View-only access to dashboards and workflows",
+        "Preview property data and platform features",
+        "No credit card required to start",
+      ],
+      note: "To continue using the platform after first search, select Pay As You Go or a Subscription plan.",
+      recommended: false,
+      description:
+        "Get a guided look at how Title Munke works before making any commitment.",
+    },
+    {
+      id: "PROFESSIONAL_PLAN",
+      title: "Subscription",
+      price: "$7.50",
+      subtitle: "/ Search Cost",
+      features: [
+        " Full access to all platform features",
+        "$10 per seat / month(Each seat includes 2 searches)",
+        "Add and manage brokers & agents",
+        "Usage-based billing with automatic overage charges",
+        "Additional searches billed at a reduced rate of $7.50 each",
+        "View invoices, users, and search history",
+      ],
+      note: "Note:  After your organization’s included searches are exhausted, Additional searches are charged automatically at $7.50 each.",
+      recommended: true,
+      description:
+        "Unlock exclusive benefits, discounted pricing, and priority access.",
+    },
+    {
+      id: "PAY_AS_YOU_GO",
+      title: "Pay as You Go",
+      price: "$10",
+      subtitle: "/ Search",
+      features: [
+        " Add and manage agents",
+        "Automatic invoice generated for each successful search (broker & agents)",
+        "Broker and agents charged $10 per successful search",
+        "Can view agents search history and their invoices",
+        "Search history and report download",
+      ],
+      note: "Note: You are charged only when a search returns results. Unsuccessful searches are not billed.",
+      recommended: false,
+      description:
+        "Order reports only when you need them — no subscriptions required.",
+    },
+  ];
 
 
 export const previousSearches = [

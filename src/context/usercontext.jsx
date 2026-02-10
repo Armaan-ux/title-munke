@@ -31,7 +31,6 @@ export const UserProvider = ({ children }) => {
   const [paymentFailedModal, setPaymentFailedModal] = useState(false);
   const userType = user?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
   const [cardListingModal, setCardListingModal] = useState(false);
-  console.log("userType", userType, user?.attributes?.sub);
   const agentBrokerDetailQuery = useQuery({
       queryKey: ["agentBrokerDetail", user?.attributes?.sub],
       queryFn: () => getAgentBrokerDetails(user?.attributes?.sub),
@@ -41,10 +40,9 @@ export const UserProvider = ({ children }) => {
       retry: false
     })
   const brokerId = agentBrokerDetailQuery?.data?.relationship?.brokerId;
-
   const subsDetailQuery = useQuery({
     queryKey: ["subcription-details", user?.attributes?.sub, userType],
-    queryFn: () => getSubscriptionDetails(user?.attributes?.sub, userType),
+    queryFn: () => getSubscriptionDetails(user?.attributes?.sub, userType,"contetx"),
     enabled: !!user?.attributes?.sub && (userType === "broker" || userType === "individual"),
     refetchOnWindowFocus: false,
     staleTime: Infinity,
@@ -53,15 +51,15 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     if(userType === "agent")
-      getAgentDetails(user?.attributes?.sub).then(res => console.log("agent", res))
+     user?.attributes?.sub && getAgentDetails(user?.attributes?.sub).then(res => console.log("agent", res))
   }, [user?.attributes?.sub, userType])
 
   useEffect(() => {
-    if(agentBrokerDetailQuery?.isSuccess) {
+    if(agentBrokerDetailQuery?.isSuccess && userType === "broker") {
       getSubscriptionDetails(brokerId, "broker")
       .then(subData => setUser(pre => ({...pre, brokerStatus: subData?.status, brokerId})))
     }
-  }, [agentBrokerDetailQuery?.data, agentBrokerDetailQuery?.isSuccess, brokerId])
+  }, [agentBrokerDetailQuery?.data, agentBrokerDetailQuery?.isSuccess, brokerId,userType])
 
   useEffect(() => {
     if(subsDetailQuery?.isError) {
@@ -152,7 +150,6 @@ export const UserProvider = ({ children }) => {
     navigate("/login");
     // window.location.href = "/login";
   };
-
   return (
     <UserContext.Provider
       value={{

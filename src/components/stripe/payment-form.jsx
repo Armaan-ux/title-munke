@@ -17,7 +17,7 @@ import ShowError from "../common/ShowError";
 import { useLocation } from "react-router-dom";
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
-function PaymentForm() {
+function PaymentForm({onPaymentSuccess}) {
   const {user, setUser} = useUser()
   const {pathname} = useLocation();
   const [type, setType] = useState("");
@@ -25,28 +25,44 @@ function PaymentForm() {
   const stripe = useStripe();
   const elements = useElements();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!stripe || !elements) return;
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!stripe || !elements) return;
 
-    const { error } = user?.isAddCard ? await stripe.confirmSetup({
-      elements,
-      confirmParams: { return_url: window.location.origin + `${pathname}?isCardAdded=true`, },
-    }):
-    await stripe.confirmPayment({
+  let result;
+
+  if (user?.isAddCard) {
+    result = await stripe.confirmSetup({
       elements,
       confirmParams: {
-        return_url:
-          window.location.origin + `${pathname}?isPaymentSuccessful=true`,
+        return_url: `${window.location.origin}${pathname}?isCardAdded=true`,
       },
+      redirect: "if_required",
     });
-    setUser((pre) => ({ ...pre, isAddCard: false }));
+  } else {
+    result = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}${pathname}?isPaymentSuccessful=true`,
+      },
+      redirect: "if_required",
+    });
+  }
 
-    if (error) {
-      toast.error(error?.message || "Something went wrong.");
-    }
-    
-  };
+ 
+  if (result?.error) {
+    toast.error(result.error.message || "Something went wrong.");
+    return;
+  }
+
+ 
+  if (result?.paymentIntent?.status === "succeeded") {
+    onPaymentSuccess?.();
+  }
+
+  setUser((prev) => ({ ...prev, isAddCard: false }));
+};
+
 
   useEffect(() => {
     if (!elements) return;
@@ -85,12 +101,12 @@ function PaymentForm() {
 
 
 
-export default function PaymentSetup() {
+export default function PaymentSetup({planId='',onPaymentSuccess}) {
   const [clientSecret, setClientSecret] = useState("");
   const {user} = useUser()
   const userType = user?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
   const membershipMutation = useMutation({
-    mutationFn: () => addCard(user?.attributes?.sub, userType, user?.isAddCard ? "add-card" : "subscribe"), 
+    mutationFn: () => addCard(user?.attributes?.sub, userType, user?.isAddCard ? "add-card" : "subscribe",planId), 
     onSuccess: (data) =>  setClientSecret(data.clientSecret)
   })
   const init = async () => {
@@ -116,8 +132,8 @@ export default function PaymentSetup() {
       {membershipMutation?.isPending && <CenterLoader />}
       {membershipMutation?.isError && <ShowError message={membershipMutation?.error?.response?.data?.error}/>}
       {membershipMutation?.isSuccess && 
-        <Elements stripe={stripePromise} options={options}>
-          <PaymentForm />
+        <Elements stripe={stripePromise} options={options} >
+          <PaymentForm onPaymentSuccess={onPaymentSuccess} />
         </Elements>
       }
     </>

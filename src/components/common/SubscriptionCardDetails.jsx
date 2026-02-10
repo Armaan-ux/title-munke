@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../../context/usercontext";
 import ResetPassword from "../ResetPassword";
 import { Input } from "@/components/ui/input";
@@ -15,55 +15,45 @@ import {
   EyeOff,
   Loader,
   UserRoundCheck,
+  
 } from "lucide-react";
 import { motion } from "motion/react";
-import VerifyEmail from "../verify-email";
-import { useMutation } from "@tanstack/react-query";
-import {
-  confirmEmail,
-  resendConfirmationCode,
-  updateUserStatus,
-} from "../service/userAdmin";
-import { handleCreateAuditLog } from "@/utils";
-import { Card } from "../ui/card";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+
 import SubscriptionSuccessModal from "../Modal/SubscriptionSuccessModal";
 import CardAddedSuccessModal from "../Modal/CardAddedSuccessModal";
+import PaymentSetup from "../stripe/payment-form";
 
-function SubscriptionCardDetails() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+function SubscriptionCardDetails({isAddCard=false}) {
+   const { planId } = useParams();
   const { user, signIn } = useUser();
-  const [isChecking, setIsChecking] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [isReset, setIsReset] = useState(false);
-  const [showCodeInput, setShowCodeInput] = useState(false);
   const [showSubscriptionSuccess, setShowSubscriptionSuccess] = useState(false);
   const [showCardSuccess, setShowCardSuccess] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
+useEffect(() => {
+  const params = new URLSearchParams(location.search);
 
-  useEffect(() => {
-    if (
-      user &&
-      user.signInUserSession &&
-      user.signInUserSession.idToken &&
-      user.signInUserSession.idToken.payload &&
-      user.signInUserSession.idToken.payload["cognito:groups"]
-    ) {
-      navigate(
-        "/" + user.signInUserSession.idToken.payload["cognito:groups"][0],
-      );
-    }
-  }, [user, navigate]);
+  if (params.get("isPaymentSuccessful") === "true") {
+    setShowSubscriptionSuccess(true);
+  }
+
+  if (params.get("isCardAdded") === "true") {
+    setShowCardSuccess(true);
+  }
+}, [location.search]);
 
   const paymentHandler = (e) => {
     e.preventDefault();
     setShowSubscriptionSuccess(true);
   };
   if (isReset) return <ResetPassword username={username} password={password} />;
+  const handlePaymentSuccess = () => {
+  setShowSubscriptionSuccess(true);
+};
 
   return (
     <>
@@ -71,7 +61,7 @@ function SubscriptionCardDetails() {
         open={showSubscriptionSuccess}
         onOpenChange={() => {
           setShowSubscriptionSuccess(false);
-          navigate("/subscription-login");
+          navigate("/" + user.signInUserSession.idToken.payload["cognito:groups"][0]);
         }}
         onFailed={() => {}}
       />
@@ -156,7 +146,7 @@ function SubscriptionCardDetails() {
                 </div>
 
                 <div className="border-2 border-[#e6d6c3] rounded-3xl p-4 bg-[#FFFFFF]">
-                  <form className="mt-6 space-y-4">
+                  {/* <form className="mt-6 space-y-4">
                     <div>
                       <label className="text-sm text-[#3b1f12]">
                         Enter Card Details
@@ -222,7 +212,7 @@ function SubscriptionCardDetails() {
                       </label>
                     </div>
 
-                    {/* Bottom Actions */}
+                 
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                       <button className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900">
                         <ArrowLeft /> Back
@@ -237,7 +227,11 @@ function SubscriptionCardDetails() {
                         Make Payment <ArrowRight />
                       </button>
                     </div>
-                    <div className="border-t border-gray-200 mb-6 mt-4"></div>
+               
+                  </form> */}
+                    <PaymentSetup  isAddCard={isAddCard} planId={planId} onPaymentSuccess={handlePaymentSuccess}/>
+
+                       <div className="border-t border-gray-200 mb-6 mt-4"></div>
                     <p className="text-center text-xs text-[#7a5a49]">
                       Already have an account?{" "}
                       <a
@@ -247,7 +241,6 @@ function SubscriptionCardDetails() {
                         Log In
                       </a>
                     </p>
-                  </form>
                 </div>
               </div>
             </div>
