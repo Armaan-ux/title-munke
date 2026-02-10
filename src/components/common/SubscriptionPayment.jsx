@@ -46,7 +46,8 @@ const [paymentMethod, setPaymentMethod] = useState("");
 
 console.log("user",user);
 
-  const submitHandler = () => {
+  const submitHandler = (e) => {
+    e.preventDefault();
     console.log("paymentMethod", paymentMethod);
     // debugger;
     if(paymentMethod === "card") {
@@ -228,7 +229,7 @@ navigate(
                   </div>
 
                   {/* Skip Payment Link */}
-                  <div className="text-center mb-8" >
+                  <div className="text-center mb-8"  type="button" >
                     <button onClick={skipPaymentHandler} className="inline-flex items-center gap-2 text-sm font-medium text-[#550000] hover:text-secondary-700 underline">
                       Skip Payment Method
                       <ArrowRight />
@@ -236,12 +237,13 @@ navigate(
                   </div>
 
                   {/* Bottom Actions */}
-                  <div onClick={()=>navigate(-1)} className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <button className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900">
+                  <div  className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <button onClick={()=>navigate(-1)} type="button" className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900">
                       <ArrowLeft /> Back
                     </button>
 
                     <button
+                     type="button"
                       onClick={submitHandler}
                       className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-8 py-3
                bg-gradient-to-b from-[#3b1f12] to-[#5c2f1b]
