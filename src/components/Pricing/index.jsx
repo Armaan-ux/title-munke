@@ -240,7 +240,7 @@ const Pricing = () => {
                             className="flex gap-3 text-sm text-secondary"
                           >
                             <img
-                              src="./checkbox.png"
+                              src="/checkbox.png"
                               className="h-5 w-5"
                               alt="checkbox"
                             />
