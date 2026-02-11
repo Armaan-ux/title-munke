@@ -1458,3 +1458,21 @@ export async function changePassword(data) {
     "/change-password-of-user"
   );
 }
+
+
+export async function iniitateSearch(data) {
+  const action = "INITIATE_SEARCH";
+
+  const payload = {
+    body: {
+      ...data
+    }
+  };
+
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "Error in " + action,
+    "/initiate-search"
+  );
+}

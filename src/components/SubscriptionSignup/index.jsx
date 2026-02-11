@@ -38,14 +38,16 @@ const { userType, planId } = useParams();
     termsAccepted: false,
     // code: ""
   });
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    console.log();
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+const handleChange = (e) => {
+  const { name, value, type, checked } = e.target;
+
+  setFormData((prev) => ({
+    ...prev,
+    [name]: type === "checkbox"
+      ? checked
+      : value.trimStart(),
+  }));
+};
 
 
   // Resgister User Form Mutation

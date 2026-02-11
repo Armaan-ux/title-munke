@@ -12,36 +12,49 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { getAgentBrokerDetails, getBrokerDetails, getSearchedStatus } from "../service/userAdmin";
+import {
+  getAgentBrokerDetails,
+  getBrokerDetails,
+  getSearchedStatus,
+  iniitateSearch,
+} from "../service/userAdmin";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUserIdType } from "@/hooks/useUserIdType";
+import { excludedPlans } from "@/utils/constant";
 
-export default function Search({isIndivisual=false}) {
+export default function Search({ isIndivisual = false }) {
   const queryClient = useQueryClient();
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState("");
   const [isChecked, setIsChecked] = useState(false);
   const [message, setMessage] = useState(
-    "Initializing title search... This process may take a few minutes."
+    "Initializing title search... This process may take a few minutes.",
   );
   const [percentage, setPercentage] = useState(null);
   const [zipUrl, setZipUrl] = useState(null);
   const [isAgent, setIsAgent] = useState(false);
-  const { user, setPaymentModal, setInvalidateSearchHistory } = useUser();
-  const {userId:agentId, userType, status:brokerStatus, agentBrokerStatus} = useUserIdType();
+  const { user, setPaymentModal, setInvalidateSearchHistory, agentDetail } =
+    useUser();
+  const {
+    userId: agentId,
+    userType,
+    status: brokerStatus,
+    agentBrokerStatus,
+  } = useUserIdType();
   const ONE_AND_HALF_HOURS = 1.5 * 60 * 60 * 1000;
 
   const agentBrokerDetailQuery = useQuery({
     queryKey: ["agentBrokerDetail"],
     queryFn: () => getAgentBrokerDetails(agentId),
-    enabled: userType === "agent"
-  })
+    enabled: userType === "agent",
+  });
   const brokerDetailQuery = useQuery({
     queryKey: ["agentBrokerDetail"],
     queryFn: () => getBrokerDetails(agentId),
-    enabled: userType === "broker"
-  })
+    enabled: userType === "broker",
+  });
+  console.log("user11111111111agentDetail", agentDetail);
 
   const clearSearchState = () => {
     const searchKeys = [
@@ -58,7 +71,7 @@ export default function Search({isIndivisual=false}) {
     setPercentage(null);
     setZipUrl(null);
     setMessage(
-      "Initializing title search... This process may take a few minutes."
+      "Initializing title search... This process may take a few minutes.",
     );
     setLoading(false);
   };
@@ -72,13 +85,16 @@ export default function Search({isIndivisual=false}) {
         //   { timeout: 10000 }
         // );
         const response = await getSearchedStatus(searchId);
-        const { status, status_message, zip_url, percent_completion } = response
+        const { status, status_message, zip_url, percent_completion } =
+          response;
 
         if (isRestoring && status === "In Progress") setLoading(true);
 
         if (status === "SUCCESS") {
-          if(userType === "individual")
-            queryClient.invalidateQueries({queryKey: ["subcription-details"]})
+          if (userType === "individual")
+            queryClient.invalidateQueries({
+              queryKey: ["subcription-details"],
+            });
           setProgress("Search Completed");
           setPercentage(100);
           setMessage(status_message || "Search Complete Successfully");
@@ -108,7 +124,7 @@ export default function Search({isIndivisual=false}) {
         setLoading(false);
       }
     },
-    []
+    [],
   );
 
   useEffect(() => {
@@ -161,17 +177,25 @@ export default function Search({isIndivisual=false}) {
   const handleSearch = async (e) => {
     if (e) e.preventDefault();
     // setInvalidateSearchHistory(true);
-    if(userType === "broker" && brokerStatus !== "active") {
-      toast.error("Subscription required to access this feature.")
+    if (userType === "broker" && brokerStatus !== "active") {
+      toast.error("Subscription required to access this feature.");
+      return;
+    } else if (
+      userType === "agent" &&
+      agentDetail &&
+      agentDetail.planType &&
+      !excludedPlans.includes(agentDetail?.planType)
+    ) {
+      toast.error("Subscription required to access this feature.");
       return;
     }
 
-    else if(userType === "agent" && agentBrokerStatus !== "active") {
-      toast.error("Subscription required to access this feature.")
-      return;
-    }
+    // else if (userType === "agent" && agentBrokerStatus !== "active") {
+    //   toast.error("Subscription required to access this feature.");
+    //   return;
+    // }
 
-    if(isIndivisual && !user?.isIndividualCardAdded) {
+    if (isIndivisual && !user?.isIndividualCardAdded) {
       setPaymentModal(true);
       return;
     }
@@ -182,7 +206,7 @@ export default function Search({isIndivisual=false}) {
     setProgress("");
     setZipUrl(null);
     setMessage(
-      "Initializing title search... This process may take a few minutes."
+      "Initializing title search... This process may take a few minutes.",
     );
 
     try {
@@ -195,26 +219,35 @@ export default function Search({isIndivisual=false}) {
 
       const response = await axios.post(
         "https://iweevgyflmwhamvgraszfn2xp40wvqza.lambda-url.us-east-1.on.aws/",
-        { address }
+        { address },
       );
 
       const { matched_address, pin_and_parnum, tax_assessment } = response.data;
       const [pin, parnum] = pin_and_parnum;
 
-      const initiateResponse = await axios.post(
-        "https://ffdldf2c4ozijgyvor26zr5qyu0ulsie.lambda-url.us-east-1.on.aws/",
-        {
-          mode: "INITIATE_SEARCH",
-          pin,
-          parnum,
-          address: matched_address,
-          tax_assessment,
-        }
-      );
+      const data = "";
 
-      const { search_id } = initiateResponse.data;
+      // const initiateResponse = await axios.post(
+      //   "https://jdk8dyza99.execute-api.us-east-1.amazonaws.com/initiate-search",
+        
+      //   {
+      //     // mode: "INITIATE_SEARCH", 
+      //     pin,
+      //     parnum,
+      //     address: matched_address,
+      //     tax_assessment,
+      //   },{
+      //     headers: {
+
+      //     }
+      //   }
+      // );
+
+      const initiateResponse = await iniitateSearch({pin, parnum, address: matched_address, tax_assessment})
+
+     const { search_id } = initiateResponse?.data || {};
       localStorage.setItem("searchId", search_id);
-      
+
       await addToDynamoDB(address, search_id, user?.attributes?.sub);
       checkSearchStatus(search_id);
     } catch (error) {
@@ -222,7 +255,7 @@ export default function Search({isIndivisual=false}) {
       toast.error(
         error?.response?.data?.message ||
           error.message ||
-          "Search failed: Invalid address or server error."
+          "Search failed: Invalid address or server error.",
       );
       setLoading(false);
       clearSearchState();
@@ -234,7 +267,11 @@ export default function Search({isIndivisual=false}) {
       let brokerId = "none";
       let username = "";
 
-      if (user?.signInUserSession?.idToken?.payload?.["cognito:groups"].includes("agent")) {
+      if (
+        user?.signInUserSession?.idToken?.payload?.["cognito:groups"].includes(
+          "agent",
+        )
+      ) {
         // const response = await API.graphql(
         //   graphqlOperation(relationshipsByAgentId, { agentId: userId })
         // );
@@ -261,9 +298,9 @@ export default function Search({isIndivisual=false}) {
             searchId,
             brokerId,
             username,
-            userType
+            userType,
           },
-        })
+        }),
       );
       setInvalidateSearchHistory(true);
     } catch (err) {

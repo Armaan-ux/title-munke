@@ -244,10 +244,11 @@ navigate(
 
                     <button
                      type="button"
+                     disabled={planId==="EXPLORE_PLAN"}
                       onClick={submitHandler}
-                      className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-8 py-3
-               bg-gradient-to-b from-[#3b1f12] to-[#5c2f1b]
-               text-white rounded-xl font-medium transition-colors"
+                      className={`inline-flex w-full sm:w-auto items-center justify-center gap-2 px-8 py-3
+                         bg-gradient-to-b from-[#3b1f12] to-[#5c2f1b]
+               text-white rounded-xl font-medium transition-colors ${planId==="EXPLORE_PLAN" ? "disabled:opacity-50 disabled:cursor-not-allowed" : "hover:bg-gradient-to-t from-[#3b1f12] to-[#5c2f1b]"}`}
                     >
                       Make Payment <ArrowRight />
                     </button>

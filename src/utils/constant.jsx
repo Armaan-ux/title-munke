@@ -274,7 +274,7 @@ export const previousSearches = [
     description: "2 Active Permits"
   },
 ]
-
+export const excludedPlans = ["EXPLORE_PLAN", "PROFESSIONAL_PLAN", "PAY_AS_YOU_GO"];
 
 export const faq = [
   {

@@ -17,7 +17,7 @@ import ShowError from "../common/ShowError";
 import { useLocation } from "react-router-dom";
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
-function PaymentForm({onPaymentSuccess}) {
+function PaymentForm({onPaymentSuccess,planId}) {
   const {user, setUser} = useUser()
   const {pathname} = useLocation();
   const [type, setType] = useState("");
@@ -31,7 +31,7 @@ const handleSubmit = async (e) => {
 
   let result;
 
-  if (user?.isAddCard) {
+  if (user?.isAddCard || planId ==="PAY_AS_YOU_GO") {
     result = await stripe.confirmSetup({
       elements,
       confirmParams: {
@@ -55,8 +55,7 @@ const handleSubmit = async (e) => {
     return;
   }
 
- 
-  if (result?.paymentIntent?.status === "succeeded") {
+  if (result?.paymentIntent?.status === "succeeded" || result?.setupIntent?.status === "succeeded") {
     onPaymentSuccess?.();
   }
 
@@ -89,7 +88,7 @@ const handleSubmit = async (e) => {
           size="lg"
           className="mt-4"
         >
-          {user?.isAddCard ? "Save Card" : "Make Payment"}
+          {user?.isAddCard || planId ==="PAY_AS_YOU_GO" ? "Save Card" : "Make Payment"}
         </Button>
     </form>
   );
@@ -106,7 +105,7 @@ export default function PaymentSetup({planId='',onPaymentSuccess}) {
   const {user} = useUser()
   const userType = user?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
   const membershipMutation = useMutation({
-    mutationFn: () => addCard(user?.attributes?.sub, userType, user?.isAddCard ? "add-card" : "subscribe",planId), 
+    mutationFn: () => addCard(user?.attributes?.sub, userType, user?.isAddCard || planId ==="PAY_AS_YOU_GO" ? "add-card" : "subscribe",planId), 
     onSuccess: (data) =>  setClientSecret(data.clientSecret)
   })
   const init = async () => {
@@ -133,7 +132,7 @@ export default function PaymentSetup({planId='',onPaymentSuccess}) {
       {membershipMutation?.isError && <ShowError message={membershipMutation?.error?.response?.data?.error}/>}
       {membershipMutation?.isSuccess && 
         <Elements stripe={stripePromise} options={options} >
-          <PaymentForm onPaymentSuccess={onPaymentSuccess} />
+          <PaymentForm onPaymentSuccess={onPaymentSuccess} planId={planId} />
         </Elements>
       }
     </>
