@@ -54,9 +54,7 @@ export default function Navbar() {
             
             <div className="flex items-center gap-4">
               <Button className="hover:scale-105" size="lg" onClick={() => scrollToSection("request-demo")}  >Request a Demo</Button>
-              <Link to="/login" >
-                <Button className="hover:scale-105"  size="lg" variant="secondary">Login <ArrowRight /></Button>
-              </Link>
+              <Button className="hover:scale-105"  size="lg" variant="secondary" onClick={() => window.location.href = '/subscription-login'}>Login <ArrowRight /></Button>
             </div>
           </div>
           
