@@ -101,7 +101,7 @@ function MembershipOrCardAddedModalContainer() {
 
   if (!["individual", "broker"].includes(userType)) return null;
   const cards = subcriptionDetailQuery?.data?.payment_methods ?? [];
-
+console.log("cardListingModal",cardListingModal)
   return (
     <div>
       {cardListingModal && 

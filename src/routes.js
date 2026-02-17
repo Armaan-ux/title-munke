@@ -29,6 +29,7 @@ import BrokerDetails from "./components/Admin/broker-details";
 import PropertySearch from "./components/Admin/property-search";
 import IndividualBusiness from "./components/Admin/individual-business";
 import PropertySearchIndividual from "./components/Admin/property-search-individual";
+import Request from "./components/Agent/request";
 
 export const adminRoutes = [
   { path: "admin", component: Admin },
@@ -56,6 +57,7 @@ export const agentRoutes = [
   { path: "agent/dashboard/search-history", component: HistoryListview },
   { path: "agent/dashboard/property-details/:id", component: BrokerPropertyDetails },
   { path: "agent/audit-logs", component: AuditLogs },
+  { path: "agent/request", component: Request },
   { path: "agent/setting", component: AgentSetting },
 ];
 

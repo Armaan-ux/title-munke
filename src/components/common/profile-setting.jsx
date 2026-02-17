@@ -7,13 +7,18 @@ import React, { useEffect, useRef, useState } from "react";
 import { Separator } from "../ui/separator";
 import { useSidebar } from "../ui/sidebar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { changePassword, getAdminDetails, updateProfileDetails, uploadProfileImageOnS3 } from "../service/userAdmin";
+import {
+  changePassword,
+  getAdminDetails,
+  updateProfileDetails,
+  uploadProfileImageOnS3,
+} from "../service/userAdmin";
 import { toast } from "react-toastify";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { queryKeys } from "@/utils";
 const uploadToS3 = async (uploadUrl, file) => {
   const type = file.type;
-  const binaryData = await file.arrayBuffer()
+  const binaryData = await file.arrayBuffer();
   const res = await fetch(uploadUrl, {
     method: "PUT",
     body: file, // raw file
@@ -25,11 +30,15 @@ const uploadToS3 = async (uploadUrl, file) => {
 };
 
 const ProfileSetting = ({ setIsProfile, editProfile }) => {
-  const [showPassword, setShowPassword] = useState({currentShow: false, newShow: false, confirmShow: false});
+  const [showPassword, setShowPassword] = useState({
+    currentShow: false,
+    newShow: false,
+    confirmShow: false,
+  });
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
   const queryClient = useQueryClient();
-  const {userId, userType, email: userEmail} = useUserIdType();
+  const { userId, userType, email: userEmail } = useUserIdType();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -39,69 +48,75 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
   const { open } = useSidebar();
   const fileInputRef = useRef(null);
   const [preview, setPreView] = useState(null);
-  const [profileImage,setProfileImage] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
   const handleClick = () => {
     fileInputRef.current?.click();
   };
   const getUserDetail = useQuery({
     queryKey: [queryKeys.getUserDetails, userId],
-    queryFn: () => getAdminDetails(userId)
-  })
+    queryFn: () => getAdminDetails(userId),
+  });
   useEffect(() => {
-    if(getUserDetail.isSuccess) {
-      setName(getUserDetail.data?.attributes?.name)
-      setEmail(getUserDetail.data?.attributes?.email)
-      setPhone(getUserDetail.data?.attributes?.phone_number)
+    if (getUserDetail.isSuccess) {
+      setName(getUserDetail.data?.attributes?.name);
+      setEmail(getUserDetail.data?.attributes?.email);
+      setPhone(getUserDetail.data?.attributes?.phone_number);
     }
-  }, [getUserDetail.isSuccess, getUserDetail.data])
+  }, [getUserDetail.isSuccess, getUserDetail.data]);
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setProfileImage(file);
-    setPreView(URL.createObjectURL(file))
+    setPreView(URL.createObjectURL(file));
   };
   const updateProfileMutation = useMutation({
     mutationFn: (payload) => updateProfileDetails(payload),
     onSuccess: (data) => {
-      if(!profileImage) {
+      if (!profileImage) {
         toast.success(data?.message);
         queryClient.invalidateQueries([queryKeys.getUserDetails]);
-        setIsProfile(false)
+        setIsProfile(false);
       }
-    }
-  })
+    },
+  });
 
   const uploadToS3ApiMutation = useMutation({
     mutationFn: (uploadUrl) => uploadToS3(uploadUrl, profileImage),
     onSuccess: () => {
-      if(profileImage) {
+      if (profileImage) {
         toast.success("Profile changed successfully");
         queryClient.invalidateQueries([queryKeys.getUserDetails]);
         setProfileImage(null);
-        setIsProfile(false)
+        setIsProfile(false);
       }
-    }
-  })
+    },
+  });
 
   const S3ApiMutation = useMutation({
     mutationFn: (payload) => uploadProfileImageOnS3(payload),
     onSuccess: (data) => {
-      uploadToS3ApiMutation.mutate(data?.uploadUrl)
-    }
+      uploadToS3ApiMutation.mutate(data?.uploadUrl);
+    },
   });
-  
+
   const handleProfileChange = (e) => {
     e.preventDefault();
-    const payload = {userId, userType, name, phoneNumber: phone, email: userEmail};
+    const payload = {
+      userId,
+      userType,
+      name,
+      phoneNumber: phone,
+      email: userEmail,
+    };
     updateProfileMutation?.mutate(payload);
-    if(!!profileImage) {
+    if (!!profileImage) {
       const fileName = profileImage.name;
       const fileType = profileImage.type;
-      S3ApiMutation.mutate({fileName, fileType, userId, userType})
+      S3ApiMutation.mutate({ fileName, fileType, userId, userType });
     }
-  }
+  };
 
   const changePasswordMutation = useMutation({
-    mutationFn: () => changePassword({currentPassword, newPassword}),
+    mutationFn: () => changePassword({ currentPassword, newPassword }),
     onSuccess: () => {
       setCurrentPassword("");
       setNewPassword("");
@@ -110,21 +125,25 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
     },
     onError: (err) => {
       toast.error(err?.response?.data?.message || "Error in changing password");
-    }
-  })
+    },
+  });
 
   const handlePasswordChange = (e) => {
     e.preventDefault();
-    if(currentPassword.trim() === "" || newPassword.trim() === "" || confirmPassword.trim() === "") {
+    if (
+      currentPassword.trim() === "" ||
+      newPassword.trim() === "" ||
+      confirmPassword.trim() === ""
+    ) {
       toast.error("Please fill all the fields");
       return;
     }
-    if(newPassword !== confirmPassword) {
+    if (newPassword !== confirmPassword) {
       toast.error("New password and confirm password do not match");
       return;
     }
     changePasswordMutation.mutate();
-  }
+  };
 
   return (
     <div className="bg-[#F5F0EC] flex items-start justify-start text-secondary">
@@ -132,16 +151,26 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
         <div className="bg-white rounded-xl px-8 pt-8 pb-0 flex flex-col md:flex-row items-start gap-10 w-full shadow-md">
           <div className="flex flex-col w-full">
             <div className="mb-5 flex items-center gap-4">
-              <Button type="ghost" variant="secondary" onClick={() => setIsProfile(false)}>
+              <Button
+                type="ghost"
+                variant="secondary"
+                onClick={() => setIsProfile(false)}
+              >
                 <ArrowLeft />
               </Button>
               <p className="text-xl font-medium">Edit Profile</p>
             </div>
 
-            <div className={`flex gap-10 pt-5 border-t border-gray-200 mb-2 flex-col ${open ? "md:flex-col": "md:flex-row"} lg:flex-row`}>
+            <div
+              className={`flex gap-10 pt-5 border-t border-gray-200 mb-2 flex-col ${open ? "md:flex-col" : "md:flex-row"} lg:flex-row`}
+            >
               <div className="flex flex-col items-center gap-4">
                 <img
-                  src={preview || getUserDetail?.data?.profileImageUrl || "/dummy-profile.png"}
+                  src={
+                    preview ||
+                    getUserDetail?.data?.profileImageUrl ||
+                    "/dummy-profile.png"
+                  }
                   alt="Profile"
                   className="w-60 h-60 rounded-2xl object-cover"
                 />
@@ -161,7 +190,10 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                 </Button>
               </div>
 
-              <form className="space-y-6 flex-1 w-full"  onSubmit={handleProfileChange}>
+              <form
+                className="space-y-6 flex-1 w-full"
+                onSubmit={handleProfileChange}
+              >
                 <div className="mb-9">
                   <Label
                     htmlFor="current-password"
@@ -223,7 +255,11 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                   <Button
                     variant="secondary"
                     // className="bg-tertiary text-white hover:bg-[#9C3D26] hover:text-white rounded-md px-12 mb-6 w-[20%]"
-                    disabled={updateProfileMutation.isPending || uploadToS3ApiMutation?.isPending || S3ApiMutation?.isPending}
+                    disabled={
+                      updateProfileMutation.isPending ||
+                      uploadToS3ApiMutation?.isPending ||
+                      S3ApiMutation?.isPending
+                    }
                     size="lg"
                   >
                     Save Changes
@@ -237,7 +273,9 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                 <p className="text-md font-medium mt-5">Change Password</p>
               </div>
               <form onSubmit={handlePasswordChange}>
-                <div className={`grid sm:grid-cols-1 ${ open ? "md:grid-cols-1" : "md:grid-cols-2"} ${ open ? "lg:grid-cols-2" : "lg:grid-cols-3"} xl:grid-cols-3 gap-6 mt-5 w-full`}>
+                <div
+                  className={`grid sm:grid-cols-1 ${open ? "md:grid-cols-1" : "md:grid-cols-2"} ${open ? "lg:grid-cols-2" : "lg:grid-cols-3"} xl:grid-cols-3 gap-6 mt-5 w-full`}
+                >
                   <div>
                     <Label
                       htmlFor="new-password"
@@ -256,22 +294,23 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                       />
-                      <Button 
-                        type="button" 
+                      <Button
+                        type="button"
                         variant="ghost"
                         className="!p-0 absolute right-3 top-1/2 -translate-y-1/2 "
-                        onClick={() => setShowPassword(pre => ({...pre, currentShow: !pre.currentShow}))}
+                        onClick={() =>
+                          setShowPassword((pre) => ({
+                            ...pre,
+                            currentShow: !pre.currentShow,
+                          }))
+                        }
                       >
-                         {!showPassword.currentShow &&
-                          <Eye 
-                            className="text-tertiary text-500 w-4 h-4"
-                          />
-                        }
-                        {showPassword.currentShow &&
-                          <EyeOff 
-                            className="text-tertiary text-500 w-4 h-4"
-                          />
-                        }
+                        {!showPassword.currentShow && (
+                          <Eye className="text-tertiary text-500 w-4 h-4" />
+                        )}
+                        {showPassword.currentShow && (
+                          <EyeOff className="text-tertiary text-500 w-4 h-4" />
+                        )}
                       </Button>
                     </div>
                   </div>
@@ -294,22 +333,23 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                       />
-                      <Button 
-                        type="button" 
+                      <Button
+                        type="button"
                         variant="ghost"
                         className="!p-0 absolute right-3 top-1/2 -translate-y-1/2 "
-                        onClick={() => setShowPassword(pre => ({...pre, newShow: !pre.newShow}))}
+                        onClick={() =>
+                          setShowPassword((pre) => ({
+                            ...pre,
+                            newShow: !pre.newShow,
+                          }))
+                        }
                       >
-                         {!showPassword.newShow &&
-                          <Eye 
-                            className="text-tertiary text-500 w-4 h-4"
-                          />
-                        }
-                        {showPassword.newShow &&
-                          <EyeOff 
-                            className="text-tertiary text-500 w-4 h-4"
-                          />
-                        }
+                        {!showPassword.newShow && (
+                          <Eye className="text-tertiary text-500 w-4 h-4" />
+                        )}
+                        {showPassword.newShow && (
+                          <EyeOff className="text-tertiary text-500 w-4 h-4" />
+                        )}
                       </Button>
                     </div>
                   </div>
@@ -331,22 +371,23 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                       />
-                      <Button 
-                        type="button" 
+                      <Button
+                        type="button"
                         variant="ghost"
                         className="!p-0 absolute right-3 top-1/2 -translate-y-1/2 "
-                        onClick={() => setShowPassword(pre => ({...pre, confirmShow: !pre.confirmShow}))}
+                        onClick={() =>
+                          setShowPassword((pre) => ({
+                            ...pre,
+                            confirmShow: !pre.confirmShow,
+                          }))
+                        }
                       >
-                         {!showPassword.confirmShow &&
-                          <Eye 
-                            className="text-tertiary text-500 w-4 h-4"
-                          />
-                        }
-                        {showPassword.confirmShow &&
-                          <EyeOff 
-                            className="text-tertiary text-500 w-4 h-4"
-                          />
-                        }
+                        {!showPassword.confirmShow && (
+                          <Eye className="text-tertiary text-500 w-4 h-4" />
+                        )}
+                        {showPassword.confirmShow && (
+                          <EyeOff className="text-tertiary text-500 w-4 h-4" />
+                        )}
                       </Button>
                     </div>
                   </div>
@@ -375,7 +416,6 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                 </div>
               </form>
             </div>
-
           </div>
         </div>
       ) : (
@@ -395,7 +435,9 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
           <div className="flex flex-col md:flex-row items-start gap-10 mt-6">
             <div className="flex flex-col items-center gap-4">
               <img
-                src={getUserDetail?.data?.profileImageUrl || "/dummy-profile.png"}
+                src={
+                  getUserDetail?.data?.profileImageUrl || "/dummy-profile.png"
+                }
                 alt="Profile"
                 className="w-60 h-60 rounded-2xl object-cover"
               />
