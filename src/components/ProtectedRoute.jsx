@@ -7,7 +7,7 @@ const ProtectedRoute = ({ children, allowedGroups }) => {
     const { user } = useUser();
     if (!user) {
         // If the user is not logged in, redirect to the login page
-        return <Navigate to="/login" />;
+        return <Navigate to="/subscription-login" />;
     }
 
     const userGroups = user?.signInUserSession?.idToken?.payload['cognito:groups'] || [];

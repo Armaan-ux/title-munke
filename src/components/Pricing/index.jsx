@@ -107,7 +107,7 @@ const Pricing = () => {
       <div className=" flex items-center justify-center text-base bg-primary text-primary-foreground text-center px-2 py-1 ">
         <p className="">
           Still doing manual searches?{" "}
-          <Link to="/login" className="inline-flex items-center gap-2">
+          <Link to="/subscription-login" className="inline-flex items-center gap-2">
             {" "}
             <b> Automate now </b> <ArrowRight className="size-5" />{" "}
           </Link>

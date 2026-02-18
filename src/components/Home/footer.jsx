@@ -39,7 +39,7 @@ export default function Footer() {
             <div className="p-6 mb-4 bg-white rounded-[20px] space-y-4 " >
                 <p className="text-[22px] text-secondary" >Let's Get Start</p>
                 <Button size="lg" className="w-full hover:scale-105" >Request a Demo  <ArrowRight /></Button>
-                <Link to="/login" >
+                <Link to="/subscription-login" >
                     <Button size="lg" variant="secondary" className="w-full hover:scale-105" >Login <ArrowRight /></Button>
                 </Link>
             </div>

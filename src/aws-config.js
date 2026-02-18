@@ -34,12 +34,12 @@ export const awsmobile = {
     ],
     "aws_cloud_logic_custom": [{
         "name": "usersAdmin-dev",
-        "endpoint": "https://jdk8dyza99.execute-api.us-east-1.amazonaws.com",
+        "endpoint": "https://pkkj9m1c-4000.inc1.devtunnels.ms",
         "region": "us-east-1"
     }]
 };
 
-
+// "https://jdk8dyza99.execute-api.us-east-1.amazonaws.com"
 //prod
 // export const awsmobile = {
 //     "aws_project_region": "us-east-1",

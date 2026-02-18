@@ -30,6 +30,7 @@ import PropertySearch from "./components/Admin/property-search";
 import IndividualBusiness from "./components/Admin/individual-business";
 import PropertySearchIndividual from "./components/Admin/property-search-individual";
 import Request from "./components/Agent/request";
+import RequestBroker from "./components/Broker/request-broker";
 
 export const adminRoutes = [
   { path: "admin", component: Admin },
@@ -69,6 +70,7 @@ export const brokerRoutes = [
   { path: "broker/manage-agents", component: ManageAgents },
   { path: "broker/agent-audit-log", component: AuditLogsForBroker },
   { path: "broker/setting", component: BrokerSettings },
+  { path: "/broker/request", component: RequestBroker },
   {
     path: "broker/manage-agents/agent-property-details/:id",
     component: PropertySearch,

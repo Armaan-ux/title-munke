@@ -23,7 +23,7 @@ export default function VerifyEmail({ email, login }) {
         if(login){
             login()
         } else {
-            navigate("/login");
+            navigate("/subscription-login");
         }
     },
     onError: (error) => {

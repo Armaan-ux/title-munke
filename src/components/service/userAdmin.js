@@ -83,7 +83,8 @@ export const CONSTANTS = { // should always be copied from title-munke-serverles
     FETCH_EMAIL_PREFERENCE: "fetchEmailPreference",
     EMAIL_PREFERENCE_SEARCH_COMPLETE: "emailPreferenceSearchComplete",
     ADD_BULK_AGENTS: "addBulkAgents",
-    CHANGE_PASSWORD_OF_USER: "changePasswordOfUser"
+    CHANGE_PASSWORD_OF_USER: "changePasswordOfUser",
+    LIST_REQUESTS_BY_USER_ID: "listRequestsByUserId",
 
 
   },
@@ -1474,5 +1475,35 @@ export async function iniitateSearch(data) {
     "Success in " + action,
     "Error in " + action,
     "/initiate-search"
+  );
+}
+
+
+export async function listRequestByUserId() {
+  const action = CONSTANTS?.ACTIONS?.LIST_REQUESTS_BY_USER_ID;
+
+  const payload = {
+    // body: {
+    //   userId
+    // }
+  };
+
+  return callGetUserAdminApi(
+    payload,
+    "Success in " + action,
+    "Error in " + action,
+    "/my-request-fetch-of-user"
+  );
+}
+
+export async function getBrokerAndOrganizationSelectListing() {
+  const payload = {
+   
+  };
+  return callGetUserAdminApi(
+    payload,
+    'Success in getBrokerAndOrganizationSelectListing:',
+    'Error in getBrokerAndOrganizationSelectListing:',
+    "/fetch-existing-user-listing-to-join"
   );
 }

@@ -3,10 +3,45 @@ import React, { useState } from "react";
 import { CancelSubscriptionModal } from "../Modal/CancelSubscriptionModal";
 import { Button } from "../ui/button";
 import { JoinBrokerModal } from "../Modal/JoinBrokerModal";
+import { useUserIdType } from "@/hooks/useUserIdType";
+import { useUser } from "@/context/usercontext";
+import { useQuery } from "@tanstack/react-query";
+import { getBrokerAndOrganizationSelectListing, getBrokerDetails } from "../service/userAdmin";
 
 const AdvancedSettings = () => {
   const [cancleSubscriptionModal, setCancleSubscriptionModal] = useState(false);
   const [joinBrokerModal, setJoinBrokerModal] = useState(false);
+  const { userType, userId } = useUserIdType();
+  const { agentDetail } = useUser();
+  const { isUnderBroker = false, relationship = {} } = agentDetail || {};
+  const brokerDetailQuery = useQuery({
+    queryKey: ["agentBrokerDetail"],
+    queryFn: () => getBrokerDetails(userId),
+    enabled: userType === "broker",
+  });
+    const brokerAndOrganizationUserListQuery = useQuery({
+      queryKey: ["brokerAndOrganizationSelectListing"],
+      queryFn: getBrokerAndOrganizationSelectListing,
+      enabled: userType === "agent"
+    })
+    console.log(
+      "brokerAndOrganizationUserListQuery",brokerAndOrganizationUserListQuery?.data
+    )
+  const { isUnderOrganisation, relationship: relationshipBroker } =
+    brokerDetailQuery?.data ||{};
+  const { organisationFirstName = "-" } = relationshipBroker ||{};
+  const { brokerFirstName = "-" } = relationship || {};
+  let buttonLabel = "";
+
+  if (userType === "agent") {
+    buttonLabel = isUnderBroker ? "Leave Broker" : "Join Broker";
+  }
+
+  if (userType === "broker") {
+    buttonLabel = isUnderOrganisation
+      ? "Leave Organisation"
+      : "Join Organisation";
+  }
   return (
     <>
       <CancelSubscriptionModal
@@ -43,18 +78,41 @@ const AdvancedSettings = () => {
           {/* Broker Connection Card */}
           <div className="bg-[#F5F0EC] order border-blue-300 rounded-xl p-6 md:p-8 w-full shadow-sm">
             <p className="text-lg font-medium mb-2">Broker Connection</p>
-            <p className="text-gray-500 mb-1">
-              Connected to :{" "}
-              <span className="font-semibold">Michael Brown</span>
-            </p>
-            <p className="text-gray-500 mb-4">
-              Role : <span className="font-semibold">Agent</span>
+
+            {userType === "agent" &&
+              (isUnderBroker ? (
+                <p className="text-gray-500 mb-1">
+                  Connected to:{" "}
+                  <span className="font-semibold">{brokerFirstName}</span>
+                </p>
+              ) : (
+                <p className="text-gray-500 mb-1">Select Broker to Join</p>
+              ))}
+
+            {userType === "broker" &&
+              (isUnderOrganisation ? (
+                <p className="text-gray-500 mb-1">
+                  Connected to:{" "}
+                  <span className="font-semibold">{organisationFirstName}</span>
+                </p>
+              ) : (
+                <p className="text-gray-500 mb-1">
+                  Select Organisation to Join
+                </p>
+              ))}
+
+            <p className="text-secondary mb-4">
+              Role :{" "}
+              <span className="font-semibold">
+                {userType === "agent" ? `Agent` : `Broker`}
+              </span>
             </p>
             <Button
-              onClick={() => setCancleSubscriptionModal(true)}
+              onClick={() => userType === "agent"  &&  isUnderBroker ?   setCancleSubscriptionModal(true): setJoinBrokerModal(true)}
               className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition"
             >
-              Leave Broker <ArrowRight size={16} />
+              {buttonLabel}
+              <ArrowRight size={16} />
             </Button>
           </div>
           {/* Pay as You Do Card */}

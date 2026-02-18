@@ -148,8 +148,8 @@ export const UserProvider = ({ children }) => {
     setUser(null);
     setIsAuthenticated(false);
     localStorage?.clear()
-    // navigate("/subscription-login");
-    window.location.href = "/subscription-login";
+    navigate("/subscription-login");
+    // window.location.href = "/subscription-login";
   };
   return (
     <UserContext.Provider

@@ -20,7 +20,7 @@ function ResetPasswordWithOTP({ username }) {
     try {
       await resetPassword(username, otp, newPassword);
       toast.success("Password changed successfully");
-      navigate("/login");
+      navigate("/subscription-login");
     } catch (error) {
       setError(error.message || "Password reset failed");
     }

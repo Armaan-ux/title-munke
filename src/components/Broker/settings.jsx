@@ -3,6 +3,7 @@ import Setting from "@/components/common/settings";
 import ProfileSetting from "@/components/common/profile-setting";
 import Notification from "@/components/common/notification-setting";
 import Billing from "@/components/common/billing";
+import AdvancedSettings from "../common/AdvancedSettings";
 
 const agentTypes = [
   {
@@ -16,6 +17,10 @@ const agentTypes = [
   {
     name: "Billing",
     id: "billing",
+  },
+   {
+    name: "Advanced Settings",
+    id: "advanced",
   },
 ];
 
@@ -43,6 +48,7 @@ export default function ManageAgents() {
       {activeTab.id === "profile" && <ProfileSetting setIsProfile={setIsProfile}  editProfile={editProfile} />}
       {activeTab.id === "notifications" && <Notification />}
       {activeTab.id === "billing" && <Billing />}
+       {activeTab.id === "advanced" && <AdvancedSettings userType="broker" />}
     </div>
   );
 }

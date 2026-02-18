@@ -54,7 +54,6 @@ export default function Search({ isIndivisual = false }) {
     queryFn: () => getBrokerDetails(agentId),
     enabled: userType === "broker",
   });
-  console.log("user11111111111agentDetail", agentDetail);
 
   const clearSearchState = () => {
     const searchKeys = [

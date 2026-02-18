@@ -102,7 +102,7 @@ export default function Home() {
       <div className=" flex items-center justify-center text-base bg-primary text-primary-foreground text-center px-2 py-1 ">
         <p className="">
           Still doing manual searches?{" "}
-          <Link to="/login" className="inline-flex items-center gap-2">
+          <Link to="/subscription-login" className="inline-flex items-center gap-2">
             {" "}
             <b> Automate now </b> <ArrowRight className="size-5" />{" "}
           </Link>
@@ -140,7 +140,7 @@ export default function Home() {
             </p>
             
             <div className="space-x-3">
-              <Link to="/login">
+              <Link to="/subscription-login">
                 <Button className="hover:scale-105" size="lg" variant="outline">
                   Get Started <ArrowRight />
                 </Button>

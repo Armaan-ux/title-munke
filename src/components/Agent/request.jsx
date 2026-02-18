@@ -10,7 +10,7 @@ import {
 import { Badge } from "../ui/badge";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { useQuery } from "@tanstack/react-query";
-import { listAuditLogsByUserId } from "../service/userAdmin";
+import { listAuditLogsByUserId, listRequestByUserId } from "../service/userAdmin";
 import { CenterLoader } from "../common/Loader";
 
 import { queryKeys } from "@/utils";
@@ -48,9 +48,9 @@ const dummyData = [
 
 const RequestListTable = () => {
   const { userId } = useUserIdType();
-  const { data: auditLogs, isPending: isLogsPending } = useQuery({
-    queryKey: [queryKeys.listAuditLogsByUserId],
-    queryFn: () => listAuditLogsByUserId(userId),
+  const { data: requestList, isPending: isRequestPending } = useQuery({
+    queryKey: [queryKeys.listRequestsByUserId],
+    queryFn: () => listRequestByUserId(),
     skip: !userId,
   });
   //   const logs = auditLogs?.data?.items || []
@@ -70,7 +70,7 @@ const RequestListTable = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLogsPending ? (
+            {isRequestPending ? (
               <TableRow>
                 <TableCell
                   colSpan={5}

@@ -68,7 +68,12 @@ export const routes = {
       class: "fas fa-search",
       icon: LayoutDashboard
     },
-
+      {
+      link: "/broker/request",
+      name: "Request",
+      class: "fas fa-search",
+      icon: UserRoundCog
+    },
     {
       link: "/broker/manage-agents",
       name: "Agents",
