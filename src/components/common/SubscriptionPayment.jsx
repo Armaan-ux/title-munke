@@ -1,77 +1,55 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../../context/usercontext";
-import ResetPassword from "../ResetPassword";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,
   ArrowRight,
-  Check,
-  ChevronLeft,
   CreditCard,
-  Eye,
-  EyeOff,
-  Loader,
   UserRoundCheck,
 } from "lucide-react";
 import { motion } from "motion/react";
-import VerifyEmail from "../verify-email";
-import { useMutation } from "@tanstack/react-query";
-import {
-  confirmEmail,
-  resendConfirmationCode,
-  updateUserStatus,
-} from "../service/userAdmin";
-import { handleCreateAuditLog } from "@/utils";
+
 import { Card } from "../ui/card";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { PaymentDetailsModal } from "../Modal/PaymentDetailsModal";
-import SubscriptionSuccessModal from "../Modal/SubscriptionSuccessModal";
+import { toast } from "react-toastify";
 
 function SubscriptionPayment() {
-  const { planId } = useParams();
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { planId, price } = useParams();
   const { user, setUser, signIn } = useUser();
-  const [isChecking, setIsChecking] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [isReset, setIsReset] = useState(false);
   const [showPaymentDetails, setShowPaymentDetails] = useState(false);
-const [paymentMethod, setPaymentMethod] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
   const navigate = useNavigate();
 
-console.log("user",user);
+  console.log("user", user);
 
   const submitHandler = (e) => {
     e.preventDefault();
     console.log("paymentMethod", paymentMethod);
     // debugger;
-    if(paymentMethod === "card") {
+    if (paymentMethod === "card") {
       // setUser(pre => ({...pre, isAddCard: true}))
       navigate(`/subscription-card-details/${planId}`);
       return;
     }
-    navigate("/subscription-login");
+    toast.error("Please select a payment method to proceed.", {
+      autoClose: 3000,
+    });
+    return
   };
 
   // if (isReset) return <ResetPassword username={username} password={password} />;
 
-
-const skipPaymentHandler = () => {
-navigate(
-        "/" + user.signInUserSession.idToken.payload["cognito:groups"][0],
-      );
-}
+  const skipPaymentHandler = () => {
+    navigate("/" + user.signInUserSession.idToken.payload["cognito:groups"][0]);
+  };
   return (
     <>
       <PaymentDetailsModal
         open={showPaymentDetails}
         onOpenChange={(open) => setShowPaymentDetails(open)}
         onCancel={() => setShowPaymentDetails(false)}
+        price={price}
       />
 
       <div className="relative min-h-dvh w-full overflow-hidden bg-[#2b140c]">
@@ -125,20 +103,17 @@ navigate(
             </div>
 
             {/* RIGHT */}
-            <motion.div 
-            
-             
-                              initial={{ opacity: 0, y: 20 }}
-                              whileInView={{ opacity: 1, y: 0 }}
-                              transition={{
-                                duration: 0.5,
-                                delay: 0.1,
-                                ease: "easeOut",
-                              }}
-                              viewport={{ once: true, amount: 0.4 }} 
-            
-            
-            className="flex items-center justify-center p-6 sm:p-10 bg-[url('/bg-signin.png')]">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.5,
+                delay: 0.1,
+                ease: "easeOut",
+              }}
+              viewport={{ once: true, amount: 0.4 }}
+              className="flex items-center justify-center p-6 sm:p-10 bg-[url('/bg-signin.png')]"
+            >
               <div className="w-full max-w-lg ">
                 {/* stepper */}
                 <div className="flex items-center justify-center mb-5">
@@ -187,7 +162,7 @@ navigate(
                       </div>
                       <div className="text-right">
                         <p className="text-2xl font-semibold text-[#3b1f12]">
-                          $0.00
+                          {price ? price : `$0.00`}
                         </p>
                         <button
                           onClick={() => setShowPaymentDetails(true)}
@@ -202,8 +177,8 @@ navigate(
                   {/* Payment Options */}
                   <div className="space-y-3 mb-6">
                     <RadioGroup
-                    value={paymentMethod}
-  onValueChange={setPaymentMethod}
+                      value={paymentMethod}
+                      onValueChange={setPaymentMethod}
                       className="space-y-3"
                     >
                       {/* Apple Pay Option */}
@@ -229,32 +204,41 @@ navigate(
                   </div>
 
                   {/* Skip Payment Link */}
-                  <div className="text-center mb-8"  type="button" >
-                    <button onClick={skipPaymentHandler} className="inline-flex items-center gap-2 text-sm font-medium text-[#550000] hover:text-secondary-700 underline">
-                      Skip Payment Method
-                      <ArrowRight />
-                    </button>
-                  </div>
+                  {planId === "EXPLORE_PLAN" && (
+                    <div className="text-center mb-8" type="button">
+                      <button
+                        onClick={skipPaymentHandler}
+                        className="inline-flex items-center gap-2 text-sm font-medium text-[#550000] hover:text-secondary-700 underline"
+                      >
+                        Skip Payment Method
+                        <ArrowRight />
+                      </button>
+                    </div>
+                  )}
 
                   {/* Bottom Actions */}
-                  <div  className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <button onClick={()=>navigate(-1)} type="button" className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <button
+                      onClick={() => navigate(-1)}
+                      type="button"
+                      className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900"
+                    >
                       <ArrowLeft /> Back
                     </button>
 
                     <button
-                     type="button"
-                     disabled={planId==="EXPLORE_PLAN"}
+                      type="button"
+                      disabled={planId === "EXPLORE_PLAN"}
                       onClick={submitHandler}
                       className={`inline-flex w-full sm:w-auto items-center justify-center gap-2 px-8 py-3
                          bg-gradient-to-b from-[#3b1f12] to-[#5c2f1b]
-               text-white rounded-xl font-medium transition-colors ${planId==="EXPLORE_PLAN" ? "disabled:opacity-50 disabled:cursor-not-allowed" : "hover:bg-gradient-to-t from-[#3b1f12] to-[#5c2f1b]"}`}
+               text-white rounded-xl font-medium transition-colors ${planId === "EXPLORE_PLAN" ? "disabled:opacity-50 disabled:cursor-not-allowed" : "hover:bg-gradient-to-t from-[#3b1f12] to-[#5c2f1b]"}`}
                     >
                       Make Payment <ArrowRight />
                     </button>
                   </div>
                   <div className="border-t border-gray-200 mb-6 mt-4"></div>
-                  <p className="pt-4 text-center text-xs text-[#7a5a49]">
+                  {/* <p className="pt-4 text-center text-xs text-[#7a5a49]">
                     Already have an account?{" "}
                     <a
                       href="/subscription-login"
@@ -262,7 +246,13 @@ navigate(
                     >
                       Log In
                     </a>
-                  </p>
+                  </p> */}
+                  <div className="text-center my-4 text-sm">
+                    <span>Don't have an account? </span>
+                    <Link to="/pricing" className="text-secondary">
+                      Register Now
+                    </Link>
+                  </div>
                 </div>
               </div>
             </motion.div>

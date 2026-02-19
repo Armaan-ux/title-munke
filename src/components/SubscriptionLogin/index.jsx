@@ -1,13 +1,8 @@
-import {  useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../../context/usercontext";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowRight,
-  Eye,
-  EyeOff,
-  Loader,
-} from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Loader } from "lucide-react";
 import { Input } from "../ui/input";
 import { Label } from "@/components/ui/label";
 import { useMutation } from "@tanstack/react-query";
@@ -168,21 +163,17 @@ function SubscriptionLogin() {
           </div>
 
           {/* RIGHT */}
-          <motion.div 
-            
-             
-                              initial={{ opacity: 0, y: 20 }}
-                              whileInView={{ opacity: 1, y: 0 }}
-                              transition={{
-                                duration: 0.5,
-                                delay: 0.1,
-                                ease: "easeOut",
-                              }}
-                              viewport={{ once: true, amount: 0.4 }} 
-          
-          
-          
-          className="flex items-center justify-center p-6 sm:p-10 bg-[url('/bg-signin.png')] md:py-[100px]">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.5,
+              delay: 0.1,
+              ease: "easeOut",
+            }}
+            viewport={{ once: true, amount: 0.4 }}
+            className="flex items-center justify-center p-6 sm:p-10 bg-[url('/bg-signin.png')] md:py-[100px]"
+          >
             <div className="w-full max-w-sm">
               <div className="border-2 border-[#e6d6c3] rounded-3xl p-4 bg-[#FFFFFF] ">
                 <h3 className="text-2xl font-semibold text-[#3b1f12]">
@@ -193,10 +184,13 @@ function SubscriptionLogin() {
                 </p>
 
                 <div className="border-t border-gray-200 mb-6 mt-4"></div>
-                <form className="mt-6 space-y-4"   onSubmit={(e) => {
-              e.preventDefault();
-              handleLogin();
-            }}>
+                <form
+                  className="mt-6 space-y-4"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleLogin();
+                  }}
+                >
                   <div>
                     <Label htmlFor="username" className="text-sm">
                       Email
@@ -282,7 +276,7 @@ function SubscriptionLogin() {
                     </div>
                   )}
                   <div className="border-t border-gray-200 mb-6 mt-4"></div>
-                  <p className="pt-4 text-center text-xs text-[#7a5a49]">
+                  {/* <p className="pt-4 text-center text-xs text-[#7a5a49]">
                     Already have an account?{" "}
                     <Link
                       to="/pricing"
@@ -290,7 +284,13 @@ function SubscriptionLogin() {
                     >
                       Sign up
                     </Link>
-                  </p>
+                  </p> */}
+                  <div className="text-center my-4 text-sm">
+                    <span>Don't have an account? </span>
+                    <Link to="/pricing" className="text-secondary">
+                      Register Now
+                    </Link>
+                  </div>
                 </form>
               </div>
             </div>

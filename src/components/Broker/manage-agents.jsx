@@ -309,6 +309,7 @@ function Agents() {
     setProfileImage(file);
     // bulkUploadMutation.mutate(file)
   };
+  console.log("filteredAgents",filteredAgents)
   return (
     <>
       <AddUserModal
@@ -445,11 +446,11 @@ function Agents() {
               filteredAgents?.map((item, index) => (
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">{index + 1}</TableCell>
-                  <TableCell>{item.agentName}</TableCell>
+                  <TableCell>{item.agentName ? item.agentName : "-"}</TableCell>
                   <TableCell className="text-center">
                     {item.totalSearches}
                   </TableCell>
-                  <TableCell>{getFormattedDateTime(item.lastLogin)}</TableCell>
+                  <TableCell> {item?.lastLogin ? getFormattedDateTime(item.lastLogin) : "-"}</TableCell>
                   <TableCell>
                     <Badge
                       className={`${

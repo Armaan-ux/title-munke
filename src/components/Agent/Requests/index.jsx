@@ -7,54 +7,93 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "../ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { useUserIdType } from "@/hooks/useUserIdType";
-import { useQuery } from "@tanstack/react-query";
-import { listAuditLogsByUserId, listRequestByUserId } from "../service/userAdmin";
-import { CenterLoader } from "../common/Loader";
+import { useQueryClient , useMutation, useQuery } from "@tanstack/react-query";
+import { addRequestToJoinUser, listRequestByUserId, withdrawRequestToJoinUser } from "@/components/service/userAdmin";
+import { CenterLoader } from "@/components/common/Loader";
 
 import { queryKeys } from "@/utils";
 import { useState } from "react";
 import { RefreshCcw, Trash2 } from "lucide-react";
+import { toast } from "react-toastify";
 const agentTypes = [
   {
     name: "My Requests",
     id: "request",
   },
 ];
-const dummyData = [
-  {
-    id: 1,
-    name: "John Doe",
-    date_time: "2023-03-01T00:00:00.000Z",
-    status: "In Progress",
-    action: "Agent logged in successfully",
-  },
-  {
-    id: 2,
-    name: "John Doe",
-    date_time: "2023-03-01T00:00:00.000Z",
-    status: "In Progress",
-    action: "Agent logged in successfully",
-  },
-  {
-    id: 3,
-    name: "John Doe",
-    date_time: "2023-03-01T00:00:00.000Z",
-    status: "In Progress",
-    action: "Agent logged in successfully",
-  },
-];
 
 const RequestListTable = () => {
-  const { userId } = useUserIdType();
+  const { userId,userType } = useUserIdType();
+  const queryClient = useQueryClient();
   const { data: requestList, isPending: isRequestPending } = useQuery({
     queryKey: [queryKeys.listRequestsByUserId],
-    queryFn: () => listRequestByUserId(),
+    queryFn: () => listRequestByUserId("myRequest"),
     skip: !userId,
   });
-  //   const logs = auditLogs?.data?.items || []
-  const logs = dummyData || [];
+  console.log("Request List:", requestList);
+ 
+  const logs = requestList?.data || [];
+
+const newJoinRequestMutation = useMutation({
+  mutationFn: addRequestToJoinUser,
+
+  onSuccess: (_, variables) => {
+    // Refresh request list
+    queryClient.invalidateQueries([queryKeys.listRequestsByUserId]);
+
+    toast.success(
+      variables?.actionType === "retry"
+        ? "Request retried successfully"
+        : "Request sent successfully"
+    );
+  },
+
+  onError: (error) => {
+    const message =
+      error?.response?.data?.error ||
+      error?.message ||
+      "Something went wrong. Please try again.";
+
+    toast.error(message);
+  },
+});
+const withdrawRequestMutation = useMutation({
+  mutationFn: withdrawRequestToJoinUser,
+  onSuccess: () => {
+    queryClient.invalidateQueries([queryKeys.listRequestsByUserId]);
+    toast.success("Request withdrawn successfully");
+  },
+  onError: (error) => {
+    toast.error(
+      error?.response?.data?.error ||
+        "Something went wrong while withdrawing request."
+    );
+  },
+});
+
+
+const buildRetryPayload = (item) => {
+  const user = userType === "agent" ? "broker" : "";
+  return {
+    actionType: "retry",
+    requestId: item?.id,
+    userType: user,
+    userId: item?.brokerId,
+    ...(item?.requestMessage && { message: item.requestMessage }),
+  };
+};
+
+
+  const handleRetry = (item) => {
+    if (!item?.id || newJoinRequestMutation.isPending) return;
+  newJoinRequestMutation.mutate(buildRetryPayload(item));
+  }
+  const handleDelete = (id) => {
+     if (!id || withdrawRequestMutation.isPending) return;
+  withdrawRequestMutation.mutate({ requestId: id });
+  }
 
   return (
     <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
@@ -65,6 +104,7 @@ const RequestListTable = () => {
               <TableHead className="w-[100px]">Sr. No.</TableHead>
               <TableHead>Broker Name</TableHead>
               <TableHead>Date & Time</TableHead>
+              <TableHead>Request Type</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Action</TableHead>
             </TableRow>
@@ -93,9 +133,10 @@ const RequestListTable = () => {
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">{index + 1}</TableCell>
                   <TableCell className="whitespace-pre-wrap">
-                    {item.name}
+                    {item.name?.toUpperCase() || "N/A"}
                   </TableCell>
-                  <TableCell>{getFormattedDateTime(item?.date_time)}</TableCell>
+                  <TableCell>{getFormattedDateTime(item?.updatedAt)}</TableCell>
+                  <TableCell>{item?.requestType}</TableCell>
                   <TableCell>
                     <Badge
                       className={`!text-sm ${
@@ -114,8 +155,9 @@ const RequestListTable = () => {
                     <div className="flex items-start gap-2 justify-start">
                       {/* Retry icon */}
                       <button
+                       disabled={newJoinRequestMutation.isPending}
                         className="p-2 rounded-md hover:bg-[#eef9ff] text-[#000000] bg-[#F5F0EC]"
-                        // onClick={() => handleRetry(item.id)}
+                        onClick={() => handleRetry(item)}
                       >
                         <RefreshCcw size={16} />
                       </button>
@@ -123,7 +165,7 @@ const RequestListTable = () => {
                       {/* Cross icon */}
                       <button
                         className="p-2 rounded-md  hover:bg-[#FFE3D9] text-[#FF0000] bg-[#F5F0EC]"
-                        // onClick={() => handleDelete(item.id)}
+                        onClick={() => handleDelete(item.id)}
                       >
                         <Trash2 size={16} />
                       </button>
@@ -138,7 +180,7 @@ const RequestListTable = () => {
     </div>
   );
 };
-export default function Request() {
+export default function Requests() {
   const [activeTab, setActiveTab] = useState(agentTypes[0]);
   return (
     <div className="bg-[#F5F0EC] rounded-lg px-7 py-4 mt-3 text-secondary">

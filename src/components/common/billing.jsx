@@ -19,6 +19,7 @@ import { useUserIdType } from "@/hooks/useUserIdType";
 import { toast } from "react-toastify";
 
 const Billing = () => {
+
   const navigate = useNavigate();
   const [cancleSubscriptionSucessModal, setCancleSubscriptionSucessModal] = useState(false);
   const [cancleSubscriptionModal, setCancleSubscriptionModal] = useState(false);
@@ -36,7 +37,7 @@ const Billing = () => {
 
   const userType = user?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
   const queryClient = useQueryClient();
-  const {userId} = useUserIdType();
+  const {userId,userType: userRole} = useUserIdType();
   const subcriptionDetailQuery = useQuery({
     queryKey: ["subcription-details"],
     queryFn: () => getSubscriptionDetails(user?.attributes?.sub, userType)
@@ -203,7 +204,7 @@ const Billing = () => {
                   </p>
                   <button
                     className="text-sm text-secondary font-medium mt-1 hover:underline mr-90"
-                    onClick={() => navigate("/broker/setting/billing-history")}
+                    onClick={() => userRole==="broker" ? navigate("/broker/setting/billing-history") : navigate("/agent/setting/billing-history")}
                   >
                     View
                   </button>

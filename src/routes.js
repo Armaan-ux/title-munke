@@ -29,8 +29,8 @@ import BrokerDetails from "./components/Admin/broker-details";
 import PropertySearch from "./components/Admin/property-search";
 import IndividualBusiness from "./components/Admin/individual-business";
 import PropertySearchIndividual from "./components/Admin/property-search-individual";
-import Request from "./components/Agent/request";
-import RequestBroker from "./components/Broker/request-broker";
+import RequestAgent from "./components/Agent/Requests";
+import RequestBroker from "./components/Broker/Requests";
 
 export const adminRoutes = [
   { path: "admin", component: Admin },
@@ -58,8 +58,9 @@ export const agentRoutes = [
   { path: "agent/dashboard/search-history", component: HistoryListview },
   { path: "agent/dashboard/property-details/:id", component: BrokerPropertyDetails },
   { path: "agent/audit-logs", component: AuditLogs },
-  { path: "agent/request", component: Request },
+  { path: "agent/request", component: RequestAgent },
   { path: "agent/setting", component: AgentSetting },
+  { path: "agent/setting/billing-history", component: BillingHistory },
 ];
 
 export const brokerRoutes = [
@@ -70,7 +71,7 @@ export const brokerRoutes = [
   { path: "broker/manage-agents", component: ManageAgents },
   { path: "broker/agent-audit-log", component: AuditLogsForBroker },
   { path: "broker/setting", component: BrokerSettings },
-  { path: "/broker/request", component: RequestBroker },
+  { path: "/broker/request", component:RequestBroker  },
   {
     path: "broker/manage-agents/agent-property-details/:id",
     component: PropertySearch,

@@ -1479,20 +1479,20 @@ export async function iniitateSearch(data) {
 }
 
 
-export async function listRequestByUserId() {
+export async function listRequestByUserId(requestType) {
   const action = CONSTANTS?.ACTIONS?.LIST_REQUESTS_BY_USER_ID;
 
   const payload = {
-    // body: {
-    //   userId
-    // }
+    body: {
+      requestType
+    }
   };
 
   return callGetUserAdminApi(
     payload,
     "Success in " + action,
     "Error in " + action,
-    "/my-request-fetch-of-user"
+    "/request-fetch-of-user"
   );
 }
 
@@ -1505,5 +1505,30 @@ export async function getBrokerAndOrganizationSelectListing() {
     'Success in getBrokerAndOrganizationSelectListing:',
     'Error in getBrokerAndOrganizationSelectListing:',
     "/fetch-existing-user-listing-to-join"
+  );
+}
+
+export async function addRequestToJoinUser(userData) {
+  return callUserAdminApi(
+    { body: userData },
+    'Successfully joined user:',
+    'Error joining user:',
+    "/add-request-to-join-user"
+  );
+}
+export async function withdrawRequestToJoinUser(userData) {
+  return callUserAdminApi(
+    { body: userData },
+    'Successfully withdrawn request:',
+    'Error withdrawing request:',
+    "/withdraw-request-to-join-user"
+  );
+}
+export async function processRequestToJoinUser(userData) {
+  return callUserAdminApi(
+    { body: userData },
+    'Successfully processed request:',
+    'Error processing request:',
+    "/process-request-to-join-user"
   );
 }

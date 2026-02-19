@@ -95,25 +95,10 @@ export function InvoiceModalDummy({ open, onClose, invoice, isPrint=true }) {
                 <p className="text-center">${invoice?.subtotal / 100}</p>
                 <p className="text-right">${invoice?.subtotal / 100}</p>
               </div>
-              {/* <div className="grid grid-cols-5 items-center px-3 py-2">
-                <div className="col-span-2">
-                  <p className="font-medium text-[#581b1b]">Agent Seat Fees</p>
-                  <p className="text-xs text-muted-foreground">
-                    Billing Cycle: Sep To Aug
-                  </p>
-                </div>
-                <p className="text-center">0</p>
-                <p className="text-center">$0.00</p>
-                <p className="text-right">$0.00</p>
-              </div> */}
+           
             </div>
 
             <div className="bg-[#fdf8f5] text-sm border-t px-3 py-3 space-y-1 flex flex-col items-end gap-2">
-              {/* <div></div>
-              <div className="flex justify-between gap-10 w-48">
-                <p>Subscription</p>
-                <p>$25.00</p>
-              </div> */}
               <div className="flex justify-between gap-10 w-48">
                 <p>Subtotal</p>
                 <p>${invoice?.subtotal / 100}</p>

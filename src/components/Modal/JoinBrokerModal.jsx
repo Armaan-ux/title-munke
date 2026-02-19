@@ -6,20 +6,30 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { Input } from "../ui/input";
+import { Loader } from "lucide-react";
 
 export function JoinBrokerModal({
+  dropdownOptions,
   open,
   onClose,
+  onDropdownChange,
   onSendRequest,
   brokerName,
   brokerEmail,
   activeAgents,
+  selectedId,
+  isPending,
 }) {
   const [message, setMessage] = useState("");
 
+  useEffect(() => {
+    if (!open) {
+      setMessage("");
+    }
+  }, [open]);
   if (!open) return null;
 
   return (
@@ -45,11 +55,17 @@ export function JoinBrokerModal({
           <div className="mt-4 mb-2">
             <Label className="text-sm text-secondary mb-1 block">Name</Label>
             <select
-              className="w-full rounded-md border border-gray-200 p-3 text-sm text-secondary"
-              value={brokerName}
-              disabled
+              className="w-full rounded-md border border-gray-200 p-3 text-sm text-secondary "
+              value={selectedId}
+              onChange={(e) => onDropdownChange(e.target.value)}
             >
-              <option value={brokerName}>{brokerName}</option>
+              <option value="">Select </option>
+
+              {dropdownOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
           </div>
           <div className="bg-coffee-bg-billing-foreground px-3 rounded-md py-2 mb-2">
@@ -107,10 +123,11 @@ export function JoinBrokerModal({
               className="w-1/2 bg-[#FF645E1A] border border-[#e0b4b4] text-[#c63c3c] hover:bg-[#fff1f1] text-sm"
               onClick={() => {
                 onSendRequest(message);
-                onClose();
               }}
+              disabled={isPending}
             >
-              Send Request
+              {isPending ? "Sending Request..." : "Send Request"}
+              {isPending && <Loader className="animate-spin ml-2" />}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -262,7 +262,7 @@ const Pricing = () => {
                         size="lg"
                         onClick={() => {
                           setSelectedPlan(plan.id);
-                          navigate(`/subscription-signup/${userType}/${plan.id}`);
+                          navigate(`/subscription-signup/${userType}/${plan.id}/${plan.price}`);
                         }}
                       >
                         Get Started

@@ -31,6 +31,8 @@ function SubscriptionCardDetails({isAddCard=false}) {
   const [isReset, setIsReset] = useState(false);
   const [showSubscriptionSuccess, setShowSubscriptionSuccess] = useState(false);
   const [showCardSuccess, setShowCardSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -55,15 +57,25 @@ useEffect(() => {
   setShowSubscriptionSuccess(true);
 };
 
+const subscribeModalHandler = () => {
+  setIsLoading(true);
+
+  setTimeout(() => {
+    setIsLoading(false);
+    setShowSubscriptionSuccess(false);
+          navigate("/" + user.signInUserSession.idToken.payload["cognito:groups"][0]);
+  }, 2000);
+};
+
+
   return (
     <>
       <SubscriptionSuccessModal
         open={showSubscriptionSuccess}
-        onOpenChange={() => {
-          setShowSubscriptionSuccess(false);
-          navigate("/" + user.signInUserSession.idToken.payload["cognito:groups"][0]);
-        }}
+        onOpenChange={subscribeModalHandler}
         onFailed={() => {}}
+        isLoading={isLoading}
+        showCloseIcon={false}
       />
       <CardAddedSuccessModal
         open={showCardSuccess}

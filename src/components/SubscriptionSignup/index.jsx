@@ -9,22 +9,27 @@ import {
   Eye,
   EyeOff,
   UserRoundCheck,
-  Loader
+  Loader,
 } from "lucide-react";
 import { EnterCodeModal } from "../Modal/EnterCodeModal";
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
-import { confirmEmail, registerUser, resendConfirmationCode, updateUserStatus } from "../service/userAdmin";
+import {
+  confirmEmail,
+  registerUser,
+  resendConfirmationCode,
+  updateUserStatus,
+} from "../service/userAdmin";
 import { useUser } from "@/context/usercontext";
 import { Label } from "../ui/label";
 import { motion } from "motion/react";
 function SubscriptionLogin() {
   const navigate = useNavigate();
-  
-const { userType, planId } = useParams();
+
+  const { userType, planId ,price} = useParams();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { user,setUser, signIn } = useUser();
+  const { user, setUser, signIn } = useUser();
   const [error, setError] = useState("");
   const [isReset, setIsReset] = useState(false);
   const [codeModal, setCodeModal] = useState(false);
@@ -38,17 +43,14 @@ const { userType, planId } = useParams();
     termsAccepted: false,
     // code: ""
   });
-const handleChange = (e) => {
-  const { name, value, type, checked } = e.target;
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
 
-  setFormData((prev) => ({
-    ...prev,
-    [name]: type === "checkbox"
-      ? checked
-      : value.trimStart(),
-  }));
-};
-
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value.trimStart(),
+    }));
+  };
 
   // Resgister User Form Mutation
   const registerUserMutation = useMutation({
@@ -68,14 +70,8 @@ const handleChange = (e) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const {
-      name,
-      email,
-      contact,
-      password,
-      confirmPassword,
-      termsAccepted,
-    } = formData;
+    const { name, email, contact, password, confirmPassword, termsAccepted } =
+      formData;
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
@@ -87,7 +83,7 @@ const handleChange = (e) => {
       contact,
       password,
       userType,
-      planType:planId,
+      planType: planId,
     });
   };
   // Countdown timer effect
@@ -100,63 +96,57 @@ const handleChange = (e) => {
     }
   }, [cooldown]);
 
-    const handleLogin = async () => {
-        navigate(`/subscription-payment/${planId}`);
-       const { isResetRequired, user: signedInUser } = await signIn(
-        formData.email?.trim(),
-        formData.password?.trim(),
-      );
-          const userId = signedInUser?.attributes?.sub;
-      const userType =
-        signedInUser?.signInUserSession?.idToken?.payload[
-          "cognito:groups"
-        ]?.[0];
-         await updateUserStatus({ userId, userType });
-      console.log("signedInUser after confirmation:", signedInUser);
+  const handleLogin = async () => {
+    navigate(`/subscription-payment/${planId}/${price}`);
+    const { isResetRequired, user: signedInUser } = await signIn(
+      formData.email?.trim(),
+      formData.password?.trim(),
+    );
+    const userId = signedInUser?.attributes?.sub;
+    const userType =
+      signedInUser?.signInUserSession?.idToken?.payload["cognito:groups"]?.[0];
+    await updateUserStatus({ userId, userType });
+    console.log("signedInUser after confirmation:", signedInUser);
+  };
 
-    }
+  // Confirm email code
+  const confirmCodeMutation = useMutation({
+    mutationFn: (code) =>
+      confirmEmail({
+        code,
+        email: formData.email,
+      }),
+    onSuccess: async (data) => {
+      console.log("confirmation success:", data);
+      // if(login){
+      //     login()
+      // } else {
+      //     navigate("/login");
+      // }
 
-    // Confirm email code
-    const confirmCodeMutation = useMutation({
-      mutationFn: (code) =>
-        confirmEmail({
-          code,
-          email: formData.email
-        }),
-      onSuccess: async(data) => {
-        console.log("confirmation success:", data);
-          // if(login){
-          //     login()
-          // } else {
-          //     navigate("/login");
-          // }
+      handleLogin();
+    },
+    onError: (error) => {
+      console.log("error", error);
+    },
+  });
 
-         handleLogin();
-             
-      },
-      onError: (error) => {
-        console.log("error", error);
-      },
-    });
+  // Resend code
+  const resendCodeMutation = useMutation({
+    mutationFn: (email) => resendConfirmationCode(email),
+    onSuccess: () => {
+      setCooldown(30); // start 30-second timer
+    },
+    onError: (error) => {
+      console.log("error", error);
+    },
+  });
 
-  
-    // Resend code
-    const resendCodeMutation = useMutation({
-      mutationFn: (email) =>
-        resendConfirmationCode(email),
-      onSuccess: () => {
-        setCooldown(30); // start 30-second timer
-      },
-      onError: (error) => {
-        console.log("error", error);
-      },
-    });
-
-    const submitModalHandler = (code) => {
+  const submitModalHandler = (code) => {
     // console.log("Code entered in modal:", code);
     // setCode(false);
     // navigate("/subscription-payment");
-    confirmCodeMutation.mutate(code)
+    confirmCodeMutation.mutate(code);
   };
 
   const handleResend = () => {
@@ -185,8 +175,7 @@ const handleChange = (e) => {
         />
 
         {/* card wrapper */}
-        <div
-        className="relative z-10 mx-auto flex min-h-[978px] max-w-[970px] items-center justify-center px-4 py-10">
+        <div className="relative z-10 mx-auto flex min-h-[978px] max-w-[970px] items-center justify-center px-4 py-10">
           <div className="grid w-full grid-cols-1 overflow-hidden rounded-2xl bg-[#fffaf3] shadow-2xl md:grid-cols-[30%_70%]">
             {/* LEFT */}
             <div className="hidden flex-col  justify-center align-center bg-gradient-to-b from-[#FFFDFA] to-[#EDDDC0] p-10 md:flex">
@@ -228,20 +217,17 @@ const handleChange = (e) => {
             </div>
 
             {/* RIGHT */}
-            <motion.div 
-            
-             
-                              initial={{ opacity: 0, y: 20 }}
-                              whileInView={{ opacity: 1, y: 0 }}
-                              transition={{
-                                duration: 0.5,
-                                delay: 0.1,
-                                ease: "easeOut",
-                              }}
-                              viewport={{ once: true, amount: 0.4 }}
-            
-            
-            className="flex items-center justify-center p-6 sm:p-10 bg-[url('/bg-signin.png')]">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.5,
+                delay: 0.1,
+                ease: "easeOut",
+              }}
+              viewport={{ once: true, amount: 0.4 }}
+              className="flex items-center justify-center p-6 sm:p-10 bg-[url('/bg-signin.png')]"
+            >
               <div className="w-full max-w-lg ">
                 {/* stepper */}
                 <div className="flex items-center justify-center mb-5">
@@ -299,17 +285,18 @@ const handleChange = (e) => {
                           onChange={handleChange}
                           className="bg-transparent"
                           required
-
                         />
-                        {formData.contact?.length ===10 && <div
-                          variant="ghost"
-                          type="button"
-                          size="icon"
-                          className="absolute right-3 bottom-[14px] cursor-pointer m-0 p-0 px-0 h-auto w-auto"
-                          onClick={() => setShowPassword((pre) => !pre)}
-                        >
-                          <Check className="text-green-500  w-4 h-4" />
-                        </div>}
+                        {formData.contact?.length === 10 && (
+                          <div
+                            variant="ghost"
+                            type="button"
+                            size="icon"
+                            className="absolute right-3 bottom-[14px] cursor-pointer m-0 p-0 px-0 h-auto w-auto"
+                            onClick={() => setShowPassword((pre) => !pre)}
+                          >
+                            <Check className="text-green-500  w-4 h-4" />
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div>
@@ -400,17 +387,17 @@ const handleChange = (e) => {
                         value={formData.termsAccepted}
                         onChange={handleChange}
                       />
-                      <label htmlFor="terms" className="text-sm text-[#3b1f12]">
+                      <Label htmlFor="terms" className="text-sm text-[#3b1f12]">
                         I agree to the
                         <a href="/terms" className="font-medium underline mx-1">
                           Terms and Conditions
                         </a>
                         .
-                      </label>
+                      </Label>
                     </div>
                     <Button
                       type="submit"
-                       className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
+                      className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
                       disabled={
                         !(
                           formData.name &&
@@ -422,7 +409,7 @@ const handleChange = (e) => {
                         ) || registerUserMutation.isPending
                       }
                     >
-                      Continue 
+                      Continue
                       {registerUserMutation.isPending ? (
                         <Loader className="animate-spin" size={18} />
                       ) : (
@@ -447,7 +434,7 @@ const handleChange = (e) => {
                       </p>
                     )}
                     <div className="border-t border-gray-200 mb-6 mt-4"></div>
-                    <p className="pt-4 text-center text-xs text-[#7a5a49]">
+                    {/* <p className="pt-4 text-center text-xs text-[#7a5a49]">
                       Already have an account?{" "}
                       <Link
                         to="/subscription-login"
@@ -455,7 +442,13 @@ const handleChange = (e) => {
                       >
                         Log In
                       </Link>
-                    </p>
+                    </p> */}
+                    <div className="text-center my-4 text-sm">
+                      <span>Already have an account? </span>
+                      <Link to="/subscription-login" className="text-secondary">
+                        Login Now
+                      </Link>
+                    </div>
                   </form>
                 </div>
               </div>

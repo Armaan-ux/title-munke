@@ -1,64 +1,148 @@
 import { ArrowRight, Lock } from "lucide-react";
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { CancelSubscriptionModal } from "../Modal/CancelSubscriptionModal";
 import { Button } from "../ui/button";
 import { JoinBrokerModal } from "../Modal/JoinBrokerModal";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { useUser } from "@/context/usercontext";
-import { useQuery } from "@tanstack/react-query";
-import { getBrokerAndOrganizationSelectListing, getBrokerDetails } from "../service/userAdmin";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  addRequestToJoinUser,
+  getBrokerAndOrganizationSelectListing,
+  getBrokerDetails,
+} from "../service/userAdmin";
+import { toast } from "react-toastify";
 
 const AdvancedSettings = () => {
-  const [cancleSubscriptionModal, setCancleSubscriptionModal] = useState(false);
+  const queryClient = useQueryClient();
+
+  const [cancelSubscriptionModal, setCancelSubscriptionModal] = useState(false);
   const [joinBrokerModal, setJoinBrokerModal] = useState(false);
+  const [selectedId, setSelectedId] = useState("");
   const { userType, userId } = useUserIdType();
   const { agentDetail } = useUser();
   const { isUnderBroker = false, relationship = {} } = agentDetail || {};
+
+  /* -------------------- Queries -------------------- */
   const brokerDetailQuery = useQuery({
-    queryKey: ["agentBrokerDetail"],
+    queryKey: ["brokerDetail", userId],
     queryFn: () => getBrokerDetails(userId),
-    enabled: userType === "broker",
+    enabled: userType === "broker" && !!userId,
+    staleTime: 5 * 60 * 1000,
   });
-    const brokerAndOrganizationUserListQuery = useQuery({
-      queryKey: ["brokerAndOrganizationSelectListing"],
-      queryFn: getBrokerAndOrganizationSelectListing,
-      enabled: userType === "agent"
-    })
-    console.log(
-      "brokerAndOrganizationUserListQuery",brokerAndOrganizationUserListQuery?.data
-    )
-  const { isUnderOrganisation, relationship: relationshipBroker } =
-    brokerDetailQuery?.data ||{};
-  const { organisationFirstName = "-" } = relationshipBroker ||{};
-  const { brokerFirstName = "-" } = relationship || {};
-  let buttonLabel = "";
 
-  if (userType === "agent") {
-    buttonLabel = isUnderBroker ? "Leave Broker" : "Join Broker";
-  }
+  const brokerOrgListQuery = useQuery({
+    queryKey: ["brokerOrgList"],
+    queryFn: getBrokerAndOrganizationSelectListing,
+    enabled: userId && (userType === "agent" || userType === "broker"),
+  });
 
-  if (userType === "broker") {
-    buttonLabel = isUnderOrganisation
-      ? "Leave Organisation"
-      : "Join Organisation";
-  }
+  /* -------------------- Derived Data -------------------- */
+  const brokerAndOrganizationList = brokerOrgListQuery?.data?.data ?? [];
+
+  const dropdownOptions = useMemo(
+    () =>
+      brokerAndOrganizationList.map((item) => ({
+        label: item.name,
+        value: item.id,
+        type: item.type,
+      })),
+    [brokerAndOrganizationList],
+  );
+  const { isUnderOrganisation, relationship: brokerRel } =
+    brokerDetailQuery?.data ?? {};
+
+  const organisationFirstName = brokerRel?.organisationFirstName ?? "-";
+  const brokerFirstName = relationship?.brokerFirstName ?? "-";
+
+  const buttonLabel = useMemo(() => {
+    if (userType === "agent") {
+      return isUnderBroker ? "Leave Broker" : "Join Broker";
+    }
+    if (userType === "broker") {
+      return isUnderOrganisation ? "Leave Organisation" : "Join Organisation";
+    }
+    return "";
+  }, [userType, isUnderBroker, isUnderOrganisation]);
+
+  /* -------------------- Mutations -------------------- */
+  const joinRequestMutation = useMutation({
+    mutationFn: addRequestToJoinUser,
+
+    onSuccess: () => {
+      setJoinBrokerModal(false);
+
+      // refresh data
+      queryClient.invalidateQueries(["brokerDetail"]);
+      queryClient.invalidateQueries(["brokerOrgList"]);
+
+      toast.success("Request sent successfully");
+    },
+
+    onError: (error) => {
+      toast.error(
+        error?.response?.data?.error ||
+          error?.message ||
+          "Something went wrong. Please try again.",
+      );
+    },
+  });
+
+  /* -------------------- Handlers -------------------- */
+  const selectedBroker =
+    brokerAndOrganizationList.find((b) => b.id === selectedId) ||
+    brokerAndOrganizationList[0] ||
+    null;
+
+  const handleDropdownChange = useCallback((value) => {
+    setSelectedId(value);
+  }, []);
+
+  const sendRequestHandler = useCallback(
+    (message) => {
+      console.log("message", message);
+      if (!selectedBroker?.id) {
+        toast.error("Please select a broker first");
+        return;
+      }
+
+      if (joinRequestMutation.isPending) return;
+
+      joinRequestMutation.mutate({
+        userType: selectedBroker.__typename?.toLowerCase(),
+        userId: selectedBroker.id,
+        ...(message && { message }),
+      });
+    },
+    [selectedBroker, joinRequestMutation],
+  );
+
+  const handleConnectionClick = useCallback(() => {
+    if (userType === "agent" && isUnderBroker) {
+      setCancelSubscriptionModal(true);
+    } else {
+      setJoinBrokerModal(true);
+    }
+  }, [userType, isUnderBroker]);
+
   return (
     <>
       <CancelSubscriptionModal
-        open={cancleSubscriptionModal}
-        onClose={() => setCancleSubscriptionModal(false)}
-        fromAdvancedSettings={true}
+        open={cancelSubscriptionModal}
+        onClose={() => setCancelSubscriptionModal(false)}
+        fromAdvancedSettings
       />
       <JoinBrokerModal
+        dropdownOptions={dropdownOptions}
         open={joinBrokerModal}
         onClose={() => setJoinBrokerModal(false)}
-        onSendRequest={(message) => {
-          console.log(message);
-          setJoinBrokerModal(false);
-        }}
-        brokerName={"Michael Brown"}
-        brokerEmail={"V0t4K@example.com"}
-        activeAgents={120}
+        onSendRequest={sendRequestHandler}
+        onDropdownChange={handleDropdownChange}
+        brokerName={selectedBroker?.name || ""}
+        brokerEmail={selectedBroker?.email || "N/A"}
+        activeAgents={selectedBroker?.activeAgents || 0}
+        selectedId={selectedId || dropdownOptions[0]?.value || ""}
+        isPending={joinRequestMutation?.isPending}
       />
       <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full shadow-md ">
         <div className="w-full">
@@ -108,7 +192,7 @@ const AdvancedSettings = () => {
               </span>
             </p>
             <Button
-              onClick={() => userType === "agent"  &&  isUnderBroker ?   setCancleSubscriptionModal(true): setJoinBrokerModal(true)}
+              onClick={handleConnectionClick}
               className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition"
             >
               {buttonLabel}

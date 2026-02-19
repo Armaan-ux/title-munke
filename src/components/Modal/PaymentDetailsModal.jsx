@@ -1,7 +1,7 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-export function PaymentDetailsModal({ open, onOpenChange, onCancel }) {
+export function PaymentDetailsModal({ open, onOpenChange, onCancel, price }) {
   if (!open) return null;
 
   return (
@@ -41,23 +41,23 @@ export function PaymentDetailsModal({ open, onOpenChange, onCancel }) {
             <div className="bg-[#FFF9F3] px-4 py-3 text-sm text-[#2C1B13] space-y-2">
               <div className="grid grid-cols-4">
                 <span>Agent Seat Fees</span>
-                <span className="text-center">10</span>
-                <span className="text-center">$10.00</span>
-                <span className="text-right">$100.00</span>
+                <span className="text-center">1</span>
+                <span className="text-center">{price}</span>
+                <span className="text-right">{price}</span>
               </div>
 
               <div className="grid grid-cols-4">
                 <span>Tax</span>
                 <span />
-                <span className="text-center">$5.00</span>
-                <span className="text-right">$5.00</span>
+                <span className="text-center">$0.00</span>
+                <span className="text-right">$0.00</span>
               </div>
 
               <div className="grid grid-cols-4 border-t pt-2 font-semibold">
                 <span>Amount</span>
                 <span />
                 <span />
-                <span className="text-right">$105.00</span>
+                <span className="text-right">{price}</span>
               </div>
             </div>
           </div>
