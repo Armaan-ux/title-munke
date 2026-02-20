@@ -811,7 +811,7 @@ export async function createAuditLog(userId, email, log_action, detail, isAgent)
   );
 }
 
-export async function registerUser({ name, email,contact, password, userType,planType, teamStrength }) {
+export async function registerUser({ name, email,contact, password, userType,planType, teamStrength = 10 }) {
   const body = {
     name,
     emailOfUser: email,
@@ -822,6 +822,8 @@ export async function registerUser({ name, email,contact, password, userType,pla
 
   if (contact) body.contact = contact;
   if (planType) body.planType = planType;
+
+  console.log("Register User Payload:", body);
 
   const payload = {
     body,

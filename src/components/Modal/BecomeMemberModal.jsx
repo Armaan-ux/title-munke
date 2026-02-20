@@ -13,6 +13,7 @@ const BecomeMemberModal = ({ open, onClose, setPaymentModal }) => {
     setUser(pre => ({...pre, isAddCard: false}))
     onClose();
   };
+  
 
   return (
     <Dialog open={open} onOpenChange={onClose}>

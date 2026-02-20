@@ -205,13 +205,13 @@ console.log("cardListingModal",cardListingModal)
           </div>
         </Dialog>
       }
-      {memberModal && userType === "broker" && (
+      {/* {memberModal && userType === "broker" && (
         <BecomeMemberModal
           open={memberModal}
           onClose={() => setMemberModal(false)}
           setPaymentModal={setPaymentModal}
         />
-      )}
+      )} */}
       {paymentModal && (
         <PaymentMethodModal
           open={paymentModal}
