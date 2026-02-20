@@ -21,7 +21,7 @@ export function InvoiceModalDummy({ open, onClose, invoice, isPrint=true }) {
   return (
     // <Dialog open={open} onOpenChange={onClose}>
     //   <DialogContent  showCloseButton={false} className="!max-w-xl !w-full rounded-2xl bg-white p-6 shadow-lg">
-        <div ref={ref} className={isDownloading ? "p-4 flex flex-col gap-4" : ""}>
+        <div ref={ref} style={{ padding: isDownloading ? "24px" : "0px" }}>
           <div className="flex flex-row justify-between items-center">
             <img src="/Logo.svg" alt="Logo" className={`h-30 w-30 mb-1`} />
             <p className="text-3xl font-bold text-tertiary tracking-wide">
@@ -29,7 +29,7 @@ export function InvoiceModalDummy({ open, onClose, invoice, isPrint=true }) {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-4   p-5 rounded-md bg-[#fdf8f5]">
+          <div className="grid grid-cols-1 gap-4 p-5 rounded-md bg-[#fdf8f5]" style={{ padding: isDownloading ? "8px 15px" : "" }}>
             <div className="flex justify-between items-center">
               <p className="text-sm text-tertiary font-medium">Invoice ID</p>
               <p className="text-sm text-secondary">{invoice?.id}</p>
@@ -38,7 +38,7 @@ export function InvoiceModalDummy({ open, onClose, invoice, isPrint=true }) {
               <p className="text-sm text-tertiary font-medium">Bill Date</p>
               <p className="text-sm text-secondary">{convertFromTimestamp(invoice?.created, "dateTime")}</p>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center" style={{ paddingBottom: isDownloading ? "15px" : "" }}>
               <p className="text-sm text-tertiary font-medium">
                 Payment Method
               </p>
@@ -48,8 +48,8 @@ export function InvoiceModalDummy({ open, onClose, invoice, isPrint=true }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 my-3">
-            <div className="border rounded-md p-3">
+          <div className="grid grid-cols-2 gap-4 my-3" style={{ margin: isDownloading ? "15px 0px" : "" }}>
+            <div className="border rounded-md p-3" style={{ padding: isDownloading ? "0px 20px 20px" : "" }}>
               <p className="font-semibold text-tertiary mb-1">
                 Issued From
               </p>
@@ -61,7 +61,7 @@ export function InvoiceModalDummy({ open, onClose, invoice, isPrint=true }) {
                 Tax ID 12-345689 */}
               </p>
             </div>
-            <div className="border rounded-md p-3">
+            <div className="border rounded-md p-3" style={{ padding: isDownloading ? "0px 20px 20px" : "" }}>
               <p className="font-semibold text-tertiary mb-1">
                 Billed To
               </p>
@@ -75,43 +75,150 @@ export function InvoiceModalDummy({ open, onClose, invoice, isPrint=true }) {
             </div>
           </div>
 
-          <div className="border rounded-md overflow-hidden mb-1">
-            <div className={`bg-[#581b1b] text-white text-sm font-medium grid grid-cols-5 px-3 py-2 ${isDownloading ? "pb-6" : "py-2"}`}>
-              <span className="col-span-2">Description</span>
-              <span className="text-center">QTY</span>
-              <span className="text-center">Price</span>
-              <span className="text-right">Amount</span>
-            </div>
 
-            <div className="bg-[#fdf8f5] text-sm divide-y">
-              <div className="grid grid-cols-5 items-center px-3 py-2">
-                <div className="col-span-2">
-                  <p className="font-medium text-[#581b1b]">{searchData?.address}</p>
-                  {/* <p className="text-xs text-muted-foreground">
-                    Billing Cycle: Sep To Aug
-                  </p> */}
-                </div>
-                <p className="text-center">1</p>
-                <p className="text-center">${invoice?.subtotal / 100}</p>
-                <p className="text-right">${invoice?.subtotal / 100}</p>
-              </div>
-           
-            </div>
+          <div className="border rounded-md mb-1">
+            <table className="w-full border-collapse text-sm">
+              {/* Header */}
+              <thead>
+                <tr className="bg-[#581b1b] text-white font-medium" style={{
+                    ...(isDownloading && { WebkitPrintColorAdjust: "exact" }),
+                  }}
+                >
+                  <th
+                    colSpan={2}
+                    className="text-left px-3 py-2 !rounded-none"
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                    Description
+                  </th>
+                  <th
+                    className="text-center px-3 py-2"
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                    QTY
+                  </th>
+                  <th
+                    className="text-center px-3 py-2"
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                    Price
+                  </th>
+                  <th
+                    className="text-right px-3 py-2 !rounded-none"
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                    Amount
+                  </th>
+                </tr>
+              </thead>
 
-            <div className="bg-[#fdf8f5] text-sm border-t px-3 py-3 space-y-1 flex flex-col items-end gap-2">
-              <div className="flex justify-between gap-10 w-48">
-                <p>Subtotal</p>
-                <p>${invoice?.subtotal / 100}</p>
-              </div>
-              <div className="flex justify-between gap-10 w-48">
-                <p>Tax</p>
-                <p>${invoice?.tax ? `${invoice?.tax}` : 0}</p>
-              </div>
-              <div className="flex justify-between font-semibold border-t pt-2 gap-10 w-48">
-                <p className="text-tertiary">Total</p>
-                <p className="text-secendary">${(invoice?.total / 100) + (invoice?.tax > 0 ? invoice?.tax : 0)}</p>
-              </div>
-            </div>
+              {/* Body */}
+              <tbody className="bg-[#fdf8f5]">
+                <tr>
+                  <td
+                    colSpan={2}
+                    className="px-3 py-2 font-medium text-[#581b1b]"
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                    {invoice?.description}
+                  </td>
+                  <td
+                    className="text-center px-3 py-2"
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                    1
+                  </td>
+                  <td
+                    className="text-center px-3 py-2"
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                    ${invoice?.subtotal / 100}
+                  </td>
+                  <td
+                    className="text-right px-3 py-2"
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                    ${invoice?.subtotal / 100}
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    colSpan={2}
+                    className="px-3 py-2 font-medium text-[#581b1b] border-t"
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                  </td>
+                  <td
+                    className="text-right px-3 py-2 border-t"
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                  </td>
+                  <td
+                    className="text-left px-3 py-2 border-t"
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                    <p>Subtotal</p>
+                  </td>
+                   <td
+                    className="text-right px-3 py-2 border-t"
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                    <p>${invoice?.subtotal / 100}</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    colSpan={2}
+                    className="px-3 py-2 font-medium text-[#581b1b]"
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                  </td>
+                  <td
+                    className="text-right px-3 py-2 "
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                  </td>
+                  <td
+                    className="text-left px-3 py-2 "
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                     <p>Tax</p>
+                  </td>
+                  <td
+                    className="text-right px-3 py-2 "
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                     <p>${invoice?.tax ? `${invoice?.tax}` : 0}</p>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td
+                    colSpan={2}
+                    className="px-3 py-2 font-medium text-[#581b1b]"
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                  </td>
+                  <td
+                    className="text-right px-3 py-2 "
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                  </td>
+                  <td
+                    className="text-left px-3 py-2 border-t"
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                     <p>Total</p>
+                  </td>
+                  <td
+                    className="text-right px-3 py-2 border-t"
+                    style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
+                  >
+                     <p>${(invoice?.total / 100) + (invoice?.tax > 0 ? invoice?.tax : 0)}</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
           <p className="text-center text-[#581b1b] font-medium mb-1">

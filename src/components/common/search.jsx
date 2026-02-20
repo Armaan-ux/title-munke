@@ -244,7 +244,7 @@ export default function Search({ isIndivisual = false }) {
 
       const initiateResponse = await iniitateSearch({pin, parnum, address: matched_address, tax_assessment})
 
-     const { search_id } = initiateResponse?.data || {};
+     const { search_id } = initiateResponse || {};
       localStorage.setItem("searchId", search_id);
 
       await addToDynamoDB(address, search_id, user?.attributes?.sub);

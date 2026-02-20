@@ -112,11 +112,8 @@ const Billing = () => {
                 <p className="text-sm text-coffee-text-billing font-medium uppercase">
                   Plan
                 </p>
-                <p className="text-base text-secondary  font-medium mt-1">
-                  Pro{" "}
-                  <span className="font-normal text-secondary  font-medium">
-                    (Includes up to 80 agents)
-                  </span>
+                <p className="text-base text-secondary font-medium mt-1">
+                 {subcriptionDetailQuery.data.planType?.replaceAll("_", " ")}
                 </p>
               </div>
 
@@ -124,12 +121,18 @@ const Billing = () => {
                 <p className="text-sm text-coffee-text-billing font-medium uppercase ">
                   Billing Cycle
                 </p>
-                <p className="text-base font-semibold text-gray-900 mt-1 mb-4">
-                  Monthly
-                </p>
-                <button className="text-sm text-secondary  font-medium mt-1 hover:underline">
+                { subcriptionDetailQuery?.data?.planType && ["PAY_AS_YOU_GO_PLAN", "EXPLORE_PLAN"]?.includes(subcriptionDetailQuery.data.planType) ? 
+                  <p className="text-base text-secondary font-medium mt-1">
+                    None
+                  </p> 
+                  :
+                  <p className="text-base font-semibold text-gray-900 mt-1 mb-4">
+                    Monthly
+                  </p>
+                }
+                {/* <button className="text-sm text-secondary  font-medium mt-1 hover:underline">
                   Switch to annual plan
-                </button>
+                </button> */}
               </div>
 
               <div className="p-8 bg-coffee-bg-billing-foreground  border-l border-coffee-bg-billing-foreground-200 flex flex-col ">
@@ -137,19 +140,28 @@ const Billing = () => {
                   Billing Cycle
                 </p>
                 <div className="flex items-center justify-between text-sm text-gray-700">
-                  <div>
-                    <p className="font-semibold">Monthly</p>
-                    <p className="text-secondary  font-medium text-xs">
-                      {convertFromTimestamp(subcriptionDetailQuery?.data?.previousBillingDate, "monthDateYear")}
-                    </p>
-                  </div>
-                  <span className="mx-2 text-secondary font-medium">↔</span>
-                  <div>
-                    <p className="font-semibold">Next Billing</p>
-                    <p className="text-secondary font-medium text-xs">
-                      {convertFromTimestamp(subcriptionDetailQuery?.data?.nextBillingDate, "monthDateYear")}
-                    </p>
-                  </div>
+                { subcriptionDetailQuery?.data?.planType && ["PAY_AS_YOU_GO_PLAN", "EXPLORE_PLAN"]?.includes(subcriptionDetailQuery.data.planType) ? 
+                <p className="text-base text-secondary font-medium mt-1">
+                    None
+                  </p> 
+                  :
+                  <>
+                    <div>
+                      <p className="font-semibold">Monthly</p>
+                      <p className="text-secondary  font-medium text-xs">
+                        {convertFromTimestamp(subcriptionDetailQuery?.data?.previousBillingDate, "monthDateYear")}
+                      </p>  
+                    </div>
+                    <span className="mx-2 text-secondary font-medium">↔</span>
+                    <div>
+                      <p className="font-semibold">Next Billing</p>
+                      <p className="text-secondary font-medium text-xs">
+                        {convertFromTimestamp(subcriptionDetailQuery?.data?.nextBillingDate, "monthDateYear")}
+                      </p>
+                    </div>
+                  </>
+                  }
+
                 </div>
               </div>
             </div>
