@@ -155,7 +155,7 @@ const AdvancedSettings = () => {
             <p className="text-gray-500 mb-4">
               Explore searches and platform features available to you
             </p>
-            <Button className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition">
+            <Button className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
               <Lock size={16} /> Explore Platform
             </Button>
           </div>
@@ -201,7 +201,7 @@ const AdvancedSettings = () => {
           </div>
           {/* Pay as You Do Card */}
           <div className="bg-[#F5F0EC] rounded-xl p-6 md:p-8 w-full shadow-sm my-5">
-            <p className="text-lg font-medium mb-2">Pay as You Do</p>
+            <p className="text-lg font-medium mb-2">Pay as You Go</p>
             <p className="text-gray-500 mb-4">
               Pay only for the searches you run — no subscription required.
             </p>

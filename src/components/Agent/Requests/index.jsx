@@ -141,7 +141,8 @@ const buildRetryPayload = (item) => {
                     <Badge
                       className={`!text-sm ${
                         item?.status === "Success" ||
-                        item?.status === "Completed"
+                        item?.status === "Completed" ||
+                        item?.status === "ACCEPTED"
                           ? "bg-[#E9F3E9] text-[#1E8221]"
                           : item?.status === "Updated"
                             ? "bg-[#eef9ff] text-[#2494C7]"

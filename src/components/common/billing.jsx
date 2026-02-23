@@ -98,7 +98,7 @@ const Billing = () => {
       )} */}
       <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full h-content shadow-md">
         {subcriptionDetailQuery?.isLoading && <CenterLoader />}
-        {subcriptionDetailQuery?.isError && <ShowError message={"Subscription required to access this feature."}/>}
+        {/* {subcriptionDetailQuery?.isError && <ShowError message={"Subscription required to access this feature."}/>} */}
         {subcriptionDetailQuery?.isSuccess &&
           <CardContent className="w-full space-y-6">
             <div>
@@ -121,7 +121,7 @@ const Billing = () => {
                 <p className="text-sm text-coffee-text-billing font-medium uppercase ">
                   Billing Cycle
                 </p>
-                { subcriptionDetailQuery?.data?.planType && ["PAY_AS_YOU_GO_PLAN", "EXPLORE_PLAN"]?.includes(subcriptionDetailQuery.data.planType) ? 
+                { subcriptionDetailQuery?.data?.planType && ["PAY_AS_YOU_GO_PLAN", "EXPLORE_PLAN", "NO_ACTIVE_PLAN"]?.includes(subcriptionDetailQuery.data.planType) ? 
                   <p className="text-base text-secondary font-medium mt-1">
                     None
                   </p> 
@@ -140,7 +140,7 @@ const Billing = () => {
                   Billing Cycle
                 </p>
                 <div className="flex items-center justify-between text-sm text-gray-700">
-                { subcriptionDetailQuery?.data?.planType && ["PAY_AS_YOU_GO_PLAN", "EXPLORE_PLAN"]?.includes(subcriptionDetailQuery.data.planType) ? 
+                { subcriptionDetailQuery?.data?.planType && ["PAY_AS_YOU_GO_PLAN", "EXPLORE_PLAN", "NO_ACTIVE_PLAN"]?.includes(subcriptionDetailQuery.data.planType) ? 
                 <p className="text-base text-secondary font-medium mt-1">
                     None
                   </p> 

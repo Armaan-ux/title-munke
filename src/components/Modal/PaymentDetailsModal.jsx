@@ -1,7 +1,9 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useParams } from "react-router-dom";
 
 export function PaymentDetailsModal({ open, onOpenChange, onCancel, price }) {
+  const { planId } = useParams();
   if (!open) return null;
 
   return (
@@ -40,7 +42,8 @@ export function PaymentDetailsModal({ open, onOpenChange, onCancel, price }) {
 
             <div className="bg-[#FFF9F3] px-4 py-3 text-sm text-[#2C1B13] space-y-2">
               <div className="grid grid-cols-4">
-                <span>Agent Seat Fees</span>
+                <span>
+                  {planId === 'PROFESSIONAL_PLAN' ? 'Subscription' : '' || planId === 'PAY_AS_YOU_GO' ? 'Pay As You Go' : ''}</span>
                 <span className="text-center">1</span>
                 <span className="text-center">{price}</span>
                 <span className="text-right">{price}</span>

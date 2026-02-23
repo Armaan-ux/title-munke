@@ -176,18 +176,18 @@ export default function Search({ isIndivisual = false }) {
   const handleSearch = async (e) => {
     if (e) e.preventDefault();
     // setInvalidateSearchHistory(true);
-    if (userType === "broker" && brokerStatus !== "active") {
-      toast.error("Subscription required to access this feature.");
-      return;
-    } else if (
-      userType === "agent" &&
-      agentDetail &&
-      agentDetail.planType &&
-      !excludedPlans.includes(agentDetail?.planType)
-    ) {
-      toast.error("Subscription required to access this feature.");
-      return;
-    }
+    // if (userType === "broker" && brokerStatus !== "active") {
+    //   toast.error("Subscription required to access this feature.");
+    //   return;
+    // } else if (
+    //   userType === "agent" &&
+    //   agentDetail &&
+    //   agentDetail.planType &&
+    //   !excludedPlans.includes(agentDetail?.planType)
+    // ) {
+    //   toast.error("Subscription required to access this feature.");
+    //   return;
+    // }
 
     // else if (userType === "agent" && agentBrokerStatus !== "active") {
     //   toast.error("Subscription required to access this feature.");

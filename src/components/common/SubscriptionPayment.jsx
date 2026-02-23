@@ -147,6 +147,7 @@ function SubscriptionPayment() {
                   <div className="border-t border-gray-200 my-6"></div>
 
                   {/* Total Payment Section */}
+                   {planId !== "EXPLORE_PLAN" && (
                   <div className="bg-amber-50 rounded-2xl p-5 mb-6">
                     <div className="flex items-center justify-between">
                       <div>
@@ -173,6 +174,8 @@ function SubscriptionPayment() {
                       </div>
                     </div>
                   </div>
+                   )}
+
 
                   {/* Payment Options */}
                   <div className="space-y-3 mb-6">
