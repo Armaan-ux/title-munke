@@ -13,24 +13,24 @@
 .card-info-parent::after {
     content: "";
     position: absolute;
-    width: 20px;
-    height: 15px;
-    left: -9px;
-    top: 4px;
-    transform: rotate(45deg);
+    width: 14px;
+    height: 12px;
+    left: -13px;
+    top: 0;
     z-index: -9;
-    border: 9px solid;
-    border-color: transparent transparent transparent #2b201c;
+    background-image: url('left-icon.svg');
+    background-position: right -9px top 0px;
+    background-repeat: no-repeat;
 }
 .card-info-parent::before {
     content: "";
     position: absolute;
-    width: 20px;
-    height: 15px;
-    right: -9px;
-    top: 4px;
-    transform: rotate(-45deg);
+    width: 13px;
+    height: 12px;
+    right: -13px;
+    top: 0;
     z-index: -9;
-    border: 9px solid;
-    border-color: transparent  #2b201c transparent transparent;
+    background-image: url('right-icon.svg');
+    background-position: left -9px top 0px;
+    background-repeat: no-repeat;
 }
