@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import ResetPassword from "../ResetPassword";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,9 +24,11 @@ import { useUser } from "@/context/usercontext";
 import { Label } from "../ui/label";
 import { motion } from "motion/react";
 function SubscriptionLogin() {
+  const location = useLocation();
   const navigate = useNavigate();
-
-  const { userType, planId ,price} = useParams();
+const { price } = location.state || {};
+console.log("Price in SubscriptionLogin:", price);
+  const { userType, planId} = useParams();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { user, setUser, signIn } = useUser();
@@ -97,7 +99,7 @@ function SubscriptionLogin() {
   }, [cooldown]);
 
   const handleLogin = async () => {
-    navigate(`/subscription-payment/${planId}/${price}`);
+    navigate(`/subscription-payment/${planId}`, { state: { price } });
     const { isResetRequired, user: signedInUser } = await signIn(
       formData.email?.trim(),
       formData.password?.trim(),

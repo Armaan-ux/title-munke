@@ -1534,3 +1534,13 @@ export async function processRequestToJoinUser(userData) {
     "/process-request-to-join-user"
   );
 }
+
+
+export async function changePlanOfUser(newPlanType) {
+   return callUserAdminApi(
+    { body: newPlanType },
+    'Successfully processed request:',
+    'Error processing request:',
+    "/change-plan-of-user"
+  );
+}

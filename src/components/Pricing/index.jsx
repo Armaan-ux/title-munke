@@ -1,6 +1,6 @@
 import Navbar from "../Home/navbar";
 import { ArrowRight, MoveRight } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 import { FormValidationError } from "../common/FormValidationError";
@@ -8,7 +8,7 @@ import Footer from "../Home/footer";
 import { Controller, useForm } from "react-hook-form";
 import { Input } from "../ui/input";
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { demoRequestSchema } from "@/formSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -27,7 +27,8 @@ const Pricing = () => {
   const navigate = useNavigate();
   const [userType, setUserType] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState("PROFESSIONAL_PLAN");
-
+  const [params] = useSearchParams();
+  const view = params.get("view");
   const {
     control,
     handleSubmit,
@@ -47,6 +48,13 @@ const Pricing = () => {
       toast.error("Request submission failed");
     },
   });
+ useEffect(() => {
+  if (view) {
+    setUserType(view);
+  } else {
+    setUserType(null);
+  }
+}, [view]);
 
   const pricingPlansMap = {
     agent: pricingPlansIndividual,
@@ -176,7 +184,7 @@ const Pricing = () => {
                     <Button
                       className="hover:scale-105 w-full bg-[#5D4135] hover:bg-[#5D4135]"
                       size="lg"
-                      onClick={() => setUserType(item.key)}
+                      onClick={() =>{ setUserType(item.key);  navigate(`/pricing?view=${item.key}`)  }}
                     >
                       Know More <MoveRight />
                     </Button>
@@ -262,7 +270,7 @@ const Pricing = () => {
                         size="lg"
                         onClick={() => {
                           setSelectedPlan(plan.id);
-                          navigate(`/subscription-signup/${userType}/${plan.id}/${plan.price}`);
+                          navigate(`/subscription-signup/${userType}/${plan.id}`,{ state: { price: plan.price } });
                         }}
                       >
                         Get Started

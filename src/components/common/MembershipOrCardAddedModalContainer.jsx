@@ -45,9 +45,8 @@ function MembershipOrCardAddedModalContainer() {
     setPaymentFailedModal,
     paymentFailedModal,
     cardListingModal, 
-    setCardListingModal
+    setCardListingModal,setNewPlanType
   } = useUser();
-
   
   const queryClient = useQueryClient();
   const { userId,userType } = useUserIdType();
@@ -91,17 +90,16 @@ function MembershipOrCardAddedModalContainer() {
     if (isCardAdded || isPaymentSuccessful) {
       setPaymentModal(false);
       setPaymentSuccessModal(true);
-      setUser((pre) => ({ ...pre, isAddCard: true }));
+      setNewPlanType(null);
+      // setUser((pre) => ({ ...pre, isAddCard: true }));
       const id = setTimeout(() => {
         navigate(pathname, { replace: true });
       }, 3000);
       return () => clearTimeout(id);
     }
-  }, [isCardAdded, isPaymentSuccessful, setUser, setPaymentModal, setPaymentSuccessModal, navigate, pathname]);
-
-  if (!["individual", "broker"].includes(userType)) return null;
+  }, [isCardAdded, isPaymentSuccessful, setUser, setPaymentModal, setPaymentSuccessModal, setNewPlanType, navigate, pathname]);
+  if (!["agent", "broker"].includes(userType)) return null;
   const cards = subcriptionDetailQuery?.data?.payment_methods ?? [];
-console.log("cardListingModal",cardListingModal)
   return (
     <div>
       {cardListingModal && 

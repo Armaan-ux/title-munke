@@ -7,23 +7,32 @@ import {
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "@/context/usercontext";
 
 export default function CardAddedSuccessModal({
   open,
   onOpenChange,
   onFailed,
+  fromSignUp
 }) {
-   if (!open) return null;
-   const navigate = useNavigate();
+  const navigate = useNavigate();
+    const { user } = useUser();
+   
   const subscribeHandler = () => {
     // onFailed();
     onOpenChange();
 
     //clear all query params using react router
     //dynamically get current url
-    navigate(window.location.pathname, { replace: true });
+    if(fromSignUp){
+ navigate("/" + user.signInUserSession.idToken.payload["cognito:groups"][0]);
+    }else{
+      navigate(window.location.pathname, { replace: true });
+
+    }
 
   };
+  if (!open) return null;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <div

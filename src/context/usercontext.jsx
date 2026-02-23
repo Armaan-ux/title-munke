@@ -32,6 +32,7 @@ export const UserProvider = ({ children }) => {
   const userType = user?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
   const [cardListingModal, setCardListingModal] = useState(false);
   const [agentDetail, setAgentDetail] = useState(null);
+  const [newPlanType, setNewPlanType] = useState(null);
   const agentBrokerDetailQuery = useQuery({
       queryKey: ["agentBrokerDetail", user?.attributes?.sub],
       queryFn: () => getAgentBrokerDetails(user?.attributes?.sub),
@@ -53,7 +54,7 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     if(userType === "agent")
      user?.attributes?.sub && getAgentDetails(user?.attributes?.sub).then(res =>{ console.log("agent", res); setAgentDetail(res)})
-  }, [user?.attributes?.sub, userType])
+  }, [user?.attributes?.sub, userType,newPlanType])
 
   useEffect(() => {
     if(agentBrokerDetailQuery?.isSuccess && userType === "broker") {
@@ -172,7 +173,9 @@ export const UserProvider = ({ children }) => {
         setCardListingModal,
         invalidateSearchHistory, 
         setInvalidateSearchHistory,
-        agentDetail
+        agentDetail,
+        setNewPlanType,
+          newPlanType
       }}
     >
       {children}

@@ -82,6 +82,7 @@ const subscribeModalHandler = () => {
         onOpenChange={() => {
           setShowCardSuccess(false);
         }}
+        fromSignUp={true}
         onFailed={() => {}}
       />
       <div className="relative min-h-dvh w-full overflow-hidden bg-[#2b140c]">

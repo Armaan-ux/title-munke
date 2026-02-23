@@ -120,7 +120,6 @@ export const pricingPlansIndividual = [
       features: [
         " Full access to the platform",
         "2 free searches included",
-        "Reduced search cost at $5 per search",
         "Additional searches billed at a reduced rate of $12.50 each",
         "Search history and saved searches",
         "Monthly usage-based invoice",
@@ -166,7 +165,7 @@ export  const pricingPlansBroker = [
       id: "PROFESSIONAL_PLAN",
       title: "Subscription",
       price: "$10.00",
-      subtitle: "/ month",
+      subtitle: "per seat / month",
       features: [
         "Full access to all platform features",
         "$10 per seat / month (Each seat includes 2 searches)",
@@ -218,7 +217,7 @@ export const pricingPlansOrganization = [
       id: "PROFESSIONAL_PLAN",
       title: "Subscription",
       price: "$7.50",
-      subtitle: "/ Search Cost",
+      subtitle: "per seat/ Search Cost",
       features: [
         " Full access to all platform features",
         "$10 per seat / month(Each seat includes 2 searches)",

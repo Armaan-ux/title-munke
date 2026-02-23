@@ -5,7 +5,9 @@ import { useParams } from "react-router-dom";
 export function PaymentDetailsModal({ open, onOpenChange, onCancel, price }) {
   const { planId } = useParams();
   if (!open) return null;
-
+const numericPrice = Number(price.replace("$", ""));
+const tax = 0;
+const totalAmount = numericPrice + tax;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <div
@@ -45,22 +47,22 @@ export function PaymentDetailsModal({ open, onOpenChange, onCancel, price }) {
                 <span>
                   {planId === 'PROFESSIONAL_PLAN' ? 'Subscription' : '' || planId === 'PAY_AS_YOU_GO' ? 'Pay As You Go' : ''}</span>
                 <span className="text-center">1</span>
-                <span className="text-center">{price}</span>
-                <span className="text-right">{price}</span>
+                <span className="text-center">${numericPrice.toFixed(2)}</span>
+                <span className="text-right">${numericPrice.toFixed(2)}</span>
               </div>
 
               <div className="grid grid-cols-4">
                 <span>Tax</span>
                 <span />
-                <span className="text-center">$0.00</span>
-                <span className="text-right">$0.00</span>
+                <span className="text-center">${tax.toFixed(2)}</span>
+                <span className="text-right">${tax.toFixed(2)}</span>
               </div>
 
               <div className="grid grid-cols-4 border-t pt-2 font-semibold">
                 <span>Amount</span>
                 <span />
                 <span />
-                <span className="text-right">{price}</span>
+                <span className="text-right">${totalAmount.toFixed(2)}</span>
               </div>
             </div>
           </div>

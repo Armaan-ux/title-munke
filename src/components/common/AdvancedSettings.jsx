@@ -1,4 +1,4 @@
-import { ArrowRight, Lock } from "lucide-react";
+import { ArrowRight, Loader, Lock } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { CancelSubscriptionModal } from "../Modal/CancelSubscriptionModal";
 import { Button } from "../ui/button";
@@ -8,21 +8,33 @@ import { useUser } from "@/context/usercontext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addRequestToJoinUser,
+  changePlanOfUser,
+  getAgentDetails,
   getBrokerAndOrganizationSelectListing,
   getBrokerDetails,
 } from "../service/userAdmin";
 import { toast } from "react-toastify";
+import { useSearchParams } from "react-router-dom";
 
 const AdvancedSettings = () => {
   const queryClient = useQueryClient();
-
+  const {
+    user,
+    agentDetail,
+    setCardListingModal,
+    setPaymentModal,
+    setUser,
+    setNewPlanType,
+  } = useUser();
+  const [searchParams] = useSearchParams();
+  const isCardAdded = searchParams.get("isCardAdded");
   const [cancelSubscriptionModal, setCancelSubscriptionModal] = useState(false);
   const [joinBrokerModal, setJoinBrokerModal] = useState(false);
   const [selectedId, setSelectedId] = useState("");
+  const [changingPlan, setChangingPlan] = useState("");
   const { userType, userId } = useUserIdType();
-  const { agentDetail } = useUser();
   const { isUnderBroker = false, relationship = {} } = agentDetail || {};
-
+  const isPaymentSuccessful = searchParams.get("isPaymentSuccessful");
   /* -------------------- Queries -------------------- */
   const brokerDetailQuery = useQuery({
     queryKey: ["brokerDetail", userId],
@@ -36,7 +48,7 @@ const AdvancedSettings = () => {
     queryFn: getBrokerAndOrganizationSelectListing,
     enabled: userId && (userType === "agent" || userType === "broker"),
   });
-
+  console.log("agentDetail", agentDetail);
   /* -------------------- Derived Data -------------------- */
   const brokerAndOrganizationList = brokerOrgListQuery?.data?.data ?? [];
 
@@ -51,7 +63,7 @@ const AdvancedSettings = () => {
   );
   const { isUnderOrganisation, relationship: brokerRel } =
     brokerDetailQuery?.data ?? {};
-
+  const brokerDetail = brokerDetailQuery?.data ?? {};
   const organisationFirstName = brokerRel?.organisationFirstName ?? "-";
   const brokerFirstName = relationship?.brokerFirstName ?? "-";
 
@@ -77,6 +89,45 @@ const AdvancedSettings = () => {
       queryClient.invalidateQueries(["brokerOrgList"]);
 
       toast.success("Request sent successfully");
+    },
+
+    onError: (error) => {
+      toast.error(
+        error?.response?.data?.error ||
+          error?.message ||
+          "Something went wrong. Please try again.",
+      );
+    },
+  });
+
+  const changePlanMutation = useMutation({
+    mutationFn: changePlanOfUser,
+
+    onSuccess: (data, variables) => {
+       setChangingPlan(null);
+      console.log("changePlanMutation data", data);
+      if(data?.clientSecret){
+      if (variables?.newPlanType === "PAY_AS_YOU_GO") {
+        setNewPlanType("PAY_AS_YOU_GO");
+        // setCardListingModal(true);
+      }
+      if (variables?.newPlanType === "PROFESSIONAL_PLAN") {
+        setNewPlanType("PROFESSIONAL_PLAN");
+      }
+      setPaymentModal(true);
+      setUser((pre) => ({ ...pre, isAddCard: false }));
+      }else{
+        toast.success("Plan changed successfully");
+      }   
+      //  if (variables?.newPlanType === "PAY_AS_YOU_GO") {
+      //   setNewPlanType("PAY_AS_YOU_GO");
+      // }
+      // if (variables?.newPlanType === "PROFESSIONAL_PLAN") {
+      //   setNewPlanType("PROFESSIONAL_PLAN");
+      // } 
+      // setUser((pre) => ({ ...pre, isAddCard: false }));
+      //   setPaymentModal(true);
+       queryClient.invalidateQueries(["brokerDetail"]);
     },
 
     onError: (error) => {
@@ -116,6 +167,23 @@ const AdvancedSettings = () => {
     },
     [selectedBroker, joinRequestMutation],
   );
+  const changePlanHandler = useCallback(
+    (newPlanType) => {
+      setChangingPlan(newPlanType);
+      console.log("newPlanType", newPlanType);
+      if (!newPlanType) {
+        toast.error("Please select a plan first");
+        return;
+      }
+
+      if (changePlanMutation.isPending) return;
+
+      changePlanMutation.mutate({
+        newPlanType: newPlanType,
+      });
+    },
+    [changePlanMutation],
+  );
 
   const handleConnectionClick = useCallback(() => {
     if (userType === "agent" && isUnderBroker) {
@@ -125,6 +193,12 @@ const AdvancedSettings = () => {
     }
   }, [userType, isUnderBroker]);
 
+  const isPayAsYouGoSelected =
+  (userType === "agent" && agentDetail?.planType === "PAY_AS_YOU_GO") ||
+  (userType === "broker" && brokerDetail?.planType === "PAY_AS_YOU_GO");
+const isProfessionalSelected =
+  (userType === "agent" && agentDetail?.planType === "PROFESSIONAL_PLAN") ||
+  (userType === "broker" && brokerDetail?.planType === "PROFESSIONAL_PLAN");
   return (
     <>
       <CancelSubscriptionModal
@@ -155,7 +229,10 @@ const AdvancedSettings = () => {
             <p className="text-gray-500 mb-4">
               Explore searches and platform features available to you
             </p>
-            <Button className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
+            <Button
+              className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+              disabled
+            >
               <Lock size={16} /> Explore Platform
             </Button>
           </div>
@@ -200,16 +277,59 @@ const AdvancedSettings = () => {
             </Button>
           </div>
           {/* Pay as You Do Card */}
-          <div className="bg-[#F5F0EC] rounded-xl p-6 md:p-8 w-full shadow-sm my-5">
+          <div
+              className={`rounded-xl p-6 md:p-8 w-full shadow-sm my-5 transition-all duration-200
+    ${isPayAsYouGoSelected
+      ? "border-2 border-tertiary shadow-lg -translate-y-1 bg-white"
+      : "border border-transparent bg-[#F5F0EC]"
+    }`}
+          >
             <p className="text-lg font-medium mb-2">Pay as You Go</p>
             <p className="text-gray-500 mb-4">
               Pay only for the searches you run — no subscription required.
             </p>
             <Button
-              onClick={() => setJoinBrokerModal(true)}
+              disabled={
+              isPayAsYouGoSelected ||
+                changingPlan === "PAY_AS_YOU_GO"
+              }
+              onClick={() => changePlanHandler("PAY_AS_YOU_GO")}
               className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition"
             >
-              Get Started <ArrowRight size={16} />
+              Get Started{" "}
+              {changingPlan === "PAY_AS_YOU_GO" ? (
+                <Loader className="animate-spin" size={18} />
+              ) : (
+                <ArrowRight size={16} />
+              )}
+            </Button>
+          </div>
+          {/* Subscription plan change  */}
+          <div
+          className={`rounded-xl p-6 md:p-8 w-full shadow-sm my-5 transition-all duration-200
+    ${isProfessionalSelected
+      ? "border-2 border-tertiary shadow-lg -translate-y-1 bg-white"
+      : "border border-transparent bg-[#F5F0EC]"
+    }`}
+          >
+            <p className="text-lg font-medium mb-2">Subscription Plan</p>
+            <p className="text-gray-500 mb-4">
+              Pay a monthly fee for unlimited searches and premium features.
+            </p>
+            <Button
+              disabled={
+                isProfessionalSelected  ||
+                changingPlan === "PROFESSIONAL_PLAN"
+              }
+              onClick={() => changePlanHandler("PROFESSIONAL_PLAN")}
+              className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition"
+            >
+              Get Started
+              {changingPlan === "PROFESSIONAL_PLAN" ? (
+                <Loader className="animate-spin" size={18} />
+              ) : (
+                <ArrowRight size={16} />
+              )}
             </Button>
           </div>
         </div>

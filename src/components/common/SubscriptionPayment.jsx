@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../../context/usercontext";
 import {
   ArrowLeft,
@@ -8,21 +8,25 @@ import {
   UserRoundCheck,
 } from "lucide-react";
 import { motion } from "motion/react";
-
 import { Card } from "../ui/card";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { PaymentDetailsModal } from "../Modal/PaymentDetailsModal";
 import { toast } from "react-toastify";
 
 function SubscriptionPayment() {
-  const { planId, price } = useParams();
+  
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { price } = location.state || {};
+  const { planId } = useParams();
   const { user, setUser, signIn } = useUser();
   const [showPaymentDetails, setShowPaymentDetails] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("");
-  const navigate = useNavigate();
 
   console.log("user", user);
+console.log("Price in Subscriptionpayment:", price);
 
+const numericPrice = Number(price.replace("$", ""));
   const submitHandler = (e) => {
     e.preventDefault();
     console.log("paymentMethod", paymentMethod);
@@ -163,7 +167,7 @@ function SubscriptionPayment() {
                       </div>
                       <div className="text-right">
                         <p className="text-2xl font-semibold text-[#3b1f12]">
-                          {price ? price : `$0.00`}
+                          {price ? `$${numericPrice.toFixed(2)}` : `$0.00`}
                         </p>
                         <button
                           onClick={() => setShowPaymentDetails(true)}
