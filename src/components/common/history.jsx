@@ -25,7 +25,7 @@ import { useUserIdType } from "@/hooks/useUserIdType";
 import { CenterLoader } from "./Loader";
 import ShowError from "./ShowError";
 import { useNavigate } from "react-router-dom";
-import { Eye, View } from "lucide-react";
+import { Eye, Link, View } from "lucide-react";
 import { Button } from "../ui/button";
 
 function History({isAll=false}) {
@@ -248,7 +248,7 @@ function History({isAll=false}) {
                                     )
                                   }
                               >
-                                  Click to Download
+                                  <Link className="w-4 h-4 mx-auto" />
                                 </a>
                               ) : (
                                 ""

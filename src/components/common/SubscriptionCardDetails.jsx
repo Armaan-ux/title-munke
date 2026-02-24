@@ -76,6 +76,7 @@ const subscribeModalHandler = () => {
         onFailed={() => {}}
         isLoading={isLoading}
         showCloseIcon={false}
+        planId={planId}
       />
       <CardAddedSuccessModal
         open={showCardSuccess}

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import ResetPassword from "../ResetPassword";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -23,36 +22,59 @@ import {
 import { useUser } from "@/context/usercontext";
 import { Label } from "../ui/label";
 import { motion } from "motion/react";
-function SubscriptionLogin() {
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signupSchema } from "@/formSchema";
+function SubscriptionSignup() {
   const location = useLocation();
   const navigate = useNavigate();
-const { price } = location.state || {};
-console.log("Price in SubscriptionLogin:", price);
-  const { userType, planId} = useParams();
+  const { price } = location.state || {};
+  const { userType, planId } = useParams();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { user, setUser, signIn } = useUser();
+  const { signIn } = useUser();
   const [error, setError] = useState("");
   const [isReset, setIsReset] = useState(false);
   const [codeModal, setCodeModal] = useState(false);
   const [cooldown, setCooldown] = useState(0);
-  const [formData, setFormData] = useState({
-    name: "",
-    contact: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    termsAccepted: false,
-    // code: ""
+  const {
+    control,
+    handleSubmit,
+    watch,
+    getValues,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(signupSchema),
+    mode: "onChange",
+    reValidateMode: "onChange",
+    defaultValues: {
+      name: "",
+      phoneNumber: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      termsAccepted: false,
+    },
   });
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const phoneValue = watch("phoneNumber");
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value.trimStart(),
-    }));
-  };
+  // const [formData, setFormData] = useState({
+  //   name: "",
+  //   contact: "",
+  //   email: "",
+  //   password: "",
+  //   confirmPassword: "",
+  //   termsAccepted: false,
+  //   // code: ""
+  // });
+  // const handleChange = (e) => {
+  //   const { name, value, type, checked } = e.target;
+
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [name]: type === "checkbox" ? checked : value.trimStart(),
+  //   }));
+  // };
 
   // Resgister User Form Mutation
   const registerUserMutation = useMutation({
@@ -70,24 +92,34 @@ console.log("Price in SubscriptionLogin:", price);
     },
   });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const { name, email, contact, password, confirmPassword, termsAccepted } =
-      formData;
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
+  const onSubmit = (data) => {
     registerUserMutation.mutate({
-      name,
-      email,
-      contact,
-      password,
+      name: data.name,
+      email: data.email,
+      phoneNumber: data.phoneNumber,
+      password: data.password,
       userType,
       planType: planId,
     });
   };
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   const { name, email, contact, password, confirmPassword, termsAccepted } =
+  //     formData;
+  //   if (password !== confirmPassword) {
+  //     setError("Passwords do not match");
+  //     return;
+  //   }
+
+  //   registerUserMutation.mutate({
+  //     name,
+  //     email,
+  //     phoneNumber: contact,
+  //     password,
+  //     userType,
+  //     planType: planId,
+  //   });
+  // };
   // Countdown timer effect
   useEffect(() => {
     if (cooldown > 0) {
@@ -99,10 +131,12 @@ console.log("Price in SubscriptionLogin:", price);
   }, [cooldown]);
 
   const handleLogin = async () => {
+    const email = getValues("email");
+    const password = getValues("password");
     navigate(`/subscription-payment/${planId}`, { state: { price } });
     const { isResetRequired, user: signedInUser } = await signIn(
-      formData.email?.trim(),
-      formData.password?.trim(),
+      email?.trim(),
+      password?.trim(),
     );
     const userId = signedInUser?.attributes?.sub;
     const userType =
@@ -116,7 +150,7 @@ console.log("Price in SubscriptionLogin:", price);
     mutationFn: (code) =>
       confirmEmail({
         code,
-        email: formData.email,
+        email: getValues("email"),
       }),
     onSuccess: async (data) => {
       console.log("confirmation success:", data);
@@ -153,7 +187,7 @@ console.log("Price in SubscriptionLogin:", price);
 
   const handleResend = () => {
     if (cooldown === 0 && !resendCodeMutation.isPending) {
-      resendCodeMutation.mutate(formData.email);
+      resendCodeMutation.mutate(getValues("email"));
     }
   };
 
@@ -259,12 +293,31 @@ console.log("Price in SubscriptionLogin:", price);
                     Start your secure onboarding.
                   </p>
                   <div className="border-t border-gray-200 mb-6 mt-4"></div>
-                  <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+                  <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    className="space-y-4 mt-6"
+                  >
                     <div>
                       <Label className="text-sm">
                         Name <span className="text-red-500">*</span>
                       </Label>
-                      <Input
+                      <Controller
+                        name="name"
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            placeholder="John Marks"
+                            // className="h-[38px] bg-white border border-[#E6DFDB] text-secondary placeholder:text-[#B6AAA5] focus-visible:ring-0 focus-visible:ring-offset-0"
+                            {...field}
+                          />
+                        )}
+                      />
+                      {errors.name && (
+                        <p className="text-red-500 text-xs">
+                          {errors.name.message}
+                        </p>
+                      )}
+                      {/* <Input
                         placeholder="john title munke"
                         type="text"
                         name="name"
@@ -272,14 +325,15 @@ console.log("Price in SubscriptionLogin:", price);
                         onChange={handleChange}
                         className="bg-transparent"
                         required
-                      />
+                        minLength={4}
+                      /> */}
                     </div>
                     <div>
                       <div className="relative">
                         <Label className="text-sm ">
                           Phone Number <span className="text-red-500">*</span>
                         </Label>
-                        <Input
+                        {/* <Input
                           placeholder="(212) 555-0199"
                           id="contact"
                           name="contact"
@@ -287,8 +341,24 @@ console.log("Price in SubscriptionLogin:", price);
                           onChange={handleChange}
                           className="bg-transparent"
                           required
+                        /> */}
+                        <Controller
+                          name="phoneNumber"
+                          control={control}
+                          rules={{
+                            required: true,
+                            minLength: 10,
+                            maxLength: 10,
+                          }}
+                          render={({ field }) => (
+                            <Input
+                              placeholder="phone number"
+                              // className="h-[38px] bg-white border border-[#E6DFDB] text-secondary placeholder:text-[#B6AAA5] focus-visible:ring-0 focus-visible:ring-offset-0"
+                              {...field}
+                            />
+                          )}
                         />
-                        {formData.contact?.length === 10 && (
+                        {phoneValue?.length === 10 && (
                           <div
                             variant="ghost"
                             type="button"
@@ -299,13 +369,18 @@ console.log("Price in SubscriptionLogin:", price);
                             <Check className="text-green-500  w-4 h-4" />
                           </div>
                         )}
+                        {errors.phoneNumber && (
+                          <p className="text-red-500 text-xs">
+                            {errors.phoneNumber.message}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div>
                       <Label className="text-sm">
                         Email <span className="text-red-500">*</span>
                       </Label>
-                      <Input
+                      {/* <Input
                         type="text"
                         id="email"
                         placeholder="title@example.com"
@@ -314,7 +389,24 @@ console.log("Price in SubscriptionLogin:", price);
                         onChange={handleChange}
                         className="bg-transparent"
                         required
+                      /> */}
+
+                      <Controller
+                        name="email"
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            placeholder="email"
+                            // className="h-[38px] bg-white border border-[#E6DFDB] text-secondary placeholder:text-[#B6AAA5] focus-visible:ring-0 focus-visible:ring-offset-0"
+                            {...field}
+                          />
+                        )}
                       />
+                      {errors.email && (
+                        <p className="text-red-500 text-xs">
+                          {errors.email.message}
+                        </p>
+                      )}
                     </div>
                     <div className="flex gap-4">
                       <div className="relative">
@@ -322,7 +414,7 @@ console.log("Price in SubscriptionLogin:", price);
                           Password <span className="text-red-500">*</span>
                         </Label>
                         <div className="flex items-center">
-                          <Input
+                          {/* <Input
                             type={showPassword ? "text" : "password"}
                             // placeholder="••••••••"
                             id="password"
@@ -331,7 +423,20 @@ console.log("Price in SubscriptionLogin:", price);
                             className="bg-transparent pr-9"
                             required
                             onChange={handleChange}
+                          /> */}
+                          <Controller
+                            name="password"
+                            control={control}
+                            render={({ field }) => (
+                              <Input
+                                placeholder="password"
+                                type={showPassword ? "text" : "password"}
+                                className="bg-transparent pr-9"
+                                {...field}
+                              />
+                            )}
                           />
+
                           <Button
                             variant="ghost"
                             type="button"
@@ -353,7 +458,7 @@ console.log("Price in SubscriptionLogin:", price);
                           Confirm Password{" "}
                           <span className="text-red-500">*</span>
                         </Label>
-                        <Input
+                        {/* <Input
                           type={showConfirmPassword ? "text" : "password"}
                           // placeholder="••••••••"
                           id="confirmPassword"
@@ -362,6 +467,18 @@ console.log("Price in SubscriptionLogin:", price);
                           className="bg-transparent pr-9"
                           required
                           onChange={handleChange}
+                        /> */}
+                        <Controller
+                          name="confirmPassword"
+                          control={control}
+                          render={({ field }) => (
+                            <Input
+                              placeholder="confirm password"
+                              type={showConfirmPassword ? "text" : "password"}
+                              className="bg-transparent pr-9"
+                              {...field}
+                            />
+                          )}
                         />
                         <Button
                           variant="ghost"
@@ -379,15 +496,36 @@ console.log("Price in SubscriptionLogin:", price);
                         </Button>
                       </div>
                     </div>
+                    {errors.password && (
+                      <p className="text-red-500 text-xs">
+                        {errors.password.message}
+                      </p>
+                    )}
+                    {errors.confirmPassword && (
+                      <p className="text-red-500 text-xs">
+                        {errors.confirmPassword.message}
+                      </p>
+                    )}
 
                     <div className="flex items-start gap-2 mb-10 ">
-                      <Input
+                      {/* <Input
                         type="checkbox"
                         id="terms"
                         name="termsAccepted"
                         className="mt-1 h-4 w-4 rounded border-[#d8c3ab] text-[#3b1f12] focus:ring-[#3b1f12]"
                         value={formData.termsAccepted}
                         onChange={handleChange}
+                      /> */}
+                      <Controller
+                        name="termsAccepted"
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            type="checkbox"
+                            className="mt-1 h-4 w-4 rounded border-[#d8c3ab] text-[#3b1f12] focus:ring-[#3b1f12]"
+                            {...field}
+                          />
+                        )}
                       />
                       <Label htmlFor="terms" className="text-sm text-[#3b1f12]">
                         I agree to the
@@ -400,16 +538,7 @@ console.log("Price in SubscriptionLogin:", price);
                     <Button
                       type="submit"
                       className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
-                      disabled={
-                        !(
-                          formData.name &&
-                          formData.email &&
-                          formData.contact &&
-                          formData.password &&
-                          formData.confirmPassword &&
-                          formData.termsAccepted
-                        ) || registerUserMutation.isPending
-                      }
+                      disabled={isSubmitting || registerUserMutation.isPending}
                     >
                       Continue
                       {registerUserMutation.isPending ? (
@@ -430,11 +559,6 @@ console.log("Price in SubscriptionLogin:", price);
                       }
                     `}</style>
 
-                    {error && (
-                      <p className="text-red-500 text-center text-sm font-medium">
-                        {error}
-                      </p>
-                    )}
                     <div className="border-t border-gray-200 mb-6 mt-4"></div>
                     {/* <p className="pt-4 text-center text-xs text-[#7a5a49]">
                       Already have an account?{" "}
@@ -462,4 +586,4 @@ console.log("Price in SubscriptionLogin:", price);
   );
 }
 
-export default SubscriptionLogin;
+export default SubscriptionSignup;

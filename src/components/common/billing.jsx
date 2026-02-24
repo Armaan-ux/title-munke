@@ -40,7 +40,8 @@ const Billing = () => {
   const {userId,userType: userRole} = useUserIdType();
   const subcriptionDetailQuery = useQuery({
     queryKey: ["subcription-details"],
-    queryFn: () => getSubscriptionDetails(user?.attributes?.sub, userType)
+    queryFn: () => getSubscriptionDetails(user?.attributes?.sub, userType),
+    enabled: !!user?.attributes?.sub && !!userType,
   })
   const cancelSubscriptionMutation = useMutation({
     mutationFn: (reason) => cancelSubscription(userId, userType, user?.cancel_at_period_end ? false : true, reason=""),
@@ -98,7 +99,7 @@ const Billing = () => {
       )} */}
       <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full h-content shadow-md">
         {subcriptionDetailQuery?.isLoading && <CenterLoader />}
-        {/* {subcriptionDetailQuery?.isError && <ShowError message={"Subscription required to access this feature."}/>} */}
+        {subcriptionDetailQuery?.isError && <ShowError message={"Subscription required to access this feature."}/>}
         {subcriptionDetailQuery?.isSuccess &&
           <CardContent className="w-full space-y-6">
             <div>

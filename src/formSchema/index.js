@@ -55,3 +55,41 @@ const isPhone = (value) => {
   const cleaned = value.replace(/\D/g, ""); // keep only digits
   return /^[6-9]\d{9}$/.test(cleaned);
 };
+
+
+
+export const signupSchema = z
+  .object({
+    name: z
+      .string()
+      .min(4, "Name must be at least 4 characters")
+      .trim(),
+
+    phoneNumber: z
+      .string()
+      .min(10, "Phone number must be 10 digits")
+      .max(10, "Phone number must be 10 digits")
+      .regex(/^[0-9]+$/, "Phone number must contain only digits"),
+
+    email: z
+      .string()
+      .email("Invalid email address")
+      .toLowerCase()
+      .trim(),
+
+    password: z
+      .string()
+      .min(6, "Password must be at least 6 characters"),
+
+    confirmPassword: z.string(),
+
+    termsAccepted: z
+      .boolean()
+      .refine((val) => val === true, {
+        message: "You must accept the terms and conditions",
+      }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });

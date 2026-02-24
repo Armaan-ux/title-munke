@@ -7,13 +7,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "../ui/separator";
 
-export function CancelSubscriptionModal({
+export function ChangePlanModal({
   open,
   onClose,
-  onCancelSubscription,
-  onHelpUsImprove,
-  fromAdvancedSettings,
-  brokerName
+  onChangeSubscription,
+
 }) {
   if (!open) return null;
   return (
@@ -32,16 +30,13 @@ export function CancelSubscriptionModal({
         >
           <DialogHeader>
             <h2 className="text-lg font-semibold text-secondary mb-2 text-center !font-poppins">
-              Confirm Cancellation
+              Ready to Change Your Plan?
             </h2>
             <Separator className="bg-[#e0c9c9]" />
           </DialogHeader>
 
           <p className="text-sm text-muted-foreground mb-4">
-            {fromAdvancedSettings
-              ? `If you continue, your agent account will be unlinked from ${brokerName}. Any broker-specific permissions, pricing, or access may be revoked.`
-              : `Are you sure you want to cancel your Pro subscription? You’ll lose
-          access to premium features after Oct 13, 2025.`}
+           You’re about to switch plans. Shall we continue?
           </p>
 
           <DialogFooter className="flex justify-between gap-2">
@@ -49,17 +44,17 @@ export function CancelSubscriptionModal({
               className="text-xs bg-[#581b1b] text-white hover:bg-[#6b1e1e] w-[50%]"
               onClick={onClose}
             >
-              {fromAdvancedSettings ? `Keep Broker` : `Keep Subscription`}
+              Cancel
             </Button>
             <Button
               variant="outline"
               className="text-xs border border-[#e0b4b4] text-[#c63c3c] hover:bg-[#fff1f1] w-[50%]"
               onClick={() => {
-                fromAdvancedSettings ? onCancelSubscription() : onHelpUsImprove();
+                  onChangeSubscription()
                 onClose();
               }}
             >
-              Yes, Cancel
+              Yes, Continue
             </Button>
           </DialogFooter>
         </DialogContent>

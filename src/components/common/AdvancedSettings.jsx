@@ -8,27 +8,23 @@ import { useUser } from "@/context/usercontext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addRequestToJoinUser,
+  cancelRequestToJoinUser,
   changePlanOfUser,
-  getAgentDetails,
   getBrokerAndOrganizationSelectListing,
   getBrokerDetails,
 } from "../service/userAdmin";
 import { toast } from "react-toastify";
 import { useSearchParams } from "react-router-dom";
+import { ChangePlanModal } from "../Modal/ChangePlanModal";
 
 const AdvancedSettings = () => {
   const queryClient = useQueryClient();
-  const {
-    user,
-    agentDetail,
-    setCardListingModal,
-    setPaymentModal,
-    setUser,
-    setNewPlanType,
-  } = useUser();
+  const { user, agentDetail, setPaymentModal, setUser, setNewPlanType } =
+    useUser();
   const [searchParams] = useSearchParams();
   const isCardAdded = searchParams.get("isCardAdded");
   const [cancelSubscriptionModal, setCancelSubscriptionModal] = useState(false);
+  const [changePlanModal, setChangePlanModal] = useState(false);
   const [joinBrokerModal, setJoinBrokerModal] = useState(false);
   const [selectedId, setSelectedId] = useState("");
   const [changingPlan, setChangingPlan] = useState("");
@@ -99,33 +95,47 @@ const AdvancedSettings = () => {
     },
   });
 
+  const cancelRequestMutation = useMutation({
+    mutationFn: cancelRequestToJoinUser,
+
+    onSuccess: () => {
+      setJoinBrokerModal(false);
+
+      // refresh data
+      queryClient.invalidateQueries(["brokerDetail"]);
+      queryClient.invalidateQueries(["brokerOrgList"]);
+
+      toast.success("Request sent successfully");
+    },
+
+    onError: (error) => {
+      toast.error(
+        error?.response?.data?.error ||
+          error?.message ||
+          "Something went wrong. Please try again.",
+      );
+    },
+  });
+
   const changePlanMutation = useMutation({
     mutationFn: changePlanOfUser,
 
     onSuccess: (data, variables) => {
-       setChangingPlan(null);
-      if(data?.clientSecret){
-      if (variables?.newPlanType === "PAY_AS_YOU_GO") {
-        setNewPlanType("PAY_AS_YOU_GO");
-        // setCardListingModal(true);
-      }
-      if (variables?.newPlanType === "PROFESSIONAL_PLAN") {
-        setNewPlanType("PROFESSIONAL_PLAN");
-      }
-      setPaymentModal(true);
-      setUser((pre) => ({ ...pre, isAddCard: false }));
-      }else{
+      setChangingPlan(null);
+      if (data?.clientSecret) {
+        if (variables?.newPlanType === "PAY_AS_YOU_GO") {
+          setNewPlanType("PAY_AS_YOU_GO");
+          // setCardListingModal(true);
+        }
+        if (variables?.newPlanType === "PROFESSIONAL_PLAN") {
+          setNewPlanType("PROFESSIONAL_PLAN");
+        }
+        setPaymentModal(true);
+        setUser((pre) => ({ ...pre, isAddCard: false }));
+      } else {
         toast.success("Plan changed successfully");
-      }   
-      //  if (variables?.newPlanType === "PAY_AS_YOU_GO") {
-      //   setNewPlanType("PAY_AS_YOU_GO");
-      // }
-      // if (variables?.newPlanType === "PROFESSIONAL_PLAN") {
-      //   setNewPlanType("PROFESSIONAL_PLAN");
-      // } 
-      // setUser((pre) => ({ ...pre, isAddCard: false }));
-      //   setPaymentModal(true);
-       queryClient.invalidateQueries(["agentDetail"]);
+      }
+      queryClient.invalidateQueries(["agentDetail"]);
     },
 
     onError: (error) => {
@@ -164,22 +174,23 @@ const AdvancedSettings = () => {
     },
     [selectedBroker, joinRequestMutation],
   );
-  const changePlanHandler = useCallback(
-    (newPlanType) => {
-      setChangingPlan(newPlanType);
-      if (!newPlanType) {
-        toast.error("Please select a plan first");
-        return;
-      }
+  const changePlanHandler = useCallback(() => {
+    if (!changingPlan) {
+      toast.error("Please select a plan first");
+      return;
+    }
 
-      if (changePlanMutation.isPending) return;
+    if (changePlanMutation.isPending) return;
 
-      changePlanMutation.mutate({
-        newPlanType: newPlanType,
-      });
-    },
-    [changePlanMutation],
-  );
+    changePlanMutation.mutate({
+      newPlanType: changingPlan,
+    });
+  }, [changePlanMutation, changingPlan]);
+
+  const changePlanModalHandler = useCallback((newPlan) => {
+    setChangePlanModal(true);
+    setChangingPlan(newPlan);
+  }, []);
 
   const handleConnectionClick = useCallback(() => {
     if (userType === "agent" && isUnderBroker) {
@@ -188,19 +199,49 @@ const AdvancedSettings = () => {
       setJoinBrokerModal(true);
     }
   }, [userType, isUnderBroker]);
+  const cancelPlanHandler = useCallback(() => {
+    if (cancelRequestMutation.isPending) return;
+    if (userType === "agent" && isUnderBroker) {
+      cancelRequestMutation.mutate({
+        userType,
+        userId: relationship?.brokerId,
+      });
+    }
+    if (userType === "broker" && isUnderOrganisation) {
+      cancelRequestMutation.mutate({
+        userType,
+        userId: brokerRel?.organisationId,
+      });
 
+      setCancelSubscriptionModal(false);
+    }
+  }, [
+    cancelRequestMutation,
+    userType,
+    isUnderBroker,
+    isUnderOrganisation,
+    relationship?.brokerId,
+    brokerRel?.organisationId,
+  ]);
   const isPayAsYouGoSelected =
-  (userType === "agent" && agentDetail?.planType === "PAY_AS_YOU_GO") ||
-  (userType === "broker" && brokerDetail?.planType === "PAY_AS_YOU_GO");
-const isProfessionalSelected =
-  (userType === "agent" && agentDetail?.planType === "PROFESSIONAL_PLAN") ||
-  (userType === "broker" && brokerDetail?.planType === "PROFESSIONAL_PLAN");
+    (userType === "agent" && agentDetail?.planType === "PAY_AS_YOU_GO") ||
+    (userType === "broker" && brokerDetail?.planType === "PAY_AS_YOU_GO");
+  const isProfessionalSelected =
+    (userType === "agent" && agentDetail?.planType === "PROFESSIONAL_PLAN") ||
+    (userType === "broker" && brokerDetail?.planType === "PROFESSIONAL_PLAN");
   return (
     <>
       <CancelSubscriptionModal
         open={cancelSubscriptionModal}
         onClose={() => setCancelSubscriptionModal(false)}
+        onCancelSubscription={cancelPlanHandler}
         fromAdvancedSettings
+        brokerName={brokerFirstName}
+      />
+      <ChangePlanModal
+        open={changePlanModal}
+        onClose={() => setChangePlanModal(false)}
+        onChangeSubscription={changePlanHandler}
       />
       <JoinBrokerModal
         dropdownOptions={dropdownOptions}
@@ -274,10 +315,11 @@ const isProfessionalSelected =
           </div>
           {/* Pay as You Do Card */}
           <div
-              className={`rounded-xl p-6 md:p-8 w-full shadow-sm my-5 transition-all duration-200
-    ${isPayAsYouGoSelected
-      ? "border-2 border-tertiary shadow-lg -translate-y-1 bg-white"
-      : "border border-transparent bg-[#F5F0EC]"
+            className={`rounded-xl p-6 md:p-8 w-full shadow-sm my-5 transition-all duration-200
+    ${
+      isPayAsYouGoSelected
+        ? "border-2 border-tertiary shadow-lg -translate-y-1 bg-white"
+        : "border border-transparent bg-[#F5F0EC]"
     }`}
           >
             <p className="text-lg font-medium mb-2">Pay as You Go</p>
@@ -286,10 +328,9 @@ const isProfessionalSelected =
             </p>
             <Button
               disabled={
-              isPayAsYouGoSelected ||
-                changingPlan === "PAY_AS_YOU_GO"
+                isPayAsYouGoSelected || changingPlan === "PAY_AS_YOU_GO"
               }
-              onClick={() => changePlanHandler("PAY_AS_YOU_GO")}
+              onClick={() => changePlanModalHandler("PAY_AS_YOU_GO")}
               className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition"
             >
               Get Started{" "}
@@ -302,10 +343,11 @@ const isProfessionalSelected =
           </div>
           {/* Subscription plan change  */}
           <div
-          className={`rounded-xl p-6 md:p-8 w-full shadow-sm my-5 transition-all duration-200
-    ${isProfessionalSelected
-      ? "border-2 border-tertiary shadow-lg -translate-y-1 bg-white"
-      : "border border-transparent bg-[#F5F0EC]"
+            className={`rounded-xl p-6 md:p-8 w-full shadow-sm my-5 transition-all duration-200
+    ${
+      isProfessionalSelected
+        ? "border-2 border-tertiary shadow-lg -translate-y-1 bg-white"
+        : "border border-transparent bg-[#F5F0EC]"
     }`}
           >
             <p className="text-lg font-medium mb-2">Subscription Plan</p>
@@ -314,10 +356,9 @@ const isProfessionalSelected =
             </p>
             <Button
               disabled={
-                isProfessionalSelected  ||
-                changingPlan === "PROFESSIONAL_PLAN"
+                isProfessionalSelected || changingPlan === "PROFESSIONAL_PLAN"
               }
-              onClick={() => changePlanHandler("PROFESSIONAL_PLAN")}
+              onClick={() => changePlanModalHandler("PROFESSIONAL_PLAN")}
               className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition"
             >
               Get Started

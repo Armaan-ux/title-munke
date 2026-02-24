@@ -133,7 +133,7 @@ const buildRetryPayload = (item) => {
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">{index + 1}</TableCell>
                   <TableCell className="whitespace-pre-wrap">
-                    {item.name?.toUpperCase() || "N/A"}
+                    {item?.toJoinName?.toUpperCase() || "N/A"}
                   </TableCell>
                   <TableCell>{getFormattedDateTime(item?.updatedAt)}</TableCell>
                   <TableCell>{item?.requestType}</TableCell>

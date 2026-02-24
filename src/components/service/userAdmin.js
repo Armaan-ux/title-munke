@@ -811,7 +811,7 @@ export async function createAuditLog(userId, email, log_action, detail, isAgent)
   );
 }
 
-export async function registerUser({ name, email,contact, password, userType,planType, teamStrength = 10 }) {
+export async function registerUser({ name, email,phoneNumber, password, userType,planType, teamStrength = 10 }) {
   const body = {
     name,
     emailOfUser: email,
@@ -820,7 +820,7 @@ export async function registerUser({ name, email,contact, password, userType,pla
     teamStrength,
   };
 
-  if (contact) body.contact = contact;
+  if (phoneNumber) body.phoneNumber = phoneNumber;
   if (planType) body.planType = planType;
 
   console.log("Register User Payload:", body);
@@ -1246,7 +1246,7 @@ export async function getAuditLogsForBroker(brokerId, isAgent) {
     payload,
     "Success in " + action,
     "error in " + action,
-    "/list-audit-logs-by-user-id"
+    "/list-audit-logs-for-broker"
   )
 }
 export async function updateProfileDetails(data) {
@@ -1516,6 +1516,14 @@ export async function addRequestToJoinUser(userData) {
     'Successfully joined user:',
     'Error joining user:',
     "/add-request-to-join-user"
+  );
+}
+export async function cancelRequestToJoinUser(userData) {
+  return callUserAdminApi(
+    { body: userData },
+    'Successfully cancelled request:',
+    'Error cancelling request:',
+    "/add-request-to-leave-user"
   );
 }
 export async function withdrawRequestToJoinUser(userData) {

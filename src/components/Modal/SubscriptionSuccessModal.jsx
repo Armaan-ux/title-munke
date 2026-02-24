@@ -13,6 +13,7 @@ export default function SubscriptionSuccessModal({
   onFailed,
   isLoading,
   showCloseIcon=true,
+  planId
 }) {
    if (!open) return null;
   const subscribeHandler = () => {
@@ -52,7 +53,7 @@ export default function SubscriptionSuccessModal({
               <DialogHeader className="text-center">
                 <DialogTitle className="text-2xl font-semibold pt-4 !font-poppins">
                   <div className="flex flex-col items-center">
-                    <p>Subscription</p>
+                    <p>{planId === "PAY_AS_YOU_GO" ?`Pay As you Go`: `Subscription`}</p>
                     <p>Successful!</p>
                   </div>
                 </DialogTitle>
