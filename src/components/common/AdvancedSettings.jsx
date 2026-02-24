@@ -48,7 +48,6 @@ const AdvancedSettings = () => {
     queryFn: getBrokerAndOrganizationSelectListing,
     enabled: userId && (userType === "agent" || userType === "broker"),
   });
-  console.log("agentDetail", agentDetail);
   /* -------------------- Derived Data -------------------- */
   const brokerAndOrganizationList = brokerOrgListQuery?.data?.data ?? [];
 
@@ -105,7 +104,6 @@ const AdvancedSettings = () => {
 
     onSuccess: (data, variables) => {
        setChangingPlan(null);
-      console.log("changePlanMutation data", data);
       if(data?.clientSecret){
       if (variables?.newPlanType === "PAY_AS_YOU_GO") {
         setNewPlanType("PAY_AS_YOU_GO");
@@ -127,7 +125,7 @@ const AdvancedSettings = () => {
       // } 
       // setUser((pre) => ({ ...pre, isAddCard: false }));
       //   setPaymentModal(true);
-       queryClient.invalidateQueries(["brokerDetail"]);
+       queryClient.invalidateQueries(["agentDetail"]);
     },
 
     onError: (error) => {
@@ -151,7 +149,6 @@ const AdvancedSettings = () => {
 
   const sendRequestHandler = useCallback(
     (message) => {
-      console.log("message", message);
       if (!selectedBroker?.id) {
         toast.error("Please select a broker first");
         return;
@@ -170,7 +167,6 @@ const AdvancedSettings = () => {
   const changePlanHandler = useCallback(
     (newPlanType) => {
       setChangingPlan(newPlanType);
-      console.log("newPlanType", newPlanType);
       if (!newPlanType) {
         toast.error("Please select a plan first");
         return;

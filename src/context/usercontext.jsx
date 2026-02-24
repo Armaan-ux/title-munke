@@ -51,10 +51,23 @@ export const UserProvider = ({ children }) => {
     retry: false
   })
 
-  useEffect(() => {
-    if(userType === "agent")
-     user?.attributes?.sub && getAgentDetails(user?.attributes?.sub).then(res =>{ console.log("agent", res); setAgentDetail(res)})
-  }, [user?.attributes?.sub, userType,newPlanType])
+  // useEffect(() => {
+  //   if(userType === "agent")
+  //    user?.attributes?.sub && getAgentDetails(user?.attributes?.sub).then(res =>{ console.log("agent", res); setAgentDetail(res)})
+  // }, [user?.attributes?.sub, userType,newPlanType])
+  const agentDetailQuery = useQuery({
+  queryKey: ["agentDetail", user?.attributes?.sub, newPlanType],
+  queryFn: () => getAgentDetails(user?.attributes?.sub),
+  enabled: userType === "agent" && !!user?.attributes?.sub,
+  refetchOnWindowFocus: false,
+  staleTime: 0,
+  retry: false,
+});
+useEffect(() => {
+  if (agentDetailQuery.data) {
+    setAgentDetail(agentDetailQuery.data);
+  }
+}, [agentDetailQuery.data]);
 
   useEffect(() => {
     if(agentBrokerDetailQuery?.isSuccess && userType === "broker") {
