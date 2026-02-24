@@ -873,13 +873,15 @@ export async function resendConfirmationCode(email) {
 }
 
 
-export async function addCard(userId, userType, endpoint,planId) {
+export async function addCard(userId, userType, endpoint,planId,actionType,agent) {
   const payload = {
     body: {
       // email: email,
       userId,
       userType,
-      ...(planId && {planType:planId})
+      ...(planId && {planType:planId}),
+      ...(actionType && {actionType}),
+      ...(agent && {agent:agent})
     },
   };
   return callUserAdminApi(
@@ -1551,4 +1553,19 @@ export async function changePlanOfUser(newPlanType) {
     'Error processing request:',
     "/change-plan-of-user"
   );
+}
+export async function createAgentfromSignup(data) {
+  const { name, email, phoneNumber, searchLimit, userType, brokerId, planType } = data;
+
+  console.log({ name, email, phoneNumber, searchLimit, userType, brokerId, planType });
+
+  return createUser({
+    name,
+    email,
+    phoneNumber,
+    userType: CONSTANTS.USER_TYPES.BROKER,
+    brokerId,
+    searchLimit,
+    planType,
+  });
 }

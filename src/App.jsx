@@ -27,6 +27,7 @@ import SubscriptionLogin from "./components/SubscriptionLogin";
 import SubscriptionPayment from "./components/common/SubscriptionPayment";
 import SubscriptionSignup from "./components/SubscriptionSignup";
 import SubscriptionCardDetails from "./components/common/SubscriptionCardDetails";
+import SubscriptionAddAgent from "./components/SubscriptionAddAgent/Index";
 
 function App() {
   const { isLoading } = useUser();
@@ -45,6 +46,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/subscription-signup/:userType/:planId" element={<SubscriptionSignup />} />
       <Route path="/subscription-login" element={<SubscriptionLogin />} />
+      <Route path="/subscription-addAgent/:planId" element={<SubscriptionAddAgent />} />
       <Route path="/subscription-payment/:planId" element={<SubscriptionPayment />} />
       <Route
         path="/subscription-card-details/:planId"

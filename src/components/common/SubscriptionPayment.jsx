@@ -12,6 +12,7 @@ import { Card } from "../ui/card";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { PaymentDetailsModal } from "../Modal/PaymentDetailsModal";
 import { toast } from "react-toastify";
+import { useUserIdType } from "@/hooks/useUserIdType";
 
 function SubscriptionPayment() {
   
@@ -20,6 +21,7 @@ function SubscriptionPayment() {
   const { price } = location.state || {};
   const { planId } = useParams();
   const { user, setUser, signIn } = useUser();
+    const {userType } = useUserIdType();
   const [showPaymentDetails, setShowPaymentDetails] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("");
 
@@ -120,7 +122,34 @@ const numericPrice = Number(price.replace("$", ""));
             >
               <div className="w-full max-w-lg ">
                 {/* stepper */}
-                <div className="flex items-center justify-center mb-5">
+                {  userType === "broker" ?
+                 <div className="flex items-center justify-center mb-5">
+                                  <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
+                                    {/* Active Step */}
+                                    <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4 py-2 text-xs font-medium text-white">
+                                      <UserRoundCheck />
+                                      Info.
+                                    </div>
+                
+                                    {/* Connector */}
+                                    <div className="mx-3 h-[2px] w-12 bg-[#BEA998]" />
+                                    {/* Active Step */}
+                                    <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4  py-2 text-xs font-medium text-white justify-center">
+                                      <UserRoundCheck />
+                                      Add User
+                                    </div>
+                
+                                    {/* Connector */}
+                                    <div className="mx-3 h-[2px] w-12 bg-[#BEA998]" />
+                
+                                    {/* Inactive Step */}
+                                    <div className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium text-[#7a5a49]">
+                                      <CreditCard />
+                                      Add Card
+                                    </div>
+                                  </div>
+                                </div>
+                : <div className="flex items-center justify-center mb-5">
                   <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
                     {/* Active Step */}
                     <div className="flex items-center gap-2 rounded-full bg-gradient-to-l from-[#3D2014] to-[#550000] px-4 py-2 text-xs font-medium text-white">
@@ -137,7 +166,7 @@ const numericPrice = Number(price.replace("$", ""));
                       Add Card
                     </div>
                   </div>
-                </div>
+                </div>}
 
                 <div className="border-2 border-[#e6d6c3] rounded-3xl p-4 bg-[#FFFFFF] ">
                   <h3 className="text-2xl font-semibold text-[#3b1f12]">

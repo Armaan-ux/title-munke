@@ -15,17 +15,20 @@ import {
   EyeOff,
   Loader,
   UserRoundCheck,
-  
 } from "lucide-react";
 import { motion } from "motion/react";
 
 import SubscriptionSuccessModal from "../Modal/SubscriptionSuccessModal";
 import CardAddedSuccessModal from "../Modal/CardAddedSuccessModal";
 import PaymentSetup from "../stripe/payment-form";
+import { useUserIdType } from "@/hooks/useUserIdType";
+import { createAgentfromSignup  } from "../service/userAdmin";
+import { useMutation  } from "@tanstack/react-query";
 
-function SubscriptionCardDetails({isAddCard=false}) {
-   const { planId } = useParams();
+function SubscriptionCardDetails({ isAddCard = false }) {
+  const { planId } = useParams();
   const { user, signIn } = useUser();
+  const { userType } = useUserIdType();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isReset, setIsReset] = useState(false);
@@ -33,50 +36,85 @@ function SubscriptionCardDetails({isAddCard=false}) {
   const [showCardSuccess, setShowCardSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-
   const navigate = useNavigate();
   const location = useLocation();
-useEffect(() => {
-  const params = new URLSearchParams(location.search);
+  const getStoredAgents = () =>
+  JSON.parse(localStorage.getItem("invitedAgents")) || [];
 
-  if (params.get("isPaymentSuccessful") === "true") {
-    setShowSubscriptionSuccess(true);
-  }
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
 
-  if (params.get("isCardAdded") === "true") {
-    setShowCardSuccess(true);
-  }
-}, [location.search]);
+    if (params.get("isPaymentSuccessful") === "true") {
+      setShowSubscriptionSuccess(true);
+    }
+
+    if (params.get("isCardAdded") === "true") {
+      setShowCardSuccess(true);
+    }
+  }, [location.search]);
 
   const paymentHandler = (e) => {
     e.preventDefault();
     setShowSubscriptionSuccess(true);
   };
-  if (isReset) return <ResetPassword username={username} password={password} />;
+
   const handlePaymentSuccess = () => {
-  setShowSubscriptionSuccess(true);
-};
+    addAgentsBatchMutation.mutate();
+    setShowSubscriptionSuccess(true);
+  };
 
-const subscribeModalHandler = () => {
-  setIsLoading(true);
+  const subscribeModalHandler = () => {
+    setIsLoading(true);
 
-  setTimeout(() => {
-    setIsLoading(false);
-    setShowSubscriptionSuccess(false);
-          navigate("/" + user.signInUserSession.idToken.payload["cognito:groups"][0]);
-  }, 2000);
-};
+    setTimeout(() => {
+      setIsLoading(false);
+      setShowSubscriptionSuccess(false);
+      navigate(
+        "/" + user.signInUserSession.idToken.payload["cognito:groups"][0],
+      );
+    }, 2000);
+  };
 
 
+  const addAgentsBatchMutation = useMutation({
+  mutationFn: async () => {
+    const agents = getStoredAgents();
+
+    if (!agents.length) return;
+
+    await Promise.all(
+      agents.map((agent) =>
+        createAgentfromSignup({
+          name: agent.name,
+          email: agent.email,
+          phoneNumber: agent.phoneNumber,
+          searchLimit: agent.searchLimit,
+          userType:agent.userType,
+          brokerId: agent?.brokerId,
+          planType: agent.planType,
+        })
+      )
+    );
+  },
+  onSuccess: () => {
+    localStorage.removeItem("invitedAgents");
+  },
+  onError: (error) => {
+    console.error("Batch error", error);
+    // setError("Failed to add agents");
+  },
+});
+  if (isReset) return <ResetPassword username={username} password={password} />;
   return (
     <>
       <SubscriptionSuccessModal
         open={showSubscriptionSuccess}
         onOpenChange={subscribeModalHandler}
         onFailed={() => {}}
-        isLoading={isLoading}
+        isLoading={addAgentsBatchMutation.isPending}
         showCloseIcon={false}
         planId={planId}
+
       />
       <CardAddedSuccessModal
         open={showCardSuccess}
@@ -140,24 +178,53 @@ const subscribeModalHandler = () => {
             <div className="flex items-center justify-center p-6 sm:p-10 bg-[url('/bg-signin.png')] md:pb-[200px]">
               <div className="w-full max-w-lg ">
                 {/* stepper */}
-                <div className="flex items-center justify-center mb-5 ">
-                  <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
-                    {/* Active Step */}
-                    <div className="flex items-center gap-2 rounded-full bg-gradient-to-l from-[#3D2014] to-[#550000] px-4 py-2 text-xs font-medium text-white">
-                      <UserRoundCheck />
-                      Info.
-                    </div>
+                {userType === "broker" ? (
+                  <div className="flex items-center justify-center mb-5">
+                    <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
+                      {/* Active Step */}
+                      <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4 py-2 text-xs font-medium text-white">
+                        <UserRoundCheck />
+                        Info.
+                      </div>
 
-                    {/* Connector */}
-                    <div className="mx-3 h-[2px] w-20 bg-[#BEA998]" />
+                      {/* Connector */}
+                      <div className="mx-3 h-[2px] w-12 bg-[#BEA998]" />
+                      {/* Active Step */}
+                      <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4  py-2 text-xs font-medium text-white justify-center">
+                        <UserRoundCheck />
+                        Add User
+                      </div>
 
-                    {/* Inactive Step */}
-                    <div className="flex items-center gap-2 rounded-full bg-gradient-to-l from-[#3D2014] to-[#550000] px-4 py-2 text-xs font-medium text-white">
-                      <CreditCard />
-                      Add Card
+                      {/* Connector */}
+                      <div className="mx-3 h-[2px] w-12 bg-[#BEA998]" />
+
+                      {/* Inactive Step */}
+                      <div className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium text-[#7a5a49]">
+                        <CreditCard />
+                        Add Card
+                      </div>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="flex items-center justify-center mb-5">
+                    <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
+                      {/* Active Step */}
+                      <div className="flex items-center gap-2 rounded-full bg-gradient-to-l from-[#3D2014] to-[#550000] px-4 py-2 text-xs font-medium text-white">
+                        <UserRoundCheck />
+                        Info.
+                      </div>
+
+                      {/* Connector */}
+                      <div className="mx-3 h-[2px] w-20 bg-[#BEA998]" />
+
+                      {/* Inactive Step */}
+                      <div className="flex items-center gap-2 rounded-full bg-gradient-to-l from-[#3D2014] to-[#550000] px-4 py-2 text-xs font-medium text-white">
+                        <CreditCard />
+                        Add Card
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="border-2 border-[#e6d6c3] rounded-3xl p-4 bg-[#FFFFFF]">
                   {/* <form className="mt-6 space-y-4">
@@ -243,18 +310,23 @@ const subscribeModalHandler = () => {
                     </div>
                
                   </form> */}
-                    <PaymentSetup  isAddCard={isAddCard} planId={planId} onPaymentSuccess={handlePaymentSuccess}/>
+                  <PaymentSetup
+                    isAddCard={isAddCard}
+                    planId={planId}
+                    onPaymentSuccess={handlePaymentSuccess}
+                    actionType="coming_from_register"
+                  />
 
-                       <div className="border-t border-gray-200 mb-6 mt-4"></div>
-                    <p className="text-center text-xs text-[#7a5a49]">
-                      Already have an account?{" "}
-                      <a
-                        href="/subscription-payment"
-                        className="font-medium text-[#3b1f12] hover:underline"
-                      >
-                        Log In
-                      </a>
-                    </p>
+                  <div className="border-t border-gray-200 mb-6 mt-4"></div>
+                  <p className="text-center text-xs text-[#7a5a49]">
+                    Already have an account?{" "}
+                    <a
+                      href="/subscription-payment"
+                      className="font-medium text-[#3b1f12] hover:underline"
+                    >
+                      Log In
+                    </a>
+                  </p>
                 </div>
               </div>
             </div>

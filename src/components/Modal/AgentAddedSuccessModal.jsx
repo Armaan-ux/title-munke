@@ -5,24 +5,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader, X } from "lucide-react";
-import { useEffect } from "react";
+import { CirclePlus, X } from "lucide-react";
 
-export default function SubscriptionSuccessModal({
+export default function AgentAddedSuccessModal({
   open,
   onOpenChange,
-  onFailed,
-  isLoading,
-  showCloseIcon=true,
-  planId,
-   
+  onAddAgent,
+  onContinue,
+  agentName,
 }) {
-  
-  const subscribeHandler = () => {
-    // onFailed();
-    onOpenChange();
-  };
- if (!open) return null;
+  if (!open) return null;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <div
@@ -33,7 +25,8 @@ export default function SubscriptionSuccessModal({
           backgroundColor: "rgba(0,0,0,0.5)",
         }}
       >
-        <DialogContent  showCloseButton={false}
+        <DialogContent
+          showCloseButton={false}
           className="relative w-[360px] p-0 rounded-2xl bg-white border-none overflow-visible z-50"
           style={{
             top: "50% !important",
@@ -43,42 +36,44 @@ export default function SubscriptionSuccessModal({
             margin: 0,
           }}
         >
-          {showCloseIcon && <Button
+          <Button
             onClick={() => onOpenChange(false)}
             className="absolute -top-3 -right-3 bg-white hover:bg-gray-100 rounded-full shadow-md p-1 z-50"
           >
             <X strokeWidth={3} className="w-4 h-4 text-[#2C1B13]" />
-          </Button>}
+          </Button>
 
           <div className="overflow-hidden rounded-2xl">
             <div className="relative bg-secondary text-white flex flex-col items-center justify-center py-5">
-              <img src="/success.svg" alt="success" />
+              <img src="/add-Card-Success.png" alt="success" />
               <DialogHeader className="text-center">
                 <DialogTitle className="text-2xl font-semibold pt-4 !font-poppins">
                   <div className="flex flex-col items-center">
-                    <p>{planId === "PAY_AS_YOU_GO" ?`Pay As you Go`: `Subscription`}</p>
-                    <p>Successful!</p>
+                    <p>Agent Added</p>
+                    <p>Successfully!</p>
                   </div>
                 </DialogTitle>
               </DialogHeader>
             </div>
             <div className="flex flex-col items-center justify-center px-6 py-6 text-center">
-              <p className="text-xl font-semibold text-coffee-light mb-1">
-                Thank you for becoming a member.
-              </p>
               <p className="text-sm text-coffee-light text-600 mb-5 leading-relaxed">
-                Your subscription is now active, and you have full access to all
-                brokers features.
+                {`${agentName}`} has been <br />
+                successfully added.
               </p>
-
-              <Button
-                onClick={subscribeHandler}
-                className="w-32 bg-[#5A0A0A] hover:bg-[#460707] text-white rounded-lg py-2 text-sm"
-                disabled={isLoading}
-              >
-                Continue  
-                {isLoading && <Loader className="animate-spin ml-2" />}
-              </Button>
+              <div className="flex gap-4 justify-center flex-col ">
+                <Button
+                  onClick={onAddAgent}
+                  className="w-32 bg-[#5A0A0A] hover:bg-[#460707] text-white rounded-lg py-2 text-sm"
+                >
+                  <CirclePlus /> Add Another
+                </Button>
+                <Button
+                  onClick={onContinue}
+                  className="w-32 bg-[#5A0A0A] hover:bg-[#460707] text-white rounded-lg py-2 text-sm"
+                >
+                  Continue
+                </Button>
+              </div>
             </div>
           </div>
         </DialogContent>

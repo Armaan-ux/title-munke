@@ -133,15 +133,24 @@ function SubscriptionSignup() {
   const handleLogin = async () => {
     const email = getValues("email");
     const password = getValues("password");
-    navigate(`/subscription-payment/${planId}`, { state: { price } });
+
+if(userType === "broker") {
+  navigate(`/subscription-addAgent/${planId}`, { state: { price } });
+}else{
+  navigate(`/subscription-payment/${planId}`, { state: { price } });
+
+}
+
+
+
     const { isResetRequired, user: signedInUser } = await signIn(
       email?.trim(),
       password?.trim(),
     );
     const userId = signedInUser?.attributes?.sub;
-    const userType =
+    const userTypeValue =
       signedInUser?.signInUserSession?.idToken?.payload["cognito:groups"]?.[0];
-    await updateUserStatus({ userId, userType });
+    await updateUserStatus({ userId, userType: userTypeValue });
     console.log("signedInUser after confirmation:", signedInUser);
   };
 
@@ -364,7 +373,6 @@ function SubscriptionSignup() {
                             type="button"
                             size="icon"
                             className="absolute right-3 bottom-[14px] cursor-pointer m-0 p-0 px-0 h-auto w-auto"
-                            onClick={() => setShowPassword((pre) => !pre)}
                           >
                             <Check className="text-green-500  w-4 h-4" />
                           </div>

@@ -26,8 +26,6 @@ function PaymentForm({ onPaymentSuccess, planId }) {
   const elements = useElements();
   console.log("user", user);
   const shouldForceRedirect = !!newPlanType;
-console.log("shouldForceRedirect11111111111111111",shouldForceRedirect)
-console.log("newPlanType11111111111111111111",newPlanType)
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!stripe || !elements) return;
@@ -102,12 +100,14 @@ console.log("newPlanType11111111111111111111",newPlanType)
   );
 }
 
-export default function PaymentSetup({ planId = "", onPaymentSuccess }) {
+export default function PaymentSetup({ planId = "", onPaymentSuccess,actionType }) {
   const [clientSecret, setClientSecret] = useState("");
+   const getStoredAgents = () =>
+  JSON.parse(localStorage.getItem("invitedAgents")) || [];
   const { user, newPlanType } = useUser();
-  console.log("user12312312312312312312", user);
   const userType =
     user?.signInUserSession?.idToken?.payload["cognito:groups"]?.[0];
+     const agents = getStoredAgents();
   const plan = newPlanType || planId;
   const membershipMutation = useMutation({
     mutationFn: () =>
@@ -116,6 +116,8 @@ export default function PaymentSetup({ planId = "", onPaymentSuccess }) {
         userType,
         user?.isAddCard || planId === "PAY_AS_YOU_GO" ? "add-card" : "subscribe",
         plan,
+        actionType,
+        agents?.length
       ),
     onSuccess: (data) => setClientSecret(data.clientSecret),
   });

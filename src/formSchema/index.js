@@ -93,3 +93,29 @@ export const signupSchema = z
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
+
+
+  export const addAgentSchema = z.object({
+  name: z
+    .string()
+    .min(4, "Name must be at least 4 characters")
+    .trim(),
+
+  phoneNumber: z
+    .string()
+    .length(10, "Phone number must be 10 digits")
+    .regex(/^[0-9]+$/, "Phone number must contain only digits"),
+
+  email: z
+    .string()
+    .email("Invalid email address")
+    .toLowerCase()
+    .trim(),
+
+  searchLimit: z
+    .string()
+    .min(1, "Please select search limit")
+    .refine((val) => ["10", "20"].includes(val), {
+      message: "Invalid search limit selected",
+    }),
+});
