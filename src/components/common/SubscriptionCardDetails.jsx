@@ -142,11 +142,11 @@ function SubscriptionCardDetails({ isAddCard = false }) {
                   <img src="/Logo.svg" className="h-40 w-40" alt="logo" />
                 </div>
 
-                <h2 className="mt-10 text-3xl font-semibold text-[#3b1f12]">
+                <p className="mt-10 text-3xl font-semibold text-[#3b1f12]">
                   Welcome to
                   <br />
                   Title Munke
-                </h2>
+                </p>
                 <p className="mt-3 text-sm text-[#6b4a3a]">
                   Secure. Verified. Effortless
                 </p>
@@ -188,7 +188,7 @@ function SubscriptionCardDetails({ isAddCard = false }) {
                       </div>
 
                       {/* Connector */}
-                      <div className="mx-3 h-[2px] w-12 bg-[#BEA998]" />
+                      <div className="mx-3 h-[2px] w-12 bg-[#3b1f12]" />
                       {/* Active Step */}
                       <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4  py-2 text-xs font-medium text-white justify-center">
                         <UserRoundCheck />
@@ -196,10 +196,10 @@ function SubscriptionCardDetails({ isAddCard = false }) {
                       </div>
 
                       {/* Connector */}
-                      <div className="mx-3 h-[2px] w-12 bg-[#BEA998]" />
+                      <div className="mx-3 h-[2px] w-12 bg-[#3b1f12]" />
 
-                      {/* Inactive Step */}
-                      <div className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium text-[#7a5a49]">
+                      {/* Active Step */}
+                      <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4  py-2 text-xs font-medium text-white justify-center">
                         <CreditCard />
                         Add Card
                       </div>
@@ -215,10 +215,10 @@ function SubscriptionCardDetails({ isAddCard = false }) {
                       </div>
 
                       {/* Connector */}
-                      <div className="mx-3 h-[2px] w-20 bg-[#BEA998]" />
+                      <div className="mx-3 h-[2px] w-20 bg-[#3b1f12]" />
 
-                      {/* Inactive Step */}
-                      <div className="flex items-center gap-2 rounded-full bg-gradient-to-l from-[#3D2014] to-[#550000] px-4 py-2 text-xs font-medium text-white">
+                      {/* Active Step */}
+                      <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4 py-2 text-xs font-medium text-white justify-center">
                         <CreditCard />
                         Add Card
                       </div>

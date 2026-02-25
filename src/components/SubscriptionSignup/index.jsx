@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -26,9 +26,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema } from "@/formSchema";
 function SubscriptionSignup() {
-  const location = useLocation();
   const navigate = useNavigate();
-  const { price } = location.state || {};
   const { userType, planId } = useParams();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -135,13 +133,10 @@ function SubscriptionSignup() {
     const password = getValues("password");
 
 if(userType === "broker") {
-  navigate(`/subscription-addAgent/${planId}`, { state: { price } });
+  navigate(`/subscription-addAgent/${planId}`);
 }else{
-  navigate(`/subscription-payment/${planId}`, { state: { price } });
-
+  navigate(`/subscription-payment/${planId}`);
 }
-
-
 
     const { isResetRequired, user: signedInUser } = await signIn(
       email?.trim(),
@@ -229,11 +224,11 @@ if(userType === "broker") {
                   <img src="/Logo.svg" className="h-40 w-40" alt="logo" />
                 </div>
 
-                <h2 className="mt-10 text-3xl font-semibold text-[#3b1f12]">
+                <p className="mt-10 text-3xl font-semibold text-[#3b1f12]">
                   Welcome to
                   <br />
                   Title Munke
-                </h2>
+                </p>
                 <p className="mt-3 text-sm text-[#6b4a3a]">
                   Secure. Verified. Effortless
                 </p>
@@ -276,28 +271,60 @@ if(userType === "broker") {
               <div className="w-full max-w-lg ">
                 {/* stepper */}
                 <div className="flex items-center justify-center mb-5">
-                  <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
-                    {/* Active Step */}
-                    <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4 py-2 text-xs font-medium text-white">
-                      <UserRoundCheck />
-                      Info.
-                    </div>
+              
 
-                    {/* Connector */}
-                    <div className="mx-3 h-[2px] w-20 bg-[#BEA998]" />
 
-                    {/* Inactive Step */}
-                    <div className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium text-[#7a5a49]">
-                      <CreditCard />
-                      Add Card
-                    </div>
-                  </div>
+                      {  userType === "broker" ?
+                                   <div className="flex items-center justify-center mb-5">
+                                                    <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
+                                                      {/* Active Step */}
+                                                      <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4 py-2 text-xs font-medium text-white">
+                                                        <UserRoundCheck />
+                                                        Info.
+                                                      </div>
+                                  
+                                                      {/* Connector */}
+                                                      <div className="mx-3 h-[2px] w-12 bg-[#BEA998]" />
+                                                      {/* Active Step */}
+                                                      <div className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium text-[#7a5a49]">
+                                                        <UserRoundCheck />
+                                                        Add User
+                                                      </div>
+                                  
+                                                      {/* Connector */}
+                                                      <div className="mx-3 h-[2px] w-12 bg-[#BEA998]" />
+                                  
+                                                      {/* Inactive Step */}
+                                                      <div className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium text-[#7a5a49]">
+                                                        <CreditCard />
+                                                        Add Card
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                  : <div className="flex items-center justify-center mb-5">
+                                    <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
+                                      {/* Active Step */}
+                                      <div className="flex items-center gap-2 rounded-full bg-gradient-to-l from-[#3D2014] to-[#550000] px-4 py-2 text-xs font-medium text-white">
+                                        <UserRoundCheck />
+                                        Info.
+                                      </div>
+                  
+                                      {/* Connector */}
+                                      <div className="mx-3 h-[2px] w-20 bg-[#BEA998]" />
+                  
+                                      {/* Inactive Step */}
+                                      <div className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium text-[#7a5a49]">
+                                        <CreditCard />
+                                        Add Card
+                                      </div>
+                                    </div>
+                                  </div>}
                 </div>
 
                 <div className="border-2 border-[#e6d6c3] rounded-3xl p-4 bg-[#FFFFFF] ">
-                  <h3 className="text-2xl font-semibold text-[#3b1f12]">
+                  <p className="text-2xl font-semibold text-[#3b1f12]">
                     Create Your account
-                  </h3>
+                  </p>
                   <p className="mt-1 text-sm text-[#7a5a49]">
                     Start your secure onboarding.
                   </p>

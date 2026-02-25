@@ -130,11 +130,11 @@ function SubscriptionLogin() {
                 <img src="/Logo.svg" className="h-40 w-40" alt="logo" />
               </div>
 
-              <h2 className="mt-10 text-3xl font-semibold text-[#3b1f12]">
+              <p className="mt-10 text-3xl font-semibold text-[#3b1f12]">
                 Welcome to
                 <br />
                 Title Munke
-              </h2>
+              </p>
               <p className="mt-3 text-sm text-[#6b4a3a]">
                 Secure. Verified. Effortless
               </p>
@@ -176,9 +176,9 @@ function SubscriptionLogin() {
           >
             <div className="w-full max-w-sm">
               <div className="border-2 border-[#e6d6c3] rounded-3xl p-4 bg-[#FFFFFF] ">
-                <h3 className="text-2xl font-semibold text-[#3b1f12]">
+                <p className="text-2xl font-semibold text-[#3b1f12]">
                   Welcome
-                </h3>
+                </p>
                 <p className="mt-1 text-sm text-[#7a5a49]">
                   Please enter your details to Log in.
                 </p>

@@ -270,7 +270,8 @@ const Pricing = () => {
                         size="lg"
                         onClick={() => {
                           setSelectedPlan(plan.id);
-                          navigate(`/subscription-signup/${userType}/${plan.id}`,{ state: { price: plan.price } });
+                          localStorage.setItem("price", plan.price);
+                          navigate(`/subscription-signup/${userType}/${plan.id}`);
                         }}
                       >
                         Get Started

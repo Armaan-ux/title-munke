@@ -12,7 +12,7 @@ export default function AppHeader() {
   const { user } = useUser();
 
   const location = useLocation();
-  const {userId} = useUserIdType();
+  const { userId } = useUserIdType();
 
   const userGroups =
     user?.signInUserSession?.idToken?.payload["cognito:groups"];
@@ -20,14 +20,16 @@ export default function AppHeader() {
 
   const roleRoutes = routes[userRole] || [];
   const headerTitle = roleRoutes.find((item) =>
-    location.pathname.startsWith(item.link)
+    location.pathname.startsWith(item.link),
   )?.name;
 
   const getUserDetail = useQuery({
     queryKey: [queryKeys.getUserDetails, userId],
     queryFn: () => getAdminDetails(userId),
-    skip: !!userId
-  })
+    enabled: !!userId,
+    staleTime: 1 * 60 * 1000, // prevent refetch for 1 minutes
+    refetchOnWindowFocus: false,
+  });
 
   return (
     <div className="border rounded-xl px-4 lg:px-6 py-3 bg-white flex justify-between gap-4 items-center w-full text-secondary">

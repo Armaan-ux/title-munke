@@ -881,7 +881,7 @@ export async function addCard(userId, userType, endpoint,planId,actionType,agent
       userType,
       ...(planId && {planType:planId}),
       ...(actionType && {actionType}),
-      ...(agent && {agent:agent})
+      ...(agent && {agentCount:agent})
     },
   };
   return callUserAdminApi(
@@ -1544,6 +1544,14 @@ export async function processRequestToJoinUser(userData) {
     "/process-request-to-join-user"
   );
 }
+export async function processLeaveRequestToJoinUser(userData) {
+  return callUserAdminApi(
+    { body: userData },
+    'Successfully processed request:',
+    'Error processing request:',
+    "/process-request-to-leave-user"
+  );
+}
 
 
 export async function changePlanOfUser(newPlanType) {
@@ -1563,7 +1571,7 @@ export async function createAgentfromSignup(data) {
     name,
     email,
     phoneNumber,
-    userType: CONSTANTS.USER_TYPES.BROKER,
+    userType: CONSTANTS.USER_TYPES.AGENT,
     brokerId,
     searchLimit,
     planType,

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -10,16 +10,13 @@ import {
   Lock,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
-
-  createAgentfromSignup,
   getBrokerDetails,
 
 } from "../service/userAdmin";
-import { useUser } from "@/context/usercontext";
 import { Label } from "../ui/label";
-import { getValueAsType, motion } from "motion/react";
+import { motion } from "motion/react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -33,14 +30,13 @@ import { addAgentSchema } from "@/formSchema";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import AgentAddedSuccessModal from "../Modal/AgentAddedSuccessModal";
 function SubscriptionAddAgent() {
-  const location = useLocation();
   const navigate = useNavigate();
-  const { price } = location.state || {};
   const { planId } = useParams();
 
   const [error, setError] = useState("");
+  
   const [isLoading, setIsLoading] = useState(false);
-
+    const [lastAddedAgentName, setLastAddedAgentName] = useState("");
   const [addAgent, setAddAgent] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const { userType, userId } = useUserIdType();
@@ -56,6 +52,7 @@ function SubscriptionAddAgent() {
     control,
     handleSubmit,
     watch,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(addAgentSchema),
@@ -69,7 +66,6 @@ function SubscriptionAddAgent() {
     },
   });
   const phoneValue = watch("phoneNumber");
-console.log("brokerId:", brokerRel?.brokerId);
 //   const addAgentUserMutation = useMutation({
 //     mutationFn: (data) => createAgentfromSignup(data),
 //     onSuccess: () => {
@@ -99,6 +95,18 @@ console.log("brokerId:", brokerRel?.brokerId);
 
 const onSubmit = (data) => {
 setIsLoading(true)
+  const existingAgents =
+    JSON.parse(localStorage.getItem("invitedAgents")) || [];
+
+  const isDuplicate = existingAgents.some(
+    (agent) => agent.email.toLowerCase() === data.email.toLowerCase()
+  );
+
+  if (isDuplicate) {
+    setError("Agent with this email already exists.");
+    setIsLoading(false);
+    return;
+  }
   const newAgent = {
    
     name: data.name,
@@ -110,8 +118,7 @@ setIsLoading(true)
     userType
   };
 
-  const existingAgents =
-    JSON.parse(localStorage.getItem("invitedAgents")) || [];
+
 
   // Add new agent
   const updatedAgents = [...existingAgents, newAgent];
@@ -119,8 +126,9 @@ setIsLoading(true)
   // Save back to localStorage
   localStorage.setItem("invitedAgents", JSON.stringify(updatedAgents));
 
+  setLastAddedAgentName(data.name);
   console.log("Saved agents:", updatedAgents);
-
+  reset();
   // Show success modal
   setAddAgent(true);
   setIsLoading(false);
@@ -138,7 +146,7 @@ setIsLoading(true)
 
   // if (isReset) return <ResetPassword username={username} password={password} />;
   const handleContinue = () => {
-    navigate(`/subscription-payment/${planId}`, { state: { price } });
+    navigate(`/subscription-payment/${planId}`);
   };
 
   const handleAddAgent = () => {
@@ -151,7 +159,7 @@ setIsLoading(true)
         onOpenChange={setAddAgent}
         onAddAgent={handleAddAgent}
         onContinue={handleContinue}
-        agentName={getValueAsType("name")}
+        agentName={lastAddedAgentName}
       />
 
       <div className="relative min-h-dvh w-full overflow-hidden bg-[#2b140c]">
@@ -172,11 +180,11 @@ setIsLoading(true)
                   <img src="/Logo.svg" className="h-40 w-40" alt="logo" />
                 </div>
 
-                <h2 className="mt-10 text-3xl font-semibold text-[#3b1f12]">
+                <p className="mt-10 text-3xl font-semibold text-[#3b1f12]">
                   Welcome to
                   <br />
                   Title Munke
-                </h2>
+                </p>
                 <p className="mt-3 text-sm text-[#6b4a3a]">
                   Secure. Verified. Effortless
                 </p>
@@ -227,7 +235,7 @@ setIsLoading(true)
                     </div>
 
                     {/* Connector */}
-                    <div className="mx-3 h-[2px] w-12 bg-[#BEA998]" />
+                    <div className="mx-3 h-[2px] w-12 bg-[#3b1f12]" />
                     {/* Active Step */}
                     <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4  py-2 text-xs font-medium text-white justify-center">
                       <UserRoundCheck />
@@ -259,9 +267,9 @@ setIsLoading(true)
                     </div>
                   ) : (
                     <div>
-                      <h3 className="text-2xl font-semibold text-[#3b1f12]">
+                      <p className="text-2xl font-semibold text-[#3b1f12]">
                         Add Agent
-                      </h3>
+                      </p>
                       <p className="mt-1 text-sm text-[#7a5a49]">
                         Start your secure onboarding.
                       </p>
@@ -375,7 +383,9 @@ setIsLoading(true)
                             </p>
                           )}
                         </div>
-
+{error && (
+  <p className="text-red-500 text-sm mt-2">{error}</p>
+)}
                         <Button
                           type="submit"
                           className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"

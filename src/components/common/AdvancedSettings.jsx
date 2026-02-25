@@ -203,13 +203,13 @@ const AdvancedSettings = () => {
     if (cancelRequestMutation.isPending) return;
     if (userType === "agent" && isUnderBroker) {
       cancelRequestMutation.mutate({
-        userType,
+        userType: "broker",
         userId: relationship?.brokerId,
       });
     }
     if (userType === "broker" && isUnderOrganisation) {
       cancelRequestMutation.mutate({
-        userType,
+        userType:"organisation",
         userId: brokerRel?.organisationId,
       });
 

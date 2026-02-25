@@ -52,22 +52,33 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
   const handleClick = () => {
     fileInputRef.current?.click();
   };
+  // const getUserDetail = useQuery({
+  //   queryKey: [queryKeys.getUserDetails, userId],
+  //   queryFn: () => getAdminDetails(userId),
+  // });
   const getUserDetail = useQuery({
     queryKey: [queryKeys.getUserDetails, userId],
     queryFn: () => getAdminDetails(userId),
+    enabled: !!userId,
   });
+  const rawPhone =
+    getUserDetail?.data?.attributes?.["custom:phoneNumber"] || "";
+
+  const phoneWithoutCountryCode = rawPhone.replace(/^\+1/, "");
   useEffect(() => {
     if (getUserDetail.isSuccess) {
       setName(getUserDetail.data?.attributes?.name);
       setEmail(getUserDetail.data?.attributes?.email);
-      setPhone(getUserDetail.data?.attributes?.phone_number);
+      // setPhone(getUserDetail.data?.attributes?.phone_number);
+      setPhone(phoneWithoutCountryCode);
     }
-  }, [getUserDetail.isSuccess, getUserDetail.data]);
+  }, [getUserDetail.isSuccess, getUserDetail.data, phoneWithoutCountryCode]);
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setProfileImage(file);
     setPreView(URL.createObjectURL(file));
   };
+
   const updateProfileMutation = useMutation({
     mutationFn: (payload) => updateProfileDetails(payload),
     onSuccess: (data) => {
@@ -466,9 +477,9 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                   type="text"
                   id="phone"
                   name="phone"
-                  placeholder="New password"
+                  placeholder="Phone Number"
                   className="bg-[#F5F0EC] text-tertiary font-normal border-none focus-visible:ring-0 mt-5 pointer-events-none"
-                  value={getUserDetail.data?.attributes?.phone_number ?? ""}
+                  value={phoneWithoutCountryCode}
                   //   onChange={(e) => setNewpassword(e.target.value)}
                 />
               </div>

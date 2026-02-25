@@ -54,7 +54,7 @@ export default function Navbar() {
             
             <div className="flex items-center gap-4">
               <Button className="hover:scale-105" size="lg" onClick={() => scrollToSection("request-demo")}  >Request a Demo</Button>
-              <Button className="hover:scale-105"  size="lg" variant="secondary" onClick={() => window.location.href = '/subscription-login'}>Login <ArrowRight /></Button>
+              <Button className="hover:scale-105"  size="lg" variant="secondary" onClick={() => navigate('/subscription-login')}>Login <ArrowRight /></Button>
             </div>
           </div>
           
@@ -81,9 +81,9 @@ export default function Navbar() {
                 <SheetFooter>
                   <div className="flex flex-col gap-3">
                     <Button size="lg" onClick={() => scrollToSection("request-demo")} >Request a Demo</Button>
-                    <Link to="/login" >
-                      <Button size="lg" variant="secondary" className="w-full" >Login <ArrowRight /></Button>
-                    </Link>
+                    {/* <Link to="/subscription-login" > */}
+                      <Button size="lg" variant="secondary" className="w-full" onClick={() => navigate('/subscription-login')}>Login <ArrowRight /></Button>
+                    {/* </Link> */}
                   </div>
                 </SheetFooter>
               </SheetContent>

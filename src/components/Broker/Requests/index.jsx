@@ -13,6 +13,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addRequestToJoinUser,
   listRequestByUserId,
+  processLeaveRequestToJoinUser,
   processRequestToJoinUser,
   withdrawRequestToJoinUser,
 } from "@/components/service/userAdmin";
@@ -116,7 +117,8 @@ const RequestListTable = ({
   activeTab,
   onApprove,
   onReject,
-  processRequestMutation,
+  processJoinRequestMutation,
+  processLeaveRequestMutation,
 }) => {
   const showAction = activeTab === "pending";
 
@@ -152,9 +154,12 @@ const RequestListTable = ({
                   {showAction && (
                     <TableCell>
                       <ActionButtons
-                        disabled={processRequestMutation.isPending}
-                        onApprove={() => onApprove(item?.id)}
-                        onReject={() => onReject(item?.id)}
+                        disabled={
+                          processJoinRequestMutation?.isPending ||
+                          processLeaveRequestMutation?.isPending
+                        }
+                        onApprove={() => onApprove(item)}
+                        onReject={() => onReject(item)}
                       />
                     </TableCell>
                   )}
@@ -265,8 +270,34 @@ export default function Request() {
       );
     },
   });
-  const processRequestMutation = useMutation({
+  const processJoinRequestMutation = useMutation({
     mutationFn: processRequestToJoinUser,
+
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.listRequestsByUserId, activeTab.id],
+      });
+
+      toast.success(
+        variables?.action === "accept"
+          ? "Request approved successfully"
+          : variables?.action === "reject"
+            ? "Request rejected successfully"
+            : "Request sent successfully",
+      );
+    },
+
+    onError: (error) => {
+      toast.error(
+        error?.response?.data?.error ||
+          error?.message ||
+          "Something went wrong. Please try again.",
+      );
+    },
+  });
+
+  const processLeaveRequestMutation = useMutation({
+    mutationFn: processLeaveRequestToJoinUser,
 
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
@@ -338,27 +369,46 @@ export default function Request() {
 
     withdrawRequestMutation.mutate({ requestId: id });
   };
-  const handleApprove = (id) => {
+  const handleApprove = (item) => {
+    console.log("Approving item", item);
+    const id = item?.id;
     if (!id || processingId === id) return;
 
     setProcessingId(id);
-
-    processRequestMutation.mutate(
-      { requestId: id, action: "accept" },
-      { onSettled: () => setProcessingId(null) },
-    );
+    if (item?.requestType === "LEAVE") {
+      processLeaveRequestMutation.mutate(
+        { requestId: id, action: "accept" },
+        { onSettled: () => setProcessingId(null) },
+      );
+    }
+    if (item?.requestType === "JOIN") {
+      processJoinRequestMutation.mutate(
+        { requestId: id, action: "accept" },
+        { onSettled: () => setProcessingId(null) },
+      );
+    }
   };
 
-  const handleReject = (id) => {
-    console.log("Rejecting item with id:", id);
+  const handleReject = (item) => {
+    const id = item?.id;
+    console.log("Rejecting item", item);
     if (!id || processingId === id) return;
 
     setProcessingId(id);
 
-    processRequestMutation.mutate(
-      { requestId: id, action: "reject" },
-      { onSettled: () => setProcessingId(null) },
-    );
+    if (item?.requestType === "LEAVE") {
+      processLeaveRequestMutation.mutate(
+        { requestId: id, action: "reject" },
+        { onSettled: () => setProcessingId(null) },
+      );
+    }
+
+    if (item?.requestType === "JOIN") {
+      processJoinRequestMutation.mutate(
+        { requestId: id, action: "reject" },
+        { onSettled: () => setProcessingId(null) },
+      );
+    }
   };
 
   const data = requestList?.data || [];
@@ -395,7 +445,8 @@ export default function Request() {
           activeTab={activeTab.id}
           onApprove={handleApprove}
           onReject={handleReject}
-          processRequestMutation={processRequestMutation}
+          processRequestMutation={processJoinRequestMutation}
+          processLeaveRequestMutation={processLeaveRequestMutation}
         />
       )}
     </div>

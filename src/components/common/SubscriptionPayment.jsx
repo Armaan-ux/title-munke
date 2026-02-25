@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../../context/usercontext";
 import {
   ArrowLeft,
@@ -15,20 +15,17 @@ import { toast } from "react-toastify";
 import { useUserIdType } from "@/hooks/useUserIdType";
 
 function SubscriptionPayment() {
-  
   const navigate = useNavigate();
-  const location = useLocation();
-  const { price } = location.state || {};
   const { planId } = useParams();
   const { user, setUser, signIn } = useUser();
-    const {userType } = useUserIdType();
+  const { userType } = useUserIdType();
   const [showPaymentDetails, setShowPaymentDetails] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("");
+  const price = localStorage.getItem("price") || "$0.00";
 
-  console.log("user", user);
-console.log("Price in Subscriptionpayment:", price);
+  console.log("Price in Subscriptionpayment:", price);
 
-const numericPrice = Number(price.replace("$", ""));
+  const numericPrice = Number(price.replace("$", ""));
   const submitHandler = (e) => {
     e.preventDefault();
     console.log("paymentMethod", paymentMethod);
@@ -41,7 +38,7 @@ const numericPrice = Number(price.replace("$", ""));
     toast.error("Please select a payment method to proceed.", {
       autoClose: 3000,
     });
-    return
+    return;
   };
 
   // if (isReset) return <ResetPassword username={username} password={password} />;
@@ -76,11 +73,11 @@ const numericPrice = Number(price.replace("$", ""));
                   <img src="/Logo.svg" className="h-40 w-40" alt="logo" />
                 </div>
 
-                <h2 className="mt-10 text-3xl font-semibold text-[#3b1f12]">
+                <p className="mt-10 text-3xl font-semibold text-[#3b1f12]">
                   Welcome to
                   <br />
                   Title Munke
-                </h2>
+                </p>
                 <p className="mt-3 text-sm text-[#6b4a3a]">
                   Secure. Verified. Effortless
                 </p>
@@ -122,56 +119,58 @@ const numericPrice = Number(price.replace("$", ""));
             >
               <div className="w-full max-w-lg ">
                 {/* stepper */}
-                {  userType === "broker" ?
-                 <div className="flex items-center justify-center mb-5">
-                                  <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
-                                    {/* Active Step */}
-                                    <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4 py-2 text-xs font-medium text-white">
-                                      <UserRoundCheck />
-                                      Info.
-                                    </div>
-                
-                                    {/* Connector */}
-                                    <div className="mx-3 h-[2px] w-12 bg-[#BEA998]" />
-                                    {/* Active Step */}
-                                    <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4  py-2 text-xs font-medium text-white justify-center">
-                                      <UserRoundCheck />
-                                      Add User
-                                    </div>
-                
-                                    {/* Connector */}
-                                    <div className="mx-3 h-[2px] w-12 bg-[#BEA998]" />
-                
-                                    {/* Inactive Step */}
-                                    <div className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium text-[#7a5a49]">
-                                      <CreditCard />
-                                      Add Card
-                                    </div>
-                                  </div>
-                                </div>
-                : <div className="flex items-center justify-center mb-5">
-                  <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
-                    {/* Active Step */}
-                    <div className="flex items-center gap-2 rounded-full bg-gradient-to-l from-[#3D2014] to-[#550000] px-4 py-2 text-xs font-medium text-white">
-                      <UserRoundCheck />
-                      Info.
-                    </div>
+                {userType === "broker" ? (
+                  <div className="flex items-center justify-center mb-5">
+                    <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
+                      {/* Active Step */}
+                      <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4 py-2 text-xs font-medium text-white">
+                        <UserRoundCheck />
+                        Info.
+                      </div>
 
-                    {/* Connector */}
-                    <div className="mx-3 h-[2px] w-20 bg-[#BEA998]" />
+                      {/* Connector */}
+                      <div className="mx-3 h-[2px] w-12 bg-[#3b1f12]" />
+                      {/* Active Step */}
+                      <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4  py-2 text-xs font-medium text-white justify-center">
+                        <UserRoundCheck />
+                        Add User
+                      </div>
 
-                    {/* Inactive Step */}
-                    <div className="flex items-center gap-2 rounded-full bg-gradient-to-l from-[#3D2014] to-[#550000] px-4 py-2 text-xs font-medium text-white">
-                      <CreditCard />
-                      Add Card
+                      {/* Connector */}
+                      <div className="mx-3 h-[2px] w-12 bg-[#3b1f12]" />
+
+                      {/* Active Step */}
+                      <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4  py-2 text-xs font-medium text-white justify-center">
+                        <CreditCard />
+                        Add Card
+                      </div>
                     </div>
                   </div>
-                </div>}
+                ) : (
+                  <div className="flex items-center justify-center mb-5">
+                    <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
+                      {/* Active Step */}
+                      <div className="flex items-center gap-2 rounded-full bg-gradient-to-l from-[#3D2014] to-[#550000] px-4 py-2 text-xs font-medium text-white">
+                        <UserRoundCheck />
+                        Info.
+                      </div>
+
+                      {/* Connector */}
+                      <div className="mx-3 h-[2px] w-20 bg-[#3b1f12]" />
+
+                      {/* Active Step */}
+                      <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4  py-2 text-xs font-medium text-white justify-center">
+                        <CreditCard />
+                        Add Card
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="border-2 border-[#e6d6c3] rounded-3xl p-4 bg-[#FFFFFF] ">
-                  <h3 className="text-2xl font-semibold text-[#3b1f12]">
+                  <p className="text-2xl font-semibold text-[#3b1f12]">
                     Select Payment Method
-                  </h3>
+                  </p>
                   <p className="mt-1 text-sm text-[#7a5a49]">
                     choose your preferred payment method.
                   </p>
@@ -180,35 +179,34 @@ const numericPrice = Number(price.replace("$", ""));
                   <div className="border-t border-gray-200 my-6"></div>
 
                   {/* Total Payment Section */}
-                   {planId !== "EXPLORE_PLAN" && (
-                  <div className="bg-amber-50 rounded-2xl p-5 mb-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-xl font-semibold text-[#3b1f12] mb-1">
-                          Total Payment
-                        </h3>
-                        <button
-                          onClick={() => setShowPaymentDetails(true)}
-                          className="text-xs text-[#3b1f12] hover:text-gray-900 "
-                        >
-                          View Details
-                        </button>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-2xl font-semibold text-[#3b1f12]">
-                          {price ? `$${numericPrice.toFixed(2)}` : `$0.00`}
-                        </p>
-                        <button
-                          onClick={() => setShowPaymentDetails(true)}
-                          className="text-xs text-[#550000] hover:text-red-700 underline"
-                        >
-                          View Details
-                        </button>
+                  {planId !== "EXPLORE_PLAN" && (
+                    <div className="bg-amber-50 rounded-2xl p-5 mb-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xl font-semibold text-[#3b1f12] mb-1">
+                            Total Payment
+                          </p>
+                          <button
+                            onClick={() => setShowPaymentDetails(true)}
+                            className="text-xs text-[#3b1f12] hover:text-gray-900 "
+                          >
+                            View Details
+                          </button>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-2xl font-semibold text-[#3b1f12]">
+                            {price ? `$${numericPrice.toFixed(2)}` : `$0.00`}
+                          </p>
+                          <button
+                            onClick={() => setShowPaymentDetails(true)}
+                            className="text-xs text-[#550000] hover:text-red-700 underline"
+                          >
+                            View Details
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                   )}
-
+                  )}
 
                   {/* Payment Options */}
                   <div className="space-y-3 mb-6">

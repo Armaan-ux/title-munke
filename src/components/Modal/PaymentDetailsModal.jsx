@@ -4,10 +4,17 @@ import { useParams } from "react-router-dom";
 
 export function PaymentDetailsModal({ open, onOpenChange, onCancel, price }) {
   const { planId } = useParams();
+  const getStoredAgents = () =>
+    JSON.parse(localStorage.getItem("invitedAgents")) || [];
+  const agents = getStoredAgents();
+  const numericPrice = Number(price.replace("$", ""));
+  const qty = agents?.length || 0;
+
+  const seatFees = numericPrice * qty;
+  const tax = 0;
+  const totalAmount = numericPrice + tax + seatFees;
+
   if (!open) return null;
-const numericPrice = Number(price.replace("$", ""));
-const tax = 0;
-const totalAmount = numericPrice + tax;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <div
@@ -20,7 +27,7 @@ const totalAmount = numericPrice + tax;
       >
         <DialogContent
           showCloseButton={false}
-          className="relative z-50 w-[420px] rounded-2xl bg-white border-none p-6"
+          className="relative z-50 !w-[720px] rounded-2xl bg-white border-none p-6"
           style={{
             top: "50% !important",
             left: "50% !important",
@@ -35,7 +42,7 @@ const totalAmount = numericPrice + tax;
 
           {/* Table */}
           <div className="overflow-hidden rounded-lg border border-[#F1E5D6]">
-            <div className="grid grid-cols-4 bg-[#5A0A0A] text-white text-xs font-medium px-4 py-2">
+            <div className="grid grid-cols-[2fr_1fr_1fr_1fr] bg-[#5A0A0A] text-white text-xs font-medium px-4 py-2">
               <span>Description</span>
               <span className="text-center">QTY</span>
               <span className="text-center">Price</span>
@@ -43,22 +50,36 @@ const totalAmount = numericPrice + tax;
             </div>
 
             <div className="bg-[#FFF9F3] px-4 py-3 text-sm text-[#2C1B13] space-y-2">
-              <div className="grid grid-cols-4">
-                <span>
-                  {planId === 'PROFESSIONAL_PLAN' ? 'Subscription' : '' || planId === 'PAY_AS_YOU_GO' ? 'Pay As You Go' : ''}</span>
+              <div className="grid-cols-[2fr_1fr_1fr_1fr] grid">
+                <span className="whitespace-nowrap">
+                  {planId === "PROFESSIONAL_PLAN"
+                    ? "Subscription(Base price)"
+                    : "" || planId === "PAY_AS_YOU_GO"
+                      ? "Pay As You Go"
+                      : ""}
+                </span>
                 <span className="text-center">1</span>
                 <span className="text-center">${numericPrice.toFixed(2)}</span>
                 <span className="text-right">${numericPrice.toFixed(2)}</span>
               </div>
-
-              <div className="grid grid-cols-4">
+              {agents.length > 0 && (
+                <div className="grid grid-cols-[2fr_1fr_1fr_1fr]">
+                  <span>Seat Fees</span>
+                  <span className="text-center">{agents.length}</span>
+                  <span className="text-center">
+                    ${numericPrice.toFixed(2)}
+                  </span>
+                  <span className="text-right">${seatFees.toFixed(2)}</span>
+                </div>
+              )}
+              <div className="grid grid-cols-[2fr_1fr_1fr_1fr]">
                 <span>Tax</span>
                 <span />
                 <span className="text-center">${tax.toFixed(2)}</span>
                 <span className="text-right">${tax.toFixed(2)}</span>
               </div>
 
-              <div className="grid grid-cols-4 border-t pt-2 font-semibold">
+              <div className="grid grid-cols-[2fr_1fr_1fr_1fr] border-t pt-2 font-semibold">
                 <span>Amount</span>
                 <span />
                 <span />
