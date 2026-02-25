@@ -19,11 +19,15 @@ import SubscriptionFailedModal from "@/components/Modal/SubscriptionFailedModal"
 import { Link, useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import CardAddedSuccessModal from "../Modal/CardAddedSuccessModal";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "@/utils";
+import { getBrokerDetails, getCheckCardIsAdded } from "../service/userAdmin";
+import { useUserIdType } from "@/hooks/useUserIdType";
 
 const BrokerDashboard = () => {
   const navigate =  useNavigate()
   const [agents, setAgents] = useState([]);
-  
+    const {userId,userType} = useUserIdType();
 
   const {
     user,
@@ -35,8 +39,16 @@ const BrokerDashboard = () => {
     paymentSuccessModal,
     setPaymentFailedModal,
     paymentFailedModal,
+    setCardListingModal
   } = useUser();
 
+  const brokerDetailQuery = useQuery({
+    queryKey: ["brokerDetail", userId],
+    queryFn: () => getBrokerDetails(userId),
+    enabled: userType === "broker" && !!userId,
+    staleTime: 5 * 60 * 1000,
+  });
+  console.log("broker details: ", brokerDetailQuery.data);
   useEffect(() => {
     fetchAgentsWithSearchCount(user.attributes.sub).then((res) =>
       setAgents(res || [])
@@ -52,7 +64,38 @@ const BrokerDashboard = () => {
   const inactiveAgents = agents.filter(
     (agent) => agent.status === "UNCONFIRMED"
   ).length;
+    const {data: iscardAddedForUser} = useQuery({
+    queryKey: [queryKeys.getCheckCardIsAdded],
+    queryFn: () => getCheckCardIsAdded(userId),
+    enabled: !!userId
+  })
+  console.log("is card added for user: ", iscardAddedForUser?.isCardAdded,);
 
+useEffect(() => {
+  const plan = brokerDetailQuery.data?.planType;
+  const isCardAdded = iscardAddedForUser?.isCardAdded;
+
+  if (!plan || isCardAdded !== false) return;
+
+  // store planType safely
+  localStorage.setItem("planType", plan);
+
+  let timer;
+
+  if (plan === "PROFESSIONAL_PLAN") {
+    timer = setTimeout(() => {
+      setPaymentModal(true);
+    }, 2000);
+  } else if (plan === "PAY_AS_YOU_GO") {
+    timer = setTimeout(() => {
+      setCardListingModal(true);
+    }, 2000);
+  }
+
+  return () => {
+    if (timer) clearTimeout(timer);
+  };
+}, [brokerDetailQuery.data?.planType, iscardAddedForUser?.isCardAdded]);
 
   return (
     <div className="my-4">

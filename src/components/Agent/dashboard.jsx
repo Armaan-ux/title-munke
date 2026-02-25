@@ -6,13 +6,19 @@ import Search from "@/components/common/search";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/utils";
-import { listTotalAuditLogsByUserId, listTotalSearchesByUserId } from "@/components/service/userAdmin";
+import { getCheckCardIsAdded, listTotalAuditLogsByUserId, listTotalSearchesByUserId } from "@/components/service/userAdmin";
 import { useUserIdType } from "@/hooks/useUserIdType";
+import { useUser } from "@/context/usercontext";
+import { useEffect } from "react";
 
-const BrokerDashboard = () => {
+const AgentDashboard = () => {
+  const {agentDetail} = useUser();
 
   const {userId} = useUserIdType();
-
+  const {
+    setPaymentModal,
+    setCardListingModal
+  } = useUser();
   const {data: agentSearches} = useQuery({
     queryKey: [queryKeys.listTotalSearchesByUserId],
     queryFn: () => listTotalSearchesByUserId(userId),
@@ -24,6 +30,39 @@ const BrokerDashboard = () => {
     queryFn: () => listTotalAuditLogsByUserId(userId),
     skip: !userId
   })
+
+    const {data: iscardAddedForUser} = useQuery({
+    queryKey: [queryKeys.getCheckCardIsAdded],
+    queryFn: () => getCheckCardIsAdded(userId),
+    enabled: !!userId
+  })
+  console.log("is card added for user: ", iscardAddedForUser, agentDetail);
+
+
+useEffect(() => {
+  const plan = agentDetail?.planType;
+  const isCardAdded = iscardAddedForUser?.isCardAdded;
+  if (!plan || isCardAdded !== false) return;
+
+  // store planType safely
+  localStorage.setItem("planType", plan);
+
+  let timer;
+
+  if (plan === "PROFESSIONAL_PLAN") {
+    timer = setTimeout(() => {
+      setPaymentModal(true);
+    }, 2000);
+  } else if (plan === "PAY_AS_YOU_GO") {
+    timer = setTimeout(() => {
+      setCardListingModal(true);
+    }, 2000);
+  }
+
+  return () => {
+    if (timer) clearTimeout(timer);
+  };
+}, [agentDetail.data?.planType, iscardAddedForUser?.isCardAdded]);
 
   return (
     <div className="my-4" >
@@ -71,4 +110,4 @@ const BrokerDashboard = () => {
   );
 };
 
-export default BrokerDashboard;
+export default AgentDashboard;

@@ -1577,3 +1577,16 @@ export async function createAgentfromSignup(data) {
     planType,
   });
 }
+
+
+export async function getCheckCardIsAdded() {
+  const payload = {
+   
+  };
+  return callGetUserAdminApi(
+    payload,
+    'Success in getCheckCardIsAdded',
+    'Error in getCheckCardIsAdded',
+    "/check-if-card-added-of-user"
+  );
+}

@@ -84,7 +84,8 @@ function MembershipOrCardAddedModalContainer() {
       toast.error("Failed to delete card");
     }
   })
-
+const planType = localStorage.getItem("planType");
+const isPlanMandatory = !!planType;
 
   useEffect(() => {
     if (isCardAdded || isPaymentSuccessful) {
@@ -103,7 +104,7 @@ function MembershipOrCardAddedModalContainer() {
   return (
     <div>
       {cardListingModal && 
-        <Dialog open={cardListingModal} onOpenChange={() => {setCardListingModal(false); setUser((pre) => ({ ...pre, isAddCard: false }));}}>
+        <Dialog open={cardListingModal} onOpenChange={(open) => {  if (isPlanMandatory && !open) return;  setCardListingModal(false); setUser((pre) => ({ ...pre, isAddCard: false }));}}>
           <div
         className="fixed inset-0 z-40 flex items-center justify-center"
         style={{
@@ -213,7 +214,7 @@ function MembershipOrCardAddedModalContainer() {
       {paymentModal && (
         <PaymentMethodModal
           open={paymentModal}
-          onOpenChange={() => setPaymentModal(false)}
+          onOpenChange={(open) =>{  if (isPlanMandatory && !open) return; setPaymentModal(false)}}
           onSuccess={() => setPaymentSuccessModal(true)}
         />
       )}

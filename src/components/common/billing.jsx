@@ -226,9 +226,9 @@ const Billing = () => {
               </div>
             </div>
 
-            <Separator className="my-2" />
+            {/* <Separator className="my-2" /> */}
 
-            <div className="flex justify-between items-center text-sm text-coffee-light font-medium">
+            {/* <div className="flex justify-between items-center text-sm text-coffee-light font-medium">
               <p>
                 Cancel subscription will remain active until the end of the
                 current billing period.
@@ -251,7 +251,7 @@ const Billing = () => {
                 </Button>
                 {user?.cancel_at_period_end && <div><span className="text-coffee-text-billing font-medium">Plan expires at</span> {convertFromTimestamp(user?.cancel_at, "dateTime")}</div>}
               </div>
-            </div>
+            </div> */}
           </CardContent>
         }
       </div>

@@ -100,26 +100,37 @@ function PaymentForm({ onPaymentSuccess, planId }) {
   );
 }
 
-export default function PaymentSetup({ planId = "", onPaymentSuccess,actionType }) {
+export default function PaymentSetup({
+  planId = "",
+  onPaymentSuccess,
+  actionType,
+}) {
   const [clientSecret, setClientSecret] = useState("");
-   const getStoredAgents = () =>
-  JSON.parse(localStorage.getItem("invitedAgents")) || [];
+  const getStoredAgents = () =>
+    JSON.parse(localStorage.getItem("invitedAgents")) || [];
   const { user, newPlanType } = useUser();
   const userType =
     user?.signInUserSession?.idToken?.payload["cognito:groups"]?.[0];
-     const agents = getStoredAgents();
-  const plan = newPlanType || planId;
+  const agents = getStoredAgents();
+  const localPlanType = localStorage.getItem("planType");
+  const plan = newPlanType || planId || localPlanType;
+
   const membershipMutation = useMutation({
     mutationFn: () =>
       addCard(
         user?.attributes?.sub,
         userType,
-        user?.isAddCard || planId === "PAY_AS_YOU_GO" ? "add-card" : "subscribe",
+        user?.isAddCard || planId === "PAY_AS_YOU_GO"
+          ? "add-card"
+          : "subscribe",
         plan,
         actionType,
-        agents?.length
+        agents?.length,
       ),
-    onSuccess: (data) => setClientSecret(data.clientSecret),
+    onSuccess: (data) => {
+      setClientSecret(data.clientSecret);
+      localStorage.removeItem("planType");
+    },
   });
   const init = async () => {
     const data = await addCard(user?.attributes?.sub, userType);
@@ -127,10 +138,9 @@ export default function PaymentSetup({ planId = "", onPaymentSuccess,actionType 
   };
 
   useEffect(() => {
-    if (user?.attributes?.sub)
-      // init();
-      membershipMutation.mutate();
-  }, [user?.attributes?.sub]);
+    if (!user?.attributes?.sub || !plan) return;
+    membershipMutation.mutate();
+  }, [user?.attributes?.sub, plan]);
 
   const options = {
     clientSecret,
