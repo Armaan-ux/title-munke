@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import {motion} from "motion/react"
-import { updateBrokerStatus, updateStatus } from "../service/userAdmin";
+import { updateBrokerStatus, updateStatus, updateStatusAgent } from "../service/userAdmin";
 
 
 function ResetPassword({ username, password }) {
@@ -30,7 +30,7 @@ function ResetPassword({ username, password }) {
       if (groups.includes("admin")) {
         navigate("/admin");
       } else if (groups.includes("agent")) {
-        await updateStatus(user?.username)
+        await updateStatusAgent(user?.username)
         navigate("/agent");
       } else if (groups.includes("broker")) {
         await updateBrokerStatus(user?.username, "ACTIVE")  

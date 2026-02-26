@@ -1604,3 +1604,19 @@ export async function getCheckCardIsAdded() {
     "/check-if-card-added-of-user"
   );
 }
+export async function updateStatusAgent(agentId) {
+  const action = CONSTANTS?.ACTIONS?.UPDATE_AGENT_STATUS
+  const payload = {
+    body: {
+      status: "ACTIVE",
+      action,
+      agentId
+    }
+  }
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/update-agent-status"
+  )
+}

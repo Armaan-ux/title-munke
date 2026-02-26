@@ -9,6 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { resendConfirmationCode, updateUserStatus } from "../service/userAdmin";
 import { handleCreateAuditLog } from "@/utils";
 import { motion } from "motion/react";
+import ResetPassword from "../ResetPassword";
 
 function SubscriptionLogin() {
   const [showPassword, setShowPassword] = useState(false);
@@ -36,7 +37,6 @@ function SubscriptionLogin() {
   //   }
   // }, [user, navigate]);
 
-  // if (isReset) return <ResetPassword username={username} password={password} />;
 
   const resendCodeMutation = useMutation({
     // mutationFn: code => confirmEmail({code: code, email: formData.email, userType: formData.role}),
@@ -110,6 +110,7 @@ function SubscriptionLogin() {
       setIsChecking(false);
     }
   };
+  if (isReset) return <ResetPassword username={username} password={password} />;
 
   return (
     <div className="relative min-h-dvh w-full overflow-hidden bg-[#2b140c]">
