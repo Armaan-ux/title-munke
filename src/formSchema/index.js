@@ -115,7 +115,7 @@ export const signupSchema = z
   searchLimit: z
     .string()
     .min(1, "Please select search limit")
-    .refine((val) => ["10", "20"].includes(val), {
+    .refine((val) => ["10", "20", "30", "40", "unlimited"].includes(val), {
       message: "Invalid search limit selected",
     }),
 });
