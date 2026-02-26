@@ -24,7 +24,7 @@ import { CenterLoader } from "../common/Loader";
 import ShowError from "../common/ShowError";
 import { format } from "date-fns-tz";
 
-function OrganPropertySearch() {
+function PropertySearch() {
   const [date, setDate] = useState({fromDatetime: null, toDatetime: null});
   const {id} = useParams();
   const agentSearchesQuery = useQuery({
@@ -110,4 +110,4 @@ function OrganPropertySearch() {
   );
 }
 
-export default OrganPropertySearch;
+export default PropertySearch;

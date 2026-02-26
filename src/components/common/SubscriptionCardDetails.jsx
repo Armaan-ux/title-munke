@@ -1,37 +1,21 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../../context/usercontext";
-import ResetPassword from "../ResetPassword";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  ChevronLeft,
   CreditCard,
-  Eye,
-  EyeOff,
-  Loader,
   UserRoundCheck,
 } from "lucide-react";
-import { motion } from "motion/react";
-
 import SubscriptionSuccessModal from "../Modal/SubscriptionSuccessModal";
 import CardAddedSuccessModal from "../Modal/CardAddedSuccessModal";
 import PaymentSetup from "../stripe/payment-form";
 import { useUserIdType } from "@/hooks/useUserIdType";
-import { createAgentfromSignup  } from "../service/userAdmin";
-import { useMutation  } from "@tanstack/react-query";
+import { createAgentfromSignup } from "../service/userAdmin";
+import { useMutation } from "@tanstack/react-query";
 
 function SubscriptionCardDetails({ isAddCard = false }) {
   const { planId } = useParams();
   const { user, signIn } = useUser();
   const { userType } = useUserIdType();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isReset, setIsReset] = useState(false);
   const [showSubscriptionSuccess, setShowSubscriptionSuccess] = useState(false);
   const [showCardSuccess, setShowCardSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +23,12 @@ function SubscriptionCardDetails({ isAddCard = false }) {
   const navigate = useNavigate();
   const location = useLocation();
   const getStoredAgents = () =>
-  JSON.parse(localStorage.getItem("invitedAgents")) || [];
+    JSON.parse(localStorage.getItem("invitedAgents")) || [];
+  const getStoredBrokers = () =>
+    JSON.parse(localStorage.getItem("invitedBroker")) || [];
+
+  const getStoredOrgAgents = () =>
+    JSON.parse(localStorage.getItem("invitedOrgAgents")) || [];
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -59,7 +48,12 @@ function SubscriptionCardDetails({ isAddCard = false }) {
   };
 
   const handlePaymentSuccess = () => {
-    addAgentsBatchMutation.mutate();
+    if (userType === "broker" && planId !== "EXPLORE_PLAN") {
+      addAgentsBatchMutation.mutate();
+    }
+    if (userType === "organisation" && planId !== "EXPLORE_PLAN") {
+      addOrganisationBatchMutation.mutate();
+    }
     setShowSubscriptionSuccess(true);
   };
 
@@ -75,46 +69,136 @@ function SubscriptionCardDetails({ isAddCard = false }) {
     }, 2000);
   };
 
-
   const addAgentsBatchMutation = useMutation({
-  mutationFn: async () => {
-    const agents = getStoredAgents();
+    mutationFn: async () => {
+      const agents = getStoredAgents();
 
-    if (!agents.length) return;
+      if (!agents.length) return;
 
-    await Promise.all(
-      agents.map((agent) =>
-        createAgentfromSignup({
-          name: agent.name,
-          email: agent.email,
-          phoneNumber: agent.phoneNumber,
-          searchLimit: agent.searchLimit,
-          userType:agent.userType,
-          brokerId: agent?.brokerId,
-          planType: agent.planType,
-        })
-      )
-    );
-  },
-  onSuccess: () => {
-    localStorage.removeItem("invitedAgents");
-  },
-  onError: (error) => {
-    console.error("Batch error", error);
-    // setError("Failed to add agents");
-  },
-});
-  if (isReset) return <ResetPassword username={username} password={password} />;
+      await Promise.all(
+        agents.map((agent) =>
+          createAgentfromSignup({
+            name: agent.name,
+            email: agent.email,
+            phoneNumber: agent.phoneNumber,
+            searchLimit: agent.searchLimit,
+            userType: agent.userType,
+            brokerId: agent?.brokerId,
+            planType: agent.planType,
+          }),
+        ),
+      );
+    },
+    onSuccess: () => {
+      localStorage.removeItem("invitedAgents");
+    },
+    onError: (error) => {
+      console.error("Batch error", error);
+      // setError("Failed to add agents");
+    },
+  });
+
+  const addOrganisationBatchMutation = useMutation({
+    mutationFn: async () => {
+      debugger;
+      const brokers = getStoredBrokers();
+      const agents = getStoredOrgAgents();
+
+      if (!brokers.length && !agents.length) return;
+
+      const brokerIdMap = {}; // UUID → real brokerId
+
+      try {
+        //  Create Brokers First
+        if (brokers.length) {
+          await Promise.all(
+            brokers.map(async (broker) => {
+              const res = await createAgentfromSignup({
+                name: broker.name,
+                email: broker.email,
+                phoneNumber: broker.phoneNumber,
+                userType: "broker",
+                organisationId: broker.organisationId,
+                planType: broker.planType,
+                actionType: "register_broker_from_org",
+                customUUID: broker?.customUUID,
+              });
+              const realId = res?.user?.id;
+              const responseUUID = res?.user?.customUUID;
+
+              if (responseUUID && realId) {
+                brokerIdMap[responseUUID] = realId;
+              }
+            }),
+          );
+        }
+
+        //   Prepare Agents with correct brokerId
+        const updatedAgents = agents.map((agent) => {
+          const mappedBrokerId = brokerIdMap[agent.brokerId];
+
+          if (mappedBrokerId) {
+            return {
+              ...agent,
+              brokerId: mappedBrokerId, //  replaced with real ID
+            };
+          }
+
+          return agent;
+        });
+
+        //  safety: ensure no dummy brokerIds remain
+        const invalidAgent = updatedAgents.find(
+          (a) => !a.brokerId || a.brokerId.length < 10,
+        );
+        if (invalidAgent) {
+          throw new Error("Invalid brokerId mapping. Aborting agent creation.");
+        }
+
+        //   Create Agents
+        if (updatedAgents.length) {
+          await Promise.all(
+            updatedAgents.map((agent) =>
+              createAgentfromSignup({
+                name: agent.name,
+                email: agent.email,
+                phoneNumber: agent.phoneNumber,
+                searchLimit: agent.searchLimit,
+                userType: "agent",
+                brokerId: agent.brokerId,
+                planType: agent.planType,
+              }),
+            ),
+          );
+        }
+      } catch (error) {
+        console.error("Organisation batch failed:", error);
+        throw error;
+      }
+    },
+
+    onSuccess: () => {
+      localStorage.removeItem("invitedBroker");
+      localStorage.removeItem("invitedOrgAgents");
+    },
+
+    onError: (error) => {
+      console.error("Batch failed. Nothing removed.", error);
+    },
+  });
+
   return (
     <>
       <SubscriptionSuccessModal
         open={showSubscriptionSuccess}
         onOpenChange={subscribeModalHandler}
         onFailed={() => {}}
-        isLoading={addAgentsBatchMutation.isPending}
+        isLoading={
+          addAgentsBatchMutation?.isPending ||
+          addOrganisationBatchMutation?.isPending || isLoading
+        }
         showCloseIcon={false}
         planId={planId}
-
       />
       <CardAddedSuccessModal
         open={showCardSuccess}
@@ -178,7 +262,7 @@ function SubscriptionCardDetails({ isAddCard = false }) {
             <div className="flex items-center justify-center p-6 sm:p-10 bg-[url('/bg-signin.png')] md:pb-[200px]">
               <div className="w-full max-w-lg ">
                 {/* stepper */}
-                {userType === "broker" ? (
+                {userType === "broker" || userType === "organisation" ? (
                   <div className="flex items-center justify-center mb-5">
                     <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
                       {/* Active Step */}

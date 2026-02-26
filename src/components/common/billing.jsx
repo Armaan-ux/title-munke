@@ -26,12 +26,6 @@ const Billing = () => {
   const [helpUsImproveModal, setHelpUsImproveModal] = useState(false);
   const {
     user,
-    setPaymentModal,
-    paymentModal,
-    setPaymentSuccessModal,
-    paymentSuccessModal,
-    setPaymentFailedModal,
-    paymentFailedModal,
     setCardListingModal
   } = useUser();
 
@@ -217,7 +211,7 @@ const Billing = () => {
                   </p>
                   <button
                     className="text-sm text-secondary font-medium mt-1 hover:underline mr-90"
-                    onClick={() => userRole==="broker" ? navigate("/broker/setting/billing-history") : navigate("/agent/setting/billing-history")}
+                    onClick={() => userRole==="broker" ? navigate("/broker/setting/billing-history") : userRole==="organisation" ? navigate("/organisation/setting/billing-history") : navigate("/agent/setting/billing-history")}
                   >
                     View
                   </button>

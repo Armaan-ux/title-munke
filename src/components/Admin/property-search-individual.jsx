@@ -21,7 +21,7 @@ import ShowError from "../common/ShowError";
 import { format } from "date-fns-tz";
 import { useState } from "react";
 
-function PropertySearchIndividual() {
+function OrganisationPropertySearchAgent() {
   const [date, setDate] = useState({from: null, to: null});
   const {id} = useParams();
   const individualSearchesQuery = useQuery({
@@ -108,4 +108,4 @@ function PropertySearchIndividual() {
   );
 }
 
-export default PropertySearchIndividual;
+export default OrganisationPropertySearchAgent;

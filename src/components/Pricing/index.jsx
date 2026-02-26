@@ -59,7 +59,7 @@ const Pricing = () => {
   const pricingPlansMap = {
     agent: pricingPlansIndividual,
     broker: pricingPlansBroker,
-    organization: pricingPlansOrganization,
+    organisation: pricingPlansOrganization,
   };
   const PricingCard = ({
     title,
@@ -203,16 +203,16 @@ const Pricing = () => {
             <h2 className="text-h2 text-center text-secondary mb-6">
               {userType === "broker"
                 ? "Brokerage Options"
-                : userType === "organization"
-                  ? "Organization Solutions"
+                : userType === "organisation"
+                  ? "Organisation Solutions"
                   : "Individual Agent"}
             </h2>
             <p className="text-center max-w-[1000px] mx-auto mb-10 text-body text-coffee-light">
               {userType === "broker"
                 ? `Scalable plans built for brokers managing teams, higher volume, and faster turnaround requirements.
 `
-                : userType === "organization"
-                  ? `Powerful, customizable solutions built for large organizations, investors, and enterprise-scale operations.`
+                : userType === "organisation"
+                  ? `Powerful, customizable solutions built for large organisations, investors, and enterprise-scale operations.`
                   : `Choose how you want to use Title Munke. Explore the platform, become
             a member, or pay only when you need a report.`}
             </p>

@@ -7,7 +7,7 @@ import { useState } from "react";
 import { getAdminMetrics } from "../service/userAdmin";
 import { useQuery } from "@tanstack/react-query";
 const userTimezone  = Intl.DateTimeFormat().resolvedOptions().timeZone;
-export default function OrganisationAgentBusiness() {
+export default function IndividualBusiness() {
    const [isDownload, setIsDoownload] = useState(false);
    const [date, setDate] = useState({from: null, to: null});
    const metricQuery = useQuery({

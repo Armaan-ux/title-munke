@@ -61,6 +61,39 @@ export const routes = {
     },
 
   ],
+   organisation: [
+    {
+      link: "/organisation/dashboard",
+      name: "Dashboard",
+      class: "fas fa-person",
+      icon: LayoutDashboard
+    },
+    {
+      link: "/organisation/demo-requests",
+      name: "Demo Requests",
+      class: "fas fa-person",
+      icon: BookUser
+    },
+    {
+      link: "/organisation/users",
+      name: "Users",
+      class: "fas fa-person",
+      icon: UserRound
+    },
+    {
+      link: "/organisation/audit-logs",
+      name: "Audit Logs",
+      class: "fas fa-person",
+      icon: Logs
+    },
+    {
+      link: "/organisation/settings",
+      name: "Settings",
+      class: "fas fa-person",
+      icon: Settings
+    },
+
+  ],
   broker: [
     {
       link: "/broker/dashboard",

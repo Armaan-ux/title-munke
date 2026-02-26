@@ -1,14 +1,29 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useParams } from "react-router-dom";
+import { useUserIdType } from "@/hooks/useUserIdType";
 
 export function PaymentDetailsModal({ open, onOpenChange, onCancel, price }) {
   const { planId } = useParams();
+  const { userType } = useUserIdType();
   const getStoredAgents = () =>
     JSON.parse(localStorage.getItem("invitedAgents")) || [];
+  const getStoredBrokers = () =>
+    JSON.parse(localStorage.getItem("invitedBroker")) || [];
+
+  const getStoredOrgAgents = () =>
+    JSON.parse(localStorage.getItem("invitedOrgAgents")) || [];
   const agents = getStoredAgents();
+  const brokers = getStoredBrokers();
+  const orgAgents = getStoredOrgAgents();
+  const agentCount =
+  userType === "broker"
+    ? agents?.length ?? 0
+    : userType === "organisation"
+    ? (orgAgents?.length ?? 0) + (brokers?.length ?? 0)
+    : 0;
   const numericPrice = Number(price.replace("$", ""));
-  const qty = agents?.length || 0;
+  const qty = agentCount || 1;
 
   const seatFees = numericPrice * qty;
   const tax = 0;
@@ -58,20 +73,22 @@ export function PaymentDetailsModal({ open, onOpenChange, onCancel, price }) {
                       ? "Pay As You Go"
                       : ""}
                 </span>
-                <span className="text-center">1</span>
+                <span className="text-center">{qty}</span>
                 <span className="text-center">${numericPrice.toFixed(2)}</span>
                 <span className="text-right">${numericPrice.toFixed(2)}</span>
               </div>
-              {agents.length > 0 && (
+              {agentCount > 0  && (
                 <div className="grid grid-cols-[2fr_1fr_1fr_1fr]">
                   <span>Seat Fees</span>
-                  <span className="text-center">{agents.length}</span>
+                  <span className="text-center">{agentCount}</span>
                   <span className="text-center">
                     ${numericPrice.toFixed(2)}
                   </span>
                   <span className="text-right">${seatFees.toFixed(2)}</span>
                 </div>
               )}
+
+
               <div className="grid grid-cols-[2fr_1fr_1fr_1fr]">
                 <span>Tax</span>
                 <span />

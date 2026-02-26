@@ -3,6 +3,7 @@ import Agent from "./components/Agent";
 import AgentSetting from "./components/Agent/settings";
 import Broker from "./components/Broker";
 import AdminSettings from "./components/Admin/admin-settings";
+
 import AdminAuditLogs from "./components/Admin/audit-logs";
 import AuditLogs from "./components/Agent/audit-logs";
 import BrokerSettings from "./components/Broker/settings";
@@ -32,6 +33,18 @@ import PropertySearchIndividual from "./components/Admin/property-search-individ
 import RequestAgent from "./components/Agent/Requests";
 import RequestBroker from "./components/Broker/Requests";
 
+import Organisation from "./components/Organisation";
+import OrganisationDashboard from "./components/Organisation/dashboard";
+import OrganisationBrokerBusiness from "./components/Organisation/broker-business";
+import OrganisationAgentBusiness from "./components/Organisation/individual-business";
+import OrganisationBrokerDetails from "./components/Organisation/broker-details";
+import OrganPropertySearch from "./components/Organisation/property-search";
+import OrganisationPropertySearchAgent from "./components/Organisation/property-search-individual";
+import OrganisationUsers from "./components/Organisation/users";
+import OrganisationDemoRequests from "./components/Organisation/demo-requests";
+import OrganisationAdminAuditLogs from "./components/Organisation/audit-logs";
+import OrganisationSettings from "./components/Organisation/organisation-settings";
+
 export const adminRoutes = [
   { path: "admin", component: Admin },
   { path: "admin/dashboard", component: AdminDashboard },
@@ -50,6 +63,23 @@ export const adminRoutes = [
   // { path: "admin/setting", component: AdminSettings },
   // { path: "admin/manage-admins", component: ManageAdmins },
   // { path: "admin/audit-log", component: AdminAuditLogs },
+];
+
+export const organisationRoutes = [
+  { path: "organisation", component: Organisation },
+  { path: "organisation/dashboard", component: OrganisationDashboard },
+  { path: "organisation/dashboard/broker-business", component: OrganisationBrokerBusiness },
+  { path: "organisation/dashboard/individual-business", component: OrganisationAgentBusiness },
+  { path: "organisation/dashboard/broker-details/:id", component: OrganisationBrokerDetails },
+  { path: "organisation/dashboard/property-search/:id", component: OrganPropertySearch },
+  { path: "organisation/dashboard/property-search-individual/:id", component: OrganisationPropertySearchAgent },
+
+
+  { path: "organisation/users", component: OrganisationUsers },
+  { path: "organisation/demo-requests", component: OrganisationDemoRequests },
+  { path: "organisation/audit-logs", component: OrganisationAdminAuditLogs },
+  { path: "organisation/settings", component: OrganisationSettings },
+  { path: "organisation/setting/billing-history", component: BillingHistory },
 ];
 
 export const agentRoutes = [

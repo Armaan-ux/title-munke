@@ -333,6 +333,19 @@ export async function getAgentDetails(agentId) {
     "/get-agent-details"
   );
 }
+export async function getOrganisationDetails(organisationId) {
+  const payload = {
+    body: {
+      organisationId: organisationId,
+    },
+  };
+  return callGetUserAdminApi(
+    payload,
+    'Success in getOrganisationDetails:',
+    'Error in getOrganisationDetails:',
+    "/get-organisation-details"
+  );
+}
 
 export async function getAdminDetails(adminId) {
   const payload = {
@@ -1500,10 +1513,10 @@ export async function listRequestByUserId(requestType) {
   );
 }
 
-export async function getBrokerAndOrganizationSelectListing() {
-  const payload = {
-   
-  };
+export async function getBrokerAndOrganizationSelectListing(actionType) {
+  const payload = actionType
+    ? { body: { actionType: actionType } }
+    : {};
   return callGetUserAdminApi(
     payload,
     'Success in getBrokerAndOrganizationSelectListing:',
@@ -1563,18 +1576,19 @@ export async function changePlanOfUser(newPlanType) {
   );
 }
 export async function createAgentfromSignup(data) {
-  const { name, email, phoneNumber, searchLimit, userType, brokerId, planType } = data;
-
-  console.log({ name, email, phoneNumber, searchLimit, userType, brokerId, planType });
+  const { name, email, phoneNumber, searchLimit, userType, brokerId, planType, organisationId,actionType,customUUID } = data;
 
   return createUser({
     name,
     email,
     phoneNumber,
-    userType: CONSTANTS.USER_TYPES.AGENT,
-    brokerId,
-    searchLimit,
+    userType,
     planType,
+    ...(brokerId && { brokerId }),
+    ...(searchLimit && { searchLimit }),
+    ...(organisationId && { organisationId }),
+    ...(actionType && { actionType }),
+   ...(customUUID && { customUUID })
   });
 }
 

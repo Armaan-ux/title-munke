@@ -4,6 +4,7 @@ import {
   getAdminDetails,
   getAgentBrokerDetails,
   getAgentDetails,
+  getOrganisationDetails,
   getSubscriptionDetails,
   updateAdmin,
   updateAgent,
@@ -33,6 +34,7 @@ export const UserProvider = ({ children }) => {
   const [cardListingModal, setCardListingModal] = useState(false);
   const [agentDetail, setAgentDetail] = useState(null);
   const [newPlanType, setNewPlanType] = useState(null);
+  const [organisationDetail, setOrganisationDetail] = useState(null);
   const agentBrokerDetailQuery = useQuery({
       queryKey: ["agentBrokerDetail", user?.attributes?.sub],
       queryFn: () => getAgentBrokerDetails(user?.attributes?.sub),
@@ -63,11 +65,26 @@ export const UserProvider = ({ children }) => {
   staleTime: 0,
   retry: false,
 });
+
+console.log("userType>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",userType)
+  const organisaDetailQuery = useQuery({
+  queryKey: ["organisationDetail", user?.attributes?.sub, newPlanType],
+  queryFn: () => getOrganisationDetails(user?.attributes?.sub),
+  enabled: userType === "organisation" && !!user?.attributes?.sub,
+  refetchOnWindowFocus: false,
+  staleTime: 0,
+  retry: false,
+});
+
+
 useEffect(() => {
   if (agentDetailQuery.data) {
     setAgentDetail(agentDetailQuery.data);
   }
-}, [agentDetailQuery.data]);
+  if (organisaDetailQuery.data) {
+    setOrganisationDetail(organisaDetailQuery.data);
+  }
+}, [agentDetailQuery.data, organisaDetailQuery.data]);
 
   useEffect(() => {
     if(agentBrokerDetailQuery?.isSuccess && userType === "broker") {
@@ -188,7 +205,8 @@ useEffect(() => {
         setInvalidateSearchHistory,
         agentDetail,
         setNewPlanType,
-          newPlanType
+        newPlanType,
+        organisationDetail,
       }}
     >
       {children}

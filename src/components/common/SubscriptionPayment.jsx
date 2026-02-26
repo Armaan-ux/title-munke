@@ -119,7 +119,7 @@ function SubscriptionPayment() {
             >
               <div className="w-full max-w-lg ">
                 {/* stepper */}
-                {userType === "broker" ? (
+                {userType === "broker" || userType === "organisation" ? (
                   <div className="flex items-center justify-center mb-5">
                     <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
                       {/* Active Step */}

@@ -85,13 +85,13 @@ export const flexiblePricing = [
     content: 'Designed for brokers managing multiple agents and higher activity. Streamline workflows, stay organized, and scale operations smoothly as your business expands.'
   },
   {
-    key: "organization",
+    key: "organisation",
     background: '/broker-bg.png',
     icon: '/organization.svg',
-    title: 'Organization',
+    title: 'Organisation',
     subTitle: 'Powering large-scale operations',
     headline: 'BEST FOR SCALE',
-    content: 'Built for enterprise teams, investors, and high-volume organizations. A robust solution tailored for complex workflows, advanced needs, and long-term growth.'
+    content: 'Built for enterprise teams, investors, and high-volume organisation. A robust solution tailored for complex workflows, advanced needs, and long-term growth.'
   }
 
 ]
@@ -216,7 +216,7 @@ export const pricingPlansOrganization = [
     {
       id: "PROFESSIONAL_PLAN",
       title: "Subscription",
-      price: "$7.50",
+      price: "$10",
       subtitle: "per seat/ Search Cost",
       features: [
         " Full access to all platform features",

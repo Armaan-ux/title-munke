@@ -84,7 +84,6 @@ function SubscriptionSignup() {
     onError: (error) => {
       console.log("error", error);
       setError(
-        error.response?.data?.error ||
           "Something went wrong. Please try again later.",
       );
     },
@@ -134,6 +133,8 @@ function SubscriptionSignup() {
 
 if(userType === "broker") {
   navigate(`/subscription-addAgent/${planId}`);
+}else if (userType === "organisation") {
+ navigate(`/subscription-addBroker/${planId}`);
 }else{
   navigate(`/subscription-payment/${planId}`);
 }
@@ -570,6 +571,7 @@ if(userType === "broker") {
                         .
                       </Label>
                     </div>
+                    {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
                     <Button
                       type="submit"
                       className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
@@ -593,6 +595,7 @@ if(userType === "broker") {
                         color: #aaa;
                       }
                     `}</style>
+                    
 
                     <div className="border-t border-gray-200 mb-6 mt-4"></div>
                     {/* <p className="pt-4 text-center text-xs text-[#7a5a49]">

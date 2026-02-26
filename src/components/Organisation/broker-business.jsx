@@ -28,7 +28,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAdminMetrics } from "../service/userAdmin";
 const userTimezone  = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-export default function OrganisationBrokerBusiness() {
+export default function BrokerBusiness() {
   const [isDownload, setIsDoownload] = useState(false);
   const [date, setDate] = useState({from: null, to: null});
   const metricQuery = useQuery({

@@ -13,6 +13,7 @@ import {
   agentRoutes,
   brokerRoutes,
   individualRoutes,
+  organisationRoutes,
 } from "./routes";
 import Layout from "./components/Layout";
 import { useUser } from "./context/usercontext";
@@ -28,6 +29,8 @@ import SubscriptionPayment from "./components/common/SubscriptionPayment";
 import SubscriptionSignup from "./components/SubscriptionSignup";
 import SubscriptionCardDetails from "./components/common/SubscriptionCardDetails";
 import SubscriptionAddAgent from "./components/SubscriptionAddAgent/Index";
+import SubscriptionAddBroker from "./components/SubscriptionAddBroker";
+import SubscriptionAddOrdAgent from "./components/SubscriptionAddOrgAgent";
 
 function App() {
   const { isLoading } = useUser();
@@ -47,6 +50,8 @@ function App() {
       <Route path="/subscription-signup/:userType/:planId" element={<SubscriptionSignup />} />
       <Route path="/subscription-login" element={<SubscriptionLogin />} />
       <Route path="/subscription-addAgent/:planId" element={<SubscriptionAddAgent />} />
+      <Route path="/subscription-addBroker/:planId" element={<SubscriptionAddBroker />} />
+      <Route path="/subscription-addOrgAgent/:planId" element={<SubscriptionAddOrdAgent />} />
       <Route path="/subscription-payment/:planId" element={<SubscriptionPayment />} />
       <Route
         path="/subscription-card-details/:planId"
@@ -64,6 +69,17 @@ function App() {
             path={path}
             element={
               <ProtectedRoute allowedGroups={["admin"]}>
+                <Component />
+              </ProtectedRoute>
+            }
+          />
+        ))}
+        {organisationRoutes.map(({ path, component: Component }) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              <ProtectedRoute allowedGroups={["organisation"]}>
                 <Component />
               </ProtectedRoute>
             }

@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getAdminMetrics } from "../service/userAdmin";
 const userTimezone  = Intl.DateTimeFormat().resolvedOptions().timeZone;
-const AdminDashboard = () => {
+const OrganisationDashboard = () => {
   
   const [isDownload, setIsDoownload] = useState(false);
   const [activeTab, setActiveTab] = useState("history");
@@ -150,4 +150,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default OrganisationDashboard;

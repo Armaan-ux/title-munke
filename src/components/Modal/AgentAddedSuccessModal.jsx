@@ -13,6 +13,7 @@ export default function AgentAddedSuccessModal({
   onAddAgent,
   onContinue,
   agentName,
+  isBroker
 }) {
   if (!open) return null;
   return (
@@ -49,7 +50,7 @@ export default function AgentAddedSuccessModal({
               <DialogHeader className="text-center">
                 <DialogTitle className="text-2xl font-semibold pt-4 !font-poppins">
                   <div className="flex flex-col items-center">
-                    <p>Agent Added</p>
+                    <p>{isBroker ? "Broker" : "Agent"} Added</p>
                     <p>Successfully!</p>
                   </div>
                 </DialogTitle>

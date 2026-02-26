@@ -1,0 +1,60 @@
+import {  useState } from "react";
+import ProfileSetting from "@/components/common/profile-setting";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "@/utils";
+import { getAiModels, getDefaultAiModel } from "@/components/service/chat";
+import { useUserIdType } from "@/hooks/useUserIdType";
+import Billing from "@/components/common/billing";
+
+const agentTypes = [
+  {
+    name: "Profile Settings",
+    id: "profile",
+  },
+  {
+    name: "Billing",
+    id: "billing",
+  },
+];
+
+export default function AdminSettings() {
+  const [activeTab, setActiveTab] = useState(agentTypes[0]);
+ const [editProfile, setIsProfile] = useState(false);
+ const {userId, userType} = useUserIdType();
+ const aiModelQuery = useQuery({
+    queryKey: [queryKeys.aiModelListing],
+    queryFn: () => getAiModels({action: "get_llm_list", user_id: userId, userType}),
+ })
+
+const defualtAiModelQuery = useQuery({
+    queryKey: [queryKeys.defaultAiModel],
+    queryFn: () => getDefaultAiModel({
+    action: "get_llm_by_admin",
+    admin_id: userId,
+    userType
+  })
+  })
+  console.log("defualtAiModelQuery", defualtAiModelQuery?.data?.[0]?.data?.llm_name);
+
+  return (
+    <div className="bg-[#F5F0EC] rounded-lg px-7 py-4 my-4 text-secondary">
+      {editProfile !== true && <div className="space-x-3 mb-4">
+        {agentTypes.map((item, index) => (
+          <button
+            className={` ${
+              activeTab.id === item.id
+                ? "bg-tertiary text-white"
+                : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] "
+            } transition-all  rounded-full px-10 py-3 `}
+            onClick={() => setActiveTab(item)}
+          >
+            {item.name}
+          </button>
+        ))}
+      </div>}
+
+      {activeTab.id === "profile" && <ProfileSetting setIsProfile={setIsProfile}  editProfile={editProfile} />}
+      {activeTab.id === "billing" && <Billing />}
+    </div>
+  );
+}

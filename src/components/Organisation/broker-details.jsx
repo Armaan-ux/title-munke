@@ -31,7 +31,7 @@ import { getBrokerAgentsDetails } from "../service/userAdmin";
 import { CenterLoader } from "../common/Loader";
 import ShowError from "../common/ShowError";
 
-function OrganisationBrokerDetails() {
+function BrokerDetails() {
   const navigate = useNavigate();
   const [date, setDate] = useState({from: null, to: null});
   const {id} = useParams();
@@ -178,4 +178,4 @@ function OrganisationBrokerDetails() {
   );
 }
 
-export default OrganisationBrokerDetails;
+export default BrokerDetails;

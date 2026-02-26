@@ -119,3 +119,52 @@ export const signupSchema = z
       message: "Invalid search limit selected",
     }),
 });
+
+
+  export const addBrokerSchema = z.object({
+  name: z
+    .string()
+    .min(4, "Name must be at least 4 characters")
+    .trim(),
+
+  phoneNumber: z
+    .string()
+    .length(10, "Phone number must be 10 digits")
+    .regex(/^[0-9]+$/, "Phone number must contain only digits"),
+
+  email: z
+    .string()
+    .email("Invalid email address")
+    .toLowerCase()
+    .trim(),
+
+  teamStrength: z
+    .string()
+    .min(1, "Please select team strength")
+    .refine((val) => ["10", "20", "30", "40", "unlimited"].includes(val), {
+      message: "Invalid team strength selected",
+    }),
+});
+
+
+  export const addOrgAgentSchema = z.object({
+  name: z
+    .string()
+    .min(4, "Name must be at least 4 characters")
+    .trim(),
+
+  phoneNumber: z
+    .string()
+    .length(10, "Phone number must be 10 digits")
+    .regex(/^[0-9]+$/, "Phone number must contain only digits"),
+
+  email: z
+    .string()
+    .email("Invalid email address")
+    .toLowerCase()
+    .trim(),
+
+  selectedBroker: z
+  .string()
+  .min(1, "Please select a broker"),
+});

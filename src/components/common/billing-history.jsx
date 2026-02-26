@@ -44,28 +44,6 @@ const BillingHistory = () => {
     queryFn: () => getInvoice(user?.attributes?.sub, userType),
     refetchOnWindowFocus: false
   })
-  const sortedHistories = [
-    {
-      id: "1",
-      invoiceId: "INV-1001",
-      billingPeriod: "January 2023",
-      amount: "$49.99",
-      createdAt: "2023-03-01T00:00:00.000Z",
-      status: "Pending",
-      billing: "2023-03-01T00:00:00.000Z",
-      downloadLink: "/invoices/INV-1001.pdf",
-    },
-    {
-      id: "1",
-      invoiceId: "INV-1002",
-      billingPeriod: "January 2025",
-      amount: "$149.99",
-      createdAt: "2023-03-01T00:00:00.000Z",
-      status: "Paid",
-      billing: "2023-03-01T00:00:00.000Z",
-      downloadLink: "/invoices/INV-1002.pdf",
-    },
-  ];
 
   return (
     <div className="relative">

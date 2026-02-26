@@ -108,13 +108,25 @@ export default function PaymentSetup({
   const [clientSecret, setClientSecret] = useState("");
   const getStoredAgents = () =>
     JSON.parse(localStorage.getItem("invitedAgents")) || [];
+    const getStoredBrokers = () =>
+  JSON.parse(localStorage.getItem("invitedBroker")) || [];
+
+const getStoredOrgAgents = () =>
+  JSON.parse(localStorage.getItem("invitedOrgAgents")) || [];
   const { user, newPlanType } = useUser();
   const userType =
     user?.signInUserSession?.idToken?.payload["cognito:groups"]?.[0];
   const agents = getStoredAgents();
+  const brokers = getStoredBrokers();
+  const orgAgents = getStoredOrgAgents();
   const localPlanType = localStorage.getItem("planType");
   const plan = newPlanType || planId || localPlanType;
-
+const agentCount =
+  userType === "broker"
+    ? agents?.length ?? 0
+    : userType === "organisation"
+    ? (orgAgents?.length ?? 0) + (brokers?.length ?? 0)
+    : 0;
   const membershipMutation = useMutation({
     mutationFn: () =>
       addCard(
@@ -125,7 +137,7 @@ export default function PaymentSetup({
           : "subscribe",
         plan,
         actionType,
-        agents?.length,
+        agentCount
       ),
     onSuccess: (data) => {
       setClientSecret(data.clientSecret);
