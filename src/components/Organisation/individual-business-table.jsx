@@ -51,14 +51,14 @@ export default function IndividualBusinessTable({limit, isDownload, handleDownlo
                       </p> */}
               </TableHead>
               <TableHead className="text-center">
-                Property Search
+                Property Searches
                 {/* <p className="flex items-center gap-2">
                         Property Search <span>{getSortArrow("createdAt")}</span>
                       </p> */}
               </TableHead>
 
               <TableHead className="text-center">Business</TableHead>
-              <TableHead className="text-center"> Action</TableHead>
+              <TableHead className="text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -80,7 +80,7 @@ export default function IndividualBusinessTable({limit, isDownload, handleDownlo
                     ${item?.revenue}
                   </TableCell>
                   <TableCell className="text-center">
-                    <Link to={`/admin/dashboard/property-search-individual/${item?.id}`}>
+                    <Link to={`/organisation/business/property-search-individual/${item?.id}`}>
                       <Button size="icon" className="text-md" variant="ghost">
                         <Eye />
                       </Button>

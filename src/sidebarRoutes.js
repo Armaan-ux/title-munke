@@ -1,4 +1,4 @@
-import { BookUser, LayoutDashboard, Logs, Settings, UserRound,UserRoundCog } from "lucide-react";
+import { BookUser, LayoutDashboard, Logs, Settings, UserRound,UserRoundCog,BriefcaseBusiness } from "lucide-react";
 
 export const routes = {
   agent: [
@@ -68,9 +68,15 @@ export const routes = {
       class: "fas fa-person",
       icon: LayoutDashboard
     },
+      {
+      link: "/organisation/business",
+      name: "Business",
+      class: "fas fa-person",
+      icon: BriefcaseBusiness
+    },
     {
       link: "/organisation/demo-requests",
-      name: "Demo Requests",
+      name: "Requests",
       class: "fas fa-person",
       icon: BookUser
     },

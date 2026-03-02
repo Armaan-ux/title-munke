@@ -39,26 +39,17 @@ export default function BrokerBusiness() {
     <>
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
         <BackBtn />
-        {/* <div className="flex items-center justify-left gap-2">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center text-[#5a0a0a] hover:text-[#3d0606] transition"
-          >
-            <ChevronLeft className="w-6 h-6 mr-1" />
-          </button>
-          <p className="text-lg text-secondary">Back</p>
-        </div> */}
       </div>
       <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
         <div className="flex justify-between items-center gap-4 mb-6">
           <div className="flex items-center gap-6">
-            <p className="text-secondary font-medium text-xl">Business</p>
-            <p
+            <p className="text-secondary font-medium text-xl">Broker</p>
+            {/* <p
               className={`bg-white text-tertiary font-semibold text-lg transition-all rounded-full px-10 py-3 `}
             >
               {metricQuery?.isSuccess && <span>${metricQuery?.data?.totalBusinessRevenue ?? "--"}</span>}
               {metricQuery?.isLoading && <Loader2 className="w-6 h-10 animate-spin text-secondary" />}
-            </p>
+            </p> */}
           </div>
           <div className="flex justify-between items-center gap-2">
             <DateFilter handleFilter={(from, to) => setDate(pre => ({...pre, from, to}))}/>

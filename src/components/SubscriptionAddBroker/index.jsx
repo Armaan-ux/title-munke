@@ -28,6 +28,7 @@ import { useUserIdType } from "@/hooks/useUserIdType";
 import AgentAddedSuccessModal from "../Modal/AgentAddedSuccessModal";
 import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@/context/usercontext";
+import { formatUSPhone } from "@/utils/date";
 function SubscriptionAddBroker() {
   const navigate = useNavigate();
   const { planId } = useParams();
@@ -117,6 +118,9 @@ function SubscriptionAddBroker() {
     if (planId === "EXPLORE_PLAN") {
       navigate(`/subscription-payment/${planId}`);
     }
+  };
+  const handleSkip = () => {
+    navigate(`/subscription-addOrgAgent/${planId}`);
   };
 
   const handleAddAgent = () => {
@@ -313,13 +317,18 @@ function SubscriptionAddBroker() {
                             <Controller
                               name="phoneNumber"
                               control={control}
-                              rules={{
-                                required: true,
-                                minLength: 10,
-                                maxLength: 10,
-                              }}
                               render={({ field }) => (
-                                <Input placeholder="phone number" {...field} />
+                                <Input
+                                  placeholder="phone number"
+                                  value={formatUSPhone(field.value ?? "")}
+                                  onChange={(e) => {
+                                    const digits = e.target.value
+                                      .replace(/\D/g, "")
+                                      .slice(0, 10);
+                                    field.onChange(digits);
+                                  }}
+                                  inputMode="numeric"
+                                />
                               )}
                             />
                             {phoneValue?.length === 10 && (
@@ -383,18 +392,27 @@ function SubscriptionAddBroker() {
                         {error && (
                           <p className="text-red-500 text-sm mt-2">{error}</p>
                         )}
-                        <Button
-                          type="submit"
-                          className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
-                          disabled={isSubmitting || isLoading}
-                        >
-                          Invite Broker
-                          {isLoading ? (
-                            <Loader className="animate-spin" size={18} />
-                          ) : (
+                        <div className="flex flex-row gap-1">
+                          <Button
+                            onClick={handleSkip}
+                            className="mt-4 flex w-1/3 items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
+                          >
+                            Skip
                             <ArrowRight size={18} />
-                          )}
-                        </Button>
+                          </Button>
+                          <Button
+                            type="submit"
+                            className="mt-4 flex w-2/3 items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
+                            disabled={isSubmitting || isLoading}
+                          >
+                            Invite Broker
+                            {isLoading ? (
+                              <Loader className="animate-spin" size={18} />
+                            ) : (
+                              <ArrowRight size={18} />
+                            )}
+                          </Button>
+                        </div>
                         <style jsx>{`
                           input.password-input {
                             -webkit-text-security: disc;

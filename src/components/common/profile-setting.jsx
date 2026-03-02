@@ -16,6 +16,7 @@ import {
 import { toast } from "react-toastify";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { queryKeys } from "@/utils";
+import { formatUSPhone } from "@/utils/date";
 const uploadToS3 = async (uploadUrl, file) => {
   const type = file.type;
   const binaryData = await file.arrayBuffer();
@@ -238,8 +239,10 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                     name="phone"
                     placeholder="Phone Number"
                     className="font-medium  placeholder:font-normal mt-3 bg-white"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    value={formatUSPhone(phone)}
+                    onChange={(e) =>{
+                      const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
+                      setPhone(digits)}}
                   />
                 </div>
 
@@ -479,7 +482,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                   name="phone"
                   placeholder="Phone Number"
                   className="bg-[#F5F0EC] text-tertiary font-normal border-none focus-visible:ring-0 mt-5 pointer-events-none"
-                  value={phoneWithoutCountryCode}
+                  value={formatUSPhone(phoneWithoutCountryCode)}
                   //   onChange={(e) => setNewpassword(e.target.value)}
                 />
               </div>

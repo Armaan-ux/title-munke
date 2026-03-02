@@ -45,73 +45,14 @@ function BrokerDetails() {
     <>
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
         <BackBtn />
-        {/* <div className="flex items-center justify-left gap-2">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center text-[#5a0a0a] hover:text-[#3d0606] transition"
-          >
-            <ChevronLeft className="w-6 h-6 mr-1" />
-          </button>
-          <p className="text-lg text-secondary">Back</p>
-        </div> */}
       </div>
       <UserDetailHeader />
-        {/* <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary flex items-center justify-between w-full gap-1">
-        
-      <div className="flex items-center gap-4">
-        <img
-          src="/agent.png"
-          alt="User"
-          className="w-16 h-16 rounded-full object-cover"
-        />
-        <div>
-          <p className="text-[#2A1A14] font-semibold text-lg">James Anderson</p>
-          <p className="text-[#6B5E55] text-sm">andrew@email.com</p>
-          <div className="flex items-center gap-2 text-sm mt-1">
-            <span className="w-2 h-2 bg-[#B89C65] rounded-full"></span>
-            <span className="text-[#B89C65]">Inactive</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-8 text-sm text-[#2A1A14]">
-        <div>
-          <p className="text-[#6B5E55]">Account Created</p>
-          <p className="font-semibold mt-1">Jan 02, 2024</p>
-        </div>
-        <div>
-          <p className="text-[#6B5E55]">Last Activity</p>
-          <p className="font-semibold mt-1">Oct 8, 2025</p>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-3">
-        <div className="border border-[#E3D8D2] rounded-md px-4 py-2 text-center">
-          <p className="text-[#6B5E55] text-sm">Search Count</p>
-          <p className="font-semibold text-lg text-[#2A1A14]">27</p>
-        </div>
-
-        <div className="border border-[#E3D8D2] rounded-md px-4 py-2 text-center bg-white">
-          <p className="text-[#6B5E55] text-sm">Business</p>
-          <p className="font-semibold text-lg text-[#2A1A14]">$60</p>
-        </div>
-
-        <div className="flex gap-2 ml-2">
-          <button className="text-[#6B5E55] hover:text-[#550000]">
-            <PencilLine className="w-4 h-4" />
-          </button>
-          <button className="text-[#6B5E55] hover:text-[#550000]">
-            <Trash2 className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-
-      </div> */}
+  
       <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
         <div className="bg-white !p-4 rounded-xl">
         <div className="flex justify-between items-center gap-4 mb-6">
           <div className="flex items-center gap-6">
-            <p className="text-secondary font-medium text-xl">All Agents</p>
+            <p className="text-secondary font-medium text-xl">All Brokers</p>
           </div>
             <DateFilter handleFilter={(from, to) => setDate(pre => ({...pre, from, to}))}/>
         </div>
@@ -153,7 +94,7 @@ function BrokerDetails() {
                             className="text-md"
                             variant="ghost"
                             onClick={() =>
-                              navigate(`/admin/dashboard/property-search/${item?.agentId}`)
+                              navigate(`/organisation/business/property-search/${item?.agentId}`)
                             }
                           >
                             <Eye />

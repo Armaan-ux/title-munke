@@ -66,7 +66,6 @@ export const UserProvider = ({ children }) => {
   retry: false,
 });
 
-console.log("userType>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",userType)
   const organisaDetailQuery = useQuery({
   queryKey: ["organisationDetail", user?.attributes?.sub, newPlanType],
   queryFn: () => getOrganisationDetails(user?.attributes?.sub),

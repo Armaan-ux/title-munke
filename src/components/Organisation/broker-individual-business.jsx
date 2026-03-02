@@ -143,7 +143,7 @@ function BrokerIndividualBusiness({ activeTab, onRegisterReset, isDownload, hand
   }, [onRegisterReset]);
   useEffect(() => {
     if (user?.attributes?.sub) {
-      if (activeTab === "history") fetchSearchHistories();
+      if (activeTab === "broker") fetchSearchHistories();
       else fetchAgentSearchHistories();
     }
   }, [user, activeTab, fetchSearchHistories, fetchAgentSearchHistories]);
@@ -167,33 +167,11 @@ function BrokerIndividualBusiness({ activeTab, onRegisterReset, isDownload, hand
     <>
       <div className="bg-[#F5F0EC] rounded-lg text-secondary">
         <div className="bg-white !p-4 rounded-xl">
-          {activeTab === "history" ? (
+          {activeTab === "broker" ? (
            <BrokerBusinessTable limit={5} handleDownloadComplete={handleDownloadComplete} isDownload={isDownload}/>
           ) : (
             <IndividualBusinessTable limit={5} handleDownloadComplete={handleDownloadComplete} isDownload={isDownload} />
           )}
-
-          {/* {searchHistories?.length === 0 && <p>No Records found.</p>} */}
-          {/* <div className="text-center space-y-2 my-4 text-muted-foreground">
-            {loading && <p>Loading...</p>}
-            {!hasMore && <p>No more data to load.</p>}
-
-            {searchHistories?.length > 0 && hasMore && !loading && (
-              <div className="flex justify-center">
-                <Button
-                  // className="loadmore"
-                  size="sm"
-                  onClick={
-                    activeTab === "history"
-                      ? fetchSearchHistories
-                      : fetchAgentSearchHistories
-                  }
-                >
-                  Load More
-                </Button>
-              </div>
-            )}
-          </div> */}
         </div>
       </div>
     </>

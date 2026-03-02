@@ -98,94 +98,92 @@ function SubscriptionCardDetails({ isAddCard = false }) {
     },
   });
 
-  const addOrganisationBatchMutation = useMutation({
-    mutationFn: async () => {
-      debugger;
-      const brokers = getStoredBrokers();
-      const agents = getStoredOrgAgents();
+const addOrganisationBatchMutation = useMutation({
+  mutationFn: async () => {
+    const brokers = getStoredBrokers();
+    const agents = getStoredOrgAgents();
 
-      if (!brokers.length && !agents.length) return;
+    if (!brokers.length && !agents.length) return;
 
-      const brokerIdMap = {}; // UUID → real brokerId
+    const brokerIdMap = {}; // UUID → real brokerId
 
-      try {
-        //  Create Brokers First
-        if (brokers.length) {
-          await Promise.all(
-            brokers.map(async (broker) => {
-              const res = await createAgentfromSignup({
-                name: broker.name,
-                email: broker.email,
-                phoneNumber: broker.phoneNumber,
-                userType: "broker",
-                organisationId: broker.organisationId,
-                planType: broker.planType,
-                actionType: "register_broker_from_org",
-                customUUID: broker?.customUUID,
-              });
-              const realId = res?.user?.id;
-              const responseUUID = res?.user?.customUUID;
+    try {
+      //  Create Brokers First (if any)
+      if (brokers.length) {
+        await Promise.all(
+          brokers.map(async (broker) => {
+            const res = await createAgentfromSignup({
+              name: broker.name,
+              email: broker.email,
+              phoneNumber: broker.phoneNumber,
+              userType: "broker",
+              organisationId: broker.organisationId,
+              planType: broker.planType,
+              actionType: "register_broker_from_org",
+              customUUID: broker?.customUUID,
+            });
 
-              if (responseUUID && realId) {
-                brokerIdMap[responseUUID] = realId;
-              }
-            }),
-          );
-        }
+            const realId = res?.user?.id;
+            const responseUUID = res?.user?.customUUID;
 
-        //   Prepare Agents with correct brokerId
+            if (responseUUID && realId) {
+              brokerIdMap[responseUUID] = realId;
+            }
+          })
+        );
+      }
+
+      //  Prepare Agents (only if exist)
+      if (agents.length) {
         const updatedAgents = agents.map((agent) => {
           const mappedBrokerId = brokerIdMap[agent.brokerId];
 
-          if (mappedBrokerId) {
-            return {
-              ...agent,
-              brokerId: mappedBrokerId, //  replaced with real ID
-            };
-          }
-
-          return agent;
+          return {
+            ...agent,
+            brokerId: mappedBrokerId || agent.brokerId,
+          };
         });
 
-        //  safety: ensure no dummy brokerIds remain
-        const invalidAgent = updatedAgents.find(
-          (a) => !a.brokerId || a.brokerId.length < 10,
-        );
-        if (invalidAgent) {
-          throw new Error("Invalid brokerId mapping. Aborting agent creation.");
-        }
-
-        //   Create Agents
-        if (updatedAgents.length) {
-          await Promise.all(
-            updatedAgents.map((agent) =>
-              createAgentfromSignup({
-                name: agent.name,
-                email: agent.email,
-                phoneNumber: agent.phoneNumber,
-                searchLimit: agent.searchLimit,
-                userType: "agent",
-                brokerId: agent.brokerId,
-                planType: agent.planType,
-              }),
-            ),
+        //  Only validate mapping if brokers were created
+        if (brokers.length) {
+          const invalidAgent = updatedAgents.find(
+            (a) => !a.brokerId || a.brokerId.length < 10
           );
+          if (invalidAgent) {
+            throw new Error("Invalid brokerId mapping. Aborting agent creation.");
+          }
         }
-      } catch (error) {
-        console.error("Organisation batch failed:", error);
-        throw error;
+
+        //  Create Agents
+        await Promise.all(
+          updatedAgents.map((agent) =>
+            createAgentfromSignup({
+              name: agent.name,
+              email: agent.email,
+              phoneNumber: agent.phoneNumber,
+              searchLimit: agent.searchLimit,
+              userType: "agent",
+              brokerId: agent.brokerId,
+              planType: agent.planType,
+            })
+          )
+        );
       }
-    },
+    } catch (error) {
+      console.error("Organisation batch failed:", error);
+      throw error;
+    }
+  },
 
-    onSuccess: () => {
-      localStorage.removeItem("invitedBroker");
-      localStorage.removeItem("invitedOrgAgents");
-    },
+  onSuccess: () => {
+    localStorage.removeItem("invitedBroker");
+    localStorage.removeItem("invitedOrgAgents");
+  },
 
-    onError: (error) => {
-      console.error("Batch failed. Nothing removed.", error);
-    },
-  });
+  onError: (error) => {
+    console.error("Batch failed. Nothing removed.", error);
+  },
+});
 
   return (
     <>

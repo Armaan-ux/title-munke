@@ -62,7 +62,7 @@ useEffect(() => {
   return () => {
     if (timer) clearTimeout(timer);
   };
-}, [agentDetail.data?.planType, iscardAddedForUser?.isCardAdded]);
+}, [agentDetail?.planType, iscardAddedForUser?.isCardAdded]);
 
   return (
     <div className="my-4" >

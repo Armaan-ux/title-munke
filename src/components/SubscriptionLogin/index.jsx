@@ -88,6 +88,8 @@ function SubscriptionLogin() {
           navigate("/admin");
         } else if (groups.includes("agent")) {
           navigate("/agent");
+        } else if (groups.includes("organisation")) {
+          navigate("/organisation");
         } else if (groups.includes("broker")) {
           navigate("/broker");
         }

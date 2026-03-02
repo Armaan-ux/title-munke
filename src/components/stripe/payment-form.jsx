@@ -132,7 +132,7 @@ const agentCount =
       addCard(
         user?.attributes?.sub,
         userType,
-        user?.isAddCard || planId === "PAY_AS_YOU_GO"
+        user?.isAddCard || planId === "PAY_AS_YOU_GO" || plan === "PAY_AS_YOU_GO"
           ? "add-card"
           : "subscribe",
         plan,

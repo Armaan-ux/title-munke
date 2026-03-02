@@ -101,10 +101,9 @@ export const signupSchema = z
     .min(4, "Name must be at least 4 characters")
     .trim(),
 
-  phoneNumber: z
-    .string()
-    .length(10, "Phone number must be 10 digits")
-    .regex(/^[0-9]+$/, "Phone number must contain only digits"),
+phoneNumber: z
+  .string()
+  .length(10, "Phone number must be 10 digits"),
 
   email: z
     .string()
@@ -128,9 +127,8 @@ export const signupSchema = z
     .trim(),
 
   phoneNumber: z
-    .string()
-    .length(10, "Phone number must be 10 digits")
-    .regex(/^[0-9]+$/, "Phone number must contain only digits"),
+  .string()
+  .length(10, "Phone number must be 10 digits"),
 
   email: z
     .string()
@@ -154,9 +152,8 @@ export const signupSchema = z
     .trim(),
 
   phoneNumber: z
-    .string()
-    .length(10, "Phone number must be 10 digits")
-    .regex(/^[0-9]+$/, "Phone number must contain only digits"),
+  .string()
+  .length(10, "Phone number must be 10 digits"),
 
   email: z
     .string()

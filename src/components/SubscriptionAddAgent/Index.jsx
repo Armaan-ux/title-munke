@@ -11,10 +11,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
-import {
-  getBrokerDetails,
-
-} from "../service/userAdmin";
+import { getBrokerDetails } from "../service/userAdmin";
 import { Label } from "../ui/label";
 import { motion } from "motion/react";
 import { Controller, useForm } from "react-hook-form";
@@ -29,14 +26,15 @@ import {
 import { addAgentSchema } from "@/formSchema";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import AgentAddedSuccessModal from "../Modal/AgentAddedSuccessModal";
+import { formatUSPhone } from "@/utils/date";
 function SubscriptionAddAgent() {
   const navigate = useNavigate();
   const { planId } = useParams();
 
   const [error, setError] = useState("");
-  
+
   const [isLoading, setIsLoading] = useState(false);
-    const [lastAddedAgentName, setLastAddedAgentName] = useState("");
+  const [lastAddedAgentName, setLastAddedAgentName] = useState("");
   const [addAgent, setAddAgent] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const { userType, userId } = useUserIdType();
@@ -66,73 +64,70 @@ function SubscriptionAddAgent() {
     },
   });
   const phoneValue = watch("phoneNumber");
-//   const addAgentUserMutation = useMutation({
-//     mutationFn: (data) => createAgentfromSignup(data),
-//     onSuccess: () => {
-//       setAddAgent(true);
-//     },
-//     onError: (error) => {
-//       console.log("error", error);
-//       setError(
-//         error.response?.data?.error ||
-//           "Something went wrong. Please try again later.",
-//       );
-//     },
-//   });
+  //   const addAgentUserMutation = useMutation({
+  //     mutationFn: (data) => createAgentfromSignup(data),
+  //     onSuccess: () => {
+  //       setAddAgent(true);
+  //     },
+  //     onError: (error) => {
+  //       console.log("error", error);
+  //       setError(
+  //         error.response?.data?.error ||
+  //           "Something went wrong. Please try again later.",
+  //       );
+  //     },
+  //   });
 
-//   const onSubmit = (data) => {
-//     console.log("FORM DATA", data);
-//     addAgentUserMutation.mutate({
-//       name: data.name,
-//       email: data.email,
-//       phoneNumber: data.phoneNumber,
-//       searchLimit: data.searchLimit,
-//       userType,
-//       brokerId: brokerRel?.brokerId,
-//       planType: planId,
-//     });
-//   };
+  //   const onSubmit = (data) => {
+  //     console.log("FORM DATA", data);
+  //     addAgentUserMutation.mutate({
+  //       name: data.name,
+  //       email: data.email,
+  //       phoneNumber: data.phoneNumber,
+  //       searchLimit: data.searchLimit,
+  //       userType,
+  //       brokerId: brokerRel?.brokerId,
+  //       planType: planId,
+  //     });
+  //   };
 
-const onSubmit = (data) => {
-setIsLoading(true)
-  const existingAgents =
-    JSON.parse(localStorage.getItem("invitedAgents")) || [];
+  const onSubmit = (data) => {
+    setIsLoading(true);
+    const existingAgents =
+      JSON.parse(localStorage.getItem("invitedAgents")) || [];
 
-  const isDuplicate = existingAgents.some(
-    (agent) => agent.email.toLowerCase() === data.email.toLowerCase()
-  );
+    const isDuplicate = existingAgents.some(
+      (agent) => agent.email.toLowerCase() === data.email.toLowerCase(),
+    );
 
-  if (isDuplicate) {
-    setError("Agent with this email already exists.");
+    if (isDuplicate) {
+      setError("Agent with this email already exists.");
+      setIsLoading(false);
+      return;
+    }
+    const newAgent = {
+      name: data.name,
+      email: data.email,
+      phoneNumber: data.phoneNumber,
+      searchLimit: data.searchLimit,
+      planType: planId,
+      brokerId: brokerRel?.brokerId,
+      userType: "agent",
+    };
+
+    // Add new agent
+    const updatedAgents = [...existingAgents, newAgent];
+
+    // Save back to localStorage
+    localStorage.setItem("invitedAgents", JSON.stringify(updatedAgents));
+
+    setLastAddedAgentName(data.name);
+    console.log("Saved agents:", updatedAgents);
+    reset();
+    // Show success modal
+    setAddAgent(true);
     setIsLoading(false);
-    return;
-  }
-  const newAgent = {
-   
-    name: data.name,
-    email: data.email,
-    phoneNumber: data.phoneNumber,
-    searchLimit: data.searchLimit,
-    planType: planId,
-    brokerId: brokerRel?.brokerId,
-    userType
   };
-
-
-
-  // Add new agent
-  const updatedAgents = [...existingAgents, newAgent];
-
-  // Save back to localStorage
-  localStorage.setItem("invitedAgents", JSON.stringify(updatedAgents));
-
-  setLastAddedAgentName(data.name);
-  console.log("Saved agents:", updatedAgents);
-  reset();
-  // Show success modal
-  setAddAgent(true);
-  setIsLoading(false);
-};
 
   // Countdown timer effect
   useEffect(() => {
@@ -146,6 +141,9 @@ setIsLoading(true)
 
   // if (isReset) return <ResetPassword username={username} password={password} />;
   const handleContinue = () => {
+    navigate(`/subscription-payment/${planId}`);
+  };
+  const handleSkip = () => {
     navigate(`/subscription-payment/${planId}`);
   };
 
@@ -323,13 +321,18 @@ setIsLoading(true)
                             <Controller
                               name="phoneNumber"
                               control={control}
-                              rules={{
-                                required: true,
-                                minLength: 10,
-                                maxLength: 10,
-                              }}
                               render={({ field }) => (
-                                <Input placeholder="phone number" {...field} />
+                                <Input
+                                  placeholder="phone number"
+                                  value={formatUSPhone(field.value ?? "")}
+                                  onChange={(e) => {
+                                    const digits = e.target.value
+                                      .replace(/\D/g, "")
+                                      .slice(0, 10);
+                                    field.onChange(digits);
+                                  }}
+                                  inputMode="numeric"
+                                />
                               )}
                             />
                             {phoneValue?.length === 10 && (
@@ -374,7 +377,9 @@ setIsLoading(true)
                                   <SelectItem value="20">20</SelectItem>
                                   <SelectItem value="30">30</SelectItem>
                                   <SelectItem value="40">40</SelectItem>
-                                  <SelectItem value="unlimited">unlimited</SelectItem>
+                                  <SelectItem value="unlimited">
+                                    unlimited
+                                  </SelectItem>
                                 </SelectContent>
                               </Select>
                             )}
@@ -386,23 +391,30 @@ setIsLoading(true)
                             </p>
                           )}
                         </div>
-{error && (
-  <p className="text-red-500 text-sm mt-2">{error}</p>
-)}
-                        <Button
-                          type="submit"
-                          className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
-                          disabled={
-                            isSubmitting || isLoading
-                          }
-                        >
-                          Invite Agent
-                          {isLoading ? (
-                            <Loader className="animate-spin" size={18} />
-                          ) : (
+                        {error && (
+                          <p className="text-red-500 text-sm mt-2">{error}</p>
+                        )}
+                        <div className="flex flex-row gap-1">
+                          <Button
+                            onClick={handleSkip}
+                            className="mt-4 flex w-1/3 items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
+                          >
+                            Skip
                             <ArrowRight size={18} />
-                          )}
-                        </Button>
+                          </Button>
+                          <Button
+                            type="submit"
+                            className="mt-4 flex w-2/3 items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-2 py-2 text-sm font-medium text-white"
+                            disabled={isSubmitting || isLoading}
+                          >
+                            Invite Agent
+                            {isLoading ? (
+                              <Loader className="animate-spin" size={18} />
+                            ) : (
+                              <ArrowRight size={18} />
+                            )}
+                          </Button>
+                        </div>
                         <style jsx>{`
                           input.password-input {
                             -webkit-text-security: disc;

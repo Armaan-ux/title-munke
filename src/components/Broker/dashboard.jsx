@@ -46,9 +46,8 @@ const BrokerDashboard = () => {
     queryKey: ["brokerDetail", userId],
     queryFn: () => getBrokerDetails(userId),
     enabled: userType === "broker" && !!userId,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 1 * 60 * 1000,
   });
-  console.log("broker details: ", brokerDetailQuery.data);
   useEffect(() => {
     fetchAgentsWithSearchCount(user.attributes.sub).then((res) =>
       setAgents(res || [])
@@ -69,10 +68,9 @@ const BrokerDashboard = () => {
     queryFn: () => getCheckCardIsAdded(userId),
     enabled: !!userId
   })
-  console.log("is card added for user: ", iscardAddedForUser?.isCardAdded,);
-
+  console.log("brokerDetailQuery>>>>>>>>>>>>>>>>: ", brokerDetailQuery?.data);
 useEffect(() => {
-  const plan = brokerDetailQuery.data?.planType;
+  const plan = brokerDetailQuery?.data?.planType;
   const isCardAdded = iscardAddedForUser?.isCardAdded;
 
   if (!plan || isCardAdded !== false) return;
@@ -95,7 +93,7 @@ useEffect(() => {
   return () => {
     if (timer) clearTimeout(timer);
   };
-}, [brokerDetailQuery.data?.planType, iscardAddedForUser?.isCardAdded]);
+}, [brokerDetailQuery?.data?.planType, iscardAddedForUser?.isCardAdded]);
 
   return (
     <div className="my-4">

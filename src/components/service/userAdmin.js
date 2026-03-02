@@ -1613,7 +1613,7 @@ export async function updateStatusAgent(agentId) {
       agentId
     }
   }
-  return callUserAdminApi(
+  return callPutUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,

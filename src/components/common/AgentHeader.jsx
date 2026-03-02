@@ -1,6 +1,7 @@
 
 import { format } from "date-fns-tz";
 import { Separator } from "../ui/separator";
+import { formatDateSafe } from "@/utils/date";
 
 export default function AgentDetailHeader({data}) {
   
@@ -38,13 +39,18 @@ export default function AgentDetailHeader({data}) {
           <div className="flex gap-5 2xl:gap-10 w-full" >
             <Separator orientation="vertical" className=" !h-14 text-[#F4ECE6]" />
             <div className="w-full xl:whitespace-nowrap" >
+              <p className="text-[#6B5E55] text-sm 2xl:text-lg">Associated Broker</p>
+              <p className="font-semibold mt-1 2xl:text-2xl">{data?.brokerName || "-"}</p>
+            </div>
+            <Separator orientation="vertical" className=" !h-14 text-[#F4ECE6]" />
+            <div className="w-full xl:whitespace-nowrap" >
               <p className="text-[#6B5E55] text-sm 2xl:text-lg">Account Created</p>
-              <p className="font-semibold mt-1 2xl:text-2xl">{format(data?.createdAt, "MMM dd, yyyy")}</p>
+              <p className="font-semibold mt-1 2xl:text-2xl">{formatDateSafe(data?.createdAt, "MMM dd, yyyy")}</p>
             </div>
             <Separator orientation="vertical" className="!h-14 text-[#F4ECE6]" />
             <div className="w-full  xl:whitespace-nowrap" >
               <p className="text-[#6B5E55] text-sm 2xl:text-lg">Last Activity</p>
-              <p className="font-semibold mt-1 2xl:text-2xl">{format(data?.lastLogin, "MMM dd, yyyy")}</p>
+              <p className="font-semibold mt-1 2xl:text-2xl">{formatDateSafe(data?.lastLogin, "MMM dd, yyyy")}</p>
             </div>
           </div>
 

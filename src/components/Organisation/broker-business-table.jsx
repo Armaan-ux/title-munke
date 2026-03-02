@@ -48,24 +48,18 @@ export default function BrokerBusinessTable({limit, isDownload, handleDownloadCo
                     <TableHead >Sr. No.</TableHead>
                     <TableHead>
                       Broker Name
-                      {/* <p className="flex items-center gap-2">
-                        Broker Name<span>{getSortArrow("address")}</span>
-                      </p> */}
+               
                     </TableHead>
                     <TableHead className="text-center">
-                      Agent
-                      {/* <p className="flex items-center justify-center gap-2">
-                        Agent <span>{getSortArrow("createdAt")}</span>
-                      </p> */}
+                      Agents
+                 
                     </TableHead>
                     <TableHead className="text-center">
                       Search Count
-                      {/* <p className="flex items-center justify-center gap-2">
-                        Search Count <span>{getSortArrow("status")}</span>
-                      </p> */}
+                  
                     </TableHead>
                     <TableHead>Last Activity</TableHead>
-                    <TableHead className="text-center" >Business</TableHead>
+                    {/* <TableHead className="text-center" >Business</TableHead> */}
                     <TableHead className="text-center" >Account Created</TableHead>
                     <TableHead>Action</TableHead>
                     {/* <TableHead></TableHead> */}
@@ -92,14 +86,14 @@ export default function BrokerBusinessTable({limit, isDownload, handleDownloadCo
                           {getFormattedDateTime(item?.lastLogin)}
                           {/* {convertFromTimestamp(item?.lastLogin)} */}
                         </TableCell>
-                        <TableCell className="text-center" >${item?.revenue}</TableCell>
+                        {/* <TableCell className="text-center" >${item?.revenue}</TableCell> */}
                         <TableCell className="text-center" >
                           {getFormattedDateTime(item?.createdAt)}
                         </TableCell>
                         <TableCell>
                           {" "}
                           <div className="flex items-center gap-2 flex-row">
-                            <Link to={`/admin/dashboard/broker-details/${item?.id}`} >
+                            <Link to={`/organisation/business/broker-details/${item?.id}`} >
                             <Button
                               size="icon"
                               className="text-md"

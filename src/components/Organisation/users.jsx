@@ -55,10 +55,10 @@ import { useUserIdType } from "@/hooks/useUserIdType";
 import { set } from "zod";
 
 const userTypes = [
-  {
-    name: "Admin",
-    id: "admin",
-  },
+  // {
+  //   name: "Admin",
+  //   id: "admin",
+  // },
   {
     name: "Broker",
     id: "broker",
@@ -90,7 +90,7 @@ export default function Users() {
         ))}
       </div>
 
-      {activeTab.id === "admin" && <Admins />}
+      {/* {activeTab.id === "admin" && <Admins />} */}
       {activeTab.id === "broker" && <AdminBrokersList />}
       {activeTab.id === "agent" && <Agents />}
     </div>

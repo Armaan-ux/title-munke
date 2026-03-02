@@ -25,6 +25,7 @@ import { motion } from "motion/react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema } from "@/formSchema";
+import { formatUSPhone } from "@/utils/date";
 function SubscriptionSignup() {
   const navigate = useNavigate();
   const { userType, planId } = useParams();
@@ -55,24 +56,7 @@ function SubscriptionSignup() {
     },
   });
   const phoneValue = watch("phoneNumber");
-
-  // const [formData, setFormData] = useState({
-  //   name: "",
-  //   contact: "",
-  //   email: "",
-  //   password: "",
-  //   confirmPassword: "",
-  //   termsAccepted: false,
-  //   // code: ""
-  // });
-  // const handleChange = (e) => {
-  //   const { name, value, type, checked } = e.target;
-
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     [name]: type === "checkbox" ? checked : value.trimStart(),
-  //   }));
-  // };
+  const isValidUSPhone = phoneValue?.length === 10;
 
   // Resgister User Form Mutation
   const registerUserMutation = useMutation({
@@ -83,9 +67,7 @@ function SubscriptionSignup() {
     },
     onError: (error) => {
       console.log("error", error);
-      setError(
-          "Something went wrong. Please try again later.",
-      );
+      setError("Something went wrong. Please try again later.");
     },
   });
 
@@ -99,24 +81,7 @@ function SubscriptionSignup() {
       planType: planId,
     });
   };
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   const { name, email, contact, password, confirmPassword, termsAccepted } =
-  //     formData;
-  //   if (password !== confirmPassword) {
-  //     setError("Passwords do not match");
-  //     return;
-  //   }
 
-  //   registerUserMutation.mutate({
-  //     name,
-  //     email,
-  //     phoneNumber: contact,
-  //     password,
-  //     userType,
-  //     planType: planId,
-  //   });
-  // };
   // Countdown timer effect
   useEffect(() => {
     if (cooldown > 0) {
@@ -131,13 +96,13 @@ function SubscriptionSignup() {
     const email = getValues("email");
     const password = getValues("password");
 
-if(userType === "broker") {
-  navigate(`/subscription-addAgent/${planId}`);
-}else if (userType === "organisation") {
- navigate(`/subscription-addBroker/${planId}`);
-}else{
-  navigate(`/subscription-payment/${planId}`);
-}
+    if (userType === "broker") {
+      navigate(`/subscription-addAgent/${planId}`);
+    } else if (userType === "organisation") {
+      navigate(`/subscription-addBroker/${planId}`);
+    } else {
+      navigate(`/subscription-payment/${planId}`);
+    }
 
     const { isResetRequired, user: signedInUser } = await signIn(
       email?.trim(),
@@ -272,54 +237,53 @@ if(userType === "broker") {
               <div className="w-full max-w-lg ">
                 {/* stepper */}
                 <div className="flex items-center justify-center mb-5">
-              
+                  {userType === "broker" ? (
+                    <div className="flex items-center justify-center mb-5">
+                      <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
+                        {/* Active Step */}
+                        <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4 py-2 text-xs font-medium text-white">
+                          <UserRoundCheck />
+                          Info.
+                        </div>
 
+                        {/* Connector */}
+                        <div className="mx-3 h-[2px] w-12 bg-[#BEA998]" />
+                        {/* Active Step */}
+                        <div className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium text-[#7a5a49]">
+                          <UserRoundCheck />
+                          Add User
+                        </div>
 
-                      {  userType === "broker" ?
-                                   <div className="flex items-center justify-center mb-5">
-                                                    <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
-                                                      {/* Active Step */}
-                                                      <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4 py-2 text-xs font-medium text-white">
-                                                        <UserRoundCheck />
-                                                        Info.
-                                                      </div>
-                                  
-                                                      {/* Connector */}
-                                                      <div className="mx-3 h-[2px] w-12 bg-[#BEA998]" />
-                                                      {/* Active Step */}
-                                                      <div className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium text-[#7a5a49]">
-                                                        <UserRoundCheck />
-                                                        Add User
-                                                      </div>
-                                  
-                                                      {/* Connector */}
-                                                      <div className="mx-3 h-[2px] w-12 bg-[#BEA998]" />
-                                  
-                                                      {/* Inactive Step */}
-                                                      <div className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium text-[#7a5a49]">
-                                                        <CreditCard />
-                                                        Add Card
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                  : <div className="flex items-center justify-center mb-5">
-                                    <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
-                                      {/* Active Step */}
-                                      <div className="flex items-center gap-2 rounded-full bg-gradient-to-l from-[#3D2014] to-[#550000] px-4 py-2 text-xs font-medium text-white">
-                                        <UserRoundCheck />
-                                        Info.
-                                      </div>
-                  
-                                      {/* Connector */}
-                                      <div className="mx-3 h-[2px] w-20 bg-[#BEA998]" />
-                  
-                                      {/* Inactive Step */}
-                                      <div className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium text-[#7a5a49]">
-                                        <CreditCard />
-                                        Add Card
-                                      </div>
-                                    </div>
-                                  </div>}
+                        {/* Connector */}
+                        <div className="mx-3 h-[2px] w-12 bg-[#BEA998]" />
+
+                        {/* Inactive Step */}
+                        <div className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium text-[#7a5a49]">
+                          <CreditCard />
+                          Add Card
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center mb-5">
+                      <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
+                        {/* Active Step */}
+                        <div className="flex items-center gap-2 rounded-full bg-gradient-to-l from-[#3D2014] to-[#550000] px-4 py-2 text-xs font-medium text-white">
+                          <UserRoundCheck />
+                          Info.
+                        </div>
+
+                        {/* Connector */}
+                        <div className="mx-3 h-[2px] w-20 bg-[#BEA998]" />
+
+                        {/* Inactive Step */}
+                        <div className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium text-[#7a5a49]">
+                          <CreditCard />
+                          Add Card
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="border-2 border-[#e6d6c3] rounded-3xl p-4 bg-[#FFFFFF] ">
@@ -342,11 +306,7 @@ if(userType === "broker") {
                         name="name"
                         control={control}
                         render={({ field }) => (
-                          <Input
-                            placeholder="John Marks"
-                            // className="h-[38px] bg-white border border-[#E6DFDB] text-secondary placeholder:text-[#B6AAA5] focus-visible:ring-0 focus-visible:ring-offset-0"
-                            {...field}
-                          />
+                          <Input placeholder="John Marks" {...field} />
                         )}
                       />
                       {errors.name && (
@@ -354,48 +314,31 @@ if(userType === "broker") {
                           {errors.name.message}
                         </p>
                       )}
-                      {/* <Input
-                        placeholder="john title munke"
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="bg-transparent"
-                        required
-                        minLength={4}
-                      /> */}
                     </div>
                     <div>
                       <div className="relative">
                         <Label className="text-sm ">
                           Phone Number <span className="text-red-500">*</span>
                         </Label>
-                        {/* <Input
-                          placeholder="(212) 555-0199"
-                          id="contact"
-                          name="contact"
-                          value={formData.contact}
-                          onChange={handleChange}
-                          className="bg-transparent"
-                          required
-                        /> */}
                         <Controller
                           name="phoneNumber"
                           control={control}
-                          rules={{
-                            required: true,
-                            minLength: 10,
-                            maxLength: 10,
-                          }}
+                          format="US"
                           render={({ field }) => (
                             <Input
                               placeholder="phone number"
-                              // className="h-[38px] bg-white border border-[#E6DFDB] text-secondary placeholder:text-[#B6AAA5] focus-visible:ring-0 focus-visible:ring-offset-0"
-                              {...field}
+                              value={formatUSPhone(field.value ?? "")}
+                              onChange={(e) => {
+                                const digits = e.target.value
+                                  .replace(/\D/g, "")
+                                  .slice(0, 10);
+                                field.onChange(digits);
+                              }}
+                              inputMode="numeric"
                             />
                           )}
                         />
-                        {phoneValue?.length === 10 && (
+                        {isValidUSPhone && (
                           <div
                             variant="ghost"
                             type="button"
@@ -416,26 +359,11 @@ if(userType === "broker") {
                       <Label className="text-sm">
                         Email <span className="text-red-500">*</span>
                       </Label>
-                      {/* <Input
-                        type="text"
-                        id="email"
-                        placeholder="title@example.com"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="bg-transparent"
-                        required
-                      /> */}
-
                       <Controller
                         name="email"
                         control={control}
                         render={({ field }) => (
-                          <Input
-                            placeholder="email"
-                            // className="h-[38px] bg-white border border-[#E6DFDB] text-secondary placeholder:text-[#B6AAA5] focus-visible:ring-0 focus-visible:ring-offset-0"
-                            {...field}
-                          />
+                          <Input placeholder="email" {...field} />
                         )}
                       />
                       {errors.email && (
@@ -450,16 +378,6 @@ if(userType === "broker") {
                           Password <span className="text-red-500">*</span>
                         </Label>
                         <div className="flex items-center">
-                          {/* <Input
-                            type={showPassword ? "text" : "password"}
-                            // placeholder="••••••••"
-                            id="password"
-                            name="password"
-                            value={formData.password}
-                            className="bg-transparent pr-9"
-                            required
-                            onChange={handleChange}
-                          /> */}
                           <Controller
                             name="password"
                             control={control}
@@ -494,16 +412,6 @@ if(userType === "broker") {
                           Confirm Password{" "}
                           <span className="text-red-500">*</span>
                         </Label>
-                        {/* <Input
-                          type={showConfirmPassword ? "text" : "password"}
-                          // placeholder="••••••••"
-                          id="confirmPassword"
-                          name="confirmPassword"
-                          value={formData.confirmPassword}
-                          className="bg-transparent pr-9"
-                          required
-                          onChange={handleChange}
-                        /> */}
                         <Controller
                           name="confirmPassword"
                           control={control}
@@ -544,14 +452,6 @@ if(userType === "broker") {
                     )}
 
                     <div className="flex items-start gap-2 mb-10 ">
-                      {/* <Input
-                        type="checkbox"
-                        id="terms"
-                        name="termsAccepted"
-                        className="mt-1 h-4 w-4 rounded border-[#d8c3ab] text-[#3b1f12] focus:ring-[#3b1f12]"
-                        value={formData.termsAccepted}
-                        onChange={handleChange}
-                      /> */}
                       <Controller
                         name="termsAccepted"
                         control={control}
@@ -571,7 +471,9 @@ if(userType === "broker") {
                         .
                       </Label>
                     </div>
-                    {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+                    {error && (
+                      <p className="text-red-500 text-sm mt-2">{error}</p>
+                    )}
                     <Button
                       type="submit"
                       className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
@@ -595,18 +497,8 @@ if(userType === "broker") {
                         color: #aaa;
                       }
                     `}</style>
-                    
 
                     <div className="border-t border-gray-200 mb-6 mt-4"></div>
-                    {/* <p className="pt-4 text-center text-xs text-[#7a5a49]">
-                      Already have an account?{" "}
-                      <Link
-                        to="/subscription-login"
-                        className="font-medium text-[#3b1f12] hover:underline"
-                      >
-                        Log In
-                      </Link>
-                    </p> */}
                     <div className="text-center my-4 text-sm">
                       <span>Already have an account? </span>
                       <Link to="/subscription-login" className="text-secondary">

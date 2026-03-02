@@ -11,10 +11,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
-import {
-    getBrokerAndOrganizationSelectListing,
-
-} from "../service/userAdmin";
+import { getBrokerAndOrganizationSelectListing } from "../service/userAdmin";
 import { Label } from "../ui/label";
 import { motion } from "motion/react";
 import { Controller, useForm } from "react-hook-form";
@@ -26,59 +23,62 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import {addOrgAgentSchema } from "@/formSchema";
+import { addOrgAgentSchema } from "@/formSchema";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import AgentAddedSuccessModal from "../Modal/AgentAddedSuccessModal";
+import { formatUSPhone } from "@/utils/date";
 
 function SubscriptionAddOrdAgent() {
   const navigate = useNavigate();
   const { planId } = useParams();
 
-
   const [error, setError] = useState("");
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [lastAddedBrokerName, setLastAddedBrokerName] = useState("");
   const [addBroker, setAddBroker] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const { userType, userId } = useUserIdType();
-  const invitedBrokers = JSON.parse(localStorage.getItem("invitedBroker")) || [];
+  const invitedBrokers =
+    JSON.parse(localStorage.getItem("invitedBroker")) || [];
   console.log("userType", userType);
 
   const brokerOrgListQuery = useQuery({
     queryKey: ["brokerOrgList"],
-    queryFn:  () =>
-    getBrokerAndOrganizationSelectListing("fetch_broker_listing_for_org"),
-    enabled: userId && (userType === "organisation"),
+    queryFn: () =>
+      getBrokerAndOrganizationSelectListing("fetch_broker_listing_for_org"),
+    enabled: userId && userType === "organisation",
   });
 
   const brokerAndOrganizationList = brokerOrgListQuery?.data?.data ?? [];
 
   const invitedBrokerOptions = invitedBrokers.map((item) => ({
-  label: item.name,
-  value: item.customUUID, 
-  isInvited: true, 
-}));
+    label: item.name,
+    value: item.customUUID,
+    email: item.email,
+    isInvited: true,
+  }));
 
-const apiOptions = useMemo(
-  () =>
-    (brokerAndOrganizationList || []).map((item) => ({
-      label: item.name,
-      value: item.id,
-      isInvited: false,
-    })),
-  [brokerAndOrganizationList]
-);
-const dropdownOptions = useMemo(() => {
-  const merged = [...apiOptions];
+  const apiOptions = useMemo(
+    () =>
+      (brokerAndOrganizationList || []).map((item) => ({
+        label: item.name,
+        value: item.id,
+         email: item.email,
+        isInvited: false,
+      })),
+    [brokerAndOrganizationList],
+  );
+  const dropdownOptions = useMemo(() => {
+    const merged = [...apiOptions];
 
-  invitedBrokerOptions.forEach((invited) => {
-    const exists = merged.some((opt) => opt.label === invited.label);
-    if (!exists) merged.push(invited);
-  });
+    invitedBrokerOptions.forEach((invited) => {
+      const exists = merged.some((opt) => opt.email === invited.email);
+      if (!exists) merged.push(invited);
+    });
 
-  return merged;
-}, [apiOptions, invitedBrokerOptions]);
+    return merged;
+  }, [apiOptions, invitedBrokerOptions]);
 
   const {
     control,
@@ -99,43 +99,43 @@ const dropdownOptions = useMemo(() => {
   });
   const phoneValue = watch("phoneNumber");
 
-const onSubmit = (data) => {
+  const onSubmit = (data) => {
     console.log("Form Data:", data);
-setIsLoading(true)
-  const existingOrgAgent =
-    JSON.parse(localStorage.getItem("invitedOrgAgents")) || [];
+    setIsLoading(true);
+    const existingOrgAgent =
+      JSON.parse(localStorage.getItem("invitedOrgAgents")) || [];
 
-  const isDuplicate = existingOrgAgent.some(
-    (agent) => agent.email.toLowerCase() === data.email.toLowerCase()
-  );
+    const isDuplicate = existingOrgAgent.some(
+      (agent) => agent.email.toLowerCase() === data.email.toLowerCase(),
+    );
 
-  if (isDuplicate) {
-    setError("Agent with this email already exists.");
+    if (isDuplicate) {
+      setError("Agent with this email already exists.");
+      setIsLoading(false);
+      return;
+    }
+    const newOrgAgent = {
+      name: data.name,
+      email: data.email,
+      phoneNumber: data.phoneNumber,
+      brokerId: data.selectedBroker,
+      planType: planId,
+      userType: "agent",
+    };
+
+    // Add new agent
+    const updatedOrgAgents = [...existingOrgAgent, newOrgAgent];
+
+    // Save back to localStorage
+    localStorage.setItem("invitedOrgAgents", JSON.stringify(updatedOrgAgents));
+
+    setLastAddedBrokerName(data.name);
+    console.log("Saved org agents:", updatedOrgAgents);
+    reset();
+    // Show success modal
+    setAddBroker(true);
     setIsLoading(false);
-    return;
-  }
-  const newOrgAgent = {
-    name: data.name,
-    email: data.email,
-    phoneNumber: data.phoneNumber,
-    brokerId: data.selectedBroker,
-    planType: planId,
-    userType:"agent",
   };
-
-  // Add new agent
-  const updatedOrgAgents = [...existingOrgAgent, newOrgAgent];
-
-  // Save back to localStorage
-  localStorage.setItem("invitedOrgAgents", JSON.stringify(updatedOrgAgents));
-
-  setLastAddedBrokerName(data.name);
-  console.log("Saved org agents:", updatedOrgAgents);
-  reset();
-  // Show success modal
-  setAddBroker(true);
-  setIsLoading(false);
-};
 
   // Countdown timer effect
   useEffect(() => {
@@ -149,9 +149,10 @@ setIsLoading(true)
 
   // if (isReset) return <ResetPassword username={username} password={password} />;
   const handleContinue = () => {
-
-        navigate(`/subscription-payment/${planId}`);
-    
+    navigate(`/subscription-payment/${planId}`);
+  };
+  const handleSkip = () => {
+    navigate(`/subscription-payment/${planId}`);
   };
 
   const handleAddAgent = () => {
@@ -278,25 +279,23 @@ setIsLoading(true)
                       <p className="mt-1 text-sm text-[#7a5a49]">
                         Start your secure onboarding.
                       </p> */}
-                <div className="flex items-center justify-center mb-5">
-                  <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
-                    {/* Active Step */}
-                    <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4 py-2 text-xs font-medium text-white">
-                      <UserRoundCheck />
-                      Broker
-                    </div> 
-                    {/* Connector */}
-                    <div className="mx-3 h-[2px] w-12 bg-[#3b1f12]" />
+                      <div className="flex items-center justify-center mb-5">
+                        <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
+                          {/* Active Step */}
+                          <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4 py-2 text-xs font-medium text-white">
+                            <UserRoundCheck />
+                            Broker
+                          </div>
+                          {/* Connector */}
+                          <div className="mx-3 h-[2px] w-12 bg-[#3b1f12]" />
 
-                    {/* Inactive Step */}
-                    <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4 py-2 text-xs font-medium text-white">
-                        <UserRoundCheck />
-                     Agent
-                    </div>
-                  </div>
-                </div>
-
-
+                          {/* Inactive Step */}
+                          <div className="flex items-center gap-2 rounded-full bg-[#3b1f12] px-4 py-2 text-xs font-medium text-white">
+                            <UserRoundCheck />
+                            Agent
+                          </div>
+                        </div>
+                      </div>
 
                       <div className="border-t border-gray-200 mb-6 mt-4"></div>
                       <form
@@ -305,7 +304,7 @@ setIsLoading(true)
                       >
                         <div>
                           <Label className="text-sm">
-                           Agent Name <span className="text-red-500">*</span>
+                            Agent Name <span className="text-red-500">*</span>
                           </Label>
                           <Controller
                             name="name"
@@ -322,7 +321,8 @@ setIsLoading(true)
                         </div>
                         <div>
                           <Label className="text-sm">
-                            Email Address <span className="text-red-500">*</span>
+                            Email Address{" "}
+                            <span className="text-red-500">*</span>
                           </Label>
 
                           <Controller
@@ -348,13 +348,18 @@ setIsLoading(true)
                             <Controller
                               name="phoneNumber"
                               control={control}
-                              rules={{
-                                required: true,
-                                minLength: 10,
-                                maxLength: 10,
-                              }}
                               render={({ field }) => (
-                                <Input placeholder="phone number" {...field} />
+                                <Input
+                                  placeholder="phone number"
+                                  value={formatUSPhone(field.value ?? "")}
+                                  onChange={(e) => {
+                                    const digits = e.target.value
+                                      .replace(/\D/g, "")
+                                      .slice(0, 10);
+                                    field.onChange(digits);
+                                  }}
+                                  inputMode="numeric"
+                                />
                               )}
                             />
                             {phoneValue?.length === 10 && (
@@ -377,37 +382,42 @@ setIsLoading(true)
 
                         <div>
                           <Label className="text-sm">
-                            Broker List{" "}
-                            <span className="text-red-500">*</span>
+                            Broker List <span className="text-red-500">*</span>
                           </Label>
 
-                           <Controller
-    name="selectedBroker"
-    control={control}
-    rules={{ required: "Please select a broker" }}
-    render={({ field }) => (
-      <Select value={field.value} onValueChange={field.onChange}>
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="Select broker" />
-        </SelectTrigger>
+                          <Controller
+                            name="selectedBroker"
+                            control={control}
+                            rules={{ required: "Please select a broker" }}
+                            render={({ field }) => (
+                              <Select
+                                value={field.value}
+                                onValueChange={field.onChange}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select broker" />
+                                </SelectTrigger>
 
-        <SelectContent>
-          {dropdownOptions.length === 0 ? (
-            <SelectItem disabled value="no-data">
-              No brokers found
-            </SelectItem>
-          ) : (
-            dropdownOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-                {option.isInvited && " (Invited)"} 
-              </SelectItem>
-            ))
-          )}
-        </SelectContent>
-      </Select>
-    )}
-  />
+                                <SelectContent>
+                                  {dropdownOptions.length === 0 ? (
+                                    <SelectItem disabled value="no-data">
+                                      No brokers found
+                                    </SelectItem>
+                                  ) : (
+                                    dropdownOptions.map((option) => (
+                                      <SelectItem
+                                        key={option.value}
+                                        value={option.value}
+                                      >
+                                        {option.label}
+                                        {option.isInvited && " (Invited)"}
+                                      </SelectItem>
+                                    ))
+                                  )}
+                                </SelectContent>
+                              </Select>
+                            )}
+                          />
 
                           {errors.selectedBroker && (
                             <p className="text-red-500 text-xs">
@@ -415,23 +425,30 @@ setIsLoading(true)
                             </p>
                           )}
                         </div>
-{error && (
-  <p className="text-red-500 text-sm mt-2">{error}</p>
-)}
-                        <Button
-                          type="submit"
-                          className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
-                          disabled={
-                            isSubmitting || isLoading
-                          }
-                        >
-                          Invite Agent
-                          {isLoading ? (
-                            <Loader className="animate-spin" size={18} />
-                          ) : (
+                        {error && (
+                          <p className="text-red-500 text-sm mt-2">{error}</p>
+                        )}
+                        <div className="flex flex-row gap-1">
+                          <Button
+                            onClick={handleSkip}
+                            className="mt-4 flex w-1/3 items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
+                          >
+                            Skip
                             <ArrowRight size={18} />
-                          )}
-                        </Button>
+                          </Button>
+                          <Button
+                            type="submit"
+                            className="mt-4 flex w-2/3 items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
+                            disabled={isSubmitting || isLoading}
+                          >
+                            Invite Agent
+                            {isLoading ? (
+                              <Loader className="animate-spin" size={18} />
+                            ) : (
+                              <ArrowRight size={18} />
+                            )}
+                          </Button>
+                        </div>
                         <style jsx>{`
                           input.password-input {
                             -webkit-text-security: disc;
