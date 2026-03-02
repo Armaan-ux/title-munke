@@ -6,7 +6,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Loader, X } from "lucide-react";
-import { useEffect } from "react";
 
 export default function SubscriptionSuccessModal({
   open,
@@ -56,7 +55,7 @@ export default function SubscriptionSuccessModal({
               <DialogHeader className="text-center">
                 <DialogTitle className="text-2xl font-semibold pt-4 !font-poppins">
                   <div className="flex flex-col items-center">
-                    <p>{planId === "PAY_AS_YOU_GO" ?`Pay As you Go`: `Subscription`}</p>
+                    <p>Subscription</p>
                     <p>Successful!</p>
                   </div>
                 </DialogTitle>

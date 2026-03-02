@@ -103,11 +103,11 @@ export default function Search({ isIndivisual = false }) {
           localStorage.setItem("searchTimestamp", Date.now().toString());
           if (zip_url) localStorage.setItem("zipUrl", zip_url);
           setInvalidateSearchHistory(true);
-        } else if (status === "In Progress") {
+        } else if (status === "IN_PROGRESS") {
           setProgress("Processing...");
           setPercentage(percent_completion || 0);
           setMessage(status_message || "Search in progress...");
-          localStorage.setItem("searchStatus", "In Progress");
+          localStorage.setItem("searchStatus", "IN_PROGRESS");
           setTimeout(() => checkSearchStatus(searchId, false), 5000);
         } else if (["FAILED", "STOPPED"].includes(status)) {
           clearSearchState();

@@ -42,10 +42,6 @@ function SubscriptionCardDetails({ isAddCard = false }) {
     }
   }, [location.search]);
 
-  const paymentHandler = (e) => {
-    e.preventDefault();
-    setShowSubscriptionSuccess(true);
-  };
 
   const handlePaymentSuccess = () => {
     if (userType === "broker" && planId !== "EXPLORE_PLAN") {
@@ -54,7 +50,11 @@ function SubscriptionCardDetails({ isAddCard = false }) {
     if (userType === "organisation" && planId !== "EXPLORE_PLAN") {
       addOrganisationBatchMutation.mutate();
     }
-    setShowSubscriptionSuccess(true);
+    if(planId === "PAY_AS_YOU_GO"){
+      setShowCardSuccess(true);
+    }else{
+      setShowSubscriptionSuccess(true);
+    }
   };
 
   const subscribeModalHandler = () => {
@@ -63,6 +63,7 @@ function SubscriptionCardDetails({ isAddCard = false }) {
     setTimeout(() => {
       setIsLoading(false);
       setShowSubscriptionSuccess(false);
+      setShowCardSuccess(false);
       navigate(
         "/" + user.signInUserSession.idToken.payload["cognito:groups"][0],
       );
@@ -200,9 +201,12 @@ const addOrganisationBatchMutation = useMutation({
       />
       <CardAddedSuccessModal
         open={showCardSuccess}
-        onOpenChange={() => {
-          setShowCardSuccess(false);
-        }}
+        onOpenChange={subscribeModalHandler}
+         isLoading={
+          addAgentsBatchMutation?.isPending ||
+          addOrganisationBatchMutation?.isPending || isLoading
+        }
+         showCloseIcon={false}
         fromSignUp={true}
         onFailed={() => {}}
       />

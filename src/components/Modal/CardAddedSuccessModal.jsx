@@ -5,13 +5,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { Loader, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@/context/usercontext";
 
 export default function CardAddedSuccessModal({
   open,
   onOpenChange,
+  isLoading,
+  showCloseIcon = true,
   onFailed,
   fromSignUp
 }) {
@@ -53,12 +55,12 @@ export default function CardAddedSuccessModal({
             margin: 0,
           }}
         >
-          <Button
+          {showCloseIcon && <Button
             onClick={() => onOpenChange(false)}
             className="absolute -top-3 -right-3 bg-white hover:bg-gray-100 rounded-full shadow-md p-1 z-50"
           >
             <X strokeWidth={3} className="w-4 h-4 text-[#2C1B13]" />
-          </Button>
+          </Button>}
 
           <div className="overflow-hidden rounded-2xl">
             <div className="relative bg-secondary text-white flex flex-col items-center justify-center py-5">
@@ -81,8 +83,10 @@ export default function CardAddedSuccessModal({
               <Button
                 onClick={subscribeHandler}
                 className="w-32 bg-[#5A0A0A] hover:bg-[#460707] text-white rounded-lg py-2 text-sm"
+                disabled={isLoading}
               >
                 Continue
+                  {isLoading && <Loader className="animate-spin ml-2" />}
               </Button>
             </div>
           </div>
