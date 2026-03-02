@@ -71,8 +71,8 @@ function History({isAll=false}) {
       setSearchHistories((prev) => [...prev, ...newSearchHis]);
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
-
-      const inProgress = items.filter((item) => item.status === "In Progress");
+console.log("Fetched search histories:", items);
+      const inProgress = items.filter((item) => item.status === "IN_PROGRESS");
       setInProgressSearches((prev) => [...prev, ...inProgress]);
       setInvalidateSearchHistory(false);
     } catch (error) {
@@ -306,12 +306,12 @@ function History({isAll=false}) {
                           ? "bg-[#E9F3E9] text-[#1E8221]"
                           : item?.status === "Unconfirmed"
                           ? "bg-[#FFF3D9] text-[#A2781E]"
-                           : item?.status === "In Progress"
+                           : item?.status === "IN_PROGRESS"
                           ? "bg-[#fff6e2] text-[#ffa200]"
                           : "bg-[#FFE3E2] text-[#FF5F59]"
                       } text-[13px] font-medium px-3 py-1 rounded-md`}
                     >
-                      {item?.status}
+                      {item?.status === "IN_PROGRESS" ? "In Progress" : item?.status}
                     </Badge></TableCell>
 
                     {activeTab === "agents" && (

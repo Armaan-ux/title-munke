@@ -25,7 +25,7 @@ const PropertyDetails = () => {
   queryKey: [queryKeys?.propertyDetail, id],
   queryFn: () => getSearchedStatus(id),
   refetchInterval: (query) => {
-    return query?.state?.data?.status === "In Progress"
+    return query?.state?.data?.status === "IN_PROGRESS"
       ? 5000 // poll every 5 seconds
       : false; // stop polling
   },
@@ -34,7 +34,7 @@ const PropertyDetails = () => {
 if(propertyDetailQuery?.isLoading) return <CenterLoader />
 if(propertyDetailQuery?.isError) return <ShowError message={propertyDetailQuery?.error?.response?.data?.message} />
 const pdfDocuments = propertyDetailQuery?.data?.documents?.filter(item => item?.type === "pdf") ?? [];
-
+console.log("Property Detail Data:", propertyDetailQuery?.data);  
   return (
     <>
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
@@ -87,7 +87,7 @@ const pdfDocuments = propertyDetailQuery?.data?.documents?.filter(item => item?.
                 </p>
 
                 <div className="relative">
-                  {propertyDetailQuery?.data?.status === "In Progress" && (
+                  {propertyDetailQuery?.data?.status === "IN_PROGRESS" && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center z-10 backdrop-blur-[3px]">
                       <p className="text-xl font-semibold text-[#4C0D0D]">
                         Processing... {propertyDetailQuery?.data?.percent_completion || 0}%
@@ -203,7 +203,7 @@ const pdfDocuments = propertyDetailQuery?.data?.documents?.filter(item => item?.
                         ))}
                       </tbody>
                       {
-                        propertyDetailQuery?.data?.status === "In Progress" && (
+                        propertyDetailQuery?.data?.status === "IN_PROGRESS" && (
                           <tr>
                             <td colSpan={5} className="py-3 px-4">
                               <p className="text-center text-[#4C0D0D] flex items-center justify-between mx-auto w-fit">

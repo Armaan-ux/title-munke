@@ -396,6 +396,7 @@ function SubscriptionAddAgent() {
                         )}
                         <div className="flex flex-row gap-1">
                           <Button
+                          type="button"
                             onClick={handleSkip}
                             className="mt-4 flex w-1/3 items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
                           >

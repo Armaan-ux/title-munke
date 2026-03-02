@@ -87,10 +87,10 @@ export default function Search({ isIndivisual = false }) {
         const { status, status_message, zip_url, percent_completion } =
           response;
 
-        if (isRestoring && status === "In Progress") setLoading(true);
+        if (isRestoring && status === "IN_PROGRESS") setLoading(true);
 
         if (status === "SUCCESS") {
-          if (userType === "individual")
+          if (userType === "agent")
             queryClient.invalidateQueries({
               queryKey: ["subcription-details"],
             });
@@ -152,7 +152,7 @@ export default function Search({ isIndivisual = false }) {
     }
 
     const storedSearchId = localStorage.getItem("searchId");
-    if (storedSearchId && storedStatus === "In Progress") {
+    if (storedSearchId && (storedStatus === "IN_PROGRESS")) {
       checkSearchStatus(storedSearchId, true);
     }
 
@@ -161,7 +161,7 @@ export default function Search({ isIndivisual = false }) {
       localStorage.setItem("userLoggedIn", "true");
     } else if (!user && loggedIn) {
       localStorage.removeItem("userLoggedIn");
-      if (storedStatus !== "In Progress") clearSearchState();
+      if (storedStatus !== "IN_PROGRESS") clearSearchState();
     }
   }, [user, checkSearchStatus]);
 
@@ -211,7 +211,7 @@ export default function Search({ isIndivisual = false }) {
     try {
       localStorage.setItem("searchAddress", address);
       localStorage.setItem("isChecked", isChecked);
-      localStorage.setItem("searchStatus", "In Progress");
+      localStorage.setItem("searchStatus", "IN_PROGRESS");
       localStorage.setItem("searchTimestamp", Date.now().toString());
 
       handleCreateAuditLog("SEARCH", { address }, isAgent);
@@ -293,7 +293,7 @@ export default function Search({ isIndivisual = false }) {
             address,
             timestamp: new Date().toISOString(),
             downloadLink: "",
-            status: "In Progress",
+            status: "IN_PROGRESS",
             searchId,
             brokerId,
             username,
