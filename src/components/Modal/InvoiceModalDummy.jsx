@@ -170,7 +170,7 @@ export function InvoiceModalDummy({ open, onClose, invoice, isPrint = true }) {
                 `1 × Professional Plan (Broker) (at $10.00 / month)`
               ) || invoice?.description?.includes(
                 `1 × Professional Plan (Organisation) (at $10.00 / month)`
-              )) &&
+              ) || invoice?.description?.includes("1 × Professional Plan (Individual Agent) (at $20.00 / month)")) &&
               invoice.plans.map((plan, index) => (
                 <tr key={plan.priceId || index}>
                   <td
@@ -218,7 +218,7 @@ export function InvoiceModalDummy({ open, onClose, invoice, isPrint = true }) {
               `1 × Professional Plan (Broker) (at $10.00 / month)`
             ) || invoice?.description?.includes(
               `1 × Professional Plan (Organisation) (at $10.00 / month)`
-            )) && (
+            ) || invoice?.description?.includes("1 × Professional Plan (Individual Agent) (at $20.00 / month)")) && (
               <tr>
                 <td
                   colSpan={2}

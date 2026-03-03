@@ -4,6 +4,7 @@ import {
   getAdminDetails,
   getAgentBrokerDetails,
   getAgentDetails,
+  getBrokerDetails,
   getOrganisationDetails,
   getSubscriptionDetails,
   updateAdmin,
@@ -35,6 +36,7 @@ export const UserProvider = ({ children }) => {
   const [agentDetail, setAgentDetail] = useState(null);
   const [newPlanType, setNewPlanType] = useState(null);
   const [organisationDetail, setOrganisationDetail] = useState(null);
+  const [brokerDetail, setBrokerDetail] = useState(null);
   const agentBrokerDetailQuery = useQuery({
       queryKey: ["agentBrokerDetail", user?.attributes?.sub],
       queryFn: () => getAgentBrokerDetails(user?.attributes?.sub),
@@ -74,6 +76,12 @@ export const UserProvider = ({ children }) => {
   staleTime: 0,
   retry: false,
 });
+  const brokerDetailQuery = useQuery({
+    queryKey: ["brokerDetail", user?.attributes?.sub],
+    queryFn: () => getBrokerDetails(user?.attributes?.sub),
+    enabled: userType === "broker" && !!user?.attributes?.sub,
+    staleTime: 5 * 60 * 1000,
+  });
 
 
 useEffect(() => {
@@ -83,7 +91,10 @@ useEffect(() => {
   if (organisaDetailQuery.data) {
     setOrganisationDetail(organisaDetailQuery.data);
   }
-}, [agentDetailQuery.data, organisaDetailQuery.data]);
+  if (brokerDetailQuery.data) {
+    setBrokerDetail(brokerDetailQuery.data);
+  }
+}, [agentDetailQuery.data, organisaDetailQuery.data, brokerDetailQuery.data]);
 
   useEffect(() => {
     if(agentBrokerDetailQuery?.isSuccess && userType === "broker") {
@@ -206,6 +217,7 @@ useEffect(() => {
         setNewPlanType,
         newPlanType,
         organisationDetail,
+        brokerDetail
       }}
     >
       {children}

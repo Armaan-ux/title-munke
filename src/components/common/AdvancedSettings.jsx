@@ -19,7 +19,7 @@ import { ChangePlanModal } from "../Modal/ChangePlanModal";
 
 const AdvancedSettings = () => {
   const queryClient = useQueryClient();
-  const { user, agentDetail, setPaymentModal, setUser, setNewPlanType } =
+  const { user, agentDetail, setPaymentModal, setUser, setNewPlanType ,brokerDetail } =
     useUser();
   const [searchParams] = useSearchParams();
   const isCardAdded = searchParams.get("isCardAdded");
@@ -32,12 +32,12 @@ const AdvancedSettings = () => {
   const { isUnderBroker = false, relationship = {} } = agentDetail || {};
   const isPaymentSuccessful = searchParams.get("isPaymentSuccessful");
   /* -------------------- Queries -------------------- */
-  const brokerDetailQuery = useQuery({
-    queryKey: ["brokerDetail", userId],
-    queryFn: () => getBrokerDetails(userId),
-    enabled: userType === "broker" && !!userId,
-    staleTime: 5 * 60 * 1000,
-  });
+  // const brokerDetailQuery = useQuery({
+  //   queryKey: ["brokerDetail", userId],
+  //   queryFn: () => getBrokerDetails(userId),
+  //   enabled: userType === "broker" && !!userId,
+  //   staleTime: 5 * 60 * 1000,
+  // });
 
   const brokerOrgListQuery = useQuery({
     queryKey: ["brokerOrgList"],
@@ -57,8 +57,8 @@ const AdvancedSettings = () => {
     [brokerAndOrganizationList],
   );
   const { isUnderOrganisation, relationship: brokerRel } =
-    brokerDetailQuery?.data ?? {};
-  const brokerDetail = brokerDetailQuery?.data ?? {};
+    brokerDetail ?? {};
+  // const brokerDetail = brokerDetailQuery?.data ?? {};
   const organisationFirstName = brokerRel?.organisationFirstName ?? "-";
   const brokerFirstName = relationship?.brokerFirstName ?? "-";
 
@@ -275,7 +275,7 @@ const AdvancedSettings = () => {
           </div>
           {/* Broker Connection Card */}
           <div className="bg-[#F5F0EC] order border-blue-300 rounded-xl p-6 md:p-8 w-full shadow-sm">
-            <p className="text-lg font-medium mb-2">Broker Connection</p>
+            <p className="text-lg font-medium mb-2"> { userType === "agent" ?"Broker Connection": "Organisation Connection" }</p>
 
             {userType === "agent" &&
               (isUnderBroker ? (

@@ -99,7 +99,7 @@ export default function ManageAgents() {
 
 function Agents() {
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user ,brokerDetail } = useUser();
   const fileInputRef = useRef(null);
   const [profileImage, setProfileImage] = useState(null)
   const [isOpen, setIsOpen] = useState(false);
@@ -114,6 +114,7 @@ function Agents() {
   const [pendingSearch, setPendingSearch] = useState(0);
   const [topPerformer, setTopPerformer] = useState("");
   const [addAgent, setAddAgent] = useState(false);
+  console.log("brokerDetail in manage agent", brokerDetail);
   const bulkUploadMutation = useMutation({
     mutationFn: (data) => bulkAgentUpload(data),
     onSuccess: () => {
@@ -396,7 +397,7 @@ function Agents() {
             Upload Template
           </Button>
 
-          <Button
+          {brokerDetail?.planType !== "EXPLORE_PLAN" && <Button
             // onClick={() => setAddAgent(user?.status === "active")}
             onClick={() => setAddAgent(true)}
             className="h-[36px] bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[13px] font-medium rounded-md flex items-center gap-1.5 px-3"
@@ -404,7 +405,7 @@ function Agents() {
           >
             <PlusCircle className="w-4 h-4" />
             Add Agent
-          </Button>
+          </Button>}
         </div>
       </div>
       <div className="bg-white !p-4 rounded-xl">

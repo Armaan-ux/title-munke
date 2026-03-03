@@ -117,7 +117,7 @@ function SubscriptionPayment() {
               viewport={{ once: true, amount: 0.4 }}
               className="flex items-center justify-center p-6 sm:p-10 bg-[url('/bg-signin.png')]"
             >
-              <div className="w-full max-w-lg ">
+              <div className="w-full max-w-lg">
                 {/* stepper */}
                 {userType === "broker" || userType === "organisation" ? (
                   <div className="flex items-center justify-center mb-5">
@@ -179,7 +179,7 @@ function SubscriptionPayment() {
                   <div className="border-t border-gray-200 my-6"></div>
 
                   {/* Total Payment Section */}
-                  {planId !== "EXPLORE_PLAN" && (
+                  {planId === "PROFESSIONAL_PLAN" && (
                     <div className="bg-amber-50 rounded-2xl p-5 mb-6">
                       <div className="flex items-center justify-between">
                         <div>
