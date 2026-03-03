@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -160,7 +160,12 @@ function SubscriptionSignup() {
       resendCodeMutation.mutate(getValues("email"));
     }
   };
-
+  useEffect(() => {
+      // Cleanup localStorage on unmount    
+      localStorage.removeItem("invitedAgents");
+      localStorage.removeItem("invitedBroker");
+      localStorage.removeItem("invitedOrgAgents");    
+  }, []);
   // if (isReset) return <ResetPassword username={username} password={password} />;
 
   return (

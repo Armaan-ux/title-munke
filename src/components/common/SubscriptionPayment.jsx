@@ -21,11 +21,28 @@ function SubscriptionPayment() {
   const { userType } = useUserIdType();
   const [showPaymentDetails, setShowPaymentDetails] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("");
+  const getStoredAgents = () =>
+    JSON.parse(localStorage.getItem("invitedAgents")) || [];
+  const getStoredBrokers = () =>
+    JSON.parse(localStorage.getItem("invitedBroker")) || [];
+
+  const getStoredOrgAgents = () =>
+    JSON.parse(localStorage.getItem("invitedOrgAgents")) || [];
+  const agents = getStoredAgents();
+  const brokers = getStoredBrokers();
+  const orgAgents = getStoredOrgAgents();
+  const agentCount =
+    userType === "broker"
+      ? (agents?.length ?? 0)
+      : userType === "organisation"
+        ? (orgAgents?.length ?? 0) + (brokers?.length ?? 0)
+        : 0;
   const price = localStorage.getItem("price") || "$0.00";
-
-  console.log("Price in Subscriptionpayment:", price);
-
   const numericPrice = Number(price.replace("$", ""));
+  const seatFees = numericPrice * agentCount;
+  const tax = 0;
+  const totalAmount = numericPrice + tax + seatFees;
+
   const submitHandler = (e) => {
     e.preventDefault();
     console.log("paymentMethod", paymentMethod);
@@ -195,7 +212,7 @@ function SubscriptionPayment() {
                         </div>
                         <div className="text-right">
                           <p className="text-2xl font-semibold text-[#3b1f12]">
-                            {price ? `$${numericPrice.toFixed(2)}` : `$0.00`}
+                            {price ? `$${totalAmount.toFixed(2)}` : `$0.00`}
                           </p>
                           <button
                             onClick={() => setShowPaymentDetails(true)}

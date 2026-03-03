@@ -69,13 +69,13 @@ export const routes = {
       icon: LayoutDashboard
     },
       {
-      link: "/organisation/business",
-      name: "Business",
+      link: "/organisation/search",
+      name: "Search",
       class: "fas fa-person",
       icon: BriefcaseBusiness
     },
     {
-      link: "/organisation/demo-requests",
+      link: "/organisation/requests",
       name: "Requests",
       class: "fas fa-person",
       icon: BookUser

@@ -1620,3 +1620,34 @@ export async function updateStatusAgent(agentId) {
     "/update-agent-status"
   )
 }
+export async function getOrganisationMetrics(data) {
+  const action = CONSTANTS?.ACTIONS?.GET_HOME
+  const payload = {
+    body: {
+      ...data
+    }
+  }
+  return callGetUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/get-dashboard-stats-org"
+  )
+}
+
+export async function listAuditLogsOrg(logType, userIds, nextToken,limit=10) {
+  const payload = {
+    body: {
+      logType: logType,
+      ...(userIds && { userIds: userIds }),
+      ...(nextToken && { nextToken: nextToken }),
+      limit
+    },
+  };
+  return callGetUserAdminApi(
+    payload,
+    'Success in listAuditLogs:',
+    'Error in listAuditLogs:',
+    "/list-audit-logs-for-org"
+  );
+}

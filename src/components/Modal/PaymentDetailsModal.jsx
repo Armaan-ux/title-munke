@@ -23,9 +23,9 @@ export function PaymentDetailsModal({ open, onOpenChange, onCancel, price }) {
     ? (orgAgents?.length ?? 0) + (brokers?.length ?? 0)
     : 0;
   const numericPrice = Number(price.replace("$", ""));
-  const qty = agentCount || 1;
+  const qty =  1;
 
-  const seatFees = numericPrice * qty;
+  const seatFees = numericPrice * agentCount;
   const tax = 0;
   const totalAmount = numericPrice + tax + seatFees;
 
