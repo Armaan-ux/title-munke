@@ -1,5 +1,6 @@
 import {
   FileSearch2,
+  Loader2,
   Logs,
   Subscript,
   UserRound,
@@ -21,11 +22,14 @@ import { useSearchParams } from "react-router-dom";
 import CardAddedSuccessModal from "../Modal/CardAddedSuccessModal";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/utils";
-import { getBrokerDetails, getCheckCardIsAdded } from "../service/userAdmin";
+import { getAdminMetrics, getBrokerDetails, getCheckCardIsAdded } from "../service/userAdmin";
 import { useUserIdType } from "@/hooks/useUserIdType";
+import TimeFilter from "../common/time-filter";
 
+const userTimezone  = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const OrganisationDashboard = () => {
   const navigate = useNavigate();
+    const [active, setActive] = useState("all_time");
   const [agents, setAgents] = useState([]);
   const { userId, userType } = useUserIdType();
 
@@ -37,6 +41,11 @@ const OrganisationDashboard = () => {
       setAgents(res || []),
     );
   }, []);
+
+    const metricQuery = useQuery({
+      queryKey: ['admin-metrics', active, userTimezone],
+      queryFn: () => getAdminMetrics({admin_dashboard_global_filter: active, userTimezone })
+    })
 
   const totalAgents = agents.length;
   const activeAgents = agents.filter(
@@ -79,7 +88,7 @@ const OrganisationDashboard = () => {
   return (
     <div className="my-4">
       {/* cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3  gap-5 *:rounded-2xl *:bg-[#F5F0EC] mb-4">
+      {/* <div className="grid grid-cols-2 md:grid-cols-3  gap-5 *:rounded-2xl *:bg-[#F5F0EC] mb-4">
         <div className="p-5 flex justify-between items-end ">
           <div>
             <p className="mb-4 text-secondary"> Total Agents</p>
@@ -113,7 +122,61 @@ const OrganisationDashboard = () => {
             <UserRoundX className="text-tertiary" />
           </div>
         </div>
-      </div>
+      </div> */}
+
+
+          <TimeFilter active={active} setActive={(value) => setActive(value)}/>
+            {/* cards */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 *:rounded-2xl *:bg-[#F5F0EC] my-4">
+              <div className="p-5 flex justify-between items-end ">
+                <div>
+                  <p className="mb-4 text-secondary"> Total Brokers</p>
+                  {metricQuery?.isSuccess && 
+                  <p className="text-4xl font-semibold text-tertiary">
+                    {metricQuery?.data?.BROKER ?? "--"}
+                  </p>
+                  }
+                  {metricQuery?.isLoading && <Loader2 className="w-6 h-10 animate-spin text-secondary" />}
+                </div>
+                <div className="bg-white rounded-full p-3.5">
+                  {/* <UserRound className="text-tertiary" /> */}
+                  <img src="/user-shield.svg" alt="user-shield-icon" className="w-6 h-6" />
+                </div>
+              </div>
+              <div className="p-5 flex justify-between items-end ">
+                <div>
+                  <p className="mb-4 text-secondary">Total Agents</p>
+                  {metricQuery?.isSuccess && <p className="text-4xl font-semibold text-tertiary">{metricQuery?.data?.AGENT ?? "--"}</p>}
+                  {metricQuery?.isLoading && <Loader2 className="w-6 h-10 animate-spin text-secondary" />}
+                </div>
+                <div className="bg-white rounded-full p-3.5">
+                  {/* <HatGlasses className="text-tertiary" /> */}
+                   <img src="/user-check.svg" alt="user-check-icon" className="w-6 h-6" />
+                </div>
+              </div>
+              <div className="p-5 flex justify-between items-end ">
+                <div>
+                  <p className="mb-4 text-secondary">Pending Request</p>
+                  {metricQuery?.isSuccess && <p className="text-4xl font-semibold text-tertiary">{metricQuery?.data?.totalCounties ?? "--"}</p>}
+                  {metricQuery?.isLoading && <Loader2 className="w-6 h-10 animate-spin text-secondary" />}
+                </div>
+                <div className="bg-white rounded-full p-3.5">
+                  {/* <Map className="text-tertiary" /> */}
+                   <img src="/map-location-pin.svg" alt="map-location-pin-icon" className="w-6 h-6" />
+                </div>
+              </div>
+              <div className="p-5 flex justify-between items-end ">
+                <div>
+                  <p className="mb-4 text-secondary">Approved Requests</p>
+                  {metricQuery?.isSuccess && <p className="text-4xl font-semibold text-tertiary">{metricQuery?.data?.demoRequestCount ?? "--"}</p>}
+                  {metricQuery?.isLoading && <Loader2 className="w-6 h-10 animate-spin text-secondary" />}
+                </div>
+                <div className="bg-white rounded-full p-3.5">
+                   {/* <BookUser className="text-tertiary" /> */}
+                   <img src="/request-approval.svg" alt="request-approval-icon" className="w-6 h-6" /> 
+                </div>
+              </div>
+            </div>
 
       {/* Search */}
       <Search />
