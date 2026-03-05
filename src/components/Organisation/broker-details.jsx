@@ -52,7 +52,7 @@ function BrokerDetails() {
         <div className="bg-white !p-4 rounded-xl">
         <div className="flex justify-between items-center gap-4 mb-6">
           <div className="flex items-center gap-6">
-            <p className="text-secondary font-medium text-xl">All Brokers</p>
+            <p className="text-secondary font-medium text-xl">All Agents</p>
           </div>
             <DateFilter handleFilter={(from, to) => setDate(pre => ({...pre, from, to}))}/>
         </div>

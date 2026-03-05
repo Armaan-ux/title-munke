@@ -71,7 +71,6 @@ function History({isAll=false}) {
       setSearchHistories((prev) => [...prev, ...newSearchHis]);
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
-console.log("Fetched search histories:", items);
       const inProgress = items.filter((item) => item.status === "IN_PROGRESS");
       setInProgressSearches((prev) => [...prev, ...inProgress]);
       setInvalidateSearchHistory(false);

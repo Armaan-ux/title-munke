@@ -64,7 +64,8 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
   });
   const rawPhone =
     getUserDetail?.data?.attributes?.["custom:phoneNumber"] || "";
-
+console.log("getUserDetail",getUserDetail?.data)
+console.log("rawPhone",rawPhone)
   const phoneWithoutCountryCode = rawPhone.replace(/^\+1/, "");
   useEffect(() => {
     if (getUserDetail.isSuccess) {

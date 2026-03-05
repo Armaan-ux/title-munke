@@ -1,8 +1,7 @@
-import { API } from "aws-amplify";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 // import "./index.css";
-import { getFormattedDateTime } from "@/utils";
 import { fetchAgentsWithSearchCount } from "@/components/service/broker";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -11,48 +10,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { ArchiveRestore, EyeIcon, PencilLine, PlusCircle, Trash2, UserPlus } from "lucide-react";
-import AddUserModal from "../Modal/AddUserModal";
-import AgentList from "../Modal/AgentList";
-import AddAgentByAdminModal from "../Modal/AddAgentByAdminModal";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { useDeleteUser } from "@/hooks/useDeleteUser";
+import { useRestoreUser } from "@/hooks/useRestoreUser";
+import { useMutation } from "@tanstack/react-query";
+import { ArchiveRestore, PencilLine, PlusCircle, Trash2, UserPlus } from "lucide-react";
 import { toast } from "react-toastify";
+import AddAdminModal from "../Modal/AddAdminModal";
 import {
   CONSTANTS,
   deleteUser,
   getActiveBrokers,
-  getAgentListings,
-  getBrokersWithSearchCount,
+  getOrgAgentsList,
+  getOrgBrokersList,
   getTotalBrokers,
   getTotalBrokerSearchesThisMonth,
-  listAdmins,
   reinviteUser,
-  updateBrokerStatus,
+  updateBrokerStatus
 } from "../service/userAdmin";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Badge } from "../ui/badge";
-import AddAdminModal from "../Modal/AddAdminModal";
-import { useDeleteUser } from "@/hooks/useDeleteUser";
-import { useRestoreUser } from "@/hooks/useRestoreUser";
-import { useMutation } from "@tanstack/react-query";
-import { useUserIdType } from "@/hooks/useUserIdType";
-import { set } from "zod";
 
 const userTypes = [
   // {
@@ -97,141 +72,6 @@ export default function Users() {
   );
 }
 
-function Admins() {
-  const {userId} = useUserIdType();
-  const [isOpen, setIsOpen] = useState(false);
-  const [admins, setAdmins] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
-  const [isAdminListLoading, setIsAdminListLoading] = useState(false);
-  const [nextToken, setNextToken] = useState(null);
-  const [selectedUser, setSelectedUser] = useState({});
-  const {deleteUserMutation} = useDeleteUser(() => {handleFetchAdminListing(true); setHasMore(true);});
-  const {restoreUserMutation} = useRestoreUser(() => {handleFetchAdminListing(true); setHasMore(true);});
-  const handleFetchAdminListing = async (isRefetch) => {
-    setIsAdminListLoading(true);
-    try {
-      const response = await listAdmins(isRefetch ? null : nextToken);
-      const {items, nextToken: newNextToken} = response;
-      setAdmins(pre => isRefetch ? items : [...pre, ...items]);
-      setNextToken(newNextToken);
-      setHasMore(!!newNextToken)
-    } catch (error) {
-      console.log(error)
-    }
-    setIsAdminListLoading(false);
-  }
-
-  useEffect(() => {handleFetchAdminListing()}, []);
-  const loading = deleteUserMutation.isPending || restoreUserMutation.isPending;
-
-  return (
-    <>
-     {isOpen && 
-      <AddAdminModal  
-          open={isOpen} 
-          onClose={()=> {setIsOpen(false); setSelectedUser({})}} 
-          title="Admin"  
-          userType="admin" 
-          invalidateFun={() => {handleFetchAdminListing(true); setHasMore(true);}}
-          selectedUser={selectedUser}
-        />
-     }
-    <div className="bg-white !p-4 rounded-xl">
-      {/* <AddUserModal
-        setIsOpen={setIsOpen}
-        userType="admin"
-        setUser={setAdmins}
-        isOpen={isOpen}
-      /> */}
-      <div className="flex justify-between gap-4 items-center mb-4">
-        <p className="text-lg font-medium" >All Admins</p>
-        <Button variant="secondary" onClick={() => setIsOpen(true)}>
-          {" "}
-          <PlusCircle /> Add Admin
-        </Button>
-      </div>
-
-      <Table className="">
-        <TableHeader className="bg-[#F5F0EC]">
-          <TableRow>
-            <TableHead className="">Sr. No.</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead >Status</TableHead>
-            <TableHead >Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {admins?.length === 0 && !hasMore ? (
-            <TableRow>
-              <TableCell
-                colSpan={5}
-                className="font-medium text-center py-10 text-muted-foreground"
-              >
-                No Records found.
-              </TableCell>
-            </TableRow>
-          ) : (
-            admins?.map((item, index) => (
-              <TableRow key={item.id}>
-                <TableCell className="font-medium ">{index + 1}</TableCell>
-                <TableCell className="font-medium text-black" >{item.name}</TableCell>
-                <TableCell>{item.email}</TableCell>
-                <TableCell>
-                  <Badge
-                    className={`${
-                      item?.status === "ACTIVE" ? "bg-[#E9F3E9] text-[#1E8221]"
-                        : (item?.status === "DELETED" ? " text-destructive/80 bg-destructive/20" : "bg-[#FFF3D9] text-[#A2781E]") 
-                    } text-[13px] font-medium px-3 py-1 rounded-full`}
-                  >
-                    {item?.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2 flex-row">
-                    <Button size="icon" className="text-md" variant="ghost" onClick={() => { setSelectedUser(item); setIsOpen(true)}}>
-                      <PencilLine />
-                    </Button>
-                    {userId !== item?.id &&
-                      <Button 
-                            size="icon" 
-                            className="text-md" 
-                            variant="ghost" 
-                            onClick={() => {
-                              if(item?.status === "DELETED")
-                                restoreUserMutation.mutate({userId: item.id, email: item.email, userType: "admin"})
-                              else
-                              deleteUserMutation.mutate({userId: item.id, email: item.email, userType: "admin"})
-                            }} 
-                            disabled={loading}
-                          >
-                            {item?.status === "DELETED" ? <ArchiveRestore /> : <Trash2 />}
-                      </Button>
-                    }
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-      <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
-            {isAdminListLoading && <p>Loading...</p>}
-            {!hasMore && !isAdminListLoading && <p>No more data to load.</p>}
-            {admins?.length > 0 && hasMore && !isAdminListLoading && (
-              <Button
-                size="sm"
-                className=""
-                onClick={() => handleFetchAdminListing()}
-              >
-                Load More
-              </Button>
-            )}
-        </div>
-    </div>
-    </>
-  );
-}
 
 function AdminBrokersList() {
   const [isBrokerListLoading, setIsBrokerListLoading] = useState(false);
@@ -292,14 +132,15 @@ function AdminBrokersList() {
 
     setIsBrokerListLoading(true);
     try {
-      const response = await getBrokersWithSearchCount(isRefetch ? null : nextToken);
-      const { updatedBrokers, nextToken: newNextToken } = response;
+      const response = await getOrgBrokersList({nextToken: isRefetch ? null : nextToken, limit:10});
+      console.log("Fetched brokers with search count:", response);
+      const { items: updatedBrokers, nextToken: newNextToken } = response;
 
       setBrokers((prev) => isRefetch ? updatedBrokers : [...prev, ...updatedBrokers]);
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
     } catch (error) {
-      console.error("Error fetching search histories:", error);
+      console.error("Error fetching broker list:", error);
     }
     setIsBrokerListLoading(false);
   };
@@ -585,14 +426,14 @@ function Agents() {
     
     setIsAgentListLoading(true);
     try {
-      const response = await getAgentListings(isRefetch? null : nextToken);
+      const response = await getOrgAgentsList({nextToken : isRefetch? null : nextToken,limit:10});
       const { items, nextToken: newNextToken } = response;
 
       setAgents((prev) => isRefetch ? items : [...prev, ...items]);
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
     } catch (error) {
-      console.error("Error fetching search histories:", error);
+      console.error("Error fetching agent listings:", error);
     }
     setIsAgentListLoading(false);
   };

@@ -17,7 +17,7 @@ import { Controller, useForm } from "react-hook-form";
 import { FormValidationError } from "../common/FormValidationError";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/utils";
-import { createUserByAdmin, getBrokerSelectListing, updateAdminDetail, updateAgentDetail, updateBrokerDetail } from "../service/userAdmin";
+import { createUserByAdmin, getBrokerSelectListing, getOrgBrokersList, updateAdminDetail, updateAgentDetail, updateBrokerDetail, updateOrgBrokerDetail } from "../service/userAdmin";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
 const formSchemas = {
@@ -57,8 +57,8 @@ export default function AddAdminModal({ open, onClose,title, userType, invalidat
     }
   }, [selectedUser, reset, isUpdate, userType]);
   const brokerListingQuery = useQuery({
-    queryKey: [queryKeys?.brokerSelectListing],
-    queryFn: getBrokerSelectListing,
+    queryKey: [queryKeys?.brokerListingForAdminDefault],
+    queryFn:()=> getOrgBrokersList({withSearchCount: true,limit:10}),
     enabled: userType === "agent"
   })
 
@@ -74,7 +74,7 @@ export default function AddAdminModal({ open, onClose,title, userType, invalidat
   });
 
   const updateBrokerMutation = useMutation({
-    mutationFn: (payload) => updateBrokerDetail(payload),
+    mutationFn: (payload) => updateOrgBrokerDetail(payload),
     onSuccess: () => {
       invalidateFun?.();
       onClose();
@@ -188,7 +188,7 @@ export default function AddAdminModal({ open, onClose,title, userType, invalidat
                         />
                       </SelectTrigger>
                       <SelectContent>
-                        {(brokerListingQuery?.data?.Items ?? [])?.map((item, index) => (
+                        {(brokerListingQuery?.data?.items ?? [])?.map((item, index) => (
                           <SelectItem key={index} value={item?.id}>
                             {item?.name}
                           </SelectItem>

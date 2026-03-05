@@ -22,13 +22,8 @@ export default function IndividualBusiness() {
               <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
                 <div className="flex justify-between items-center gap-4 mb-6">
                   <div className="flex items-center gap-6">
-                    <p className="text-secondary font-medium text-xl">Business</p>
-                    <p
-                      className={`bg-white text-tertiary font-semibold text-lg transition-all rounded-full px-10 py-3 `}
-                    >
-                      {metricQuery?.isSuccess && <span>${metricQuery?.data?.totalBusinessRevenueForIndividual ?? "--"}</span>}
-                      {metricQuery?.isLoading && <Loader2 className="w-6 h-10 animate-spin text-secondary" />}
-                    </p>
+                    <p className="text-secondary font-medium text-xl">All Agents</p>
+                 
                   </div>
                   <div className="flex justify-between items-center gap-4">
                     <DateFilter handleFilter={(from, to) => setDate(pre => ({...pre, from, to}))}/>

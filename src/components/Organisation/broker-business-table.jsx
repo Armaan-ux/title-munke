@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Eye } from "lucide-react";
 import { format } from "date-fns-tz";
-import { listBrokers } from "../service/userAdmin";
+import { getOrgBrokersList, listBrokers } from "../service/userAdmin";
 import { useQuery } from "@tanstack/react-query";
 import { CenterLoader } from "../common/Loader";
 import ShowError from "../common/ShowError";
@@ -22,7 +22,7 @@ import { useEffect } from "react";
 export default function BrokerBusinessTable({limit, isDownload, handleDownloadComplete, from, to}) {
   const brokerListingQuery = useQuery({
     queryKey: [queryKeys.brokerListingForAdminDefault, limit, from, to],
-    queryFn: () => listBrokers({withSearchCount: true, limit, from, to}),
+    queryFn: () => getOrgBrokersList({withSearchCount: true, limit, from, to}),
   })
   const {downloadCSV} = useDownloadCsv();
   useEffect(() => {

@@ -1,6 +1,5 @@
 import { useState } from "react";
 // import "./index.css";
-import { queryKeys } from "@/utils";
 import {
   Table,
   TableBody,
@@ -9,24 +8,26 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { queryKeys } from "@/utils";
 
-import { useNavigate, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import DateFilter from "../common/date-filter";
-import { Separator } from "../ui/separator";
+import { useNavigate, useParams } from "react-router-dom";
 import BackBtn from "../back-btn";
+import DateFilter from "../common/date-filter";
 
-import AgentDetailHeader from "../common/AgentHeader";
 import { useQuery } from "@tanstack/react-query";
-import { getAgentDetails, getAgentSearches } from "../service/userAdmin";
+import { format } from "date-fns-tz";
+import AgentDetailHeader from "../common/AgentHeader";
 import { CenterLoader } from "../common/Loader";
 import ShowError from "../common/ShowError";
-import { format } from "date-fns-tz";
+import { getAgentDetails, getAgentSearches } from "../service/userAdmin";
+import { Button } from "../ui/button";
+import { Eye } from "lucide-react";
 
 function PropertySearch() {
   const [date, setDate] = useState({fromDatetime: null, toDatetime: null});
   const {id} = useParams();
+    const navigate = useNavigate();
   const agentSearchesQuery = useQuery({
     queryKey: [queryKeys.agentSearchesAdmin, id, date.fromDatetime, date.toDatetime],
     queryFn: () => getAgentSearches(id, date?.fromDatetime, date?.toDatetime),
@@ -65,7 +66,7 @@ function PropertySearch() {
                   <TableHead>Address</TableHead>
                   <TableHead>Searched Date</TableHead>
                   <TableHead className="text-center" >Status</TableHead>
-                  {/* <TableHead className="text-center" >Action</TableHead> */}
+                  <TableHead className="text-center" >Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody className="text-black" >
@@ -98,6 +99,36 @@ function PropertySearch() {
                           {item?.status}
                         </Badge>
                       </TableCell>
+                             <TableCell>
+                      <div className="flex items-center gap-2 flex-row justify-center">
+                        {/* <Button
+                          size="icon"
+                          className="text-md"
+                          variant="ghost"
+                         
+                        >
+                          <Share2 />
+                        </Button>
+                        <Button
+                          size="icon"
+                          className="text-md"
+                          variant="ghost"
+                        >
+                          <Printer />
+                        </Button> */}
+
+                        <Button
+                          size="icon"
+                          className="text-md"
+                          variant="ghost"
+                          onClick={() =>
+                            navigate(`/broker/dashboard/property-details/${item?.searchId}`)
+                          }
+                        >
+                          <Eye />
+                        </Button>
+                      </div>
+                    </TableCell>
                     </TableRow>
                   ))
                 )}

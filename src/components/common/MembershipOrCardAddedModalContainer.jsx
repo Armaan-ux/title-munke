@@ -111,7 +111,7 @@ function MembershipOrCardAddedModalContainer() {
     navigate,
     pathname,
   ]);
-  if (!["agent", "broker"].includes(userType)) return null;
+  if (!["agent", "broker","organisation"].includes(userType)) return null;
   const cards = subcriptionDetailQuery?.data?.payment_methods ?? [];
   return (
     <div>

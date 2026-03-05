@@ -1,27 +1,15 @@
-import { API } from "aws-amplify";
-import { useState, useEffect, useCallback } from "react";
 import { listSearchHistories } from "@/graphql/queries";
+import { API } from "aws-amplify";
+import { useCallback, useEffect, useState } from "react";
 // import "./index.css";
 import { useUser } from "@/context/usercontext";
-import { FETCH_LIMIT, getFormattedDateTime } from "@/utils";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { FETCH_LIMIT } from "@/utils";
 import {
   ChevronDown,
   ChevronsUpDown,
-  ChevronUp,
-  Eye,
-  FileDown,
+  ChevronUp
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import BrokerBusinessTable from "./broker-business-table";
 import IndividualBusinessTable from "./individual-business-table";
 

@@ -65,7 +65,7 @@ export const UserProvider = ({ children }) => {
   enabled: userType === "agent" && !!user?.attributes?.sub,
   refetchOnWindowFocus: false,
   staleTime: 0,
-  retry: false,
+retry: false,
 });
 
   const organisaDetailQuery = useQuery({
@@ -80,7 +80,7 @@ export const UserProvider = ({ children }) => {
     queryKey: ["brokerDetail", user?.attributes?.sub],
     queryFn: () => getBrokerDetails(user?.attributes?.sub),
     enabled: userType === "broker" && !!user?.attributes?.sub,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 1 * 60 * 1000,
   });
 
 
@@ -213,11 +213,11 @@ useEffect(() => {
         setCardListingModal,
         invalidateSearchHistory, 
         setInvalidateSearchHistory,
-        agentDetail,
         setNewPlanType,
         newPlanType,
+        agentDetail,
+        brokerDetail,
         organisationDetail,
-        brokerDetail
       }}
     >
       {children}

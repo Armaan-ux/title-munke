@@ -19,7 +19,7 @@ import { ChangePlanModal } from "../Modal/ChangePlanModal";
 
 const AdvancedSettings = () => {
   const queryClient = useQueryClient();
-  const { user, agentDetail, setPaymentModal, setUser, setNewPlanType ,brokerDetail } =
+  const { user, agentDetail, setPaymentModal, setUser, setNewPlanType ,brokerDetail,organisationDetail } =
     useUser();
   const [searchParams] = useSearchParams();
   const isCardAdded = searchParams.get("isCardAdded");
@@ -31,6 +31,16 @@ const AdvancedSettings = () => {
   const { userType, userId } = useUserIdType();
   const { isUnderBroker = false, relationship = {} } = agentDetail || {};
   const isPaymentSuccessful = searchParams.get("isPaymentSuccessful");
+
+  /* -------------------- Query Key Mapping -------------------- */
+  const queryKeyByUserType = useMemo(
+    () => ({
+      agent: ["agentDetail"],
+      broker: ["brokerDetail"],
+      organisation: ["organisationDetail"],
+    }),
+    [],
+  );
   /* -------------------- Queries -------------------- */
   // const brokerDetailQuery = useQuery({
   //   queryKey: ["brokerDetail", userId],
@@ -135,7 +145,8 @@ const AdvancedSettings = () => {
       } else {
         toast.success("Plan changed successfully");
       }
-      queryClient.invalidateQueries(["agentDetail"]);
+      // Invalidate query based on userType
+      queryClient.invalidateQueries(queryKeyByUserType[userType]);
     },
 
     onError: (error) => {
@@ -225,10 +236,12 @@ const AdvancedSettings = () => {
   ]);
   const isPayAsYouGoSelected =
     (userType === "agent" && agentDetail?.planType === "PAY_AS_YOU_GO") ||
-    (userType === "broker" && brokerDetail?.planType === "PAY_AS_YOU_GO");
+    (userType === "broker" && brokerDetail?.planType === "PAY_AS_YOU_GO") || 
+    (userType === "organisation" && organisationDetail?.planType === "PAY_AS_YOU_GO")  
   const isProfessionalSelected =
     (userType === "agent" && agentDetail?.planType === "PROFESSIONAL_PLAN") ||
-    (userType === "broker" && brokerDetail?.planType === "PROFESSIONAL_PLAN");
+    (userType === "broker" && brokerDetail?.planType === "PROFESSIONAL_PLAN") ||
+    (userType === "organisation" && organisationDetail?.planType === "PROFESSIONAL_PLAN")
   return (
     <>
       <CancelSubscriptionModal
@@ -274,7 +287,7 @@ const AdvancedSettings = () => {
             </Button>
           </div>
           {/* Broker Connection Card */}
-          <div className="bg-[#F5F0EC] order border-blue-300 rounded-xl p-6 md:p-8 w-full shadow-sm">
+          { userType !== "organisation" && <div className="bg-[#F5F0EC] order border-blue-300 rounded-xl p-6 md:p-8 w-full shadow-sm">
             <p className="text-lg font-medium mb-2"> { userType === "agent" ?"Broker Connection": "Organisation Connection" }</p>
 
             {userType === "agent" &&
@@ -312,7 +325,7 @@ const AdvancedSettings = () => {
               {buttonLabel}
               <ArrowRight size={16} />
             </Button>
-          </div>
+          </div>}
           {/* Pay as You Do Card */}
           <div
             className={`rounded-xl p-6 md:p-8 w-full shadow-sm my-5 transition-all duration-200

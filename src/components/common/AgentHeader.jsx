@@ -40,7 +40,7 @@ export default function AgentDetailHeader({data}) {
             <Separator orientation="vertical" className=" !h-14 text-[#F4ECE6]" />
             <div className="w-full xl:whitespace-nowrap" >
               <p className="text-[#6B5E55] text-sm 2xl:text-lg">Associated Broker</p>
-              <p className="font-semibold mt-1 2xl:text-2xl">{data?.brokerName || "-"}</p>
+              <p className="font-semibold mt-1 2xl:text-2xl">{data?.relationship?.brokerFirstName || "-"}</p>
             </div>
             <Separator orientation="vertical" className=" !h-14 text-[#F4ECE6]" />
             <div className="w-full xl:whitespace-nowrap" >
