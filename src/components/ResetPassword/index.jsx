@@ -33,18 +33,17 @@ function ResetPassword({ username, password }) {
       setLoading(true);
       const user = await Auth.signIn(username, password);
       await Auth.completeNewPassword(user, newPassword);
-
       const { user: completedUser } = await signIn(username, newPassword);
       const groups =
         completedUser.signInUserSession.idToken.payload["cognito:groups"];
       if (groups.includes("admin")) {
         navigate("/admin");
       } else if (groups.includes("agent")) {
-        logHandler("agent");
+        await logHandler("agent");
         await updateStatusAgent(user?.username);
         navigate("/agent");
       } else if (groups.includes("broker")) {
-        logHandler("broker");
+        await logHandler("broker");
         await updateBrokerStatus(user?.username, "ACTIVE");
         navigate("/broker");
       } else {

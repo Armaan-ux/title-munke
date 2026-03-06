@@ -20,6 +20,8 @@ import { queryKeys } from "@/utils";
 import { createUserByAdmin, getBrokerSelectListing, getOrgBrokersList, updateAdminDetail, updateAgentDetail, updateBrokerDetail, updateOrgBrokerDetail } from "../service/userAdmin";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
+import { useUser } from "@/context/usercontext";
+import { useUserIdType } from "@/hooks/useUserIdType";
 const formSchemas = {
   admin: baseUserSchema,
   broker: addBrokerByAdminSchema,
@@ -38,6 +40,9 @@ const updateText = {
 
 
 export default function AddAdminModal({ open, onClose,title, userType, invalidateFun, selectedUser }) {
+   const { organisationDetail } =
+     useUser();
+     const {userType:currentUserType} = useUserIdType();
   const {control, handleSubmit, reset, formState: { errors }} = useForm({
       defaultValues: { fullName: "", email: "", message: "", ...(userType === "agent" && {brokerId: ""}), ...(userType === "broker" && {teamStrength: ""}) },
       resolver: zodResolver(userType === "agent" ? (getAddAgentByAdminSchema(!!selectedUser?.id ? false : true)) : formSchemas[userType]),
@@ -108,7 +113,7 @@ export default function AddAdminModal({ open, onClose,title, userType, invalidat
   const onSubmit = ({fullName, ...rest}) => {
     if(isUpdate && userType === "broker") {
       const {email, teamStrength} = rest
-      updateBrokerMutation?.mutate({email, teamStrength, name: fullName, id: selectedUser?.id});
+      updateBrokerMutation?.mutate({email, teamStrength, name: fullName, id: selectedUser?.id });
     }
     else if(isUpdate && userType === "agent") {
       const {email} = rest
@@ -119,7 +124,8 @@ export default function AddAdminModal({ open, onClose,title, userType, invalidat
       updateAdminMutation?.mutate({email, name: fullName, id: selectedUser?.id});
     }
     else
-      newUserMutation?.mutate({...rest, name: fullName, userType});
+      console.log("usertype131313131313",userType)
+      newUserMutation?.mutate({...rest, name: fullName, userType  ,...(currentUserType==="organisation"&&{organisationId:organisationDetail?.id} )});
   }
   const updateLoading = updateAgentMutation?.isPending || updateBrokerMutation?.isPending || updateAdminMutation?.isPending;
 

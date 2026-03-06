@@ -384,7 +384,7 @@ function AdminBrokersList() {
 
           <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
             {isBrokerListLoading && <p>Loading...</p>}
-            {!hasMore && <p>No more data to load.</p>}
+            {!hasMore && brokers?.length !== 0  &&  <p>No more data to load.</p>}
             {brokers?.length > 0 && hasMore && !isBrokerListLoading && (
               <Button
                 size="sm"
@@ -543,7 +543,7 @@ function Agents() {
       </Table>
        <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
             {isAgentListLoading && <p>Loading...</p>}
-            {!hasMore && !isAgentListLoading && <p>No more data to load.</p>}
+            {!hasMore && !isAgentListLoading && agents?.length !== 0 &&<p>No more data to load.</p>}
             {agents?.length > 0 && hasMore && !isAgentListLoading && (
               <Button
                 size="sm"
