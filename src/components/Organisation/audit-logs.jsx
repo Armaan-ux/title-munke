@@ -136,7 +136,7 @@ function AuditLogs() {
 
         <div className="text-center space-y-2 my-4 text-muted-foreground">
           {loading && <p>Loading...</p>}
-          {!hasMore && <p>No more data to load.</p>}
+          {!hasMore && logs?.length !== 0 && <p>No more data to load.</p>}
 
           {logs?.length > 0 && hasMore && !loading && (
             <div className="flex justify-center my-4">

@@ -850,6 +850,7 @@ export async function createAuditLog(
   log_action,
   detail,
   isAgent,
+  userType
 ) {
   const payload = {
     body: {
@@ -858,6 +859,7 @@ export async function createAuditLog(
       log_action: log_action,
       detail: detail,
       isAgent: isAgent,
+      userType: userType
     },
   };
   return callUserAdminApi(

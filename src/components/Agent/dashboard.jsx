@@ -36,7 +36,6 @@ const AgentDashboard = () => {
     queryFn: () => getCheckCardIsAdded(userId),
     enabled: !!userId
   })
-  console.log("is card added for user: ", iscardAddedForUser, agentDetail);
 
 
 useEffect(() => {
@@ -44,7 +43,6 @@ useEffect(() => {
   const isCardAdded = iscardAddedForUser?.isCardAdded;
   if (!plan || isCardAdded !== false) return;
 
-  // store planType safely
   localStorage.setItem("planType", plan);
 
   let timer;
@@ -58,11 +56,14 @@ useEffect(() => {
       setCardListingModal(true);
     }, 2000);
   }
+  
 
   return () => {
     if (timer) clearTimeout(timer);
   };
 }, [agentDetail?.planType, iscardAddedForUser?.isCardAdded]);
+
+
 
   return (
     <div className="my-4" >

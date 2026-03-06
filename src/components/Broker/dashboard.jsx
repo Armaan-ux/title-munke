@@ -1,28 +1,19 @@
+import Search from "@/components/common/search";
+import { Button } from "@/components/ui/button";
+import { useUser } from "@/context/usercontext";
+import { useUserIdType } from "@/hooks/useUserIdType";
+import { queryKeys } from "@/utils";
+import { useQuery } from "@tanstack/react-query";
 import {
-  FileSearch2,
-  Logs,
-  Subscript,
   UserRound,
   UserRoundCheck,
-  UserRoundX,
+  UserRoundX
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import BrokerHistory from "./broker-history";
-import Search from "@/components/common/search";
-import { use, useEffect, useState } from "react";
-import { useUser } from "@/context/usercontext";
-import { fetchAgentsWithSearchCount } from "../service/broker";
-import BecomeMemberModal from "@/components/Modal/BecomeMemberModal";
-import PaymentMethodModal from "@/components/Modal/PaymentMethodModal";
-import SubscriptionSuccessModal from "@/components/Modal/SubscriptionSuccessModal";
-import SubscriptionFailedModal from "@/components/Modal/SubscriptionFailedModal";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useSearchParams } from "react-router-dom";
-import CardAddedSuccessModal from "../Modal/CardAddedSuccessModal";
-import { useQuery } from "@tanstack/react-query";
-import { queryKeys } from "@/utils";
+import { fetchAgentsWithSearchCount } from "../service/broker";
 import { getBrokerDetails, getCheckCardIsAdded } from "../service/userAdmin";
-import { useUserIdType } from "@/hooks/useUserIdType";
+import BrokerHistory from "./broker-history";
 
 const BrokerDashboard = () => {
   const navigate =  useNavigate()
@@ -31,15 +22,10 @@ const BrokerDashboard = () => {
 
   const {
     user,
-    memberModal,
-    setMemberModal,
     setPaymentModal,
-    paymentModal,
-    setPaymentSuccessModal,
-    paymentSuccessModal,
-    setPaymentFailedModal,
-    paymentFailedModal,
-    setCardListingModal
+
+    setCardListingModal,
+    setNewPlanType
   } = useUser();
 
   const brokerDetailQuery = useQuery({
@@ -68,14 +54,12 @@ const BrokerDashboard = () => {
     queryFn: () => getCheckCardIsAdded(userId),
     enabled: !!userId
   })
-  console.log("brokerDetailQuery>>>>>>>>>>>>>>>>: ", brokerDetailQuery?.data);
 useEffect(() => {
   const plan = brokerDetailQuery?.data?.planType;
   const isCardAdded = iscardAddedForUser?.isCardAdded;
 
   if (!plan || isCardAdded !== false) return;
 
-  // store planType safely
   localStorage.setItem("planType", plan);
 
   let timer;
@@ -83,10 +67,12 @@ useEffect(() => {
   if (plan === "PROFESSIONAL_PLAN") {
     timer = setTimeout(() => {
       setPaymentModal(true);
+        setNewPlanType("PROFESSIONAL_PLAN")
     }, 2000);
   } else if (plan === "PAY_AS_YOU_GO") {
     timer = setTimeout(() => {
       setCardListingModal(true);
+      setNewPlanType("PAY_AS_YOU_GO")
     }, 2000);
   }
 

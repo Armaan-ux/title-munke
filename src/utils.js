@@ -48,11 +48,11 @@ export const getFormattedDateTime = (lastLoginUTC) => {
   return formattedDate;
 };
 
-export const handleCreateAuditLog = async (action, detail, isAgent = false) => {
+export const handleCreateAuditLog = async (action, detail, isAgent = false,userType) => {
   const user = await Auth.currentAuthenticatedUser();
   const userId = user?.attributes?.sub;
   const email = user?.attributes?.email;
-  await createAuditLog(userId, email, action, JSON.stringify(detail), isAgent);
+  await createAuditLog(userId, email, action, JSON.stringify(detail), isAgent,userType);
 };
 
 export const convertFromTimestamp = (timestamp, type) => {

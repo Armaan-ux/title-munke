@@ -26,6 +26,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema } from "@/formSchema";
 import { formatUSPhone } from "@/utils/date";
+import { handleCreateAuditLog } from "@/utils";
 function SubscriptionSignup() {
   const navigate = useNavigate();
   const { userType, planId } = useParams();
@@ -70,6 +71,15 @@ function SubscriptionSignup() {
       setError("Something went wrong. Please try again later.");
     },
   });
+    const logHandler = async()=>{
+         
+        await handleCreateAuditLog(
+              "Account",
+              { detail: `${userType} account created in successfully` },
+              userType === "agent",
+              userType
+            );
+    }
 
   const onSubmit = (data) => {
     registerUserMutation.mutate({
@@ -112,6 +122,7 @@ function SubscriptionSignup() {
     const userTypeValue =
       signedInUser?.signInUserSession?.idToken?.payload["cognito:groups"]?.[0];
     await updateUserStatus({ userId, userType: userTypeValue });
+    logHandler()
     console.log("signedInUser after confirmation:", signedInUser);
   };
 
@@ -119,7 +130,7 @@ function SubscriptionSignup() {
   const confirmCodeMutation = useMutation({
     mutationFn: (code) =>
       confirmEmail({
-        code,
+        code: code?.trim(),
         email: getValues("email"),
       }),
     onSuccess: async (data) => {

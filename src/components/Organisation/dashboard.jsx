@@ -1,10 +1,16 @@
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/context/usercontext";
+import { useUserIdType } from "@/hooks/useUserIdType";
+import { queryKeys } from "@/utils";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowDownToLine, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import TimeFilter from "../common/time-filter";
-import { getOrganisationMetrics } from "../service/userAdmin";
+import {
+  getCheckCardIsAdded,
+  getOrganisationMetrics,
+} from "../service/userAdmin";
 import BrokerIndividualBusiness from "./broker-individual-business";
 const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -12,6 +18,9 @@ const OrganisationDashboard = () => {
   const [isDownload, setIsDoownload] = useState(false);
   const [activeTab, setActiveTab] = useState("broker");
   const [active, setActive] = useState("all_time");
+  const { userId, userType } = useUserIdType();
+  const { setPaymentModal, setCardListingModal, organisationDetail } =
+    useUser();
 
   const [resetChildState, setResetChildState] = useState(null);
   const metricQuery = useQuery({
@@ -22,12 +31,41 @@ const OrganisationDashboard = () => {
         userTimezone,
       }),
   });
+  const { data: iscardAddedForUser } = useQuery({
+    queryKey: [queryKeys.getCheckCardIsAdded],
+    queryFn: () => getCheckCardIsAdded(userId),
+    enabled: !!userId,
+  });
   const handleTabChange = () => {
     if (resetChildState) {
       resetChildState();
     }
   };
 
+  useEffect(() => {
+    const plan = organisationDetail?.planType;
+    const isCardAdded = iscardAddedForUser?.isCardAdded;
+    if (!plan || isCardAdded !== false) return;
+
+
+    localStorage.setItem("planType", plan);
+
+    let timer;
+
+    if (plan === "PROFESSIONAL_PLAN") {
+      timer = setTimeout(() => {
+        setPaymentModal(true);
+      }, 2000);
+    } else if (plan === "PAY_AS_YOU_GO") {
+      timer = setTimeout(() => {
+        setCardListingModal(true);
+      }, 2000);
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [organisationDetail?.planType, iscardAddedForUser?.isCardAdded]);
   return (
     <div className="my-4">
       <TimeFilter active={active} setActive={(value) => setActive(value)} />

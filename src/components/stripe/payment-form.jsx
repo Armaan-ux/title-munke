@@ -31,7 +31,7 @@ function PaymentForm({ onPaymentSuccess, planId }) {
     if (!stripe || !elements) return;
 
     let result;
-    if (user?.isAddCard || planId === "PAY_AS_YOU_GO") {
+    if (user?.isAddCard || planId === "PAY_AS_YOU_GO" || newPlanType === "PAY_AS_YOU_GO") {
       console.log("confirm setup called");
       result = await stripe.confirmSetup({
         elements,
@@ -61,6 +61,7 @@ function PaymentForm({ onPaymentSuccess, planId }) {
       result?.setupIntent?.status === "succeeded"
     ) {
       console.log("Payment/Setup successful");
+      localStorage.removeItem("planType")
       onPaymentSuccess?.();
     }
 
@@ -92,7 +93,7 @@ function PaymentForm({ onPaymentSuccess, planId }) {
         size="lg"
         className="mt-4"
       >
-        {user?.isAddCard || planId === "PAY_AS_YOU_GO"
+        {user?.isAddCard || planId === "PAY_AS_YOU_GO" || newPlanType === "PAY_AS_YOU_GO"
           ? "Save Card"
           : "Make Payment"}
       </Button>
