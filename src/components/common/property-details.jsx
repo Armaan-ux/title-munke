@@ -17,24 +17,32 @@ import { useUserIdType } from "@/hooks/useUserIdType";
 import GoogleMapView from "./google-map";
 import StreetView from "./street-view";
 const PropertyDetails = () => {
-  const {userType} = useUserIdType();
+  const { userType } = useUserIdType();
   const navigate = useNavigate();
-  const {id} = useParams();
-  const {downloadCSV} = useDownloadCsv()
+  const { id } = useParams();
+  const { downloadCSV } = useDownloadCsv();
   const propertyDetailQuery = useQuery({
-  queryKey: [queryKeys?.propertyDetail, id],
-  queryFn: () => getSearchedStatus(id),
-  refetchInterval: (query) => {
-    return query?.state?.data?.status === "IN_PROGRESS"
-      ? 5000 // poll every 5 seconds
-      : false; // stop polling
-  },
-  enabled: !!id,
-});
-if(propertyDetailQuery?.isLoading) return <CenterLoader />
-if(propertyDetailQuery?.isError) return <ShowError message={propertyDetailQuery?.error?.response?.data?.message} />
-const pdfDocuments = propertyDetailQuery?.data?.documents?.filter(item => item?.type === "pdf") ?? [];
-console.log("Property Detail Data:", propertyDetailQuery?.data);  
+    queryKey: [queryKeys?.propertyDetail, id],
+    queryFn: () => getSearchedStatus(id),
+    refetchInterval: (query) => {
+      return query?.state?.data?.status === "IN_PROGRESS"
+        ? 5000 // poll every 5 seconds
+        : false; // stop polling
+    },
+    enabled: !!id,
+  });
+  if (propertyDetailQuery?.isLoading) return <CenterLoader />;
+  if (propertyDetailQuery?.isError)
+    return (
+      <ShowError
+        message={propertyDetailQuery?.error?.response?.data?.message}
+      />
+    );
+  const pdfDocuments =
+    propertyDetailQuery?.data?.documents?.filter(
+      (item) => item?.type === "pdf",
+    ) ?? [];
+  console.log("Property Detail Data:", propertyDetailQuery?.data);
   return (
     <>
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
@@ -55,12 +63,21 @@ console.log("Property Detail Data:", propertyDetailQuery?.data);
             <div className="flex items-start justify-between mb-2">
               <div>
                 <p className="text-2xl mb-1 font-semibold text-[#4C0D0D]">
-                  {propertyDetailQuery?.data?.address}, {propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.county_and_state}
+                  {propertyDetailQuery?.data?.address},{" "}
+                  {
+                    propertyDetailQuery?.data?.propertySummary
+                      ?.property_information_and_current_ownership
+                      ?.county_and_state
+                  }
                 </p>
                 <p className="text-sm text-[#8B8686] mt-1">
                   Searched on:
                   <span className="font-semibold text-[#4C0D0D]">
-                   {propertyDetailQuery?.data?.propertySummary?.["Date of Search"]}
+                    {
+                      propertyDetailQuery?.data?.propertySummary?.[
+                        "Date of Search"
+                      ]
+                    }
                   </span>
                   | Reference ID:
                   <span className="font-semibold text-[#4C0D0D]">
@@ -68,19 +85,24 @@ console.log("Property Detail Data:", propertyDetailQuery?.data);
                   </span>
                 </p>
               </div>
-              <Badge  className={`${
+              <Badge
+                className={`${
                   propertyDetailQuery?.data?.status === "SUCCESS"
                     ? "bg-[#E9F3E9] text-[#1E8221]"
                     : propertyDetailQuery?.data?.status === "Unconfirmed"
-                    ? "bg-[#FFF3D9] text-[#A2781E]"
-                    : "bg-[#FFE3E2] text-[#FF5F59]"} text-[13px] font-medium px-3 py-1 rounded-md`}>
+                      ? "bg-[#FFF3D9] text-[#A2781E]"
+                      : "bg-[#FFE3E2] text-[#FF5F59]"
+                } text-[13px] font-medium px-3 py-1 rounded-md`}
+              >
                 {propertyDetailQuery?.data.status}
               </Badge>
             </div>
 
-             <Separator />
+            <Separator />
 
-            <div className={`mt-6 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5`}>
+            <div
+              className={`mt-6 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5`}
+            >
               <div>
                 <p className="font-semibold text-lg text-[#4C0D0D] mb-2">
                   Description
@@ -90,7 +112,8 @@ console.log("Property Detail Data:", propertyDetailQuery?.data);
                   {propertyDetailQuery?.data?.status === "IN_PROGRESS" && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center z-10 backdrop-blur-[3px]">
                       <p className="text-xl font-semibold text-[#4C0D0D]">
-                        Processing... {propertyDetailQuery?.data?.percent_completion || 0}%
+                        Processing...{" "}
+                        {propertyDetailQuery?.data?.percent_completion || 0}%
                       </p>
                       {propertyDetailQuery?.data?.status_message && (
                         <p className="text-sm text-[#4C0D0D] mt-2">
@@ -99,11 +122,19 @@ console.log("Property Detail Data:", propertyDetailQuery?.data);
                       )}
                     </div>
                   )}
-                  <div className={`grid grid-cols-3 gap-8 text-sm text-[#4C0D0D] ${propertyDetailQuery?.data?.status !== "SUCCESS" ? "opacity-5 pointer-events-none" : ""}`}>
+                  <div
+                    className={`grid grid-cols-3 gap-8 text-sm text-[#4C0D0D] ${propertyDetailQuery?.data?.status !== "SUCCESS" ? "opacity-5 pointer-events-none" : ""}`}
+                  >
                     <div>
-                      <p className="font-semibold uppercase text-sm">Location</p>
+                      <p className="font-semibold uppercase text-sm">
+                        Location
+                      </p>
                       <p className="text-[#7A7676]">
-                       {propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.property_information}
+                        {
+                          propertyDetailQuery?.data?.propertySummary
+                            ?.property_information_and_current_ownership
+                            ?.property_information
+                        }
                       </p>
                     </div>
                     <div>
@@ -115,52 +146,107 @@ console.log("Property Detail Data:", propertyDetailQuery?.data);
                       <p className="text-[#7A7676]">Allentown, Lehigh County</p>
                     </div>
                     <div>
-                      <p className="font-semibold uppercase text-sm">Property</p>
-                      <p className="text-[#7A7676]">{propertyDetailQuery?.data?.address}</p>
+                      <p className="font-semibold uppercase text-sm">
+                        Property
+                      </p>
+                      <p className="text-[#7A7676]">
+                        {propertyDetailQuery?.data?.address}
+                      </p>
                     </div>
                     <div>
-                      <p className="font-semibold uppercase text-sm">County, State</p>
-                      <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.county_and_state}</p>
+                      <p className="font-semibold uppercase text-sm">
+                        County, State
+                      </p>
+                      <p className="text-[#7A7676]">
+                        {
+                          propertyDetailQuery?.data?.propertySummary
+                            ?.property_information_and_current_ownership
+                            ?.county_and_state
+                        }
+                      </p>
                     </div>
                     <div>
-                      <p className="font-semibold uppercase text-sm">Municipality</p>
-                      <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.municipality}</p>
+                      <p className="font-semibold uppercase text-sm">
+                        Municipality
+                      </p>
+                      <p className="text-[#7A7676]">
+                        {
+                          propertyDetailQuery?.data?.propertySummary
+                            ?.property_information_and_current_ownership
+                            ?.municipality
+                        }
+                      </p>
                     </div>
                     <div>
-                      <p className="font-semibold uppercase text-sm">PIN/Parcel</p>
-                      <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.PIN}</p>
+                      <p className="font-semibold uppercase text-sm">
+                        PIN/Parcel
+                      </p>
+                      <p className="text-[#7A7676]">
+                        {propertyDetailQuery?.data?.propertySummary?.PIN}
+                      </p>
                     </div>
                     <div>
-                      <p className="font-semibold uppercase text-sm">Span of Search</p>
-                      <p className="text-[#7A7676]">{propertyDetailQuery?.data?.span_of_search || ""}</p>
+                      <p className="font-semibold uppercase text-sm">
+                        Span of Search
+                      </p>
+                      <p className="text-[#7A7676]">
+                        {propertyDetailQuery?.data?.span_of_search || ""}
+                      </p>
                     </div>
                     <div>
-                      <p className="font-semibold uppercase text-sm">Date of Search</p>
-                      <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.["Date of Search"]}</p>
+                      <p className="font-semibold uppercase text-sm">
+                        Date of Search
+                      </p>
+                      <p className="text-[#7A7676]">
+                        {
+                          propertyDetailQuery?.data?.propertySummary?.[
+                            "Date of Search"
+                          ]
+                        }
+                      </p>
                     </div>
                   </div>
 
-                  <div className={`mt-4 space-y-2 ${propertyDetailQuery?.data?.status !== "SUCCESS" ? "opacity-5 pointer-events-none" : ""}`}>
+                  <div
+                    className={`mt-4 space-y-2 ${propertyDetailQuery?.data?.status !== "SUCCESS" ? "opacity-5 pointer-events-none" : ""}`}
+                  >
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div className="border border-[#F1EDEA] rounded-lg p-4 bg-[#FEFAF5]">
                         <p className="font-semibold uppercase">Current Owner</p>
-                        <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.current_owner}</p>
+                        <p className="text-[#7A7676]">
+                          {
+                            propertyDetailQuery?.data?.propertySummary
+                              ?.property_information_and_current_ownership
+                              ?.current_owner
+                          }
+                        </p>
                       </div>
                       <div className="border border-[#F1EDEA] rounded-lg p-4 bg-[#FEFAF5]">
-                        <p className="font-semibold uppercase">Tax Assessment</p>
-                        <p className="text-[#7A7676]">{propertyDetailQuery?.data?.propertySummary?.["Tax Assessment"]}</p>
+                        <p className="font-semibold uppercase">
+                          Tax Assessment
+                        </p>
+                        <p className="text-[#7A7676]">
+                          {
+                            propertyDetailQuery?.data?.propertySummary?.[
+                              "Tax Assessment"
+                            ]
+                          }
+                        </p>
                       </div>
                     </div>
 
                     <div className="border border-[#F1EDEA] rounded-lg p-4 text-[13px] bg-[#FEFAF5]">
                       <p className="font-semibold uppercase">Title Deed</p>
                       <p className="text-[#7A7676]">
-                        {propertyDetailQuery?.data?.propertySummary?.property_information_and_current_ownership?.title_deed}
+                        {
+                          propertyDetailQuery?.data?.propertySummary
+                            ?.property_information_and_current_ownership
+                            ?.title_deed
+                        }
                       </p>
                     </div>
                   </div>
                 </div>
-
 
                 <div className="mt-8">
                   <p className="font-semibold text-lg text-[#4C0D0D] mb-3">
@@ -170,7 +256,7 @@ console.log("Property Detail Data:", propertyDetailQuery?.data);
                   <div className="overflow-hidden border border-[#F1EDEA] rounded-xl">
                     <table className="w-full text-sm">
                       <thead className="bg-[#F9F6F4] text-[#4C0D0D]  text-left">
-                        <tr className="*:!font-medium" >
+                        <tr className="*:!font-medium">
                           <th className="py-3 px-4">Sr. No.</th>
                           <th className="py-3 px-4">Document Type</th>
                           <th className="py-3 px-4">Date Recorded</th>
@@ -186,8 +272,12 @@ console.log("Property Detail Data:", propertyDetailQuery?.data);
                             className="border-t border-[#F1EDEA] text-[#4C0D0D]"
                           >
                             <td className="py-3 px-4">{i + 1}</td>
-                            <td className="py-3 px-4 uppercase">Document {i + 1}</td>
-                            <td className="py-3 px-4">{format(item?.lastEdited, "dd MMM yyyy")}</td>
+                            <td className="py-3 px-4 uppercase">
+                              Document {i + 1}
+                            </td>
+                            <td className="py-3 px-4">
+                              {format(item?.lastEdited, "dd MMM yyyy")}
+                            </td>
                             {/* <td className="py-3 px-4">{item.id}</td> */}
                             {/* <td className="py-3 px-4">
                               <div className="w-[100px] bg-[#EAF7ED] rounded-full h-[6px] overflow-hidden">
@@ -195,24 +285,27 @@ console.log("Property Detail Data:", propertyDetailQuery?.data);
                               </div>
                             </td> */}
                             <td className="py-3 px-4">
-                              <a href={item?.url} target="_blank" rel="noreferrer">
+                              <a
+                                href={item?.url}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
                                 <Eye className="w-4 h-4 text-[#4C0D0D] mx-auto" />
                               </a>
                             </td>
                           </tr>
                         ))}
                       </tbody>
-                      {
-                        propertyDetailQuery?.data?.status === "IN_PROGRESS" && (
-                          <tr>
-                            <td colSpan={5} className="py-3 px-4">
-                              <p className="text-center text-[#4C0D0D] flex items-center justify-between mx-auto w-fit">
-                                Loading ... <Loader2 className="ml-2 w-4 h-4 mx-auto animate-spin" />
-                              </p>
-                            </td>
-                          </tr>
-                        )
-                      }
+                      {propertyDetailQuery?.data?.status === "IN_PROGRESS" && (
+                        <tr>
+                          <td colSpan={5} className="py-3 px-4">
+                            <p className="text-center text-[#4C0D0D] flex items-center justify-between mx-auto w-fit">
+                              Loading ...{" "}
+                              <Loader2 className="ml-2 w-4 h-4 mx-auto animate-spin" />
+                            </p>
+                          </td>
+                        </tr>
+                      )}
                     </table>
                   </div>
                 </div>
@@ -252,17 +345,24 @@ console.log("Property Detail Data:", propertyDetailQuery?.data);
             <div className="flex justify-between items-center mt-4 text-[13px]">
               <p className="text-[#4C0D0D]">
                 Total Documents Completed:{" "}
-                <span className="font-semibold">{pdfDocuments?.length ?? 0}</span>
+                <span className="font-semibold">
+                  {pdfDocuments?.length ?? 0}
+                </span>
                 <br />
                 Status:{" "}
-                <Badge  className={`${
-                  propertyDetailQuery?.data?.status === "SUCCESS"
-                    ? "bg-[#E9F3E9] text-[#1E8221]"
-                    : propertyDetailQuery?.data?.status === "Unconfirmed"
-                    ? "bg-[#FFF3D9] text-[#A2781E]"
-                    : "bg-[#FFE3E2] text-[#FF5F59]"} text-[13px] font-medium px-3 py-1 rounded-md`}>
-                {propertyDetailQuery?.data.status}
-              </Badge>
+                <Badge
+                  className={`${
+                    propertyDetailQuery?.data?.status === "SUCCESS"
+                      ? "bg-[#E9F3E9] text-[#1E8221]"
+                      : propertyDetailQuery?.data?.status === "Unconfirmed"
+                        ? "bg-[#FFF3D9] text-[#A2781E]"
+                        : propertyDetailQuery?.data?.status === "IN_PROGRESS"
+                          ? "bg-[#fff6e2] text-[#ffa200]"
+                          : "bg-[#FFE3E2] text-[#FF5F59]"
+                  } text-[13px] font-medium px-3 py-1 rounded-md`}
+                >
+                   {propertyDetailQuery?.data.status === "IN_PROGRESS" ? "In Progress" : propertyDetailQuery?.data.status}
+                </Badge>
               </p>
 
               <div className="flex gap-3">
@@ -270,16 +370,40 @@ console.log("Property Detail Data:", propertyDetailQuery?.data);
                   variant="outline"
                   className="border border-[#4C0D0D] text-[#4C0D0D] hover:bg-[#4C0D0D]/5 px-5 rounded-lg"
                   disabled={propertyDetailQuery?.data?.status !== "SUCCESS"}
-                  onClick={() => downloadCSV(pdfDocuments?.map?.((item, index) => (
-                    {"Sr. No.": index + 1, "Document Type": `Document ${index + 1}`, "Date Recorded": format(item?.lastEdited, "dd MMM yyyy"), "Download Link": item?.url}
-                  )))}
+                  onClick={() =>
+                    downloadCSV(
+                      pdfDocuments?.map?.((item, index) => ({
+                        "Sr. No.": index + 1,
+                        "Document Type": `Document ${index + 1}`,
+                        "Date Recorded": format(
+                          item?.lastEdited,
+                          "dd MMM yyyy",
+                        ),
+                        "Download Link": item?.url,
+                      })),
+                    )
+                  }
                 >
                   Download CSV
                 </Button>
-                <Button className="bg-[#4C0D0D] text-white hover:bg-[#4C0D0D]/90 px-5 rounded-lg" disabled={!propertyDetailQuery?.data?.downloadLink} 
-                  onClick={() =>  handleCreateAuditLog("DOWNLOAD",{ zipUrl: propertyDetailQuery?.data?.downloadLink }, userType === "agent")}
+                <Button
+                  className="bg-[#4C0D0D] text-white hover:bg-[#4C0D0D]/90 px-5 rounded-lg"
+                  disabled={!propertyDetailQuery?.data?.downloadLink}
+                  onClick={() =>
+                    handleCreateAuditLog(
+                      "DOWNLOAD",
+                      { zipUrl: propertyDetailQuery?.data?.downloadLink },
+                      userType === "agent",
+                    )
+                  }
                 >
-                  <a href={propertyDetailQuery?.data?.zip_url} target="_blank" rel="noreferrer">Download All as ZIP</a>
+                  <a
+                    href={propertyDetailQuery?.data?.zip_url}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Download All as ZIP
+                  </a>
                 </Button>
               </div>
             </div>

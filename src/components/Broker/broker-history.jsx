@@ -34,6 +34,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { getSearchedStatus } from "../service/userAdmin";
+import { useUserIdType } from "@/hooks/useUserIdType";
 
 function History({isAll=false}) {
   const [searchHistories, setSearchHistories] = useState([]);
@@ -47,6 +48,7 @@ function History({isAll=false}) {
     direction: "descending",
   });
   const { user, invalidateSearchHistory, setInvalidateSearchHistory } = useUser();
+  const {userType} =  useUserIdType()
   const navigate = useNavigate();
   useEffect(() => {
     if(invalidateSearchHistory) {
@@ -355,7 +357,7 @@ function History({isAll=false}) {
                           size="icon"
                           className="text-md"
                           variant="ghost"
-                          onClick={() =>
+                          onClick={() => userType ==="organisation" ?   navigate(`/organisation/dashboard/property-details/${item?.searchId}`) :
                             navigate(`/broker/dashboard/property-details/${item?.searchId}`)
                           }
                         >

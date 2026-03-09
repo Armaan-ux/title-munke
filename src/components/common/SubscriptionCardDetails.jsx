@@ -85,7 +85,7 @@ function SubscriptionCardDetails({ isAddCard = false }) {
             searchLimit: agent.searchLimit,
             userType: agent.userType,
             brokerId: agent?.brokerId,
-            planType: agent.planType,
+            planType: agent?.planType,
           }),
         ),
       );
@@ -166,6 +166,7 @@ const addOrganisationBatchMutation = useMutation({
               userType: "agent",
               brokerId: agent.brokerId,
               planType: agent.planType,
+              organisationId: agent?.organisationId
             })
           )
         );

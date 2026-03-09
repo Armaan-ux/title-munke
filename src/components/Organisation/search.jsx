@@ -99,7 +99,7 @@ const OrganisationSearch = () => {
       <div className="bg-[#F5F0EC] p-6 rounded-2xl ">
         <div className="flex justify-between items-center gap-4 mb-6">
           <p className="text-secondary font-medium text-xl">Search History</p>
-          <Link to="/broker/dashboard/search-history">
+          <Link to="/organisation/search-history">
             <Button variant="outline"> View More </Button>
           </Link>
         </div>

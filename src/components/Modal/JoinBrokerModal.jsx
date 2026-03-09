@@ -15,6 +15,7 @@ export function JoinBrokerModal({
   dropdownOptions,
   open,
   onClose,
+  userType,
   onDropdownChange,
   onSendRequest,
   brokerName,
@@ -22,6 +23,8 @@ export function JoinBrokerModal({
   activeAgents,
   selectedId,
   isPending,
+  isUnderBroker,
+  isUnderOrganisation
 }) {
   const [message, setMessage] = useState("");
 
@@ -46,7 +49,15 @@ export function JoinBrokerModal({
           {/* Header */}
           <DialogHeader>
             <h2 className="text-lg font-semibold text-secondary mb-4 text-start !font-poppins">
-              Join Broker
+            {
+  isUnderBroker
+    ? "Leave Broker"
+    : isUnderOrganisation
+    ? "Leave Organisation"
+    : userType === "broker" &&  !isUnderOrganisation 
+    ? "Join Organisation"
+    : "Join Broker"
+}
             </h2>
             <Separator className="bg-coffee-bg-billing-foreground" />
           </DialogHeader>
@@ -55,6 +66,7 @@ export function JoinBrokerModal({
           <div className="mt-4 mb-2">
             <Label className="text-sm text-secondary mb-1 block">Name</Label>
             <select
+            disabled={isUnderBroker || isUnderOrganisation}
               className="w-full rounded-md border border-gray-200 p-3 text-sm text-secondary "
               value={selectedId}
               onChange={(e) => onDropdownChange(e.target.value)}

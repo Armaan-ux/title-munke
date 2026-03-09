@@ -45,6 +45,7 @@ import OrganisationRequests from "./components/Organisation/requests";
 import OrganisationAdminAuditLogs from "./components/Organisation/audit-logs";
 import OrganisationSettings from "./components/Organisation/organisation-settings";
 import OrganisationSearch from "./components/Organisation/search";
+import OrganisationHistoryList from "./components/Organisation/OrganisationHistoryList"
 
 export const adminRoutes = [
   { path: "admin", component: Admin },
@@ -73,6 +74,8 @@ export const organisationRoutes = [
   { path: "organisation/dashboard/individual-business", component: OrganisationAgentBusiness },
   { path: "organisation/business/broker-details/:id", component: OrganisationBrokerDetails },
   { path: "organisation/business/property-search/:id", component: OrganPropertySearch },
+   { path: "organisation/search-history", component: OrganisationHistoryList },
+    { path: "organisation/dashboard/property-details/:id", component: BrokerPropertyDetails },
   // { path: "organisation/business/property-search-individual/:id", component: OrganisationPropertySearchAgent },
   { path: "organisation/search", component: OrganisationSearch },
   { path: "organisation/users", component: OrganisationUsers },

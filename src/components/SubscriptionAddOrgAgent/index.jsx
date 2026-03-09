@@ -27,11 +27,13 @@ import { addOrgAgentSchema } from "@/formSchema";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import AgentAddedSuccessModal from "../Modal/AgentAddedSuccessModal";
 import { formatUSPhone } from "@/utils/date";
+import { useUser } from "@/context/usercontext";
 
 function SubscriptionAddOrdAgent() {
   const navigate = useNavigate();
   const { planId } = useParams();
-
+   const { organisationDetail } =
+     useUser();
   const [error, setError] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
@@ -121,6 +123,7 @@ function SubscriptionAddOrdAgent() {
       brokerId: data.selectedBroker,
       planType: planId,
       userType: "agent",
+      organisationId: organisationDetail?.id
     };
 
     // Add new agent

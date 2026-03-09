@@ -294,14 +294,16 @@ function SearchHistory({isAll=false}) {
                     </TableCell>
                     <TableCell>        <Badge
                       className={`${
-                        item?.status === "SUCCESS"
+                          item?.status === "SUCCESS"
                           ? "bg-[#E9F3E9] text-[#1E8221]"
                           : item?.status === "Unconfirmed"
                           ? "bg-[#FFF3D9] text-[#A2781E]"
+                           : item?.status === "IN_PROGRESS"
+                          ? "bg-[#fff6e2] text-[#ffa200]"
                           : "bg-[#FFE3E2] text-[#FF5F59]"
                       } text-[13px] font-medium px-3 py-1 rounded-md`}
                     >
-                      {item?.status}
+                      {item?.status === "IN_PROGRESS" ? "In Progress" : item?.status}
                     </Badge></TableCell>
 
                     {activeTab === "agents" && (
