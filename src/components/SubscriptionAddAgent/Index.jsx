@@ -10,8 +10,8 @@ import {
   Lock,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useQuery } from "@tanstack/react-query";
-import { getBrokerDetails } from "../service/userAdmin";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { checkEmailExist, getBrokerDetails } from "../service/userAdmin";
 import { Label } from "../ui/label";
 import { motion } from "motion/react";
 import { Controller, useForm } from "react-hook-form";
@@ -27,12 +27,13 @@ import { addAgentSchema } from "@/formSchema";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import AgentAddedSuccessModal from "../Modal/AgentAddedSuccessModal";
 import { formatUSPhone } from "@/utils/date";
+import { useUser } from "@/context/usercontext";
 function SubscriptionAddAgent() {
   const navigate = useNavigate();
   const { planId } = useParams();
 
   const [error, setError] = useState("");
-
+  const { user } = useUser();
   const [isLoading, setIsLoading] = useState(false);
   const [lastAddedAgentName, setLastAddedAgentName] = useState("");
   const [addAgent, setAddAgent] = useState(false);
@@ -91,41 +92,62 @@ function SubscriptionAddAgent() {
   //     });
   //   };
 
-  const onSubmit = (data) => {
+  const emailExistMutation = useMutation({
+    mutationFn: (email) =>
+      checkEmailExist({
+        email: email?.trim(),
+      }),
+  });
+
+  const onSubmit = async (data) => {
     setIsLoading(true);
-    const existingAgents =
-      JSON.parse(localStorage.getItem("invitedAgents")) || [];
+    try {
+      const res = await emailExistMutation.mutateAsync(data?.email);
 
-    const isDuplicate = existingAgents.some(
-      (agent) => agent.email.toLowerCase() === data.email.toLowerCase(),
-    );
+      if (res?.emailExists) {
+        setError("This email already exists.");
+        setIsLoading(false);
+        return;
+      }
+      const existingAgents =
+        JSON.parse(localStorage.getItem("invitedAgents")) || [];
 
-    if (isDuplicate) {
-      setError("Agent with this email already exists.");
-      setIsLoading(false);
-      return;
+      const email = data?.email?.toLowerCase();
+      const userEmail = user?.attributes?.email?.toLowerCase();
+
+      const isDuplicate =
+        existingAgents.some((agent) => agent?.email?.toLowerCase() === email) ||
+        email === userEmail;
+
+      if (isDuplicate) {
+        setError("This email already exists.");
+        setIsLoading(false);
+        return;
+      }
+      const newAgent = {
+        name: data.name,
+        email: data.email,
+        phoneNumber: data.phoneNumber,
+        searchLimit: data.searchLimit,
+        planType: planId,
+        brokerId: brokerRel?.brokerId,
+        userType: "agent",
+      };
+
+      // Add new agent
+      const updatedAgents = [...existingAgents, newAgent];
+
+      // Save back to localStorage
+      localStorage.setItem("invitedAgents", JSON.stringify(updatedAgents));
+
+      setLastAddedAgentName(data.name);
+      console.log("Saved agents:", updatedAgents);
+      reset();
+      // Show success modal
+      setAddAgent(true);
+    } catch (error) {
+      console.log("error", error);
     }
-    const newAgent = {
-      name: data.name,
-      email: data.email,
-      phoneNumber: data.phoneNumber,
-      searchLimit: data.searchLimit,
-      planType: planId,
-      brokerId: brokerRel?.brokerId,
-      userType: "agent",
-    };
-
-    // Add new agent
-    const updatedAgents = [...existingAgents, newAgent];
-
-    // Save back to localStorage
-    localStorage.setItem("invitedAgents", JSON.stringify(updatedAgents));
-
-    setLastAddedAgentName(data.name);
-    console.log("Saved agents:", updatedAgents);
-    reset();
-    // Show success modal
-    setAddAgent(true);
     setIsLoading(false);
   };
 
@@ -396,7 +418,7 @@ function SubscriptionAddAgent() {
                         )}
                         <div className="flex flex-row gap-1">
                           <Button
-                          type="button"
+                            type="button"
                             onClick={handleSkip}
                             className="mt-4 flex w-1/3 items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
                           >

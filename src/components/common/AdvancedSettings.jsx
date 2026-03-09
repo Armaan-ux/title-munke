@@ -218,12 +218,12 @@ const AdvancedSettings = () => {
   }, []);
 
   const handleConnectionClick = useCallback(() => {
-    if (userType === "agent" && isUnderBroker) {
+    if ((userType === "agent" && isUnderBroker) || (userType==="broker" && isUnderOrganisation)) {
       setCancelSubscriptionModal(true);
     } else {
       setJoinBrokerModal(true);
     }
-  }, [userType, isUnderBroker]);
+  }, [userType, isUnderBroker, isUnderOrganisation]);
   const cancelPlanHandler = useCallback(() => {
     if (cancelRequestMutation.isPending) return;
     if (userType === "agent" && isUnderBroker) {
@@ -265,7 +265,8 @@ const AdvancedSettings = () => {
         onClose={() => setCancelSubscriptionModal(false)}
         onCancelSubscription={cancelPlanHandler}
         fromAdvancedSettings
-        brokerName={brokerFirstName}
+        brokerName={brokerFirstName || organisationFirstName}
+        userType={userType}
       />
       <ChangePlanModal
         open={changePlanModal}

@@ -1774,3 +1774,12 @@ export async function updateOrgBrokerDetail(updatedData) {
     "/update-broker",
   );
 }
+
+export async function checkEmailExist({email}) {
+  return callUserAdminApi(
+    { body:{emailOfUser: email} },
+    "Successfully created user:",
+    "Error creating user:",
+    "/check-if-email-already-exist",
+  );
+}

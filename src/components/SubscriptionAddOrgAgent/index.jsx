@@ -10,8 +10,8 @@ import {
   Lock,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useQuery } from "@tanstack/react-query";
-import { getBrokerAndOrganizationSelectListing } from "../service/userAdmin";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { checkEmailExist, getBrokerAndOrganizationSelectListing } from "../service/userAdmin";
 import { Label } from "../ui/label";
 import { motion } from "motion/react";
 import { Controller, useForm } from "react-hook-form";
@@ -32,8 +32,7 @@ import { useUser } from "@/context/usercontext";
 function SubscriptionAddOrdAgent() {
   const navigate = useNavigate();
   const { planId } = useParams();
-   const { organisationDetail } =
-     useUser();
+  const { organisationDetail, user } = useUser();
   const [error, setError] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
@@ -66,7 +65,7 @@ function SubscriptionAddOrdAgent() {
       (brokerAndOrganizationList || []).map((item) => ({
         label: item.name,
         value: item.id,
-         email: item.email,
+        email: item.email,
         isInvited: false,
       })),
     [brokerAndOrganizationList],
@@ -101,42 +100,68 @@ function SubscriptionAddOrdAgent() {
   });
   const phoneValue = watch("phoneNumber");
 
-  const onSubmit = (data) => {
+  const emailExistMutation = useMutation({
+    mutationFn: (email) =>
+      checkEmailExist({
+        email: email?.trim(),
+      }),
+  });
+
+  const onSubmit = async (data) => {
     console.log("Form Data:", data);
     setIsLoading(true);
-    const existingOrgAgent =
-      JSON.parse(localStorage.getItem("invitedOrgAgents")) || [];
 
-    const isDuplicate = existingOrgAgent.some(
-      (agent) => agent.email.toLowerCase() === data.email.toLowerCase(),
-    );
+    try {
+      const res = await emailExistMutation.mutateAsync(data?.email);
 
-    if (isDuplicate) {
-      setError("Agent with this email already exists.");
-      setIsLoading(false);
-      return;
+      if (res?.emailExists) {
+        setError("This email already exists.");
+        setIsLoading(false);
+        return;
+      }
+      const existingOrgAgent =
+        JSON.parse(localStorage.getItem("invitedOrgAgents")) || [];
+
+      const email = data?.email?.toLowerCase();
+      const userEmail = user?.attributes?.email?.toLowerCase();
+
+      const isDuplicate =
+        existingOrgAgent.some(
+          (agent) => agent?.email?.toLowerCase() === email,
+        ) || email === userEmail;
+
+      if (isDuplicate) {
+        setError("This email already exists.");
+        setIsLoading(false);
+        return;
+      }
+      const newOrgAgent = {
+        name: data.name,
+        email: data.email,
+        phoneNumber: data.phoneNumber,
+        brokerId: data.selectedBroker,
+        planType: planId,
+        userType: "agent",
+        organisationId: organisationDetail?.id,
+      };
+
+      // Add new agent
+      const updatedOrgAgents = [...existingOrgAgent, newOrgAgent];
+
+      // Save back to localStorage
+      localStorage.setItem(
+        "invitedOrgAgents",
+        JSON.stringify(updatedOrgAgents),
+      );
+
+      setLastAddedBrokerName(data.name);
+      console.log("Saved org agents:", updatedOrgAgents);
+      reset();
+      // Show success modal
+      setAddBroker(true);
+    } catch (error) {
+      console.log("error", error);
     }
-    const newOrgAgent = {
-      name: data.name,
-      email: data.email,
-      phoneNumber: data.phoneNumber,
-      brokerId: data.selectedBroker,
-      planType: planId,
-      userType: "agent",
-      organisationId: organisationDetail?.id
-    };
-
-    // Add new agent
-    const updatedOrgAgents = [...existingOrgAgent, newOrgAgent];
-
-    // Save back to localStorage
-    localStorage.setItem("invitedOrgAgents", JSON.stringify(updatedOrgAgents));
-
-    setLastAddedBrokerName(data.name);
-    console.log("Saved org agents:", updatedOrgAgents);
-    reset();
-    // Show success modal
-    setAddBroker(true);
     setIsLoading(false);
   };
 
@@ -433,7 +458,7 @@ function SubscriptionAddOrdAgent() {
                         )}
                         <div className="flex flex-row gap-1">
                           <Button
-                           type="button"
+                            type="button"
                             onClick={handleSkip}
                             className="mt-4 flex w-1/3 items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
                           >

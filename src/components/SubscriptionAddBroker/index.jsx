@@ -10,8 +10,8 @@ import {
   Lock,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useQuery } from "@tanstack/react-query";
-import { getBrokerDetails } from "../service/userAdmin";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { checkEmailExist, getBrokerDetails } from "../service/userAdmin";
 import { Label } from "../ui/label";
 import { motion } from "motion/react";
 import { Controller, useForm } from "react-hook-form";
@@ -32,7 +32,7 @@ import { formatUSPhone } from "@/utils/date";
 function SubscriptionAddBroker() {
   const navigate = useNavigate();
   const { planId } = useParams();
-  const { organisationDetail } = useUser();
+  const { organisationDetail, user } = useUser();
   const [error, setError] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
@@ -62,21 +62,44 @@ function SubscriptionAddBroker() {
   });
   const phoneValue = watch("phoneNumber");
 
-  const onSubmit = (data) => {
-    console.log("Form Data:", data);
-    setIsLoading(true);
-    const existingBroker =
-      JSON.parse(localStorage.getItem("invitedBroker")) || [];
+const emailExistMutation = useMutation({
+  mutationFn: (email) =>
+    checkEmailExist({
+      email: email?.trim(),
+    }),
+});
 
-    const isDuplicate = existingBroker.some(
-      (agent) => agent.email.toLowerCase() === data.email.toLowerCase(),
-    );
 
-    if (isDuplicate) {
-      setError("Broker with this email already exists.");
+const onSubmit = async (data) => {
+  setIsLoading(true);
+
+  try {
+    const res = await emailExistMutation.mutateAsync(data?.email);
+
+    if (res?.emailExists) {
+      setError("This email already exists.");
       setIsLoading(false);
       return;
     }
+
+    console.log("Form Data:", data);
+
+    const existingBroker =
+      JSON.parse(localStorage.getItem("invitedBroker")) || [];
+
+    const email = data?.email?.toLowerCase();
+    const userEmail = user?.attributes?.email?.toLowerCase();
+
+    const isDuplicate =
+      existingBroker.some((broker) => broker?.email?.toLowerCase() === email) ||
+      email === userEmail;
+
+    if (isDuplicate) {
+      setError("This email already exists.");
+      setIsLoading(false);
+      return;
+    }
+
     const newBroker = {
       customUUID: uuidv4(),
       name: data.name,
@@ -88,19 +111,19 @@ function SubscriptionAddBroker() {
       userType: "broker",
     };
 
-    // Add new agent
     const updatedBrokers = [...existingBroker, newBroker];
 
-    // Save back to localStorage
     localStorage.setItem("invitedBroker", JSON.stringify(updatedBrokers));
 
     setLastAddedBrokerName(data.name);
-    console.log("Saved brokers:", updatedBrokers);
     reset();
-    // Show success modal
     setAddBroker(true);
-    setIsLoading(false);
-  };
+  } catch (error) {
+    console.log("error", error);
+  }
+
+  setIsLoading(false);
+};
 
   // Countdown timer effect
   useEffect(() => {
@@ -126,6 +149,7 @@ function SubscriptionAddBroker() {
   const handleAddAgent = () => {
     setAddBroker(false);
   };
+
   return (
     <>
       <AgentAddedSuccessModal
@@ -394,7 +418,7 @@ function SubscriptionAddBroker() {
                         )}
                         <div className="flex flex-row gap-1">
                           <Button
-                           type="button"
+                            type="button"
                             onClick={handleSkip}
                             className="mt-4 flex w-1/3 items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
                           >

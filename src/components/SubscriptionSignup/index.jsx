@@ -32,7 +32,7 @@ function SubscriptionSignup() {
   const { userType, planId } = useParams();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { signIn } = useUser();
+  const {user, signIn } = useUser();
   const [error, setError] = useState("");
   const [isReset, setIsReset] = useState(false);
   const [codeModal, setCodeModal] = useState(false);
@@ -58,6 +58,21 @@ function SubscriptionSignup() {
   });
   const phoneValue = watch("phoneNumber");
   const isValidUSPhone = phoneValue?.length === 10;
+
+    useEffect(() => {
+      if (
+        user &&
+        user.signInUserSession &&
+        user.signInUserSession.idToken &&
+        user.signInUserSession.idToken.payload &&
+        user.signInUserSession.idToken.payload["cognito:groups"]
+      ) {
+        navigate(
+          "/" + user.signInUserSession.idToken.payload["cognito:groups"][0],
+        );
+        localStorage.removeItem("price")
+      }
+    }, [user, navigate]);
 
   // Resgister User Form Mutation
   const registerUserMutation = useMutation({
@@ -253,7 +268,7 @@ function SubscriptionSignup() {
               <div className="w-full max-w-lg ">
                 {/* stepper */}
                 <div className="flex items-center justify-center mb-5">
-                  {userType === "broker" ? (
+                  {userType === "broker" ||  userType === "organisation" ? (
                     <div className="flex items-center justify-center mb-5">
                       <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
                         {/* Active Step */}

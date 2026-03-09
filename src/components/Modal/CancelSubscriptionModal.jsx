@@ -13,7 +13,8 @@ export function CancelSubscriptionModal({
   onCancelSubscription,
   onHelpUsImprove,
   fromAdvancedSettings,
-  brokerName
+  brokerName,
+  userType
 }) {
   if (!open) return null;
   return (
@@ -49,7 +50,7 @@ export function CancelSubscriptionModal({
               className="text-xs bg-[#581b1b] text-white hover:bg-[#6b1e1e] w-[50%]"
               onClick={onClose}
             >
-              {fromAdvancedSettings ? `Keep Broker` : `Keep Subscription`}
+              {fromAdvancedSettings ? userType ==="agent"? `Keep Broker`:"Keep Organisation"  : `Keep Subscription`}
             </Button>
             <Button
               variant="outline"

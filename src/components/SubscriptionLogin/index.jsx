@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../../context/usercontext";
 import { Button } from "@/components/ui/button";
@@ -23,19 +23,19 @@ function SubscriptionLogin() {
 
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (
-  //     user &&
-  //     user.signInUserSession &&
-  //     user.signInUserSession.idToken &&
-  //     user.signInUserSession.idToken.payload &&
-  //     user.signInUserSession.idToken.payload["cognito:groups"]
-  //   ) {
-  //     navigate(
-  //       "/" + user.signInUserSession.idToken.payload["cognito:groups"][0],
-  //     );
-  //   }
-  // }, [user, navigate]);
+  useEffect(() => {
+    if (
+      user &&
+      user.signInUserSession &&
+      user.signInUserSession.idToken &&
+      user.signInUserSession.idToken.payload &&
+      user.signInUserSession.idToken.payload["cognito:groups"]
+    ) {
+      navigate(
+        "/" + user.signInUserSession.idToken.payload["cognito:groups"][0],
+      );
+    }
+  }, [user, navigate]);
 
 
   const resendCodeMutation = useMutation({
