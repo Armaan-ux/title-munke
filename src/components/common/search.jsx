@@ -69,6 +69,7 @@ export default function Search({ isIndivisual = false }) {
     setProgress("");
     setPercentage(null);
     setZipUrl(null);
+    setIsChecked(false)
     setMessage(
       "Initializing title search... This process may take a few minutes.",
     );
@@ -103,6 +104,7 @@ export default function Search({ isIndivisual = false }) {
           localStorage.setItem("searchTimestamp", Date.now().toString());
           if (zip_url) localStorage.setItem("zipUrl", zip_url);
           setInvalidateSearchHistory(true);
+          clearSearchState();
         } else if (status === "IN_PROGRESS") {
           setProgress("Processing...");
           setPercentage(percent_completion || 0);
