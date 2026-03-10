@@ -102,7 +102,7 @@ function SubscriptionLogin() {
       console.log("error ", error);
       if (error.name === "UserNotConfirmedException") {
         // setError("Your email is not confirmed. Please enter the verification code sent to your email.");
-        resendCodeMutation.mutate(username);
+        resendCodeMutation.mutate(username?.trim());
 
         // setShowCodeInput(true); // <-- State variable to show confirmation code input
         return;
@@ -112,7 +112,7 @@ function SubscriptionLogin() {
       setIsChecking(false);
     }
   };
-  if (isReset) return <ResetPassword username={username} password={password} />;
+  if (isReset) return <ResetPassword username={username?.trim()} password={password} />;
 
   return (
     <div className="relative min-h-dvh w-full overflow-hidden bg-[#2b140c]">

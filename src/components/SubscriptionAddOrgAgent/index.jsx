@@ -60,18 +60,19 @@ function SubscriptionAddOrdAgent() {
     isInvited: true,
   }));
 
-  const apiOptions = useMemo(
-    () =>
-      (brokerAndOrganizationList || []).map((item) => ({
-        label: item.name,
-        value: item.id,
-        email: item.email,
-        isInvited: false,
-      })),
-    [brokerAndOrganizationList],
-  );
+  // const apiOptions = useMemo(
+  //   () =>
+  //     (brokerAndOrganizationList || []).map((item) => ({
+  //       label: item.name,
+  //       value: item.id,
+  //       email: item.email,
+  //       isInvited: false,
+  //     })),
+  //   [brokerAndOrganizationList],
+  // );
   const dropdownOptions = useMemo(() => {
-    const merged = [...apiOptions];
+    // const merged = [...apiOptions];
+    const merged = [];
 
     invitedBrokerOptions.forEach((invited) => {
       const exists = merged.some((opt) => opt.email === invited.email);
@@ -79,7 +80,7 @@ function SubscriptionAddOrdAgent() {
     });
 
     return merged;
-  }, [apiOptions, invitedBrokerOptions]);
+  }, [invitedBrokerOptions]);
 
   const {
     control,
@@ -438,7 +439,6 @@ function SubscriptionAddOrdAgent() {
                                         value={option.value}
                                       >
                                         {option.label}
-                                        {option.isInvited && " (Invited)"}
                                       </SelectItem>
                                     ))
                                   )}

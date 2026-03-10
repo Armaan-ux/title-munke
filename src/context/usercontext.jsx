@@ -14,6 +14,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { handleCreateAuditLog } from "@/utils";
+import { setLogoutHandler } from "../utils/logoutManager";
 
 const UserContext = createContext();
 
@@ -192,6 +193,18 @@ useEffect(() => {
     navigate("/subscription-login");
     // window.location.href = "/subscription-login";
   };
+    const logOut = async () => {
+    await Auth.signOut();
+    setUser(null);
+    setIsAuthenticated(false);
+    localStorage?.clear()
+    navigate("/subscription-login");
+    // window.location.href = "/subscription-login";
+  };
+
+  useEffect(() => {
+  setLogoutHandler(logOut);
+}, []);
   return (
     <UserContext.Provider
       value={{

@@ -13,7 +13,6 @@ import {
 import { handleCreateAuditLog } from "@/utils";
 
 function ResetPassword({ username, password }) {
-  console.log({ username });
   const { signIn } = useUser();
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);

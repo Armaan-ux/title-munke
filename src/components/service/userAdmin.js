@@ -1,7 +1,7 @@
 import { API, Auth } from "aws-amplify";
 import { constants } from "buffer";
 import path from "path";
-
+import { triggerLogout } from "@/utils/logoutManager";
 // const apiName = 'usersAdmin-dev';
 const apiName = "usersAdmin-dev";
 const userPath = "/users";
@@ -147,6 +147,10 @@ async function callGetUserAdminApi(
     return response;
   } catch (error) {
     const errorData = error.response?.data || error;
+      const statusCode = error?.response?.status || error?.statusCode;
+      if (statusCode === 401) {
+    await triggerLogout();
+  }
     console.error(errorMessage, errorData);
     throw error;
   }
@@ -210,6 +214,10 @@ async function callUserAdminApi(
   } catch (error) {
     // Improved error logging to show server-side error messages if available
     const errorData = error.response ? error.response.data : error;
+        const statusCode = error?.response?.status || error?.statusCode;
+      if (statusCode === 401) {
+    await triggerLogout();
+  }
     console.error(errorMessage, errorData);
     throw error; // Re-throw to allow calling functions to handle if needed
   }
@@ -240,6 +248,10 @@ async function callPutUserAdminApi(
   } catch (error) {
     // Improved error logging to show server-side error messages if available
     const errorData = error.response ? error.response.data : error;
+        const statusCode = error?.response?.status || error?.statusCode;
+      if (statusCode === 401) {
+    await triggerLogout();
+  }
     console.error(errorMessage, errorData);
     throw error; // Re-throw to allow calling functions to handle if needed
   }
