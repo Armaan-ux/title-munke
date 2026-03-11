@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/utils";
 import { getAiModels, getDefaultAiModel } from "../service/chat";
 import { useUserIdType } from "@/hooks/useUserIdType";
+import ProductList from "./productList";
 
 const agentTypes = [
   {
@@ -14,6 +15,10 @@ const agentTypes = [
   {
     name: " AI Governance",
     id: "others",
+  },
+  {
+    name: "Upgrade Price",
+    id: "price",
   },
 ];
 
@@ -55,6 +60,7 @@ const defualtAiModelQuery = useQuery({
 
       {activeTab.id === "profile" && <ProfileSetting setIsProfile={setIsProfile}  editProfile={editProfile} />}
       {activeTab.id === "others" && <OtherSetting aiModels={aiModelQuery.data?.data || [] } selectedModel={defualtAiModelQuery?.data?.[0]?.data?.llm_name} />}
+      {activeTab.id === "price" && <ProductList />}
     </div>
   );
 }
