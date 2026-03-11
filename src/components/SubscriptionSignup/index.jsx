@@ -90,7 +90,7 @@ function SubscriptionSignup() {
          
         await handleCreateAuditLog(
               "Account",
-              { detail: `${userType} account created in successfully` },
+              { detail: `${userType} account created  successfully` },
               userType === "agent",
               userType
             );

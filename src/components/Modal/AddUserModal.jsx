@@ -57,7 +57,7 @@ function AddUserModal({ isOpen, setIsOpen, userType, setUser }) {
           user?.signInUserSession?.idToken?.payload["cognito:groups"] || [];
         if (userGroups.includes("broker")) {
           handleCreateAuditLog("AGENT_CREATE", {
-            detail: `Broker ${user?.attributes?.sub} has created the agent ${newAgent.id}`,
+            detail: `Broker has created the agent`,
           });
         }
       } else if (userType === "broker") {

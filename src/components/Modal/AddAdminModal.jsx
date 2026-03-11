@@ -168,6 +168,7 @@ export default function AddAdminModal({ open, onClose,title, userType, invalidat
                   placeholder="john@emailaddress.com"
                   className="bg-white"
                   {...field}
+                  disabled={isUpdate}
                 />
               )}
             />
