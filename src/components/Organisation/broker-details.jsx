@@ -94,7 +94,7 @@ function BrokerDetails() {
                             className="text-md"
                             variant="ghost"
                             onClick={() =>
-                              navigate(`/organisation/business/property-search/${item?.agentId}`)
+                              navigate(`/organisation/search/property-search/${item?.agentId}`)
                             }
                           >
                             <Eye />

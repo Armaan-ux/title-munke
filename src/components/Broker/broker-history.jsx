@@ -357,7 +357,7 @@ function History({isAll=false}) {
                           size="icon"
                           className="text-md"
                           variant="ghost"
-                          onClick={() => userType ==="organisation" ?   navigate(`/organisation/dashboard/property-details/${item?.searchId}`) :
+                          onClick={() => userType ==="organisation" ?   navigate(`/organisation/search/property-details/${item?.searchId}`) :
                             navigate(`/broker/dashboard/property-details/${item?.searchId}`)
                           }
                         >

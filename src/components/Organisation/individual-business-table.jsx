@@ -76,7 +76,7 @@ export default function IndividualBusinessTable({limit, isDownload, handleDownlo
                     {item?.totalSearches}
                   </TableCell>
                   <TableCell className="text-center">
-                    <Link to={`/organisation/business/property-search/${item?.id}`}>
+                    <Link to={`/organisation/search/property-search/${item?.id}`}>
                       <Button size="icon" className="text-md" variant="ghost">
                         <Eye />
                       </Button>

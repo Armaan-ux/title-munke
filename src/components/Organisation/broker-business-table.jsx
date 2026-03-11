@@ -93,7 +93,7 @@ export default function BrokerBusinessTable({limit, isDownload, handleDownloadCo
                         <TableCell>
                           {" "}
                           <div className="flex items-center gap-2 flex-row">
-                            <Link to={`/organisation/business/broker-details/${item?.id}`} >
+                            <Link to={`/organisation/search/broker-details/${item?.id}`} >
                             <Button
                               size="icon"
                               className="text-md"
