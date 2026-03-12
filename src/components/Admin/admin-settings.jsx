@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/utils";
 import { getAiModels, getDefaultAiModel } from "../service/chat";
 import { useUserIdType } from "@/hooks/useUserIdType";
-import ProductList from "./productList";
+import ProductList from "./Setting/Pricing/productList";
 
 const agentTypes = [
   {

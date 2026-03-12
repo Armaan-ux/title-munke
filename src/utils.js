@@ -20,7 +20,8 @@ export const queryKeys = {
   listTotalAuditLogsByUserId: "listTotalAuditLogsByUserId",
   listAuditLogsByUserId: "listAuditLogsByUserId",
   aiModelListing: "aiModelListing",
-  defaultAiModel: "defaultAiModel"
+  defaultAiModel: "defaultAiModel",
+  pricingListing: "pricingListing"
 }
 const months = {
   0: "Jan",

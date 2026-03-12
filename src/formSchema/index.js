@@ -165,3 +165,9 @@ phoneNumber: z
   .string()
   .min(1, "Please select a broker"),
 });
+
+export const addPricingSchema = z.object({
+  amount: z.coerce.number().min(0.01, "Amount is required"),
+  description: z.string().trim().min(1, "Description is required"),
+  subscription: z.string().trim().min(1, "Subscription selection is required"),
+});

@@ -46,6 +46,7 @@ import OrganisationAdminAuditLogs from "./components/Organisation/audit-logs";
 import OrganisationSettings from "./components/Organisation/organisation-settings";
 import OrganisationSearch from "./components/Organisation/search";
 import OrganisationHistoryList from "./components/Organisation/OrganisationHistoryList"
+import PricingDetailPage from "./components/Admin/Setting/Pricing/pricing-detail-page";
 
 export const adminRoutes = [
   { path: "admin", component: Admin },
@@ -60,6 +61,7 @@ export const adminRoutes = [
   { path: "admin/demo-requests", component: DemoRequests },
   { path: "admin/audit-logs", component: AdminAuditLogs },
   { path: "admin/settings", component: AdminSettings },
+  { path: "admin/settings/pricing-details/:id", component: PricingDetailPage },
   // { path: "admin/brokers", component: BorkerList },
   // { path: "admin/searchHistory", component: AllSearchHistory },
   // { path: "admin/setting", component: AdminSettings },

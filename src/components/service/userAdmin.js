@@ -86,6 +86,7 @@ export const CONSTANTS = {
     ADD_BULK_AGENTS: "addBulkAgents",
     CHANGE_PASSWORD_OF_USER: "changePasswordOfUser",
     LIST_REQUESTS_BY_USER_ID: "listRequestsByUserId",
+     DELETE_PRODUCT: "DeleteProduct",
   },
   USER_TYPES: {
     AGENT: "agent",
@@ -197,12 +198,13 @@ async function callUserAdminApi(
   try {
     // The Amplify API library automatically looks up the endpoint from aws-exports.js
     // and, most importantly, signs the request with the current user's credentials.
+     const isFormData = payload.body instanceof FormData;
     const token = await getAuthToken();
     const accessToken = await getAccessToken();
     const params = {
       ...payload,
       headers: payload.headers || {
-        "Content-Type": "application/json",
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...(accessToken ? { "X-Access-Token": `${accessToken}` } : {}),
       },
@@ -231,12 +233,13 @@ async function callPutUserAdminApi(
   try {
     // The Amplify API library automatically looks up the endpoint from aws-exports.js
     // and, most importantly, signs the request with the current user's credentials.
+    const isFormData = payload.body instanceof FormData;
     const token = await getAuthToken();
     const accessToken = await getAccessToken();
     const params = {
       ...payload,
       headers: payload.headers || {
-        "Content-Type": "application/json",
+        ...(isFormData ? {} : { "Content-Type": "application/json" }),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...(accessToken ? { "X-Access-Token": `${accessToken}` } : {}),
       },
@@ -1793,5 +1796,100 @@ export async function checkEmailExist({email}) {
     "Successfully created user:",
     "Error creating user:",
     "/check-if-email-already-exist",
+  );
+}
+export async function listPricing({userType, active}) {
+  const action = CONSTANTS?.ACTIONS?.LIST_REQUESTS_BY_USER_ID;
+
+  const payload = {
+    body: {
+      userType,
+      active
+    },
+  };
+
+  return callGetUserAdminApi(
+    payload,
+    "Success in " + action,
+    "Error in " + action,
+    "/list-stripe-products",
+  );
+}
+
+export async function createProduct(formData) {
+  const payload = {
+     body: formData,
+  };
+  return callUserAdminApi(
+    payload,
+    "Success in createProduct:",
+    "Error in createProduct:",
+    "/create-stripe-product",
+  );
+}
+export async function createPrice(data) {
+  const payload = {
+     body: data,
+  };
+  return callUserAdminApi(
+    payload,
+    "Success in createPrice:",
+    "Error in createPrice:",
+    "/add-stripe-price",
+  );
+}
+export async function updateProduct(formData) {
+  const payload = {
+     body: formData,
+  };
+  return callPutUserAdminApi(
+    payload,
+    "Success in updateProduct:",
+    "Error in updateProduct:",
+    "/edit-stripe-product",
+  );
+}
+export async function deleteProduct(productId) {
+  const action = CONSTANTS?.ACTIONS?.DELETE_PRODUCT;
+  const payload = {
+    body: {
+      productId,
+    },
+  };
+  return callDeleteUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/archive-stripe-product",
+  );
+}
+export async function deactivePrice(priceId) {
+  const action = CONSTANTS?.ACTIONS?.DELETE_PRODUCT;
+  const payload = {
+    body: {
+      priceId,
+    },
+  };
+  return callDeleteUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/deactivate-stripe-price",
+  );
+}
+export async function productDetails(productId) {
+  const action = CONSTANTS?.ACTIONS?.LIST_REQUESTS_BY_USER_ID;
+
+  const payload = {
+    body: {
+     productId
+    },
+  };
+
+  return callGetUserAdminApi(
+    payload,
+    "Success in " + action,
+    "Error in " + action,
+    "/get-stripe-product",
   );
 }

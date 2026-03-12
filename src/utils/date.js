@@ -33,3 +33,21 @@ export const formatDateSafe = (dateValue, fallback = "-") => {
 
   return format(date, "MMM dd, yyyy");
 };
+
+ export const convertUnixToLocalTime = (timestamp) => {
+  if (!timestamp) return "";
+  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const date = new Date(timestamp * 1000); 
+
+  return date.toLocaleString("en-IN", {
+    timeZone: userTimeZone,
+    // weekday: "long",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+};
