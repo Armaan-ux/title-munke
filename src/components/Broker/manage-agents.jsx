@@ -54,6 +54,7 @@ import { useDeleteUser } from "@/hooks/useDeleteUser";
 import { useRestoreUser } from "@/hooks/useRestoreUser";
 import { useMutation } from "@tanstack/react-query";
 import * as XLSX from "xlsx";
+import { useUserIdType } from "@/hooks/useUserIdType";
 
 const agentTypes = [
   {
@@ -99,9 +100,10 @@ export default function ManageAgents() {
 
 function Agents() {
   const navigate = useNavigate();
-  const { user ,brokerDetail } = useUser();
+  const { user, brokerDetail } = useUser();
+  const { userType } = useUserIdType();
   const fileInputRef = useRef(null);
-  const [profileImage, setProfileImage] = useState(null)
+  const [profileImage, setProfileImage] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [agents, setAgents] = useState([]);
@@ -117,20 +119,26 @@ function Agents() {
   console.log("brokerDetail in manage agent", brokerDetail);
   const bulkUploadMutation = useMutation({
     mutationFn: (data) => bulkAgentUpload(data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast("Agents added successfully");
       if (fileInputRef?.current?.value) {
         fileInputRef.current.value = "";
       }
       fetchData();
+      await handleCreateAuditLog(
+        "Bulk Upload",
+        { detail: "Bulk Agent Upload" },
+        false,
+        userType,
+      );
     },
     onError: (err) => {
       toast(err?.response?.data?.message);
       if (fileInputRef?.current?.value) {
         fileInputRef.current.value = "";
       }
-    }
-  })
+    },
+  });
 
   const fetchData = useCallback(async () => {
     if (user?.attributes?.sub) {
@@ -147,7 +155,7 @@ function Agents() {
             getAgentsTotalSearches(
               user.attributes.sub,
               currentMonthStart.toISOString(),
-              nextMonthStart.toISOString()
+              nextMonthStart.toISOString(),
             ),
             fetchAgentsWithSearchCount(user.attributes.sub),
             getPendingAgentSearches(user.attributes.sub),
@@ -175,14 +183,14 @@ function Agents() {
   }, [user]);
 
   const [selectedUser, setSelectedUser] = useState({});
-  const {deleteUserMutation} = useDeleteUser(fetchData);
-  const {restoreUserMutation} = useRestoreUser(fetchData);
+  const { deleteUserMutation } = useDeleteUser(fetchData);
+  const { restoreUserMutation } = useRestoreUser(fetchData);
   const reinviteMutation = useMutation({
     mutationFn: (payload) => reinviteUser(payload),
     onSuccess: () => {
       toast.success("Reinvitation sent successfully");
-    }
-  })
+    },
+  });
 
   useEffect(() => {
     if (user?.attributes?.sub) {
@@ -198,7 +206,7 @@ function Agents() {
       const filtered = showDeleted
         ? agents
         : agents.filter(
-            (agent) => agent.status !== CONSTANTS.USER_STATUS.DELETED
+            (agent) => agent.status !== CONSTANTS.USER_STATUS.DELETED,
           );
       setFilteredAgents(agents);
     }
@@ -208,7 +216,7 @@ function Agents() {
     const result = await UnassignAgent(agentId);
     if (result) {
       setAgents((prevAgents) =>
-        prevAgents.filter((elem) => elem.agentId !== agentId)
+        prevAgents.filter((elem) => elem.agentId !== agentId),
       );
       toast.success("Agent UnAssigned Successfully.");
       handleCreateAuditLog("UNASSIGN", {
@@ -222,8 +230,8 @@ function Agents() {
     if (result) {
       setAgents((prevAgents) =>
         prevAgents.map((agent) =>
-          agent.agentId === id ? { ...agent, status: status } : agent
-        )
+          agent.agentId === id ? { ...agent, status: status } : agent,
+        ),
       );
       toast.success(`Agent ${status} Successfully.`);
       handleCreateAuditLog("ACTIVE_STATUS", {
@@ -246,7 +254,7 @@ function Agents() {
   const handleDelete = async (agent) => {
     if (
       window.confirm(
-        `Are you sure you want to delete agent ${agent.agentName}? This is a soft delete.`
+        `Are you sure you want to delete agent ${agent.agentName}? This is a soft delete.`,
       )
     ) {
       setDeletingAgentId(agent.id);
@@ -257,7 +265,7 @@ function Agents() {
       } catch (error) {
         console.error("Failed to delete agent:", error);
         toast.error(
-          `Failed to delete agent. ${error?.response?.data?.message || ""}`
+          `Failed to delete agent. ${error?.response?.data?.message || ""}`,
         );
       } finally {
         setDeletingAgentId(null);
@@ -268,7 +276,7 @@ function Agents() {
   const handleUndelete = async (agent) => {
     if (
       window.confirm(
-        `Are you sure you want to restore agent ${agent.agentName}?`
+        `Are you sure you want to restore agent ${agent.agentName}?`,
       )
     ) {
       setUndeletingAgentId(agent.id);
@@ -279,7 +287,7 @@ function Agents() {
       } catch (error) {
         console.error("Failed to restore agent:", error);
         toast.error(
-          `Failed to restore agent. ${error?.response?.data?.message || ""}`
+          `Failed to restore agent. ${error?.response?.data?.message || ""}`,
         );
       } finally {
         setUndeletingAgentId(null);
@@ -302,7 +310,10 @@ function Agents() {
         defval: null,
       });
       console.log("json data:", json);
-      bulkUploadMutation.mutate({agents: json, brokerId: user.attributes.sub});
+      bulkUploadMutation.mutate({
+        agents: json,
+        brokerId: user.attributes.sub,
+      });
     };
 
     reader.readAsArrayBuffer(file);
@@ -310,7 +321,7 @@ function Agents() {
     setProfileImage(file);
     // bulkUploadMutation.mutate(file)
   };
-  console.log("filteredAgents",filteredAgents)
+  console.log("filteredAgents", filteredAgents);
   return (
     <>
       <AddUserModal
@@ -318,17 +329,20 @@ function Agents() {
         setIsOpen={setIsOpen}
         userType="agent"
         setUser={setAgents}
-        agents={agents} // Pass agents to check for duplicates
+        agents={agents}
       />
-      {addAgent &&
+      {addAgent && (
         <AddAgentByBrokerModal
           open={addAgent}
-          onOpenChange={() => {setAddAgent(false); setSelectedUser({});}}
+          onOpenChange={() => {
+            setAddAgent(false);
+            setSelectedUser({});
+          }}
           setUser={setAgents}
           selectedUser={selectedUser}
           invalidateFun={fetchData}
         />
-      }
+      )}
       {/* <div className="flex items-center gap-2 justify-end mb-3">
         <Checkbox
           id="show-deleted-checkbox"
@@ -372,13 +386,13 @@ function Agents() {
         {/* Right Section */}
         <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
           <a href="https://title-search-storage.s3.us-east-1.amazonaws.com/Bulk+Upload+Template.xlsx">
-          <Button
-            variant="outline"
-            className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
-          >
-            <Download className="w-4 h-4" />
-            Download Template
-          </Button>
+            <Button
+              variant="outline"
+              className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
+            >
+              <Download className="w-4 h-4" />
+              Download Template
+            </Button>
           </a>
           <input
             type="file"
@@ -397,15 +411,17 @@ function Agents() {
             Upload Template
           </Button>
 
-          {brokerDetail?.planType !== "EXPLORE_PLAN" && <Button
-            // onClick={() => setAddAgent(user?.status === "active")}
-            onClick={() => setAddAgent(true)}
-            className="h-[36px] bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[13px] font-medium rounded-md flex items-center gap-1.5 px-3"
-            // disabled={user?.status !== "active"}
-          >
-            <PlusCircle className="w-4 h-4" />
-            Add Agent
-          </Button>}
+          {brokerDetail?.planType !== "EXPLORE_PLAN" && (
+            <Button
+              // onClick={() => setAddAgent(user?.status === "active")}
+              onClick={() => setAddAgent(true)}
+              className="h-[36px] bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[13px] font-medium rounded-md flex items-center gap-1.5 px-3"
+              // disabled={user?.status !== "active"}
+            >
+              <PlusCircle className="w-4 h-4" />
+              Add Agent
+            </Button>
+          )}
         </div>
       </div>
       <div className="bg-white !p-4 rounded-xl">
@@ -451,40 +467,53 @@ function Agents() {
                   <TableCell className="text-center">
                     {item.totalSearches}
                   </TableCell>
-                  <TableCell> {item?.lastLogin ? getFormattedDateTime(item.lastLogin) : "-"}</TableCell>
+                  <TableCell>
+                    {" "}
+                    {item?.lastLogin
+                      ? getFormattedDateTime(item.lastLogin)
+                      : "-"}
+                  </TableCell>
                   <TableCell>
                     <Badge
                       className={`${
                         item?.status === "ACTIVE"
                           ? "bg-[#E9F3E9] text-[#1E8221]"
                           : item?.status === "UNCONFIRMED"
-                          ? "bg-[#FFF3D9] text-[#A2781E]"
-                          : "bg-[#FFE3E2] text-[#FF5F59]"
+                            ? "bg-[#FFF3D9] text-[#A2781E]"
+                            : "bg-[#FFE3E2] text-[#FF5F59]"
                       } text-[13px] font-medium px-3 py-1 rounded-md`}
                     >
                       {item?.status}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center">
-                    {item.status === "UNCONFIRMED" && 
+                    {item.status === "UNCONFIRMED" && (
                       <UserPlus
                         className="w-5 h-5 mx-auto"
                         // className={` text-sm`}
-                        disabled={
-                          reinviteMutation?.isPending
+                        disabled={reinviteMutation?.isPending}
+                        onClick={() =>
+                          reinviteMutation?.mutate({ email: item?.email })
                         }
-                        onClick={() => reinviteMutation?.mutate({email: item?.email})}
                         // variant="outline"
                         // size="sm"
                       />
-                    }
+                    )}
                     {/* {reinvitingAgentId === item.id
                         ? "Sending..."
                         : "Reinvite"} */}
                   </TableCell>
-                  <TableCell className="text-center" >
+                  <TableCell className="text-center">
                     <div className="">
-                      <Button size="icon" className="text-sm" variant="ghost" onClick={() => {setAddAgent(true); setSelectedUser(item)}}>
+                      <Button
+                        size="icon"
+                        className="text-sm"
+                        variant="ghost"
+                        onClick={() => {
+                          setAddAgent(true);
+                          setSelectedUser(item);
+                        }}
+                      >
                         <PencilLine />
                       </Button>
                       <Button
@@ -492,24 +521,41 @@ function Agents() {
                         className="text-sm"
                         variant="ghost"
                         onClick={() =>
-                          navigate(`/broker/manage-agents/agent-property-details/${item?.id}`)
+                          navigate(
+                            `/broker/manage-agents/agent-property-details/${item?.id}`,
+                          )
                         }
                       >
                         <Eye />
                       </Button>
-                      <Button 
-                          size="icon" 
-                          className="text-md" 
-                          variant="ghost" 
-                          onClick={() => {
-                            if(item?.status === "DELETED")
-                              restoreUserMutation.mutate({userId: item.id, email: item.email, userType: "agent"})
-                            else
-                            deleteUserMutation.mutate({userId: item.id, email: item.email, userType: "agent"})
-                          }} 
-                          disabled={deleteUserMutation?.isLoading || restoreUserMutation?.isLoading}
-                        >
-                          {item?.status === "DELETED" ? <ArchiveRestore /> : <Trash2 />}
+                      <Button
+                        size="icon"
+                        className="text-md"
+                        variant="ghost"
+                        onClick={() => {
+                          if (item?.status === "DELETED")
+                            restoreUserMutation.mutate({
+                              userId: item.id,
+                              email: item.email,
+                              userType: "agent",
+                            });
+                          else
+                            deleteUserMutation.mutate({
+                              userId: item.id,
+                              email: item.email,
+                              userType: "agent",
+                            });
+                        }}
+                        disabled={
+                          deleteUserMutation?.isLoading ||
+                          restoreUserMutation?.isLoading
+                        }
+                      >
+                        {item?.status === "DELETED" ? (
+                          <ArchiveRestore />
+                        ) : (
+                          <Trash2 />
+                        )}
                       </Button>
                       {/* {item.status !== "UNCONFIRMED" && (
                         <>
@@ -614,8 +660,8 @@ function UnassignedAgents() {
       if (result) {
         setAgents((prevAgents) =>
           prevAgents.map((agent) =>
-            agent.id === id ? { ...agent, status: result.status } : agent
-          )
+            agent.id === id ? { ...agent, status: result.status } : agent,
+          ),
         );
         toast.success("Agent Deleted Successfully.");
         handleCreateAuditLog("DELETE", {
@@ -631,8 +677,8 @@ function UnassignedAgents() {
       if (result) {
         setAgents((prevAgents) =>
           prevAgents.map((agent) =>
-            agent.id === id ? { ...agent, status: result.status } : agent
-          )
+            agent.id === id ? { ...agent, status: result.status } : agent,
+          ),
         );
         toast.success("Agent Restored Successfully.");
         handleCreateAuditLog("RESTORE", {
