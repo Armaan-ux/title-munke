@@ -23,19 +23,14 @@ function AuditLogs() {
   const [nextToken, setNextToken] = useState(null);
   const [activeTab, setActiveTab] = useState("organisation");
   const { user } = useUser();
-  const  {userId}  = useUserIdType();
+  const { userId } = useUserIdType();
 
   const fetchLogs = async (value) => {
     if (loading || !hasMore) return;
 
     setLoading(true);
     try {
-      const response = await listAuditLogsOrg(
-        activeTab,
-        userId,
-        nextToken,
-        10
-      );
+      const response = await listAuditLogsOrg(activeTab, userId, nextToken, 10);
       const { items, nextToken: newNextToken } = response;
 
       setLogs((prev) => [...prev, ...items]);
@@ -142,9 +137,7 @@ function AuditLogs() {
             <div className="flex justify-center my-4">
               <Button
                 className="mx-auto "
-                onClick={() =>
-                  fetchLogs(activeTab === "broker" ? false : true)
-                }
+                onClick={() => fetchLogs(activeTab === "broker" ? false : true)}
               >
                 Load More
               </Button>
@@ -153,7 +146,6 @@ function AuditLogs() {
         </div>
       </div>
     </div>
-   
   );
 }
 

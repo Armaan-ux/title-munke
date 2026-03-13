@@ -766,10 +766,10 @@ export async function listSearchHistories({
   );
 }
 
-export async function listAuditLogs(isAgent, userIds, nextToken) {
+export async function listAuditLogs(activeTab, userIds, nextToken) {
   const payload = {
     body: {
-      isAgent: isAgent,
+      userType: activeTab,
       ...(userIds && { userIds: userIds }),
       ...(nextToken && { nextToken: nextToken }),
     },
