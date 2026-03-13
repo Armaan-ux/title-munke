@@ -84,6 +84,7 @@ export const CONSTANTS = {
     FETCH_EMAIL_PREFERENCE: "fetchEmailPreference",
     EMAIL_PREFERENCE_SEARCH_COMPLETE: "emailPreferenceSearchComplete",
     ADD_BULK_AGENTS: "addBulkAgents",
+    ADD_BULK_BROKER: "addBulkBrokers",
     CHANGE_PASSWORD_OF_USER: "changePasswordOfUser",
     LIST_REQUESTS_BY_USER_ID: "listRequestsByUserId",
     DELETE_PRODUCT: "DeleteProduct",
@@ -594,6 +595,19 @@ export async function listAdmins(nextToken) {
     "Success in listAdmins:",
     "Error in listAdmins:",
     "/list-admins",
+  );
+}
+export async function listOrganisation(nextToken) {
+  const payload = {
+    body: {
+      nextToken,
+    },
+  };
+  return callGetUserAdminApi(
+    payload,
+    "Success in listAdmins:",
+    "Error in listAdmins:",
+    "/get-organisation-with-search-count",
   );
 }
 
@@ -1393,6 +1407,20 @@ export async function updateUserStatus(data) {
 
 export async function bulkAgentUpload(data) {
   const action = CONSTANTS?.ACTIONS?.ADD_BULK_AGENTS;
+
+  const payload = {
+    body: { ...data },
+  };
+
+  return callUserAdminApi(
+    payload,
+    "Success in " + action,
+    "Error in " + action,
+    "/add-bulk-agents",
+  );
+}
+export async function bulkBrokerUpload(data) {
+  const action = CONSTANTS?.ACTIONS?.ADD_BULK_BROKER;
 
   const payload = {
     body: { ...data },

@@ -321,7 +321,6 @@ function Agents() {
     setProfileImage(file);
     // bulkUploadMutation.mutate(file)
   };
-  console.log("filteredAgents", filteredAgents);
   return (
     <>
       <AddUserModal

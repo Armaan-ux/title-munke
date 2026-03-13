@@ -25,7 +25,12 @@ import { Link, useNavigate } from "react-router-dom";
 import BrokerBusinessTable from "./broker-business-table";
 import IndividualBusinessTable from "./individual-business-table";
 
-function BrokerIndividualBusiness({ activeTab, onRegisterReset, isDownload, handleDownloadComplete }) {
+function BrokerIndividualBusiness({
+  activeTab,
+  onRegisterReset,
+  isDownload,
+  handleDownloadComplete,
+}) {
   const navigate = useNavigate();
   const [searchHistories, setSearchHistories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -143,8 +148,10 @@ function BrokerIndividualBusiness({ activeTab, onRegisterReset, isDownload, hand
   }, [onRegisterReset]);
   useEffect(() => {
     if (user?.attributes?.sub) {
-      if (activeTab === "history") fetchSearchHistories();
-      else fetchAgentSearchHistories();
+      if (activeTab === "broker") {
+        fetchSearchHistories();
+      } else if (activeTab === "organisation") {
+      } else fetchAgentSearchHistories();
     }
   }, [user, activeTab, fetchSearchHistories, fetchAgentSearchHistories]);
 
@@ -162,15 +169,22 @@ function BrokerIndividualBusiness({ activeTab, onRegisterReset, isDownload, hand
     );
   };
 
-
   return (
     <>
       <div className="bg-[#F5F0EC] rounded-lg text-secondary">
         <div className="bg-white !p-4 rounded-xl">
-          {activeTab === "history" ? (
-           <BrokerBusinessTable limit={5} handleDownloadComplete={handleDownloadComplete} isDownload={isDownload}/>
+          {activeTab === "broker" ? (
+            <BrokerBusinessTable
+              limit={5}
+              handleDownloadComplete={handleDownloadComplete}
+              isDownload={isDownload}
+            />
           ) : (
-            <IndividualBusinessTable limit={5} handleDownloadComplete={handleDownloadComplete} isDownload={isDownload} />
+            <IndividualBusinessTable
+              limit={5}
+              handleDownloadComplete={handleDownloadComplete}
+              isDownload={isDownload}
+            />
           )}
 
           {/* {searchHistories?.length === 0 && <p>No Records found.</p>} */}

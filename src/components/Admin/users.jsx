@@ -12,7 +12,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ArchiveRestore, EyeIcon, PencilLine, PlusCircle, Trash2, UserPlus } from "lucide-react";
+import {
+  ArchiveRestore,
+  EyeIcon,
+  PencilLine,
+  PlusCircle,
+  Trash2,
+  UserPlus,
+} from "lucide-react";
 import AddUserModal from "../Modal/AddUserModal";
 import AgentList from "../Modal/AgentList";
 import AddAgentByAdminModal from "../Modal/AddAgentByAdminModal";
@@ -32,6 +39,7 @@ import {
   getTotalBrokers,
   getTotalBrokerSearchesThisMonth,
   listAdmins,
+  listOrganisation,
   reinviteUser,
   updateBrokerStatus,
 } from "../service/userAdmin";
@@ -58,6 +66,10 @@ const userTypes = [
   {
     name: "Admin",
     id: "admin",
+  },
+  {
+    name: "Organisation",
+    id: "organisation",
   },
   {
     name: "Broker",
@@ -91,144 +103,359 @@ export default function Users() {
       </div>
 
       {activeTab.id === "admin" && <Admins />}
+      {activeTab.id === "organisation" && <Organisation />}
       {activeTab.id === "broker" && <AdminBrokersList />}
       {activeTab.id === "agent" && <Agents />}
     </div>
   );
 }
 
-function Admins() {
-  const {userId} = useUserIdType();
+function Organisation() {
+  const { userId } = useUserIdType();
   const [isOpen, setIsOpen] = useState(false);
   const [admins, setAdmins] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [isAdminListLoading, setIsAdminListLoading] = useState(false);
   const [nextToken, setNextToken] = useState(null);
   const [selectedUser, setSelectedUser] = useState({});
-  const {deleteUserMutation} = useDeleteUser(() => {handleFetchAdminListing(true); setHasMore(true);});
-  const {restoreUserMutation} = useRestoreUser(() => {handleFetchAdminListing(true); setHasMore(true);});
-  const handleFetchAdminListing = async (isRefetch) => {
+  const { deleteUserMutation } = useDeleteUser(() => {
+    handleFetchOrgListing(true);
+    setHasMore(true);
+  });
+  const { restoreUserMutation } = useRestoreUser(() => {
+    handleFetchOrgListing(true);
+    setHasMore(true);
+  });
+  const handleFetchOrgListing = async (isRefetch) => {
     setIsAdminListLoading(true);
     try {
-      const response = await listAdmins(isRefetch ? null : nextToken);
-      const {items, nextToken: newNextToken} = response;
-      setAdmins(pre => isRefetch ? items : [...pre, ...items]);
+      const response = await listOrganisation(isRefetch ? null : nextToken);
+      const { items, nextToken: newNextToken } = response;
+      setAdmins((pre) => (isRefetch ? items : [...pre, ...items]));
       setNextToken(newNextToken);
-      setHasMore(!!newNextToken)
+      setHasMore(!!newNextToken);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
     setIsAdminListLoading(false);
-  }
+  };
 
-  useEffect(() => {handleFetchAdminListing()}, []);
+  useEffect(() => {
+    handleFetchOrgListing();
+  }, []);
   const loading = deleteUserMutation.isPending || restoreUserMutation.isPending;
 
   return (
     <>
-     {isOpen && 
-      <AddAdminModal  
-          open={isOpen} 
-          onClose={()=> {setIsOpen(false); setSelectedUser({})}} 
-          title="Admin"  
-          userType="admin" 
-          invalidateFun={() => {handleFetchAdminListing(true); setHasMore(true);}}
+      {isOpen && (
+        <AddAdminModal
+          open={isOpen}
+          onClose={() => {
+            setIsOpen(false);
+            setSelectedUser({});
+          }}
+          title="Admin"
+          userType="admin"
+          invalidateFun={() => {
+            handleFetchAdminListing(true);
+            setHasMore(true);
+          }}
           selectedUser={selectedUser}
         />
-     }
-    <div className="bg-white !p-4 rounded-xl">
-      {/* <AddUserModal
+      )}
+      <div className="bg-white !p-4 rounded-xl">
+        {/* <AddUserModal
         setIsOpen={setIsOpen}
         userType="admin"
         setUser={setAdmins}
         isOpen={isOpen}
       /> */}
-      <div className="flex justify-between gap-4 items-center mb-4">
-        <p className="text-lg font-medium" >All Admins</p>
-        <Button variant="secondary" onClick={() => setIsOpen(true)}>
-          {" "}
-          <PlusCircle /> Add Admin
-        </Button>
-      </div>
+        <div className="flex justify-between gap-4 items-center mb-4">
+          <p className="text-lg font-medium">All Organisation</p>
+          <Button variant="secondary" onClick={() => setIsOpen(true)}>
+            {" "}
+            <PlusCircle /> Add Organisation
+          </Button>
+        </div>
 
-      <Table className="">
-        <TableHeader className="bg-[#F5F0EC]">
-          <TableRow>
-            <TableHead className="">Sr. No.</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead >Status</TableHead>
-            <TableHead >Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {admins?.length === 0 && !hasMore ? (
+        <Table className="">
+          <TableHeader className="bg-[#F5F0EC]">
             <TableRow>
-              <TableCell
-                colSpan={5}
-                className="font-medium text-center py-10 text-muted-foreground"
-              >
-                No Records found.
-              </TableCell>
+              <TableHead className="">Sr. No.</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Action</TableHead>
             </TableRow>
-          ) : (
-            admins?.map((item, index) => (
-              <TableRow key={item.id}>
-                <TableCell className="font-medium ">{index + 1}</TableCell>
-                <TableCell className="font-medium text-black" >{item.name}</TableCell>
-                <TableCell>{item.email}</TableCell>
-                <TableCell>
-                  <Badge
-                    className={`${
-                      item?.status === "ACTIVE" ? "bg-[#E9F3E9] text-[#1E8221]"
-                        : (item?.status === "DELETED" ? " text-destructive/80 bg-destructive/20" : "bg-[#FFF3D9] text-[#A2781E]") 
-                    } text-[13px] font-medium px-3 py-1 rounded-full`}
-                  >
-                    {item?.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2 flex-row">
-                    <Button size="icon" className="text-md" variant="ghost" onClick={() => { setSelectedUser(item); setIsOpen(true)}}>
-                      <PencilLine />
-                    </Button>
-                    {userId !== item?.id &&
-                      <Button 
-                            size="icon" 
-                            className="text-md" 
-                            variant="ghost" 
-                            onClick={() => {
-                              if(item?.status === "DELETED")
-                                restoreUserMutation.mutate({userId: item.id, email: item.email, userType: "admin"})
-                              else
-                              deleteUserMutation.mutate({userId: item.id, email: item.email, userType: "admin"})
-                            }} 
-                            disabled={loading}
-                          >
-                            {item?.status === "DELETED" ? <ArchiveRestore /> : <Trash2 />}
-                      </Button>
-                    }
-                  </div>
+          </TableHeader>
+          <TableBody>
+            {admins?.length === 0 && !hasMore ? (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="font-medium text-center py-10 text-muted-foreground"
+                >
+                  No Records found.
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-      <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
-            {isAdminListLoading && <p>Loading...</p>}
-            {!hasMore && !isAdminListLoading && <p>No more data to load.</p>}
-            {admins?.length > 0 && hasMore && !isAdminListLoading && (
-              <Button
-                size="sm"
-                className=""
-                onClick={() => handleFetchAdminListing()}
-              >
-                Load More
-              </Button>
+            ) : (
+              admins?.map((item, index) => (
+                <TableRow key={item.id}>
+                  <TableCell className="font-medium ">{index + 1}</TableCell>
+                  <TableCell className="font-medium text-black">
+                    {item.name}
+                  </TableCell>
+                  <TableCell>{item.email}</TableCell>
+                  <TableCell>
+                    <Badge
+                      className={`${
+                        item?.status === "ACTIVE"
+                          ? "bg-[#E9F3E9] text-[#1E8221]"
+                          : item?.status === "DELETED"
+                            ? " text-destructive/80 bg-destructive/20"
+                            : "bg-[#FFF3D9] text-[#A2781E]"
+                      } text-[13px] font-medium px-3 py-1 rounded-full`}
+                    >
+                      {item?.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2 flex-row">
+                      <Button
+                        size="icon"
+                        className="text-md"
+                        variant="ghost"
+                        onClick={() => {
+                          setSelectedUser(item);
+                          setIsOpen(true);
+                        }}
+                      >
+                        <PencilLine />
+                      </Button>
+                      {userId !== item?.id && (
+                        <Button
+                          size="icon"
+                          className="text-md"
+                          variant="ghost"
+                          onClick={() => {
+                            if (item?.status === "DELETED")
+                              restoreUserMutation.mutate({
+                                userId: item.id,
+                                email: item.email,
+                                userType: "admin",
+                              });
+                            else
+                              deleteUserMutation.mutate({
+                                userId: item.id,
+                                email: item.email,
+                                userType: "admin",
+                              });
+                          }}
+                          disabled={loading}
+                        >
+                          {item?.status === "DELETED" ? (
+                            <ArchiveRestore />
+                          ) : (
+                            <Trash2 />
+                          )}
+                        </Button>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
             )}
+          </TableBody>
+        </Table>
+        <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
+          {isAdminListLoading && <p>Loading...</p>}
+          {!hasMore && !isAdminListLoading && <p>No more data to load.</p>}
+          {admins?.length > 0 && hasMore && !isAdminListLoading && (
+            <Button
+              size="sm"
+              className=""
+              onClick={() => handleFetchAdminListing()}
+            >
+              Load More
+            </Button>
+          )}
         </div>
-    </div>
+      </div>
+    </>
+  );
+}
+
+function Admins() {
+  const { userId } = useUserIdType();
+  const [isOpen, setIsOpen] = useState(false);
+  const [admins, setAdmins] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [isAdminListLoading, setIsAdminListLoading] = useState(false);
+  const [nextToken, setNextToken] = useState(null);
+  const [selectedUser, setSelectedUser] = useState({});
+  const { deleteUserMutation } = useDeleteUser(() => {
+    handleFetchAdminListing(true);
+    setHasMore(true);
+  });
+  const { restoreUserMutation } = useRestoreUser(() => {
+    handleFetchAdminListing(true);
+    setHasMore(true);
+  });
+  const handleFetchAdminListing = async (isRefetch) => {
+    setIsAdminListLoading(true);
+    try {
+      const response = await listAdmins(isRefetch ? null : nextToken);
+      const { items, nextToken: newNextToken } = response;
+      setAdmins((pre) => (isRefetch ? items : [...pre, ...items]));
+      setNextToken(newNextToken);
+      setHasMore(!!newNextToken);
+    } catch (error) {
+      console.log(error);
+    }
+    setIsAdminListLoading(false);
+  };
+
+  useEffect(() => {
+    handleFetchAdminListing();
+  }, []);
+  const loading = deleteUserMutation.isPending || restoreUserMutation.isPending;
+
+  return (
+    <>
+      {isOpen && (
+        <AddAdminModal
+          open={isOpen}
+          onClose={() => {
+            setIsOpen(false);
+            setSelectedUser({});
+          }}
+          title="Admin"
+          userType="admin"
+          invalidateFun={() => {
+            handleFetchAdminListing(true);
+            setHasMore(true);
+          }}
+          selectedUser={selectedUser}
+        />
+      )}
+      <div className="bg-white !p-4 rounded-xl">
+        {/* <AddUserModal
+        setIsOpen={setIsOpen}
+        userType="admin"
+        setUser={setAdmins}
+        isOpen={isOpen}
+      /> */}
+        <div className="flex justify-between gap-4 items-center mb-4">
+          <p className="text-lg font-medium">All Admins</p>
+          <Button variant="secondary" onClick={() => setIsOpen(true)}>
+            {" "}
+            <PlusCircle /> Add Admin
+          </Button>
+        </div>
+
+        <Table className="">
+          <TableHeader className="bg-[#F5F0EC]">
+            <TableRow>
+              <TableHead className="">Sr. No.</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {admins?.length === 0 && !hasMore ? (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="font-medium text-center py-10 text-muted-foreground"
+                >
+                  No Records found.
+                </TableCell>
+              </TableRow>
+            ) : (
+              admins?.map((item, index) => (
+                <TableRow key={item.id}>
+                  <TableCell className="font-medium ">{index + 1}</TableCell>
+                  <TableCell className="font-medium text-black">
+                    {item.name}
+                  </TableCell>
+                  <TableCell>{item.email}</TableCell>
+                  <TableCell>
+                    <Badge
+                      className={`${
+                        item?.status === "ACTIVE"
+                          ? "bg-[#E9F3E9] text-[#1E8221]"
+                          : item?.status === "DELETED"
+                            ? " text-destructive/80 bg-destructive/20"
+                            : "bg-[#FFF3D9] text-[#A2781E]"
+                      } text-[13px] font-medium px-3 py-1 rounded-full`}
+                    >
+                      {item?.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2 flex-row">
+                      <Button
+                        size="icon"
+                        className="text-md"
+                        variant="ghost"
+                        onClick={() => {
+                          setSelectedUser(item);
+                          setIsOpen(true);
+                        }}
+                      >
+                        <PencilLine />
+                      </Button>
+                      {userId !== item?.id && (
+                        <Button
+                          size="icon"
+                          className="text-md"
+                          variant="ghost"
+                          onClick={() => {
+                            if (item?.status === "DELETED")
+                              restoreUserMutation.mutate({
+                                userId: item.id,
+                                email: item.email,
+                                userType: "admin",
+                              });
+                            else
+                              deleteUserMutation.mutate({
+                                userId: item.id,
+                                email: item.email,
+                                userType: "admin",
+                              });
+                          }}
+                          disabled={loading}
+                        >
+                          {item?.status === "DELETED" ? (
+                            <ArchiveRestore />
+                          ) : (
+                            <Trash2 />
+                          )}
+                        </Button>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+        <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
+          {isAdminListLoading && <p>Loading...</p>}
+          {!hasMore && !isAdminListLoading && <p>No more data to load.</p>}
+          {admins?.length > 0 && hasMore && !isAdminListLoading && (
+            <Button
+              size="sm"
+              className=""
+              onClick={() => handleFetchAdminListing()}
+            >
+              Load More
+            </Button>
+          )}
+        </div>
+      </div>
     </>
   );
 }
@@ -255,9 +482,16 @@ function AdminBrokersList() {
   const [totalBrokerSearchThisMonthCount, setTotalBrokerSearchThisMonthCount] =
     useState(0);
   const [deletingBrokerId, setDeletingBrokerId] = useState(null);
-  const {deleteUserMutation} = useDeleteUser(() => {handleFetchBrokersWithSearchCount(true); setHasMore(true);});
-  const {restoreUserMutation} = useRestoreUser(() => {handleFetchBrokersWithSearchCount(true); setHasMore(true);});
-  const loadingDelete = deleteUserMutation.isPending || restoreUserMutation.isPending;
+  const { deleteUserMutation } = useDeleteUser(() => {
+    handleFetchBrokersWithSearchCount(true);
+    setHasMore(true);
+  });
+  const { restoreUserMutation } = useRestoreUser(() => {
+    handleFetchBrokersWithSearchCount(true);
+    setHasMore(true);
+  });
+  const loadingDelete =
+    deleteUserMutation.isPending || restoreUserMutation.isPending;
   const getBroker = async () => {
     try {
       setLoading(true);
@@ -266,7 +500,7 @@ function AdminBrokersList() {
       const TotalBrokerSearchesThisMonthDict =
         await getTotalBrokerSearchesThisMonth();
       setTotalBrokerSearchThisMonthCount(
-        TotalBrokerSearchesThisMonthDict.totalSearches
+        TotalBrokerSearchesThisMonthDict.totalSearches,
       );
       setTotalBrokerCount(totalBrokerDict?.totalBrokers);
       setTotalActiveBrokerCount(ActiveBrokers?.length);
@@ -289,13 +523,16 @@ function AdminBrokersList() {
   }, []);
 
   const handleFetchBrokersWithSearchCount = async (isRefetch) => {
-
     setIsBrokerListLoading(true);
     try {
-      const response = await getBrokersWithSearchCount(isRefetch ? null : nextToken);
+      const response = await getBrokersWithSearchCount(
+        isRefetch ? null : nextToken,
+      );
       const { updatedBrokers, nextToken: newNextToken } = response;
 
-      setBrokers((prev) => isRefetch ? updatedBrokers : [...prev, ...updatedBrokers]);
+      setBrokers((prev) =>
+        isRefetch ? updatedBrokers : [...prev, ...updatedBrokers],
+      );
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
     } catch (error) {
@@ -315,8 +552,8 @@ function AdminBrokersList() {
           (broker) =>
             broker.id === brokerId
               ? { ...broker, status: newStatus } // Create a new object for the updated item
-              : broker // Return all other items as they are
-        )
+              : broker, // Return all other items as they are
+        ),
       );
     } catch (error) {
       // Use the specific error message from the backend if available
@@ -370,7 +607,7 @@ function AdminBrokersList() {
     } catch (error) {
       console.error("Failed to delete broker:", error);
       toast.error(
-        `Failed to delete broker. ${error?.response?.data?.message || ""}`
+        `Failed to delete broker. ${error?.response?.data?.message || ""}`,
       );
     } finally {
       setDeletingBrokerId(null);
@@ -394,26 +631,33 @@ function AdminBrokersList() {
         userType={"broker"}
         setUser={setBrokers}
       /> */}
-{/* 
+      {/* 
       <AddAgentByAdminModal
         isOpen={isAgentCreationModalOpen}
         setIsOpen={setIsAgentCreationModalOpen}
         brokers={activeBrokers}
       /> */}
-      {isOpen && 
-        <AddAdminModal  
-          open={isOpen} onClose={()=> {setIsOpen(false); setSelectedBroker({})}} 
-          title="Broker" 
-          userType="broker" 
-          invalidateFun={() => {handleFetchBrokersWithSearchCount(true); setHasMore(true);}} 
+      {isOpen && (
+        <AddAdminModal
+          open={isOpen}
+          onClose={() => {
+            setIsOpen(false);
+            setSelectedBroker({});
+          }}
+          title="Broker"
+          userType="broker"
+          invalidateFun={() => {
+            handleFetchBrokersWithSearchCount(true);
+            setHasMore(true);
+          }}
           selectedUser={selectedBroker}
         />
-    }
+      )}
 
       <div>
         <div className="bg-white !p-4 rounded-xl">
           <div className="flex justify-between gap-4 items-center mb-4">
-            <p className="text-lg font-medium" >All Brokers</p>
+            <p className="text-lg font-medium">All Brokers</p>
 
             <div className="space-x-2">
               <Button variant="secondary" onClick={() => setIsOpen(true)}>
@@ -451,7 +695,9 @@ function AdminBrokersList() {
                 brokers?.map((item, index) => (
                   <TableRow key={item.id}>
                     <TableCell className="font-medium ">{index + 1}</TableCell>
-                    <TableCell className="font-medium text-black" >{item.name}</TableCell>
+                    <TableCell className="font-medium text-black">
+                      {item.name}
+                    </TableCell>
                     {/* <TableCell>{item.totalSearches}</TableCell> */}
                     {/* <TableCell>
                       {getFormattedDateTime(item.lastLogin)}
@@ -462,32 +708,55 @@ function AdminBrokersList() {
                       {" "}
                       <Badge
                         className={`${
-                      item?.status === "ACTIVE" ? "bg-[#E9F3E9] text-[#1E8221]"
-                        : (item?.status === "DELETED" ? " text-destructive/80 bg-destructive/20" : "bg-[#FFF3D9] text-[#A2781E]") 
-                    } text-[13px] font-medium px-3 py-1 rounded-full`}
+                          item?.status === "ACTIVE"
+                            ? "bg-[#E9F3E9] text-[#1E8221]"
+                            : item?.status === "DELETED"
+                              ? " text-destructive/80 bg-destructive/20"
+                              : "bg-[#FFF3D9] text-[#A2781E]"
+                        } text-[13px] font-medium px-3 py-1 rounded-full`}
                       >
                         {item?.status}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2 flex-row">
-                        <Button size="icon" className="text-md" variant="ghost" onClick={() => { setSelectedBroker(item); setIsOpen(true)}}>
+                        <Button
+                          size="icon"
+                          className="text-md"
+                          variant="ghost"
+                          onClick={() => {
+                            setSelectedBroker(item);
+                            setIsOpen(true);
+                          }}
+                        >
                           <PencilLine />
                         </Button>
-                        <Button 
-                          size="icon" 
-                          className="text-md" 
-                          variant="ghost" 
+                        <Button
+                          size="icon"
+                          className="text-md"
+                          variant="ghost"
                           onClick={() => {
-                            if(item?.status === "DELETED")
-                              restoreUserMutation.mutate({userId: item.id, email: item.email, userType: "broker"})
+                            if (item?.status === "DELETED")
+                              restoreUserMutation.mutate({
+                                userId: item.id,
+                                email: item.email,
+                                userType: "broker",
+                              });
                             else
-                            deleteUserMutation.mutate({userId: item.id, email: item.email, userType: "broker"})
-                          }} 
+                              deleteUserMutation.mutate({
+                                userId: item.id,
+                                email: item.email,
+                                userType: "broker",
+                              });
+                          }}
                           disabled={loadingDelete}
                         >
-                          {item?.status === "DELETED" ? <ArchiveRestore /> : <Trash2 />}
-                    </Button>
+                          {item?.status === "DELETED" ? (
+                            <ArchiveRestore />
+                          ) : (
+                            <Trash2 />
+                          )}
+                        </Button>
                       </div>
 
                       {/* <div >
@@ -560,7 +829,6 @@ function AdminBrokersList() {
   );
 }
 
-
 function Agents() {
   const [isOpen, setIsOpen] = useState(false);
   const [agents, setAgents] = useState([]);
@@ -571,24 +839,29 @@ function Agents() {
   useEffect(() => {
     handleFetchAgentListing();
   }, []);
-  const {deleteUserMutation} = useDeleteUser(() => {handleFetchAgentListing(true); setHasMore(true);});
-  const {restoreUserMutation} = useRestoreUser(() => {handleFetchAgentListing(true); setHasMore(true);});
+  const { deleteUserMutation } = useDeleteUser(() => {
+    handleFetchAgentListing(true);
+    setHasMore(true);
+  });
+  const { restoreUserMutation } = useRestoreUser(() => {
+    handleFetchAgentListing(true);
+    setHasMore(true);
+  });
   const reinviteMutation = useMutation({
     mutationFn: (payload) => reinviteUser(payload),
     onSuccess: () => {
       toast.success("Reinvitation sent successfully");
       handleFetchAgentListing(true);
       setHasMore(true);
-    }
-  })
+    },
+  });
   const handleFetchAgentListing = async (isRefetch) => {
-    
     setIsAgentListLoading(true);
     try {
-      const response = await getAgentListings(isRefetch? null : nextToken);
+      const response = await getAgentListings(isRefetch ? null : nextToken);
       const { items, nextToken: newNextToken } = response;
 
-      setAgents((prev) => isRefetch ? items : [...prev, ...items]);
+      setAgents((prev) => (isRefetch ? items : [...prev, ...items]));
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
     } catch (error) {
@@ -599,121 +872,150 @@ function Agents() {
   const loading = deleteUserMutation.isPending || restoreUserMutation.isPending;
   return (
     <>
-     {isOpen && 
-      <AddAdminModal  
-        open={isOpen} 
-        onClose={()=> {setIsOpen(false); setSelectedUser({})}}  
-        title="Agent" 
-        userType="agent" 
-        invalidateFun={() => {handleFetchAgentListing(true); setHasMore(true);}}
-        selectedUser={selectedUser}
-      />
-     }
-    <div className="bg-white !p-4 rounded-xl">
-      {/* <AddUserModal
+      {isOpen && (
+        <AddAdminModal
+          open={isOpen}
+          onClose={() => {
+            setIsOpen(false);
+            setSelectedUser({});
+          }}
+          title="Agent"
+          userType="agent"
+          invalidateFun={() => {
+            handleFetchAgentListing(true);
+            setHasMore(true);
+          }}
+          selectedUser={selectedUser}
+        />
+      )}
+      <div className="bg-white !p-4 rounded-xl">
+        {/* <AddUserModal
         setIsOpen={setIsOpen}
         userType="admin"
         setUser={setAdmins}
         isOpen={isOpen}
       /> */}
-      <div className="flex justify-between gap-4 items-center mb-4">
-        <p className="text-lg font-medium" >All Agents</p>
-        <Button variant="secondary" onClick={() => setIsOpen(true)}>
-          {" "}
-          <PlusCircle /> Add Agent
-        </Button>
-      </div>
+        <div className="flex justify-between gap-4 items-center mb-4">
+          <p className="text-lg font-medium">All Agents</p>
+          <Button variant="secondary" onClick={() => setIsOpen(true)}>
+            {" "}
+            <PlusCircle /> Add Agent
+          </Button>
+        </div>
 
-      <Table className="">
-        <TableHeader className="bg-[#F5F0EC]">
-          <TableRow>
-            <TableHead>Sr. No.</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-center" >Reinvite</TableHead>
-            <TableHead>Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {agents?.length === 0 && !hasMore ? (
+        <Table className="">
+          <TableHeader className="bg-[#F5F0EC]">
             <TableRow>
-              <TableCell
-                colSpan={5}
-                className="font-medium text-center py-10 text-muted-foreground"
-              >
-                No Records found.
-              </TableCell>
+              <TableHead>Sr. No.</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-center">Reinvite</TableHead>
+              <TableHead>Action</TableHead>
             </TableRow>
-          ) : (
-            agents?.map((item, index) => (
-              <TableRow key={item?.id}>
-                <TableCell className="font-medium">{index + 1}</TableCell>
-                <TableCell className="text-black font-medium" >{item?.name}</TableCell>
-                <TableCell>{item?.email}</TableCell>
-                <TableCell>
-                  <Badge
-                    className={`${
-                      item?.status === "ACTIVE" ? "bg-[#E9F3E9] text-[#1E8221]"
-                        : (item?.status === "DELETED" ? " text-destructive/80 bg-destructive/20" : "bg-[#FFF3D9] text-[#A2781E]") 
-                    } text-[13px] font-medium px-3 py-1 rounded-full`}
-                  >
-                    {item?.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-center" >
-                    {item?.status === "UNCONFIRMED" &&
-                    <Button 
-                      size="icon" 
-                      className="text-md" 
-                      variant="ghost"
-                      onClick={() => reinviteMutation.mutate({email: item.email})}
-                      disabled={reinviteMutation.isPending}
-                    >
-                      <UserPlus />
-                    </Button>
-                  }
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2 flex-row">
-                    <Button size="icon" className="text-md" variant="ghost" onClick={() => { setSelectedUser(item); setIsOpen(true)}}>
-                      <PencilLine />
-                    </Button>
-                    <Button 
-                      size="icon" 
-                      className="text-md" 
-                      variant="ghost" 
-                      onClick={() => {
-                        if(item?.status === "DELETED")
-                          restoreUserMutation.mutate({userId: item.id, email: item.email, userType: "agent"})
-                        else
-                        deleteUserMutation.mutate({userId: item.id, email: item.email, userType: "agent"})
-                      }} 
-                      disabled={loading}
-                    >
-                      {item?.status === "DELETED" ? <ArchiveRestore /> : <Trash2 />}
-                    </Button>
-                  </div>
+          </TableHeader>
+          <TableBody>
+            {agents?.length === 0 && !hasMore ? (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="font-medium text-center py-10 text-muted-foreground"
+                >
+                  No Records found.
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-       <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
-            {isAgentListLoading && <p>Loading...</p>}
-            {!hasMore && !isAgentListLoading && <p>No more data to load.</p>}
-            {agents?.length > 0 && hasMore && !isAgentListLoading && (
-              <Button
-                size="sm"
-                className=""
-                onClick={handleFetchAgentListing}
-              >
-                Load More
-              </Button>
+            ) : (
+              agents?.map((item, index) => (
+                <TableRow key={item?.id}>
+                  <TableCell className="font-medium">{index + 1}</TableCell>
+                  <TableCell className="text-black font-medium">
+                    {item?.name}
+                  </TableCell>
+                  <TableCell>{item?.email}</TableCell>
+                  <TableCell>
+                    <Badge
+                      className={`${
+                        item?.status === "ACTIVE"
+                          ? "bg-[#E9F3E9] text-[#1E8221]"
+                          : item?.status === "DELETED"
+                            ? " text-destructive/80 bg-destructive/20"
+                            : "bg-[#FFF3D9] text-[#A2781E]"
+                      } text-[13px] font-medium px-3 py-1 rounded-full`}
+                    >
+                      {item?.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {item?.status === "UNCONFIRMED" && (
+                      <Button
+                        size="icon"
+                        className="text-md"
+                        variant="ghost"
+                        onClick={() =>
+                          reinviteMutation.mutate({ email: item.email })
+                        }
+                        disabled={reinviteMutation.isPending}
+                      >
+                        <UserPlus />
+                      </Button>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2 flex-row">
+                      <Button
+                        size="icon"
+                        className="text-md"
+                        variant="ghost"
+                        onClick={() => {
+                          setSelectedUser(item);
+                          setIsOpen(true);
+                        }}
+                      >
+                        <PencilLine />
+                      </Button>
+                      <Button
+                        size="icon"
+                        className="text-md"
+                        variant="ghost"
+                        onClick={() => {
+                          if (item?.status === "DELETED")
+                            restoreUserMutation.mutate({
+                              userId: item.id,
+                              email: item.email,
+                              userType: "agent",
+                            });
+                          else
+                            deleteUserMutation.mutate({
+                              userId: item.id,
+                              email: item.email,
+                              userType: "agent",
+                            });
+                        }}
+                        disabled={loading}
+                      >
+                        {item?.status === "DELETED" ? (
+                          <ArchiveRestore />
+                        ) : (
+                          <Trash2 />
+                        )}
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
             )}
+          </TableBody>
+        </Table>
+        <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
+          {isAgentListLoading && <p>Loading...</p>}
+          {!hasMore && !isAgentListLoading && <p>No more data to load.</p>}
+          {agents?.length > 0 && hasMore && !isAgentListLoading && (
+            <Button size="sm" className="" onClick={handleFetchAgentListing}>
+              Load More
+            </Button>
+          )}
         </div>
-    </div>
+      </div>
     </>
   );
 }

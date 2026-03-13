@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 // import "./index.css";
 import { fetchAgentsWithSearchCount } from "@/components/service/broker";
 import { Button } from "@/components/ui/button";
@@ -13,10 +13,12 @@ import {
 import { useDeleteUser } from "@/hooks/useDeleteUser";
 import { useRestoreUser } from "@/hooks/useRestoreUser";
 import { useMutation } from "@tanstack/react-query";
-import { ArchiveRestore, PencilLine, PlusCircle, Trash2, UserPlus } from "lucide-react";
+import { ArchiveRestore, Download, PencilLine, PlusCircle, Trash2, Upload, UserPlus } from "lucide-react";
 import { toast } from "react-toastify";
 import AddAdminModal from "../Modal/AddAdminModal";
 import {
+  bulkAgentUpload,
+  bulkBrokerUpload,
   CONSTANTS,
   deleteUser,
   getActiveBrokers,
@@ -28,6 +30,10 @@ import {
   updateBrokerStatus
 } from "../service/userAdmin";
 import { Badge } from "../ui/badge";
+import { handleCreateAuditLog } from "@/utils";
+import { useUserIdType } from "@/hooks/useUserIdType";
+import * as XLSX from "xlsx";
+import { useUser } from "@/context/usercontext";
 
 const userTypes = [
   // {
@@ -77,6 +83,9 @@ function AdminBrokersList() {
   const [isBrokerListLoading, setIsBrokerListLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedBroker, setSelectedBroker] = useState({});
+     const { user } = useUser();
+   const fileInputRef = useRef(null);
+    const { userType } = useUserIdType();
   const [isAgentCreationModalOpen, setIsAgentCreationModalOpen] =
     useState(false);
   const [isAgentListOpen, setIsAgentListOpen] = useState(false);
@@ -110,7 +119,7 @@ function AdminBrokersList() {
       );
       setTotalBrokerCount(totalBrokerDict?.totalBrokers);
       setTotalActiveBrokerCount(ActiveBrokers?.length);
-      setActiveBrokers(ActiveBrokers); // Store the fetched active brokers in state
+      setActiveBrokers(ActiveBrokers); 
     } catch (err) {
       console.error("Error", err);
     } finally {
@@ -127,6 +136,29 @@ function AdminBrokersList() {
   useEffect(() => {
     handleFetchBrokersWithSearchCount();
   }, []);
+
+      const bulkUploadMutation = useMutation({
+      mutationFn: (data) => bulkBrokerUpload(data),
+      onSuccess: async () => {
+        toast("Agents added successfully");
+        if (fileInputRef?.current?.value) {
+          fileInputRef.current.value = "";
+        }
+        getBroker();
+        await handleCreateAuditLog(
+          "Bulk Upload",
+          { detail: "Bulk Broker Upload" },
+          false,
+          userType,
+        );
+      },
+      onError: (err) => {
+        toast(err?.response?.data?.message);
+        if (fileInputRef?.current?.value) {
+          fileInputRef.current.value = "";
+        }
+      },
+    });
 
   const handleFetchBrokersWithSearchCount = async (isRefetch) => {
 
@@ -217,6 +249,32 @@ function AdminBrokersList() {
       setDeletingBrokerId(null);
     }
   };
+      const handleFileChange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+  
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const data = new Uint8Array(evt.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+  
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+  
+        const json = XLSX.utils.sheet_to_json(worksheet, {
+          defval: null,
+        });
+        console.log("json data:", json);
+        bulkUploadMutation.mutate({
+          agents: json,
+          organisationId: user.attributes.sub,
+        });
+      };
+  
+      reader.readAsArrayBuffer(file);
+  
+      // bulkUploadMutation.mutate(file)
+    };
 
   return (
     <>
@@ -255,13 +313,43 @@ function AdminBrokersList() {
         <div className="bg-white !p-4 rounded-xl">
           <div className="flex justify-between gap-4 items-center mb-4">
             <p className="text-lg font-medium" >All Brokers</p>
+<div className="flex items-center gap-2">
+       <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <a href="https://title-search-storage.s3.us-east-1.amazonaws.com/Bulk+Upload+Template.xlsx">
+            <Button
+              variant="outline"
+              className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
+            >
+              <Download className="w-4 h-4" />
+              Download Template
+            </Button>
+          </a>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+            accept=".xls,.xlsx"
+          />
+          <Button
+            disabled={bulkUploadMutation.isPending}
+            variant="outline"
+            className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <Upload className="w-4 h-4" />
+            Upload Template
+          </Button>
 
+       
+        </div>
             <div className="space-x-2">
               <Button variant="secondary" onClick={() => setIsOpen(true)}>
                 {" "}
                 <PlusCircle /> Add Broker
               </Button>
             </div>
+</div>
           </div>
 
           <Table className="">
@@ -404,6 +492,9 @@ function AdminBrokersList() {
 
 function Agents() {
   const [isOpen, setIsOpen] = useState(false);
+   const { user } = useUser();
+   const fileInputRef = useRef(null);
+    const { userType } = useUserIdType();
   const [agents, setAgents] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [isAgentListLoading, setIsAgentListLoading] = useState(false);
@@ -438,6 +529,55 @@ function Agents() {
     setIsAgentListLoading(false);
   };
   const loading = deleteUserMutation.isPending || restoreUserMutation.isPending;
+    const bulkUploadMutation = useMutation({
+      mutationFn: (data) => bulkAgentUpload(data),
+      onSuccess: async () => {
+        toast("Agents added successfully");
+        if (fileInputRef?.current?.value) {
+          fileInputRef.current.value = "";
+        }
+        handleFetchAgentListing();
+        await handleCreateAuditLog(
+          "Bulk Upload",
+          { detail: "Bulk Agent Upload" },
+          false,
+          userType,
+        );
+      },
+      onError: (err) => {
+        toast(err?.response?.data?.message);
+        if (fileInputRef?.current?.value) {
+          fileInputRef.current.value = "";
+        }
+      },
+    });
+  
+    const handleFileChange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+  
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const data = new Uint8Array(evt.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+  
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+  
+        const json = XLSX.utils.sheet_to_json(worksheet, {
+          defval: null,
+        });
+        console.log("json data:", json);
+        bulkUploadMutation.mutate({
+          agents: json,
+          organisationId: user.attributes.sub,
+        });
+      };
+  
+      reader.readAsArrayBuffer(file);
+  
+      // bulkUploadMutation.mutate(file)
+    };
   return (
     <>
      {isOpen && 
@@ -459,11 +599,45 @@ function Agents() {
       /> */}
       <div className="flex justify-between gap-4 items-center mb-4">
         <p className="text-lg font-medium" >All Agents</p>
+        <div className="flex items-center gap-2">
+
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <a href="https://title-search-storage.s3.us-east-1.amazonaws.com/Bulk+Upload+Template.xlsx">
+            <Button
+              variant="outline"
+              className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
+            >
+              <Download className="w-4 h-4" />
+              Download Template
+            </Button>
+          </a>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+            accept=".xls,.xlsx"
+          />
+          <Button
+            disabled={bulkUploadMutation.isPending}
+            variant="outline"
+            className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <Upload className="w-4 h-4" />
+            Upload Template
+          </Button>
+
+       
+        </div>
         <Button variant="secondary" onClick={() => setIsOpen(true)}>
           {" "}
           <PlusCircle /> Add Agent
         </Button>
+        </div>
       </div>
+
+   
 
       <Table className="">
         <TableHeader className="bg-[#F5F0EC]">
