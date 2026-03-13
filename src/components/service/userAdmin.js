@@ -86,7 +86,9 @@ export const CONSTANTS = {
     ADD_BULK_AGENTS: "addBulkAgents",
     CHANGE_PASSWORD_OF_USER: "changePasswordOfUser",
     LIST_REQUESTS_BY_USER_ID: "listRequestsByUserId",
-     DELETE_PRODUCT: "DeleteProduct",
+    DELETE_PRODUCT: "DeleteProduct",
+    DEACTIVATE_PRICE: "deactivatePrice",
+    PRODUCT_DETAILS: "productDetails",
   },
   USER_TYPES: {
     AGENT: "agent",
@@ -148,10 +150,10 @@ async function callGetUserAdminApi(
     return response;
   } catch (error) {
     const errorData = error.response?.data || error;
-      const statusCode = error?.response?.status || error?.statusCode;
-      if (statusCode === 401) {
-    await triggerLogout();
-  }
+    const statusCode = error?.response?.status || error?.statusCode;
+    if (statusCode === 401) {
+      await triggerLogout();
+    }
     console.error(errorMessage, errorData);
     throw error;
   }
@@ -198,13 +200,13 @@ async function callUserAdminApi(
   try {
     // The Amplify API library automatically looks up the endpoint from aws-exports.js
     // and, most importantly, signs the request with the current user's credentials.
-     const isFormData = payload.body instanceof FormData;
+    const isFormData = payload.body instanceof FormData;
     const token = await getAuthToken();
     const accessToken = await getAccessToken();
     const params = {
       ...payload,
       headers: payload.headers || {
-      ...(isFormData ? {} : { "Content-Type": "application/json" }),
+        ...(isFormData ? {} : { "Content-Type": "application/json" }),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...(accessToken ? { "X-Access-Token": `${accessToken}` } : {}),
       },
@@ -216,10 +218,10 @@ async function callUserAdminApi(
   } catch (error) {
     // Improved error logging to show server-side error messages if available
     const errorData = error.response ? error.response.data : error;
-        const statusCode = error?.response?.status || error?.statusCode;
-      if (statusCode === 401) {
-    await triggerLogout();
-  }
+    const statusCode = error?.response?.status || error?.statusCode;
+    if (statusCode === 401) {
+      await triggerLogout();
+    }
     console.error(errorMessage, errorData);
     throw error; // Re-throw to allow calling functions to handle if needed
   }
@@ -251,10 +253,10 @@ async function callPutUserAdminApi(
   } catch (error) {
     // Improved error logging to show server-side error messages if available
     const errorData = error.response ? error.response.data : error;
-        const statusCode = error?.response?.status || error?.statusCode;
-      if (statusCode === 401) {
-    await triggerLogout();
-  }
+    const statusCode = error?.response?.status || error?.statusCode;
+    if (statusCode === 401) {
+      await triggerLogout();
+    }
     console.error(errorMessage, errorData);
     throw error; // Re-throw to allow calling functions to handle if needed
   }
@@ -865,7 +867,7 @@ export async function createAuditLog(
   log_action,
   detail,
   isAgent,
-  userType
+  userType,
 ) {
   const payload = {
     body: {
@@ -874,7 +876,7 @@ export async function createAuditLog(
       log_action: log_action,
       detail: detail,
       isAgent: isAgent,
-      userType: userType
+      userType: userType,
     },
   };
   return callUserAdminApi(
@@ -1790,21 +1792,21 @@ export async function updateOrgBrokerDetail(updatedData) {
   );
 }
 
-export async function checkEmailExist({email}) {
+export async function checkEmailExist({ email }) {
   return callUserAdminApi(
-    { body:{emailOfUser: email} },
+    { body: { emailOfUser: email } },
     "Successfully created user:",
     "Error creating user:",
     "/check-if-email-already-exist",
   );
 }
-export async function listPricing({userType, active}) {
+export async function listPricing({ roleType, active }) {
   const action = CONSTANTS?.ACTIONS?.LIST_REQUESTS_BY_USER_ID;
 
   const payload = {
     body: {
-      userType,
-      active
+      roleType,
+      active,
     },
   };
 
@@ -1818,7 +1820,7 @@ export async function listPricing({userType, active}) {
 
 export async function createProduct(formData) {
   const payload = {
-     body: formData,
+    body: formData,
   };
   return callUserAdminApi(
     payload,
@@ -1829,7 +1831,7 @@ export async function createProduct(formData) {
 }
 export async function createPrice(data) {
   const payload = {
-     body: data,
+    body: data,
   };
   return callUserAdminApi(
     payload,
@@ -1840,7 +1842,7 @@ export async function createPrice(data) {
 }
 export async function updateProduct(formData) {
   const payload = {
-     body: formData,
+    body: formData,
   };
   return callPutUserAdminApi(
     payload,
@@ -1856,21 +1858,22 @@ export async function deleteProduct(productId) {
       productId,
     },
   };
-  return callDeleteUserAdminApi(
+  return callUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,
     "/archive-stripe-product",
   );
 }
-export async function deactivePrice(priceId) {
-  const action = CONSTANTS?.ACTIONS?.DELETE_PRODUCT;
+export async function deactivePrice(priceId, productType) {
+  const action = CONSTANTS?.ACTIONS?.DEACTIVATE_PRICE;
   const payload = {
     body: {
       priceId,
+      productType,
     },
   };
-  return callDeleteUserAdminApi(
+  return callUserAdminApi(
     payload,
     "Success in " + action,
     "error in " + action,
@@ -1878,11 +1881,11 @@ export async function deactivePrice(priceId) {
   );
 }
 export async function productDetails(productId) {
-  const action = CONSTANTS?.ACTIONS?.LIST_REQUESTS_BY_USER_ID;
+  const action = CONSTANTS?.ACTIONS?.PRODUCT_DETAILS;
 
   const payload = {
     body: {
-     productId
+      productId,
     },
   };
 

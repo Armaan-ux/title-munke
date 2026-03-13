@@ -107,7 +107,7 @@ function ProductTableList({ activeTab, activeFilter }) {
     queryKey: [queryKeys.pricingListing, activeTab.id, activeFilter],
     queryFn: () =>
       listPricing({
-        userType: tabToApiParam[activeTab.id],
+        roleType: tabToApiParam[activeTab.id],
         active: activeFilter,
       }),
     enabled: !!userId,

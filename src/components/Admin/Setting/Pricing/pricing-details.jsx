@@ -1,10 +1,34 @@
 import React, { useState } from "react";
-import { Briefcase, Plus, Clock } from "lucide-react";
+import { Briefcase, Plus, Clock, Trash2, Loader2 } from "lucide-react";
 import { convertUnixToLocalTime } from "@/utils/date";
 import AddPricingModal from "@/components/Modal/AddPricingModal";
+import { deactivePrice } from "@/components/service/userAdmin";
+import { toast } from "react-toastify";
+import { useMutation } from "@tanstack/react-query";
 
-export default function PricingDetails({ data, invalidateFun }) {
+export default function PricingDetails({ data, invalidateFun, isPending }) {
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+
+  const deleteUserMutation = useMutation({
+    mutationFn: ({ priceId, productType }) =>
+      deactivePrice(priceId, productType),
+    onSuccess: () => {
+      toast.success("Pricing deleted successfully");
+      invalidateFun?.();
+      setDeletingId(null);
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error(error?.response?.data?.message || "Failed to delete pricing");
+      setDeletingId(null);
+    },
+  });
+
+  const handleDeletePrice = (priceId, productType) => {
+    setDeletingId(priceId);
+    deleteUserMutation.mutate({ priceId, productType });
+  };
 
   return (
     <div className="w-full bg-[#F5EFEA] p-6 rounded-lg mt-6">
@@ -13,16 +37,16 @@ export default function PricingDetails({ data, invalidateFun }) {
         Pricing Details
       </p>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* LEFT SECTION */}
-        <div className="col-span-2 bg-white rounded-lg p-6 border border-[#E6DED6]">
+        <div className="col-span-1 lg:col-span-2 bg-white rounded-lg p-6 border border-[#E6DED6]">
           {/* Plan Header */}
           <div className="flex justify-between items-start">
             <div className="flex gap-4">
               <div className="bg-[#F1E6DE] p-3 rounded-md">
                 <Briefcase size={20} className="text-[#7B4B3A]" />
               </div>
-
+              {/* 
               <div>
                 <h3 className="font-semibold text-[#3C2F2F]">
                   {data?.productDetails?.name}
@@ -30,10 +54,13 @@ export default function PricingDetails({ data, invalidateFun }) {
                 <p className="text-sm text-[#8A7F76]">
                   {`${data?.prices?.unit_amount / 100} / Search Cost`}
                 </p>
-              </div>
+              </div> */}
             </div>
 
-            <button onClick={() => setIsPricingModalOpen(true)} className="flex items-center gap-2 border border-[#E3D9CF] px-3 py-2 rounded-md text-sm text-[#5C4E46] hover:bg-[#F8F4F1] cursor-pointer">
+            <button
+              onClick={() => setIsPricingModalOpen(true)}
+              className="flex items-center gap-2 border border-[#E3D9CF] px-3 py-2 rounded-md text-sm text-[#5C4E46] hover:bg-[#F8F4F1] cursor-pointer whitespace-nowrap"
+            >
               <Plus size={14} />
               Add Price
             </button>
@@ -48,27 +75,63 @@ export default function PricingDetails({ data, invalidateFun }) {
           <hr className="my-6 border-[#EEE6DF]" />
 
           {/* Pricing Table */}
-          <div className="rounded-md overflow-hidden border border-[#ECE4DC]">
-            <div className="grid grid-cols-4 bg-[#F2EAE3] text-sm font-medium text-[#6C5E55] p-3">
-              <div>Price</div>
-              <div>Description</div>
-              <div>Subscription</div>
-              <div>Created</div>
-            </div>
-            {data?.prices?.length > 0 &&
-              <div className="max-h-60 overflow-y-auto">
-              {data?.prices?.map((prices, index) => {
-                return (
-                  <div key={index} className="grid grid-cols-4 text-sm p-3 text-[#5E534A]">
-                    <div>{`US$ ${prices?.unit_amount / 100}`}</div>
-                    <div>{prices?.nickname}</div>
-                    <div>-</div>
-                    <div>{convertUnixToLocalTime(prices?.created)}</div>
-                  </div>
-                );
-              })}
+          <div className="rounded-md border border-[#ECE4DC] overflow-x-auto">
+            <div className="min-w-[600px]">
+              <div className="grid grid-cols-5 bg-[#F2EAE3] text-sm font-medium text-[#6C5E55] p-3">
+                <div>Price</div>
+                <div>Description</div>
+                <div>Subscription</div>
+                <div>Created</div>
+                <div className="text-right">Action</div>
               </div>
-            }
+              {data?.prices === undefined ? (
+                <div className="p-8 flex justify-center items-center">
+                  <Loader2 className="animate-spin text-[#7B4B3A]" size={24} />
+                </div>
+              ) : data?.prices?.filter((prices) => prices.active)?.length >
+                0 ? (
+                <div className="max-h-60 overflow-y-auto">
+                  {data?.prices
+                    ?.filter((prices) => prices.active)
+                    ?.map((prices, index) => {
+                      return (
+                        <div
+                          key={index}
+                          className="grid grid-cols-5 items-center text-sm p-3 text-[#5E534A] border-b border-[#ECE4DC] last:border-0"
+                        >
+                          <div>{`US$ ${prices?.unit_amount / 100}`}</div>
+                          <div>{prices?.nickname || "-"}</div>
+                          <div>-</div>
+                          <div>{convertUnixToLocalTime(prices?.created)}</div>
+                          <div className="flex justify-end">
+                            <button
+                              onClick={() =>
+                                handleDeletePrice(
+                                  prices?.id,
+                                  data?.product?.metadata?.productType,
+                                )
+                              }
+                              disabled={deletingId === prices?.id}
+                              className="text-red-500 hover:text-red-700 disabled:opacity-50 flex items-center justify-center p-1 cursor-pointer transition-colors"
+                              title="Delete Pricing"
+                            >
+                              {deletingId === prices?.id ? (
+                                <Loader2 size={16} className="animate-spin" />
+                              ) : (
+                                <Trash2 size={16} />
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              ) : (
+                <div className="p-8 text-center text-sm text-[#7A6E65]">
+                  No pricing available for this product.
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Description Section */}
@@ -89,17 +152,17 @@ export default function PricingDetails({ data, invalidateFun }) {
             <div className="space-y-3 text-sm text-[#6F635A]">
               <div className="flex items-center gap-2">
                 <Clock size={14} />
-                {`Plan updated on ${convertUnixToLocalTime(data?.productDetails?.updated)}`}
+                {`Plan updated on ${convertUnixToLocalTime(data?.product?.updated)}`}
               </div>
 
               <div className="flex items-center gap-2">
                 <Clock size={14} />
-                {`Plan created on ${convertUnixToLocalTime(data?.productDetails?.created)}`}
+                {`Plan created on ${convertUnixToLocalTime(data?.product?.created)}`}
               </div>
 
               <div className="flex items-center gap-2">
                 <Clock size={14} />
-                {`Pricing table updated on ${convertUnixToLocalTime(data?.productDetails?.updated)}`}
+                {`Pricing table updated on ${convertUnixToLocalTime(data?.product?.updated)}`}
               </div>
             </div>
           </div>
@@ -114,7 +177,13 @@ export default function PricingDetails({ data, invalidateFun }) {
                 <h4 className="font-semibold text-[#3A2F2F]">Status</h4>
                 <div className="flex items-center gap-2 text-green-600 text-sm">
                   <span className="w-2 h-2 bg-green-600 rounded-full"></span>
-                  {data?.product?.active ? "Active" : "Inactive"}
+                  {isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin text-secondary" />
+                  ) : data?.product?.active ? (
+                    "Active"
+                  ) : (
+                    "Inactive"
+                  )}
                 </div>
               </div>
 
@@ -130,7 +199,9 @@ export default function PricingDetails({ data, invalidateFun }) {
               <div className="space-y-4 text-sm">
                 <div>
                   <p className="text-[#8A7F76]">Product ID</p>
-                  <p className="text-[#4F433C]">{data?.product?.id}</p>
+                  <p className="text-[#4F433C] break-all">
+                    {data?.product?.id}
+                  </p>
                 </div>
 
                 <div>
@@ -157,11 +228,12 @@ export default function PricingDetails({ data, invalidateFun }) {
         </div>
       </div>
 
-      <AddPricingModal 
-        open={isPricingModalOpen} 
-        onClose={() => setIsPricingModalOpen(false)} 
+      <AddPricingModal
+        open={isPricingModalOpen}
+        onClose={() => setIsPricingModalOpen(false)}
         product={data?.product}
         invalidateFun={invalidateFun}
+        metadata={data?.product?.metadata}
       />
     </div>
   );

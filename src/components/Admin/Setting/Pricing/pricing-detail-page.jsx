@@ -24,8 +24,15 @@ export default function PricingDetailPage() {
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
         <BackBtn />
       </div>
-      <PricingDetailsHeader  product={productDetailsQuery?.data?.product}/>
-      <PricingDetails data={productDetailsQuery?.data} invalidateFun={productDetailsQuery.refetch} />
+      <PricingDetailsHeader
+        isPending={productDetailsQuery?.isPending}
+        product={productDetailsQuery?.data?.product}
+      />
+      <PricingDetails
+        data={productDetailsQuery?.data}
+        invalidateFun={productDetailsQuery.refetch}
+        isPending={productDetailsQuery?.isPending}
+      />
     </>
   );
 }

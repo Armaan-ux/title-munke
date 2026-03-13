@@ -1,5 +1,10 @@
 import React, { useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -18,21 +23,33 @@ import { FormValidationError } from "../common/FormValidationError";
 import { useMutation } from "@tanstack/react-query";
 import { createPrice } from "../service/userAdmin";
 import { toast } from "react-toastify";
+import { Loader } from "lucide-react";
 
-export default function AddPricingModal({ open, onClose, product, invalidateFun }) {
+export default function AddPricingModal({
+  open,
+  onClose,
+  product,
+  invalidateFun,
+  metadata,
+}) {
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm({
-    defaultValues: { amount: "", description: "", subscription: "" },
+    defaultValues: {
+      amount: "",
+      description: "",
+      priceType: "",
+      subscription: "",
+    },
     resolver: zodResolver(addPricingSchema),
   });
 
   useEffect(() => {
     if (open) {
-      reset({ amount: "", description: "", subscription: "" });
+      reset({ amount: "", description: "", priceType: "", subscription: "" });
     }
   }, [open, reset]);
 
@@ -46,20 +63,20 @@ export default function AddPricingModal({ open, onClose, product, invalidateFun 
     onError: (error) => {
       toast.error(
         error?.response?.data?.error ||
-          "Something went wrong while adding new pricing. Please try again."
+          "Something went wrong while adding new pricing. Please try again.",
       );
     },
   });
 
-  console.log("product",product)
   const onSubmit = (data) => {
     const payload = {
       productId: product?.id,
       name: product?.name,
       amount: data.amount * 100,
-      nickname: data.description, // using description as nickname or metadata
-      description: data.description,
-      billingPeriod: data.subscription,
+      priceType: data.priceType,
+      nickname: data.description,
+      recurring: data.subscription,
+      metadata: { ...metadata, priceType: data.priceType },
     };
     newPricingMutation.mutate(payload);
   };
@@ -75,7 +92,10 @@ export default function AddPricingModal({ open, onClose, product, invalidateFun 
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label className="text-sm text-[#6B5E55] mb-1 block" htmlFor="amount">
+            <label
+              className="text-sm text-[#6B5E55] mb-1 block"
+              htmlFor="amount"
+            >
               Amount
             </label>
             <div className="flex border border-[#E6DFDB] rounded-md overflow-hidden focus-within:ring-1 focus-within:ring-[#7a0c20]">
@@ -97,11 +117,16 @@ export default function AddPricingModal({ open, onClose, product, invalidateFun 
                 )}
               />
             </div>
-            {errors.amount && <FormValidationError message={errors.amount.message} />}
+            {errors.amount && (
+              <FormValidationError message={errors.amount.message} />
+            )}
           </div>
 
           <div>
-            <label className="text-sm text-[#6B5E55] mb-1 block" htmlFor="description">
+            <label
+              className="text-sm text-[#6B5E55] mb-1 block"
+              htmlFor="description"
+            >
               Description
             </label>
             <Controller
@@ -123,20 +148,80 @@ export default function AddPricingModal({ open, onClose, product, invalidateFun 
           </div>
 
           <div>
-            <Label className="text-sm text-[#6B5E55] mb-1 block">Subscription</Label>
+            <Label className="text-sm text-[#6B5E55] mb-1 block">
+              Price Type
+            </Label>
+            <Controller
+              name="priceType"
+              control={control}
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger className="mt-1 w-full bg-white border-[#E6DFDB] focus-visible:ring-0">
+                    <SelectValue
+                      placeholder="Select price type"
+                      className="text-[#2c150f]"
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="BASE_PRICE_PROFESSIONAL_PLAN_ORGANISATION">
+                      Professional Plan - Organisation Base Price
+                    </SelectItem>
+                    <SelectItem value="SEAT_PRICE_PROFESSIONAL_PLAN_ORGANISATION">
+                      Professional Plan - Organisation Seat Price
+                    </SelectItem>
+                    <SelectItem value="BASE_PRICE_PROFESSIONAL_PLAN_BROKER">
+                      Professional Plan - Broker Base Price
+                    </SelectItem>
+                    <SelectItem value="SEAT_PRICE_PROFESSIONAL_PLAN_BROKER">
+                      Professional Plan - Broker Seat Price
+                    </SelectItem>
+                    <SelectItem value="BASE_PRICE_PROFESSIONAL_PLAN">
+                      Professional Plan - Base Price
+                    </SelectItem>
+                    <SelectItem value="SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN">
+                      Professional Plan - Search Usage Price
+                    </SelectItem>
+                    <SelectItem value="SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN_ORGANISATION">
+                      Professional Plan - Organisation Search Usage Price
+                    </SelectItem>
+                    <SelectItem value="SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN_BROKER">
+                      Professional Plan - Broker Search Usage Price
+                    </SelectItem>
+                    <SelectItem value="SEARCH_USAGE_PRICE_PAY_AS_YOU_GO">
+                      Pay As You Go - Search Usage Price
+                    </SelectItem>
+                    <SelectItem value="SEARCH_USAGE_PRICE_PAY_AS_YOU_GO_BROKER">
+                      Pay As You Go - Broker Search Usage Price
+                    </SelectItem>
+                    <SelectItem value="SEARCH_USAGE_PRICE_PAY_AS_YOU_GO_ORGANISATION">
+                      Pay As You Go - Organisation Search Usage Price
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.priceType && (
+              <FormValidationError message={errors.priceType.message} />
+            )}
+          </div>
+          <div>
+            <Label className="text-sm text-[#6B5E55] mb-1 block">
+              Subscription
+            </Label>
             <Controller
               name="subscription"
               control={control}
               render={({ field }) => (
                 <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger className="mt-1 w-full bg-white border-[#E6DFDB] focus-visible:ring-0">
-                    <SelectValue placeholder="Select Subscription" className="text-[#2c150f]" />
+                    <SelectValue
+                      placeholder="Select Subscription"
+                      className="text-[#2c150f]"
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="monthly">Monthly</SelectItem>
-                    <SelectItem value="quarterly">Quarterly</SelectItem>
-                    <SelectItem value="annually">Annually</SelectItem>
-                    <SelectItem value="one-time">One-time</SelectItem>
+                    <SelectItem value="month">Monthly</SelectItem>
+                    <SelectItem value="day">Daily</SelectItem>
                   </SelectContent>
                 </Select>
               )}
@@ -147,12 +232,7 @@ export default function AddPricingModal({ open, onClose, product, invalidateFun 
           </div>
 
           <div className="flex justify-end gap-3 pt-4 *:flex-1">
-            <Button
-              type="button"
-              onClick={onClose}
-              variant="outline"
-              size="lg"
-            >
+            <Button type="button" onClick={onClose} variant="outline" size="lg">
               Cancel
             </Button>
             <Button
@@ -161,7 +241,10 @@ export default function AddPricingModal({ open, onClose, product, invalidateFun 
               variant="secondary"
               size="lg"
             >
-              Add Price
+              Add Price{" "}
+              {newPricingMutation.isPending && (
+                <Loader className="animate-spin" />
+              )}
             </Button>
           </div>
         </form>

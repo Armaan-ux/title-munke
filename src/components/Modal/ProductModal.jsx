@@ -5,6 +5,13 @@ import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { createPrice, createProduct } from "../service/userAdmin";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 // ── Reusable chevron icon ──────────────────────────────────────────────────
 function Chevron({ size = 12, color = "#6b7280" }) {
@@ -53,11 +60,14 @@ export default function ProductModal({ open, onClose, activeTab }) {
     defaultValues: {
       name: "",
       description: "",
+      productType: "",
       imageUrl: "",
       amount: "",
+      currency: "usd",
+      taxCode: "",
       pricing: "recurring",
-      includeTax: "auto",
-      billingPeriod: "monthly",
+      taxBehavior: "unspecified",
+      billingPeriod: "month",
       statementDescriptor: "",
       unitLabel: "",
     },
@@ -86,29 +96,29 @@ export default function ProductModal({ open, onClose, activeTab }) {
     resetformHandler();
   };
 
-  const createProductMutation = useMutation({
-    mutationFn: createProduct,
-    onSuccess: (data) => {
-      console.log("data ---------------------------  createProduct", data);
-
-      // createPriceMutation.mutate({
-      //   productId: data.id,
-      //   name: data.name,
-      //   metaData: data.metaData,
-      //   pricingType: data.pricingType,
-      //   amount: data.amount,
-      //   currency: data.currency,
-      //   billingPeriod: data.billingPeriod,
-      //   taxBehavior: data.taxBehavior,
-      //   nickname: data.nickname,
-      // });
-    },
-    onError: handleError,
-  });
-
   const createPriceMutation = useMutation({
     mutationFn: createPrice,
     onSuccess: handleSuccess,
+    onError: handleError,
+  });
+
+  const createProductMutation = useMutation({
+    mutationFn: createProduct,
+    onSuccess: (data, variables) => {
+      console.log("data ---------------------------  createProduct", data);
+
+      createPriceMutation.mutate({
+        productId: data.id,
+        name: data.name,
+        metaData: data.metadata,
+        pricingType: variables.productType,
+        amount: variables.amount, // Already multiplied by 100 in payload
+        currency: variables.currency || "usd",
+        billingPeriod: variables.billingPeriod,
+        taxBehavior: variables.taxBehavior || "unspecified",
+        nickname: variables.description,
+      });
+    },
     onError: handleError,
   });
 
@@ -117,26 +127,41 @@ export default function ProductModal({ open, onClose, activeTab }) {
   const onSubmit = (data) => {
     console.log("data", data);
 
-    const formData = new FormData();
+    const payload = {
+      name: data.name,
+      description: data.description || "",
+      amount: data.amount * 100,
+      currency: data.currency || "usd",
+      pricing: data.pricing,
+      productType: data.productType,
+      taxCode: data.taxCode || "",
+      taxBehavior: data.taxBehavior || "unspecified",
+      billingPeriod: data.billingPeriod || "",
+      statementDescriptor: data.statementDescriptor || "",
+      unitLabel: data.unitLabel || "",
+      metadata: { roleType: activeTab?.id, productType: data.productType },
+    };
 
-    formData.append("name", data.name);
-    formData.append("description", data.description || "");
-    formData.append("taxCode", taxCode || "");
-    formData.append("amount", data.amount * 100);
-    formData.append("pricing", data.pricing);
-    formData.append("includeTax", data.includeTax || "");
-    formData.append("billingPeriod", data.billingPeriod || "");
-    formData.append("statementDescriptor", data.statementDescriptor || "");
-    formData.append("unitLabel", data.unitLabel || "");
+    // const formData = new FormData();
+
+    // formData.append("name", data.name);
+    // formData.append("description", data.description || "");
+    // formData.append("taxCode", taxCode || "");
+    // formData.append("amount", data.amount * 100);
+    // formData.append("pricing", data.pricing);
+    // formData.append("includeTax", data.includeTax || "");
+    // formData.append("billingPeriod", data.billingPeriod || "");
+    // formData.append("statementDescriptor", data.statementDescriptor || "");
+    // formData.append("unitLabel", data.unitLabel || "");
 
     // FormData cannot take object directly
-    formData.append("metadata", JSON.stringify({ roleType: activeTab?.id }));
+    // formData.append("metadata", JSON.stringify({ roleType: activeTab?.id }));
 
     // if (data.imageUrl) {
     //   formData.append("imageUrl", data.imageUrl);
     // }
 
-    createProductMutation.mutate(formData);
+    createProductMutation.mutate(payload);
   };
 
   const resetformHandler = () => {
@@ -203,7 +228,7 @@ export default function ProductModal({ open, onClose, activeTab }) {
                 {/* NAME */}
                 <div>
                   <Label className="block text-[13px] font-medium text-gray-800 my-4">
-                    Name (required)
+                    Name <span className="text-red-500">*</span>
                   </Label>
                   <Controller
                     name="name"
@@ -239,7 +264,7 @@ export default function ProductModal({ open, onClose, activeTab }) {
                 </div>
 
                 {/* IMAGE */}
-                <div>
+                {/* <div>
                   <Label className="block text-[13px] font-medium text-gray-800 mb-1">
                     Image
                   </Label>
@@ -271,7 +296,6 @@ export default function ProductModal({ open, onClose, activeTab }) {
                           Upload file
                         </label>
 
-                        {/* Image Preview */}
                         {imagePreview && (
                           <img
                             src={imagePreview}
@@ -286,6 +310,63 @@ export default function ProductModal({ open, onClose, activeTab }) {
                       </div>
                     )}
                   />
+                </div> */}
+
+                {/* PRODUCT TYPE */}
+                <div>
+                  <Label className="block text-[13px] font-medium text-gray-800 mb-1">
+                    Product Type <span className="text-red-500">*</span>
+                  </Label>
+
+                  <Controller
+                    name="productType"
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => (
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="w-full bg-white border border-gray-300 text-[13px] text-gray-700 focus:ring-2 focus:ring-[#7a0c20]/30 focus:border-[#7a0c20] h-[38px] px-3">
+                          <SelectValue
+                            placeholder="Select product type"
+                            className="text-[#2c150f]"
+                          />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-60">
+                          <SelectItem value="PROFESSIONAL_PLAN">
+                            Professional Plan
+                          </SelectItem>
+                          <SelectItem value="PROFESSIONAL_PLAN_ORGANISATION">
+                            Professional Plan - Organisation
+                          </SelectItem>
+                          <SelectItem value="PROFESSIONAL_PLAN_BROKER">
+                            Professional Plan - Broker
+                          </SelectItem>
+
+                          <SelectItem value="PAY_AS_YOU_GO">
+                            Pay As You Go
+                          </SelectItem>
+                          <SelectItem value="PAY_AS_YOU_GO_BROKER">
+                            Pay As You Go - Broker
+                          </SelectItem>
+                          <SelectItem value="PAY_AS_YOU_GO_ORGANISATION">
+                            Pay As You Go - Organisation
+                          </SelectItem>
+
+                          <SelectItem value="EXPLORE_PLAN">
+                            Explore Plan
+                          </SelectItem>
+                          <SelectItem value="EXPLORE_PLAN_BROKER">
+                            Explore Plan - Broker
+                          </SelectItem>
+                          <SelectItem value="EXPLORE_PLAN_ORGANISATION">
+                            Explore Plan - Organisation
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
                 </div>
 
                 {/* PRODUCT TAX CODE */}
@@ -298,25 +379,23 @@ export default function ProductModal({ open, onClose, activeTab }) {
                     name="taxCode"
                     control={control}
                     render={({ field }) => (
-                      <SelectWrap>
-                        <select
-                          {...field}
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-8 text-[13px] text-gray-700 bg-white appearance-none outline-none cursor-pointer focus:ring-2 focus:ring-[#7a0c20]/30 focus:border-[#7a0c20]"
-                        >
-                          <option value="">
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="w-full bg-white border border-gray-300 text-[13px] text-gray-700 focus:ring-2 focus:ring-[#7a0c20]/30 focus:border-[#7a0c20] h-[38px] px-3">
+                          <SelectValue
+                            placeholder="Select product tax code"
+                            className="text-[#2c150f]"
+                          />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-60">
+                          <SelectItem value="txcd_10000000">
                             Use preset: General - Electronically Supplied
                             Services
-                          </option>
-
-                          <option value="digital_services">
-                            Digital Services
-                          </option>
-
-                          <option value="software">Software</option>
-
-                          <option value="saas">SaaS</option>
-                        </select>
-                      </SelectWrap>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                     )}
                   />
                 </div>
@@ -324,7 +403,7 @@ export default function ProductModal({ open, onClose, activeTab }) {
                 {/* PRICING TOGGLE */}
                 <div>
                   <Label className="block text-[13px] font-medium text-gray-800 mb-2">
-                    Pricing
+                    Pricing <span className="text-red-500">*</span>
                   </Label>
                   <div className="flex items-center gap-2">
                     <button
@@ -357,7 +436,7 @@ export default function ProductModal({ open, onClose, activeTab }) {
                 {/* AMOUNT */}
                 <div>
                   <Label className="block text-[13px] font-medium text-gray-800 mb-1">
-                    Amount (required)
+                    Amount <span className="text-red-500">*</span>
                   </Label>
                   <div className="flex border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-[#7a0c20]/30 focus-within:border-[#7a0c20]">
                     <span className="px-3 flex items-center text-[13px] text-gray-500 border-r border-gray-200 bg-white select-none">
@@ -379,14 +458,26 @@ export default function ProductModal({ open, onClose, activeTab }) {
                       )}
                     />
                     <div className="relative border-l border-gray-200">
-                      <select className="h-full pl-2.5 pr-6 text-[13px] text-gray-700 bg-white border-0 outline-none cursor-pointer appearance-none">
-                        <option>USD</option>
-                        <option>EUR</option>
-                        <option>GBP</option>
-                      </select>
-                      <div className="pointer-events-none absolute inset-y-0 right-1.5 flex items-center">
-                        <Chevron size={10} />
-                      </div>
+                      <Controller
+                        name="currency"
+                        control={control}
+                        defaultValue="usd"
+                        render={({ field }) => (
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
+                            <SelectTrigger className="h-full bg-white border-0 text-[13px] text-gray-700 focus:ring-0 focus:ring-offset-0 px-2 min-w-[70px]">
+                              <SelectValue placeholder="USD" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="usd">USD</SelectItem>
+                              <SelectItem value="eur">EUR</SelectItem>
+                              <SelectItem value="gbp">GBP</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
                     </div>
                   </div>
                 </div>
@@ -398,20 +489,23 @@ export default function ProductModal({ open, onClose, activeTab }) {
                   </Label>
 
                   <Controller
-                    name="includeTax"
+                    name="taxBehavior"
                     control={control}
-                    defaultValue="auto"
+                    defaultValue="unspecified"
                     render={({ field }) => (
-                      <SelectWrap>
-                        <select
-                          {...field}
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-8 text-[13px] text-gray-700 bg-white appearance-none outline-none cursor-pointer focus:ring-2 focus:ring-[#7a0c20]/30 focus:border-[#7a0c20]"
-                        >
-                          <option value="auto">Auto</option>
-                          <option value="yes">Yes</option>
-                          <option value="no">No</option>
-                        </select>
-                      </SelectWrap>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="w-full bg-white border border-gray-300 text-[13px] text-gray-700 focus:ring-2 focus:ring-[#7a0c20]/30 focus:border-[#7a0c20] h-[38px] px-3">
+                          <SelectValue placeholder="Auto" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="unspecified">Auto</SelectItem>
+                          <SelectItem value="inclusive">Yes</SelectItem>
+                          <SelectItem value="exclusive">No</SelectItem>
+                        </SelectContent>
+                      </Select>
                     )}
                   />
                 </div>
@@ -426,36 +520,32 @@ export default function ProductModal({ open, onClose, activeTab }) {
                     <Controller
                       name="billingPeriod"
                       control={control}
-                      defaultValue="monthly"
+                      defaultValue="month"
                       render={({ field }) => (
-                        <SelectWrap>
-                          <select
-                            {...field}
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-8 text-[13px] text-gray-700 bg-white appearance-none outline-none cursor-pointer focus:ring-2 focus:ring-[#7a0c20]/30 focus:border-[#7a0c20]"
-                          >
-                            <option value="monthly">Monthly</option>
-                            <option value="quarterly">Quarterly</option>
-                            <option value="annually">Annually</option>
-                          </select>
-                        </SelectWrap>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <SelectTrigger className="w-full bg-white border border-gray-300 text-[13px] text-gray-700 focus:ring-2 focus:ring-[#7a0c20]/30 focus:border-[#7a0c20] h-[38px] px-3">
+                            <SelectValue placeholder="Monthly" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="month">Monthly</SelectItem>
+                            {/* <SelectItem value="quarterly">Quarterly</SelectItem> */}
+                            {/* <SelectItem value="annually">Annually</SelectItem> */}
+                            <SelectItem value="day">Daily</SelectItem>
+                          </SelectContent>
+                        </Select>
                       )}
                     />
                   </div>
                 )}
 
-                {/* MORE PRICING OPTIONS */}
-                <button
-                  type="button"
-                  className="text-sm text-gray-500 flex items-center gap-1 hover:text-gray-700 bg-transparent border-0 cursor-pointer p-0 self-start"
-                >
-                  More pricing options <Chevron size={10} />
-                </button>
-
                 {/* Spacer */}
-                <div className="flex-1 border-b border-[#e5d5cc] pt-2" />
+                <div className="flex-1 border-b border-[#e5d5cc] pt-4" />
 
                 {/* FOOTER BUTTONS */}
-                <div className="flex justify-end gap-2.5 pt-2">
+                <div className="flex justify-end gap-2.5 pt-4">
                   <Button
                     type="button"
                     onClick={onClose}
@@ -468,7 +558,11 @@ export default function ProductModal({ open, onClose, activeTab }) {
                     disabled={isSubmitting}
                     className="bg-[#7a0c20] text-white border-0 px-6  rounded-lg text-[13px] font-medium cursor-pointer hover:opacity-90 transition-opacity disabled:opacity-60"
                   >
-                    Add Product
+                    Add Product{" "}
+                    {createProductMutation.isPending ||
+                      (createPriceMutation.isPending && (
+                        <Loader className="animate-spin" />
+                      ))}
                   </Button>
                 </div>
               </form>
@@ -492,9 +586,10 @@ export default function ProductModal({ open, onClose, activeTab }) {
                   </p>
                   <input
                     type="text"
-                    onChange={(e) => setTaxCode(e.target.value)}
+                    value={watch("taxCode") || ""}
+                    disabled
                     placeholder="Tax Code"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] text-gray-700 placeholder-gray-400 outline-none focus:ring-1 focus:ring-tertiary/10 focus:border-[#7a0c20] transition-colors bg-white"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] text-gray-500 placeholder-gray-400 outline-none focus:ring-1 focus:ring-tertiary/10 focus:border-[#7a0c20] transition-colors bg-gray-50 cursor-not-allowed"
                   />
                 </div>
 
@@ -504,13 +599,18 @@ export default function ProductModal({ open, onClose, activeTab }) {
                     Location
                   </p>
 
-                  <SelectWrap>
-                    <select className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-8 text-xs text-gray-700 bg-[#ece5e0] appearance-none outline-none cursor-pointer">
-                      <option>United States (Head office address)</option>
-                      <option>Yes</option>
-                      <option>No</option>
-                    </select>
-                  </SelectWrap>
+                  <Select defaultValue="us" disabled>
+                    <SelectTrigger className="w-full border border-gray-300 rounded-lg text-xs text-gray-700 bg-[#ece5e0] h-[36px] px-3 focus:ring-0 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                      <SelectValue placeholder="United States (Head office address)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="us">
+                        United States (Head office address)
+                      </SelectItem>
+                      <SelectItem value="yes">Yes</SelectItem>
+                      <SelectItem value="no">No</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {/* State */}
@@ -519,13 +619,16 @@ export default function ProductModal({ open, onClose, activeTab }) {
                     State
                   </p>
 
-                  <SelectWrap>
-                    <select className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-8 text-sm text-gray-700 bg-[#ece5e0] appearance-none outline-none cursor-pointer">
-                      <option>Pennsylvania</option>
-                      <option>Yes</option>
-                      <option>No</option>
-                    </select>
-                  </SelectWrap>
+                  <Select defaultValue="pa" disabled>
+                    <SelectTrigger className="w-full border border-gray-300 rounded-lg text-sm text-gray-700 bg-[#ece5e0] h-[36px] px-3 focus:ring-0 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                      <SelectValue placeholder="Pennsylvania" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pa">Pennsylvania</SelectItem>
+                      <SelectItem value="yes">Yes</SelectItem>
+                      <SelectItem value="no">No</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {/* Qty line */}
