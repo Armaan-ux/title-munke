@@ -11,17 +11,17 @@ import { Button } from "../ui/button";
 import { Eye } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getFormattedDateTime, queryKeys } from "@/utils";
-import { getIndividualListing } from "../service/userAdmin";
+import { getAgentlListing, getIndividualListing } from "../service/userAdmin";
 import ShowError from "../common/ShowError";
 import { CenterLoader } from "../common/Loader";
 import { useEffect } from "react";
 import { useDownloadCsv } from "@/hooks/useDownloadCsv";
 
 
-export default function IndividualBusinessTable({limit, isDownload, handleDownloadComplete, from, to}) {
+export default function AgentBusinessTable({limit, isDownload, handleDownloadComplete, from, to}) {
   const individualListingQuery = useQuery({
     queryKey: [queryKeys.individualListingForAdmin, limit, from, to],
-    queryFn: () => getIndividualListing(true, limit, from, to),
+    queryFn: () => getAgentlListing(true, limit, from, to),
   });
   const {downloadCSV} = useDownloadCsv();
   useEffect(() => {

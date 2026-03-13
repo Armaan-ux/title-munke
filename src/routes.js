@@ -47,11 +47,13 @@ import OrganisationSettings from "./components/Organisation/organisation-setting
 import OrganisationSearch from "./components/Organisation/search";
 import OrganisationHistoryList from "./components/Organisation/OrganisationHistoryList"
 import PricingDetailPage from "./components/Admin/Setting/Pricing/pricing-detail-page";
+import OrganisationBusiness from "./components/Admin/organisation-business";
 
 export const adminRoutes = [
   { path: "admin", component: Admin },
   { path: "admin/dashboard", component: AdminDashboard },
   { path: "admin/dashboard/broker-business", component: BrokerBusiness },
+  { path: "admin/dashboard/organisation-business", component: OrganisationBusiness },
   { path: "admin/dashboard/individual-business", component: IndividualBusiness },
   { path: "admin/dashboard/broker-details/:id", component: BrokerDetails },
   { path: "admin/dashboard/property-search/:id", component: PropertySearch },

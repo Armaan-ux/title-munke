@@ -1,7 +1,7 @@
 import { ArrowDownToLine, Loader2 } from "lucide-react";
 import DateFilter from "../common/date-filter";
 import { Button } from "../ui/button";
-import IndividualBusinessTable from "./individual-business-table";
+import IndividualBusinessTable from "./agent-business-table";
 import BackBtn from "../back-btn";
 import { useState } from "react";
 import { getAdminMetrics } from "../service/userAdmin";

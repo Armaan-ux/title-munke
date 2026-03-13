@@ -21,7 +21,9 @@ export const queryKeys = {
   listAuditLogsByUserId: "listAuditLogsByUserId",
   aiModelListing: "aiModelListing",
   defaultAiModel: "defaultAiModel",
-  pricingListing: "pricingListing"
+  pricingListing: "pricingListing",
+  orgListingForAdminDefault: "orgListingForAdminDefault",
+
 }
 const months = {
   0: "Jan",

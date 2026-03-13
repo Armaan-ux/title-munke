@@ -597,19 +597,7 @@ export async function listAdmins(nextToken) {
     "/list-admins",
   );
 }
-export async function listOrganisation(nextToken) {
-  const payload = {
-    body: {
-      nextToken,
-    },
-  };
-  return callGetUserAdminApi(
-    payload,
-    "Success in listAdmins:",
-    "Error in listAdmins:",
-    "/get-organisation-with-search-count",
-  );
-}
+
 
 export async function listBrokers(data) {
   const { withSearchCount, limit } = data || {};
@@ -1430,7 +1418,7 @@ export async function bulkBrokerUpload(data) {
     payload,
     "Success in " + action,
     "Error in " + action,
-    "/add-bulk-agents",
+    "/add-bulk-brokers",
   );
 }
 
@@ -1922,5 +1910,70 @@ export async function productDetails(productId) {
     "Success in " + action,
     "Error in " + action,
     "/get-stripe-product",
+  );
+}
+
+export async function listOrganisation(nextToken) {
+  const payload = {
+    body: {
+      nextToken,
+    },
+  };
+  return callGetUserAdminApi(
+    payload,
+    "Success in listAdmins:",
+    "Error in listAdmins:",
+    "/get-organisation-with-search-count",
+  );
+}
+
+export async function listOrganisations(data) {
+  const { withSearchCount, limit } = data || {};
+  const payload = {
+    body: {
+      ...(limit && { limit }),
+      ...(withSearchCount && { withSearchCount }),
+      ...(data?.from && { fromDatetime: data.from }),
+      ...(data?.to && { toDatetime: data.to }),
+    },
+  };
+  return callGetUserAdminApi(
+    payload,
+    "Success in listBrokers:",
+    "Error in listBrokers:",
+    "/get-organisation-with-search-count",
+  );
+}
+export async function getAgentlListing(
+  withSearchCount,
+  limit,
+  fromDatetime,
+  toDatetime,
+) {
+  const action = CONSTANTS?.ACTIONS?.LIST_INDIVIDUALS;
+  const payload = {
+    body: {
+      ...(limit && { limit }),
+      ...(fromDatetime && { fromDatetime }),
+      ...(toDatetime && { toDatetime }),
+      withSearchCount,
+    },
+  };
+  return callGetUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/list-agents-for-admin",
+  );
+}
+export async function fetchBrokerInOrganisation() {
+  const payload = {
+    body: {},
+  };
+  return callGetUserAdminApi(
+    payload,
+    "Success in fetchBrokerInOrganisation:",
+    "Error in fetchBrokerInOrganisation:",
+    "/fetch-broker-in-organisation",
   );
 }

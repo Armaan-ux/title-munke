@@ -25,17 +25,20 @@ import { useUserIdType } from "@/hooks/useUserIdType";
 const formSchemas = {
   admin: baseUserSchema,
   broker: addBrokerByAdminSchema,
+  organisation: baseUserSchema,
 };
 
 const submitText = {
   agent: "Invite Agent",
   broker: "Invite Broker",
   admin: "Invite Admin",
+  organisation: "Invite Organisation",
 };
 const updateText = {
   agent: "Update Agent",
   broker: "Update Broker",
   admin: "Update Admin",
+  organisation: "Update Organisation",
 };
 
 

@@ -113,9 +113,9 @@ export default function Users() {
 function Organisation() {
   const { userId } = useUserIdType();
   const [isOpen, setIsOpen] = useState(false);
-  const [admins, setAdmins] = useState([]);
+  const [org, setOrg] = useState([]);
   const [hasMore, setHasMore] = useState(true);
-  const [isAdminListLoading, setIsAdminListLoading] = useState(false);
+  const [isOrgListLoading, setIsOrgListLoading] = useState(false);
   const [nextToken, setNextToken] = useState(null);
   const [selectedUser, setSelectedUser] = useState({});
   const { deleteUserMutation } = useDeleteUser(() => {
@@ -127,17 +127,18 @@ function Organisation() {
     setHasMore(true);
   });
   const handleFetchOrgListing = async (isRefetch) => {
-    setIsAdminListLoading(true);
+    setIsOrgListLoading(true);
     try {
       const response = await listOrganisation(isRefetch ? null : nextToken);
-      const { items, nextToken: newNextToken } = response;
-      setAdmins((pre) => (isRefetch ? items : [...pre, ...items]));
+
+      const { updatedOrganisations, nextToken: newNextToken } = response;
+      setOrg((pre) => (isRefetch ? updatedOrganisations : [...pre, ...updatedOrganisations]));
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
     } catch (error) {
       console.log(error);
     }
-    setIsAdminListLoading(false);
+    setIsOrgListLoading(false);
   };
 
   useEffect(() => {
@@ -154,10 +155,10 @@ function Organisation() {
             setIsOpen(false);
             setSelectedUser({});
           }}
-          title="Admin"
-          userType="admin"
+          title="Organisation"
+          userType="organisation"
           invalidateFun={() => {
-            handleFetchAdminListing(true);
+            handleFetchOrgListing(true);
             setHasMore(true);
           }}
           selectedUser={selectedUser}
@@ -189,7 +190,7 @@ function Organisation() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {admins?.length === 0 && !hasMore ? (
+            {org?.length === 0 && !hasMore ? (
               <TableRow>
                 <TableCell
                   colSpan={5}
@@ -199,7 +200,7 @@ function Organisation() {
                 </TableCell>
               </TableRow>
             ) : (
-              admins?.map((item, index) => (
+              org?.map((item, index) => (
                 <TableRow key={item.id}>
                   <TableCell className="font-medium ">{index + 1}</TableCell>
                   <TableCell className="font-medium text-black">
@@ -242,13 +243,13 @@ function Organisation() {
                               restoreUserMutation.mutate({
                                 userId: item.id,
                                 email: item.email,
-                                userType: "admin",
+                                userType: "organisation",
                               });
                             else
                               deleteUserMutation.mutate({
                                 userId: item.id,
                                 email: item.email,
-                                userType: "admin",
+                                userType: "organisation",
                               });
                           }}
                           disabled={loading}
@@ -268,13 +269,13 @@ function Organisation() {
           </TableBody>
         </Table>
         <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
-          {isAdminListLoading && <p>Loading...</p>}
-          {!hasMore && !isAdminListLoading && <p>No more data to load.</p>}
-          {admins?.length > 0 && hasMore && !isAdminListLoading && (
+          {isOrgListLoading && <p>Loading...</p>}
+          {!hasMore && !isOrgListLoading && <p>No more data to load.</p>}
+          {org?.length > 0 && hasMore && !isOrgListLoading && (
             <Button
               size="sm"
               className=""
-              onClick={() => handleFetchAdminListing()}
+              onClick={() => handleFetchOrgListing()}
             >
               Load More
             </Button>
