@@ -1,3 +1,5 @@
+import { useState } from "react";
+// import "./index.css";
 import { queryKeys } from "@/utils";
 import {
   Table,
@@ -8,41 +10,41 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import DateFilter from "../common/date-filter";
+import { Separator } from "../ui/separator";
 import BackBtn from "../back-btn";
 
 import AgentDetailHeader from "../common/AgentHeader";
 import { useQuery } from "@tanstack/react-query";
-import { getAgentSearches, getIndividualDetails, getIndividualSearches } from "../service/userAdmin";
+import { getAgentDetails, getAgentSearches, getBrokerDetails } from "../service/userAdmin";
 import { CenterLoader } from "../common/Loader";
 import ShowError from "../common/ShowError";
 import { format } from "date-fns-tz";
-import { useState } from "react";
 
-function OrganisationPropertySearchAgent() {
-  const [date, setDate] = useState({from: null, to: null});
+function BrokerPropertySearch() {
+  const [date, setDate] = useState({fromDatetime: null, toDatetime: null});
   const {id} = useParams();
-  const individualSearchesQuery = useQuery({
-    queryKey: [queryKeys.individualSearchesAdmin, id, date.from, date.to],
-    queryFn: () => getAgentSearches(id, date.from, date.to),
+  const agentSearchesQuery = useQuery({
+    queryKey: [queryKeys.agentSearchesAdmin, id, date.fromDatetime, date.toDatetime],
+    queryFn: () => getAgentSearches(id, date?.fromDatetime, date?.toDatetime),
     enabled: !!id,
   })
-  const individualMetricsAdminQeurry = useQuery({
-      queryKey: [queryKeys.agentMetricsAdmin, id],
-      queryFn: () => getIndividualDetails(id),
-      enabled: !!id
-    })
-
+  const agentMetricsAdminQeurry = useQuery({
+    queryKey: [queryKeys.agentMetricsAdmin, id],
+    queryFn: () => getBrokerDetails(id),
+    enabled: !!id
+  })
   return (
     <>
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
         <BackBtn />
       </div>
-      {individualMetricsAdminQeurry?.isLoading && <div className="h-auto"><CenterLoader /></div>}
-      {individualMetricsAdminQeurry?.isError && <ShowError message={individualMetricsAdminQeurry?.error?.response?.data?.message} />}
-      {individualMetricsAdminQeurry?.isSuccess && <AgentDetailHeader data={individualMetricsAdminQeurry?.data}/>}
+      {agentMetricsAdminQeurry?.isLoading && <div className="h-auto"><CenterLoader /></div>}
+      {agentMetricsAdminQeurry?.isError && <ShowError message={agentMetricsAdminQeurry?.error?.response?.data?.message} />}
+      {agentMetricsAdminQeurry?.isSuccess && <AgentDetailHeader isBrokerSearch={true} data={agentMetricsAdminQeurry?.data}/>}
       <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
         <div className="bg-white !p-4 rounded-xl">
           <div className="flex justify-between items-center gap-4 mb-6">
@@ -51,11 +53,11 @@ function OrganisationPropertySearchAgent() {
                 Properties Searches
               </p>
             </div>
-            <DateFilter handleFilter={(from, to) => setDate(pre => ({...pre, from, to}))}/>
+            <DateFilter handleFilter={(fromDatetime, toDatetime) => setDate(pre => ({...pre, fromDatetime, toDatetime}))}/>
           </div>
-          {individualSearchesQuery?.isLoading && <CenterLoader />}
-          {individualSearchesQuery?.isError && <ShowError message={individualSearchesQuery?.error?.response?.data?.message}/>}
-          {individualSearchesQuery?.isSuccess &&
+          {agentSearchesQuery?.isLoading && <CenterLoader />}
+          {agentSearchesQuery?.isError && <ShowError message={agentSearchesQuery?.error?.response?.data?.message}/>}
+          {agentSearchesQuery?.isSuccess &&
             <Table className="">
               <TableHeader className="bg-[#F5F0EC]">
                 <TableRow>
@@ -67,7 +69,7 @@ function OrganisationPropertySearchAgent() {
                 </TableRow>
               </TableHeader>
               <TableBody className="text-black" >
-                {individualSearchesQuery?.data?.length === 0 ? (
+                {agentSearchesQuery?.data?.length === 0 ? (
                   <TableRow>
                     <TableCell
                       colSpan={5}
@@ -77,7 +79,7 @@ function OrganisationPropertySearchAgent() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  individualSearchesQuery?.data?.map((item, index) => (
+                  agentSearchesQuery?.data?.map((item, index) => (
                     <TableRow key={item.id}>
                       <TableCell >{index + 1}</TableCell>
                       <TableCell >
@@ -108,4 +110,4 @@ function OrganisationPropertySearchAgent() {
   );
 }
 
-export default OrganisationPropertySearchAgent;
+export default BrokerPropertySearch;

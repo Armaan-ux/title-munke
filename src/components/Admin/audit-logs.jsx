@@ -80,7 +80,7 @@ function AuditLogs() {
           Brokers
         </button>
         <button
-          className={` ${activeTab === "agents" ? "bg-tertiary text-white" : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] "} transition-all  rounded-full px-10 py-3 `}
+          className={` ${activeTab === "agent" ? "bg-tertiary text-white" : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] "} transition-all  rounded-full px-10 py-3 `}
           onClick={() => {
             resetStateOnTabChange();
             setActiveTab("agent");

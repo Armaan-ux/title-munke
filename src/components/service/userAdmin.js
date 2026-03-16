@@ -342,6 +342,51 @@ export async function getBrokerAgentsDetails(
     "/get-broker-agent-details",
   );
 }
+export async function getOrganisationBrokerDetails(
+  organisationId,
+  withSearchCount = false,
+  fromDatetime,
+  toDatetime,
+) {
+  const payload = {
+    body: {
+      organisationId: organisationId,
+      withSearchCount: withSearchCount,
+      ...(fromDatetime && { fromDatetime }),
+      ...(toDatetime && { toDatetime }),
+    },
+  };
+  return callGetUserAdminApi(
+    payload,
+    "Success in getOrganisationBrokerDetails:",
+    "Error in getOrganisationBrokerDetails:",
+    "/get-organisation-broker-details",
+  );
+}
+export async function getOrganisationAgentDetails(
+  organisationId,
+  withSearchCount = false,
+  fromDatetime,
+  toDatetime,
+) {
+  const payload = {
+    body: {
+      organisationId: organisationId,
+      withSearchCount: withSearchCount,
+      ...(fromDatetime && { fromDatetime }),
+      ...(toDatetime && { toDatetime }),
+    },
+  };
+  return callGetUserAdminApi(
+    payload,
+    "Success in getOrganisationAgentDetails:",
+    "Error in getOrganisationAgentDetails:",
+    "/get-organisation-agent-details",
+  );
+}
+
+
+
 
 export async function getBrokerDetails(brokerId) {
   const payload = {
@@ -1316,7 +1361,7 @@ export async function getIndividualDetails(userId) {
     payload,
     "Success in " + action,
     "error in " + action,
-    "/get-individual-details",
+    "/get-agent-details-for-admin",
   );
 }
 export async function markDemoRequestContacted(requestId) {

@@ -116,7 +116,7 @@ function Agents() {
   const [pendingSearch, setPendingSearch] = useState(0);
   const [topPerformer, setTopPerformer] = useState("");
   const [addAgent, setAddAgent] = useState(false);
-  console.log("brokerDetail in manage agent", brokerDetail);
+  const underOrganisation = brokerDetail?.isUnderOrganisation
   const bulkUploadMutation = useMutation({
     mutationFn: (data) => bulkAgentUpload(data),
     onSuccess: async () => {
@@ -387,6 +387,7 @@ function Agents() {
           <a href="https://title-search-storage.s3.us-east-1.amazonaws.com/Bulk+Upload+Template.xlsx">
             <Button
               variant="outline"
+              disabled={underOrganisation}
               className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
             >
               <Download className="w-4 h-4" />
@@ -401,7 +402,7 @@ function Agents() {
             accept=".xls,.xlsx"
           />
           <Button
-            disabled={bulkUploadMutation.isPending}
+            disabled={underOrganisation|| bulkUploadMutation.isPending}
             variant="outline"
             className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
             onClick={() => fileInputRef.current?.click()}
@@ -414,6 +415,7 @@ function Agents() {
             <Button
               // onClick={() => setAddAgent(user?.status === "active")}
               onClick={() => setAddAgent(true)}
+              disabled={underOrganisation}
               className="h-[36px] bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[13px] font-medium rounded-md flex items-center gap-1.5 px-3"
               // disabled={user?.status !== "active"}
             >

@@ -120,7 +120,6 @@ export default function BulkUploadModal({ open, onClose, type, onSuccess }) {
   const brokers = Array.isArray(brokerQuery.data)
     ? brokerQuery.data
     : (brokerQuery.data?.items || brokerQuery.data?.brokers || []);
-
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md rounded-2xl p-6 bg-white border-none shadow-xl px-10 border-0 outline-0 ring-0">
@@ -163,7 +162,7 @@ export default function BulkUploadModal({ open, onClose, type, onSuccess }) {
                     </div>
                   ) : (
                     brokers.map((broker) => (
-                      <SelectItem key={broker.id} value={broker.id}>
+                      <SelectItem key={broker.brokerId} value={broker.brokerId}>
                         {broker.name}
                       </SelectItem>
                     ))

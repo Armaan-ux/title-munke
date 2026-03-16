@@ -43,12 +43,14 @@ const updateText = {
 
 
 export default function AddAdminModal({ open, onClose,title, userType, invalidateFun, selectedUser }) {
+
+  console.log("selectedUser",selectedUser)
    const { organisationDetail } =
      useUser();
      const {userType:currentUserType} = useUserIdType();
   const {control, handleSubmit, reset, formState: { errors }} = useForm({
-      defaultValues: { fullName: "", email: "", message: "", ...(userType === "agent" && {brokerId: ""}), ...(userType === "broker" && {teamStrength: ""}) },
-      resolver: zodResolver(userType === "agent" ? (getAddAgentByAdminSchema(!!selectedUser?.id ? false : true)) : formSchemas[userType]),
+      defaultValues: { fullName: "", email: "", message: "", ...(userType === "agent" && currentUserType !== "admin" && {brokerId: ""}), ...(userType === "broker" && {teamStrength: ""}) },
+      resolver: zodResolver(userType === "agent" ? (getAddAgentByAdminSchema(!!selectedUser?.id || currentUserType === "admin" ? false : true)) : formSchemas[userType]),
     });
 
   const isUpdate = !!selectedUser?.id;
@@ -59,7 +61,7 @@ export default function AddAdminModal({ open, onClose,title, userType, invalidat
         fullName: selectedUser?.name || "",
         email: selectedUser?.email || "",
         message: selectedUser?.message || "",
-        // ...(userType === "agent" && {brokerId: selectedUser?.brokerId || ""}),
+        ...(userType === "agent" && {brokerId: selectedUser?.brokerId || ""}),
         ...(userType === "broker" && {teamStrength: selectedUser?.teamStrength || ""}),
       });
     }
@@ -126,9 +128,9 @@ export default function AddAdminModal({ open, onClose,title, userType, invalidat
       const {email} = rest
       updateAdminMutation?.mutate({email, name: fullName, id: selectedUser?.id});
     }
-    else
-      console.log("usertype131313131313",userType)
+    else {
       newUserMutation?.mutate({...rest, name: fullName, userType  ,...(currentUserType==="organisation"&&{organisationId:organisationDetail?.id} )});
+    }
   }
   const updateLoading = updateAgentMutation?.isPending || updateBrokerMutation?.isPending || updateAdminMutation?.isPending;
 
@@ -178,7 +180,7 @@ export default function AddAdminModal({ open, onClose,title, userType, invalidat
             {errors.email && <FormValidationError message={errors.email.message} />}
           </div>
 
-          {userType === "agent" && !isUpdate &&
+          {userType === "agent" && currentUserType !== "admin" && !isUpdate &&
             <div>
                 <Label className="text-sm text-[#6B5E55] mb-1 block">
                   Select Broker
@@ -261,6 +263,12 @@ export default function AddAdminModal({ open, onClose,title, userType, invalidat
               />
             </div>
           }
+
+          {currentUserType === "admin" && (
+            <p className="text-xs text-[#6B5E55] italic">
+              Note: The broker will get the explore plan.
+            </p>
+          )}
 
           <div className="flex justify-end gap-3 pt-2 *:flex-1">
             <Button

@@ -3,7 +3,7 @@ import { format } from "date-fns-tz";
 import { Separator } from "../ui/separator";
 import { formatDateSafe } from "@/utils/date";
 
-export default function AgentDetailHeader({data}) {
+export default function AgentDetailHeader({data, isBrokerSearch=false}) {
   
     return (
     <div className="bg-[#F5F0EC] rounded-lg py-5 px-7 my-4 text-secondary flex justify-between items-center ">
@@ -38,11 +38,12 @@ export default function AgentDetailHeader({data}) {
 
           <div className="flex gap-5 2xl:gap-10 w-full" >
             <Separator orientation="vertical" className=" !h-14 text-[#F4ECE6]" />
-            <div className="w-full xl:whitespace-nowrap" >
+            {!isBrokerSearch && <div className="w-full xl:whitespace-nowrap" >
               <p className="text-[#6B5E55] text-sm 2xl:text-lg">Associated Broker</p>
               <p className="font-semibold mt-1 2xl:text-2xl">{data?.relationship?.brokerFirstName || "-"}</p>
             </div>
-            <Separator orientation="vertical" className=" !h-14 text-[#F4ECE6]" />
+            }
+            <Separator orientation="vertical" className={` !h-14 text-[#F4ECE6] ${isBrokerSearch ? "hidden" : ""}`} />  
             <div className="w-full xl:whitespace-nowrap" >
               <p className="text-[#6B5E55] text-sm 2xl:text-lg">Account Created</p>
               <p className="font-semibold mt-1 2xl:text-2xl">{formatDateSafe(data?.createdAt, "MMM dd, yyyy")}</p>

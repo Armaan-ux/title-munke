@@ -99,7 +99,7 @@ export default function OrganisationBusinessTable({limit, isDownload, handleDown
                         <TableCell>
                           {" "}
                           <div className="flex items-center gap-2 flex-row">
-                            <Link to={`/admin/dashboard/broker-details/${item?.id}`} >
+                            <Link to={`/admin/dashboard/org-details/${item?.id}`} >
                             <Button
                               size="icon"
                               className="text-md"
