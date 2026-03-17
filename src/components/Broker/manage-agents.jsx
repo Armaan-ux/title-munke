@@ -116,7 +116,7 @@ function Agents() {
   const [pendingSearch, setPendingSearch] = useState(0);
   const [topPerformer, setTopPerformer] = useState("");
   const [addAgent, setAddAgent] = useState(false);
-  const underOrganisation = brokerDetail?.isUnderOrganisation
+  const underOrganisation = brokerDetail?.isUnderOrganisation;
   const bulkUploadMutation = useMutation({
     mutationFn: (data) => bulkAgentUpload(data),
     onSuccess: async () => {
@@ -384,10 +384,18 @@ function Agents() {
 
         {/* Right Section */}
         <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-          <a href="https://title-search-storage.s3.us-east-1.amazonaws.com/Bulk+Upload+Template.xlsx">
+          <a
+            href={
+              underOrganisation || brokerDetail?.planType === "EXPLORE_PLAN"
+                ? undefined
+                : "https://title-search-storage.s3.us-east-1.amazonaws.com/Bulk+Upload+Template.xlsx"
+            }
+          >
             <Button
               variant="outline"
-              disabled={underOrganisation}
+              disabled={
+                underOrganisation || brokerDetail?.planType === "EXPLORE_PLAN"
+              }
               className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
             >
               <Download className="w-4 h-4" />
@@ -402,7 +410,11 @@ function Agents() {
             accept=".xls,.xlsx"
           />
           <Button
-            disabled={underOrganisation|| bulkUploadMutation.isPending}
+            disabled={
+              underOrganisation ||
+              bulkUploadMutation.isPending ||
+              brokerDetail?.planType === "EXPLORE_PLAN"
+            }
             variant="outline"
             className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
             onClick={() => fileInputRef.current?.click()}
@@ -411,18 +423,18 @@ function Agents() {
             Upload Template
           </Button>
 
-          {brokerDetail?.planType !== "EXPLORE_PLAN" && (
-            <Button
-              // onClick={() => setAddAgent(user?.status === "active")}
-              onClick={() => setAddAgent(true)}
-              disabled={underOrganisation}
-              className="h-[36px] bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[13px] font-medium rounded-md flex items-center gap-1.5 px-3"
-              // disabled={user?.status !== "active"}
-            >
-              <PlusCircle className="w-4 h-4" />
-              Add Agent
-            </Button>
-          )}
+          <Button
+            // onClick={() => setAddAgent(user?.status === "active")}
+            onClick={() => setAddAgent(true)}
+            disabled={
+              underOrganisation || brokerDetail?.planType === "EXPLORE_PLAN"
+            }
+            className="h-[36px] bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[13px] font-medium rounded-md flex items-center gap-1.5 px-3"
+            // disabled={user?.status !== "active"}
+          >
+            <PlusCircle className="w-4 h-4" />
+            Add Agent
+          </Button>
         </div>
       </div>
       <div className="bg-white !p-4 rounded-xl">

@@ -12,6 +12,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { Loader } from "lucide-react";
+
+const PRICE_TYPES_BY_ROLE = {
+  organisation: [
+    {
+      label: "Professional Plan - Organisation",
+      value: "PROFESSIONAL_PLAN_ORGANISATION",
+    },
+    {
+      label: "Pay As You Go - Organisation",
+      value: "PAY_AS_YOU_GO_ORGANISATION",
+    },
+    {
+      label: "Explore Plan - Organisation",
+      value: "EXPLORE_PLAN_ORGANISATION",
+    },
+  ],
+  broker: [
+    { label: "Professional Plan - Broker", value: "PROFESSIONAL_PLAN_BROKER" },
+    { label: "Pay As You Go - Broker", value: "PAY_AS_YOU_GO_BROKER" },
+    { label: "Explore Plan - Broker", value: "EXPLORE_PLAN_BROKER" },
+  ],
+  agent: [
+    { label: "Professional Plan - Agent", value: "PROFESSIONAL_PLAN" },
+    { label: "Pay As You Go - Agent", value: "PAY_AS_YOU_GO" },
+    { label: "Explore Plan - Agent", value: "EXPLORE_PLAN" },
+  ],
+};
 
 // ── Reusable chevron icon ──────────────────────────────────────────────────
 function Chevron({ size = 12, color = "#6b7280" }) {
@@ -334,35 +362,13 @@ export default function ProductModal({ open, onClose, activeTab }) {
                           />
                         </SelectTrigger>
                         <SelectContent className="max-h-60">
-                          <SelectItem value="PROFESSIONAL_PLAN">
-                            Professional Plan
-                          </SelectItem>
-                          <SelectItem value="PROFESSIONAL_PLAN_ORGANISATION">
-                            Professional Plan - Organisation
-                          </SelectItem>
-                          <SelectItem value="PROFESSIONAL_PLAN_BROKER">
-                            Professional Plan - Broker
-                          </SelectItem>
-
-                          <SelectItem value="PAY_AS_YOU_GO">
-                            Pay As You Go
-                          </SelectItem>
-                          <SelectItem value="PAY_AS_YOU_GO_BROKER">
-                            Pay As You Go - Broker
-                          </SelectItem>
-                          <SelectItem value="PAY_AS_YOU_GO_ORGANISATION">
-                            Pay As You Go - Organisation
-                          </SelectItem>
-
-                          <SelectItem value="EXPLORE_PLAN">
-                            Explore Plan
-                          </SelectItem>
-                          <SelectItem value="EXPLORE_PLAN_BROKER">
-                            Explore Plan - Broker
-                          </SelectItem>
-                          <SelectItem value="EXPLORE_PLAN_ORGANISATION">
-                            Explore Plan - Organisation
-                          </SelectItem>
+                          {(PRICE_TYPES_BY_ROLE[activeTab?.id || activeTab] || [])?.map(
+                            (item) => (
+                              <SelectItem key={item.value} value={item.value}>
+                                {item.label}
+                              </SelectItem>
+                            ),
+                          )}
                         </SelectContent>
                       </Select>
                     )}

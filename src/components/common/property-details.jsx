@@ -42,7 +42,6 @@ const PropertyDetails = () => {
     propertyDetailQuery?.data?.documents?.filter(
       (item) => item?.type === "pdf",
     ) ?? [];
-  console.log("Property Detail Data:", propertyDetailQuery?.data);
   return (
     <>
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
@@ -312,32 +311,31 @@ const PropertyDetails = () => {
               </div>
 
               <div className="flex flex-col gap-4">
-                <div className="rounded-xl overflow-hidden border border-[#F1EDEA]">
-                  {/* <img
-                    src="/property.png"
-                    alt="Property"
-                    width={300}
-                    height={270}
-                    className="object-cover w-full h-[270px]"
-                  /> */}
-                  <StreetView
-                    lat={propertyDetailQuery?.data?.latitude}
-                    lng={propertyDetailQuery?.data?.longitude}
-                  />
-                </div>
-                <div className="rounded-xl overflow-hidden border border-[#F1EDEA]">
-                  {/* <img
-                    src="/map-geo.png"
-                    alt="Map"
-                    width={300}
-                    height={270}
-                    className="object-cover w-full h-[270px]"
-                  /> */}
-                  <GoogleMapView
-                    lat={propertyDetailQuery?.data?.latitude}
-                    lng={propertyDetailQuery?.data?.longitude}
-                  />
-                </div>
+                {(() => {
+                  const lat = parseFloat(propertyDetailQuery?.data?.latitude);
+                  const lng = parseFloat(propertyDetailQuery?.data?.longitude);
+                  const isValidCoords = !isNaN(lat) && !isNaN(lng);
+                  return (
+                    <div
+                      className={`rounded-xl overflow-hidden ${isValidCoords ? "border border-[#F1EDEA]" : ""}`}
+                    >
+                      <StreetView lat={lat} lng={lng} />
+                    </div>
+                  );
+                })()}
+
+                {(() => {
+                  const lat = parseFloat(propertyDetailQuery?.data?.latitude);
+                  const lng = parseFloat(propertyDetailQuery?.data?.longitude);
+                  const isValidCoords = !isNaN(lat) && !isNaN(lng);
+                  return (
+                    <div
+                      className={`rounded-xl overflow-hidden ${isValidCoords ? "border border-[#F1EDEA]" : ""}`}
+                    >
+                      <GoogleMapView lat={lat} lng={lng} />
+                    </div>
+                  );
+                })()}
               </div>
             </div>
 
@@ -361,7 +359,9 @@ const PropertyDetails = () => {
                           : "bg-[#FFE3E2] text-[#FF5F59]"
                   } text-[13px] font-medium px-3 py-1 rounded-md`}
                 >
-                   {propertyDetailQuery?.data.status === "IN_PROGRESS" ? "In Progress" : propertyDetailQuery?.data.status}
+                  {propertyDetailQuery?.data.status === "IN_PROGRESS"
+                    ? "In Progress"
+                    : propertyDetailQuery?.data.status}
                 </Badge>
               </p>
 

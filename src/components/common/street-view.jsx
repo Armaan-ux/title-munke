@@ -1,25 +1,29 @@
-import { GoogleMap, StreetViewPanorama, useLoadScript } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  StreetViewPanorama,
+  useLoadScript,
+} from "@react-google-maps/api";
 
 const containerStyle = {
   width: "100%",
   height: "300px",
 };
 
-export default function StreetView({lat, lng}) {
+export default function StreetView({ lat, lng }) {
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY, 
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
   });
-
-  const center = {lat, lng}
+  const isValidCoords =
+    typeof lat === "number" &&
+    typeof lng === "number" &&
+    !isNaN(lat) &&
+    !isNaN(lng);
   if (!isLoaded) return <p>Loading map...</p>;
-
+  if (!isValidCoords) return <p className="mt-10">Street Location unavailable</p>;
+  const center = { lat, lng };
   return (
-    <GoogleMap
-      mapContainerStyle={containerStyle}
-      center={center}
-      zoom={14}
-    >
-    <StreetViewPanorama
+    <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={14}>
+      <StreetViewPanorama
         position={center}
         visible={true}
         options={{

@@ -25,6 +25,59 @@ import { createPrice } from "../service/userAdmin";
 import { toast } from "react-toastify";
 import { Loader } from "lucide-react";
 
+const PRICE_TYPES_BY_ROLE = {
+  organisation: [
+    {
+      label: "Professional Plan - Organisation Base Price",
+      value: "BASE_PRICE_PROFESSIONAL_PLAN_ORGANISATION",
+    },
+    {
+      label: "Professional Plan - Organisation Seat Price",
+      value: "SEAT_PRICE_PROFESSIONAL_PLAN_ORGANISATION",
+    },
+    {
+      label: "Professional Plan - Organisation Search Usage Price",
+      value: "SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN_ORGANISATION",
+    },
+    {
+      label: "Pay As You Go - Organisation Search Usage Price",
+      value: "SEARCH_USAGE_PRICE_PAY_AS_YOU_GO_ORGANISATION",
+    },
+  ],
+  broker: [
+    {
+      label: "Professional Plan - Broker Base Price",
+      value: "BASE_PRICE_PROFESSIONAL_PLAN_BROKER",
+    },
+    {
+      label: "Professional Plan - Broker Seat Price",
+      value: "SEAT_PRICE_PROFESSIONAL_PLAN_BROKER",
+    },
+    {
+      label: "Professional Plan - Broker Search Usage Price",
+      value: "SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN_BROKER",
+    },
+    {
+      label: "Pay As You Go - Broker Search Usage Price",
+      value: "SEARCH_USAGE_PRICE_PAY_AS_YOU_GO_BROKER",
+    },
+  ],
+  agent: [
+    {
+      label: "Professional Plan - Agent Base Price",
+      value: "BASE_PRICE_PROFESSIONAL_PLAN",
+    },
+    {
+      label: "Professional Plan - Agent Search Usage Price",
+      value: "SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN",
+    },
+    {
+      label: "Pay As You Go - Agent Search Usage Price",
+      value: "SEARCH_USAGE_PRICE_PAY_AS_YOU_GO",
+    },
+  ],
+};
+
 export default function AddPricingModal({
   open,
   onClose,
@@ -163,39 +216,11 @@ export default function AddPricingModal({
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="BASE_PRICE_PROFESSIONAL_PLAN_ORGANISATION">
-                      Professional Plan - Organisation Base Price
-                    </SelectItem>
-                    <SelectItem value="SEAT_PRICE_PROFESSIONAL_PLAN_ORGANISATION">
-                      Professional Plan - Organisation Seat Price
-                    </SelectItem>
-                    <SelectItem value="BASE_PRICE_PROFESSIONAL_PLAN_BROKER">
-                      Professional Plan - Broker Base Price
-                    </SelectItem>
-                    <SelectItem value="SEAT_PRICE_PROFESSIONAL_PLAN_BROKER">
-                      Professional Plan - Broker Seat Price
-                    </SelectItem>
-                    <SelectItem value="BASE_PRICE_PROFESSIONAL_PLAN">
-                      Professional Plan - Base Price
-                    </SelectItem>
-                    <SelectItem value="SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN">
-                      Professional Plan - Search Usage Price
-                    </SelectItem>
-                    <SelectItem value="SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN_ORGANISATION">
-                      Professional Plan - Organisation Search Usage Price
-                    </SelectItem>
-                    <SelectItem value="SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN_BROKER">
-                      Professional Plan - Broker Search Usage Price
-                    </SelectItem>
-                    <SelectItem value="SEARCH_USAGE_PRICE_PAY_AS_YOU_GO">
-                      Pay As You Go - Search Usage Price
-                    </SelectItem>
-                    <SelectItem value="SEARCH_USAGE_PRICE_PAY_AS_YOU_GO_BROKER">
-                      Pay As You Go - Broker Search Usage Price
-                    </SelectItem>
-                    <SelectItem value="SEARCH_USAGE_PRICE_PAY_AS_YOU_GO_ORGANISATION">
-                      Pay As You Go - Organisation Search Usage Price
-                    </SelectItem>
+                    {(PRICE_TYPES_BY_ROLE[metadata?.roleType] || [])?.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}

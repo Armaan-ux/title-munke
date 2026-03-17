@@ -31,7 +31,8 @@ const ProductTable = ({ pricingListingQuery, onDelete }) => {
           <TableHeader className="bg-[#F5F0EC] w-full">
             <TableRow className="w-full">
               <TableHead>Sr. No.</TableHead>
-              <TableHead>Plan Type</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Product Type</TableHead>
               <TableHead className="text-center">Pricing Type</TableHead>
               <TableHead className="text-center">Created</TableHead>
               <TableHead>Updated</TableHead>
@@ -53,6 +54,7 @@ const ProductTable = ({ pricingListingQuery, onDelete }) => {
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">{index + 1}</TableCell>
                   <TableCell>{item.name}</TableCell>
+                  <TableCell>{item.metadata?.productType}</TableCell>
                   <TableCell className="text-center">{item?.type}</TableCell>
                   <TableCell className="text-center">
                     {convertUnixToLocalTime(item?.created)}
