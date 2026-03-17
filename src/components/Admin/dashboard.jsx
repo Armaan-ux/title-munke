@@ -158,7 +158,7 @@ const AdminDashboard = () => {
               setActiveTab("organisation");
             }}
           >
-            Organisation
+            Organization
           </button>
           <button
             className={` ${

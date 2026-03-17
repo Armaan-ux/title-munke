@@ -53,9 +53,9 @@ export function JoinBrokerModal({
   isUnderBroker
     ? "Leave Broker"
     : isUnderOrganisation
-    ? "Leave Organisation"
+    ? "Leave Organization"
     : userType === "broker" &&  !isUnderOrganisation 
-    ? "Join Organisation"
+    ? "Join Organization"
     : "Join Broker"
 }
             </h2>

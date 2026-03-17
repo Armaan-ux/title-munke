@@ -83,7 +83,7 @@ const AdvancedSettings = () => {
       return isUnderBroker ? "Leave Broker" : "Join Broker";
     }
     if (userType === "broker") {
-      return isUnderOrganisation ? "Leave Organisation" : "Join Organisation";
+      return isUnderOrganisation ? "Leave Organization" : "Join Organization";
     }
     return "";
   }, [userType, isUnderBroker, isUnderOrganisation]);
@@ -314,7 +314,7 @@ const AdvancedSettings = () => {
                 {" "}
                 {userType === "agent"
                   ? "Broker Connection"
-                  : "Organisation Connection"}
+                  : "Organization Connection"}
               </p>
 
               {userType === "agent" &&
@@ -337,7 +337,7 @@ const AdvancedSettings = () => {
                   </p>
                 ) : (
                   <p className="text-gray-500 mb-1">
-                    Select Organisation to Join
+                    Select Organization to Join
                   </p>
                 ))}
 

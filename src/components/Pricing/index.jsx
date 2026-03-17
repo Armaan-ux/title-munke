@@ -204,7 +204,7 @@ const Pricing = () => {
               {userType === "broker"
                 ? "Brokerage Options"
                 : userType === "organisation"
-                  ? "Organisation Solutions"
+                  ? "Organization Solutions"
                   : "Individual Agent"}
             </h2>
             <p className="text-center max-w-[1000px] mx-auto mb-10 text-body text-coffee-light">
@@ -212,7 +212,7 @@ const Pricing = () => {
                 ? `Scalable plans built for brokers managing teams, higher volume, and faster turnaround requirements.
 `
                 : userType === "organisation"
-                  ? `Powerful, customizable solutions built for large organisations, investors, and enterprise-scale operations.`
+                  ? `Powerful, customizable solutions built for large organizations, investors, and enterprise-scale operations.`
                   : `Choose how you want to use Title Munke. Explore the platform, become
             a member, or pay only when you need a report.`}
             </p>

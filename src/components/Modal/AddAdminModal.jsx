@@ -32,13 +32,13 @@ const submitText = {
   agent: "Invite Agent",
   broker: "Invite Broker",
   admin: "Invite Admin",
-  organisation: "Invite Organisation",
+  organisation: "Invite Organization",
 };
 const updateText = {
   agent: "Update Agent",
   broker: "Update Broker",
   admin: "Update Admin",
-  organisation: "Update Organisation",
+  organisation: "Update Organization",
 };
 
 

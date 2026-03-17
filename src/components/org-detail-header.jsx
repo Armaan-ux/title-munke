@@ -54,7 +54,7 @@ export default function OrgDetailHeader() {
           <div className="flex gap-5 2xl:gap-10 w-full" >
             <Separator orientation="vertical" className=" !h-14 text-[#F4ECE6]" />
                 <div className="w-full xl:whitespace-nowrap" >
-              <p className="text-[#6B5E55] text-sm 2xl:text-lg">Associated Organisation</p>
+              <p className="text-[#6B5E55] text-sm 2xl:text-lg">Associated Organization</p>
               <p className="font-semibold mt-1 2xl:text-2xl">{orgMetricsAdminQeurry?.relationship?.organisationFirstName|| "-"}</p>
             </div>
               <Separator orientation="vertical" className=" !h-14 text-[#F4ECE6]" />

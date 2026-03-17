@@ -28,7 +28,7 @@ export default function OrganisationBusinessTable({limit, isDownload, handleDown
   useEffect(() => {
     if (isDownload && orgListingQuery?.data?.updatedOrganisations?.length > 0 && handleDownloadComplete) {
       const data = orgListingQuery?.data?.updatedOrganisations?.map((item, idx) => (
-        {"Sr. No.": idx + 1, "Organisation Name": item?.name, "Agent": item?.agentCount, "Search Count": item?.totalSearches, "Last Activity": 
+        {"Sr. No.": idx + 1, "Organization Name": item?.name, "Agent": item?.agentCount, "Search Count": item?.totalSearches, "Last Activity": 
           getFormattedDateTime(item?.lastLogin), Business: `$${item?.revenue}`, "Account Created": getFormattedDateTime(item?.createdAt)}
       ))
       downloadCSV(data);

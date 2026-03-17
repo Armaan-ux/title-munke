@@ -7,7 +7,7 @@ import ProductModal from "@/components/Modal/ProductModal";
 const ProductList = () => {
   const agentTypes = [
     {
-      name: "Organisation",
+      name: "Organization",
       id: "organisation",
     },
     {

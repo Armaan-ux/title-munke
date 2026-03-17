@@ -68,7 +68,7 @@ const userTypes = [
     id: "admin",
   },
   {
-    name: "Organisation",
+    name: "Organization",
     id: "organisation",
   },
   {
@@ -155,7 +155,7 @@ function Organisation() {
             setIsOpen(false);
             setSelectedUser({});
           }}
-          title="Organisation"
+          title="Organization"
           userType="organisation"
           invalidateFun={() => {
             handleFetchOrgListing(true);
