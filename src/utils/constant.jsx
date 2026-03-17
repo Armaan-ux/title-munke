@@ -88,10 +88,10 @@ export const flexiblePricing = [
     key: "organisation",
     background: '/broker-bg.png',
     icon: '/organization.svg',
-    title: 'Organisation',
+    title: 'Organization',
     subTitle: 'Powering large-scale operations',
     headline: 'BEST FOR SCALE',
-    content: 'Built for enterprise teams, investors, and high-volume organisation. A robust solution tailored for complex workflows, advanced needs, and long-term growth.'
+    content: 'Built for enterprise teams, investors, and high-volume organization. A robust solution tailored for complex workflows, advanced needs, and long-term growth.'
   }
 
 ]

@@ -36,6 +36,27 @@ const AdminDashboard = () => {
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 *:rounded-2xl *:bg-[#F5F0EC] my-4">
         <div className="p-5 flex justify-between items-end ">
           <div>
+            <p className="mb-4 text-secondary">Total Organisation</p>
+            {metricQuery?.isSuccess && (
+              <p className="text-4xl font-semibold text-tertiary">
+                {metricQuery?.data?.ORGANISATION ?? "--"}
+              </p>
+            )}
+            {metricQuery?.isLoading && (
+              <Loader2 className="w-6 h-10 animate-spin text-secondary" />
+            )}
+          </div>
+          <div className="bg-white rounded-full p-3.5">
+            {/* <HatGlasses className="text-tertiary" /> */}
+            <img
+              src="/user-check.svg"
+              alt="user-check-icon"
+              className="w-6 h-6"
+            />
+          </div>
+        </div>
+        <div className="p-5 flex justify-between items-end ">
+          <div>
             <p className="mb-4 text-secondary"> Total Brokers</p>
             {metricQuery?.isSuccess && (
               <p className="text-4xl font-semibold text-tertiary">
@@ -76,27 +97,7 @@ const AdminDashboard = () => {
             />
           </div>
         </div>
-        <div className="p-5 flex justify-between items-end ">
-          <div>
-            <p className="mb-4 text-secondary">Total Organisation</p>
-            {metricQuery?.isSuccess && (
-              <p className="text-4xl font-semibold text-tertiary">
-                {metricQuery?.data?.ORGANISATION ?? "--"}
-              </p>
-            )}
-            {metricQuery?.isLoading && (
-              <Loader2 className="w-6 h-10 animate-spin text-secondary" />
-            )}
-          </div>
-          <div className="bg-white rounded-full p-3.5">
-            {/* <HatGlasses className="text-tertiary" /> */}
-            <img
-              src="/user-check.svg"
-              alt="user-check-icon"
-              className="w-6 h-6"
-            />
-          </div>
-        </div>
+
         <div className="p-5 flex justify-between items-end ">
           <div>
             <p className="mb-4 text-secondary"> Total Counties</p>
@@ -205,9 +206,11 @@ const AdminDashboard = () => {
                 <p>
                   $
                   {metricQuery?.data?.[
-                  activeTab ==="organisation" ?  "organisationRevenueResults" : activeTab === "broker"
-                      ? "brokerRevenueResults"
-                      : "agentRevenueResults"
+                    activeTab === "organisation"
+                      ? "organisationRevenueResults"
+                      : activeTab === "broker"
+                        ? "brokerRevenueResults"
+                        : "agentRevenueResults"
                   ] ?? "--"}
                 </p>
               )}
@@ -222,9 +225,11 @@ const AdminDashboard = () => {
             </Button>
             <Link
               to={
-                activeTab === "broker"  ? "/admin/dashboard/broker-business"
-                  : activeTab === "organisation" ? "/admin/dashboard/organisation-business"
-                  : "/admin/dashboard/individual-business"
+                activeTab === "broker"
+                  ? "/admin/dashboard/broker-business"
+                  : activeTab === "organisation"
+                    ? "/admin/dashboard/organisation-business"
+                    : "/admin/dashboard/individual-business"
               }
             >
               <Button variant="outline"> View More </Button>
