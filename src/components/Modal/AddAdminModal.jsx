@@ -175,6 +175,7 @@ export default function AddAdminModal({
         teamStrength,
         name: fullName,
         id: selectedUser?.id,
+        planType: "EXPLORE_PLAN",
       });
     } else if (isUpdate && userType === "agent") {
       const { email } = rest;
@@ -182,6 +183,7 @@ export default function AddAdminModal({
         email,
         name: fullName,
         id: selectedUser?.id,
+        planType: "EXPLORE_PLAN",
       });
     } else if (isUpdate && userType === "admin") {
       const { email } = rest;
@@ -198,6 +200,7 @@ export default function AddAdminModal({
         ...(currentUserType === "organisation" && {
           organisationId: organisationDetail?.id,
         }),
+        planType: "EXPLORE_PLAN",
       });
     }
   };
