@@ -1,4 +1,4 @@
-import { use, useState } from "react";
+import { useEffect, useState } from "react";
 import ProfileSetting from "@/components/common/profile-setting";
 import OtherSetting from "@/components/common/other-setting";
 import { useQuery } from "@tanstack/react-query";
@@ -23,7 +23,14 @@ const agentTypes = [
 ];
 
 export default function AdminSettings() {
-  const [activeTab, setActiveTab] = useState(agentTypes[0]);
+  const [activeTab, setActiveTab] = useState(() => {
+    const savedTabId = localStorage.getItem("adminSettingsActiveTab");
+    return agentTypes.find((tab) => tab.id === savedTabId) || agentTypes[0];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("adminSettingsActiveTab", activeTab.id);
+  }, [activeTab]);
  const [editProfile, setIsProfile] = useState(false);
  const {userId, userType} = useUserIdType();
  const aiModelQuery = useQuery({

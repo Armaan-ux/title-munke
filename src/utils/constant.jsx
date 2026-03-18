@@ -6,294 +6,316 @@ export const navItems = [
   { name: "Counties", path: "counties" },
   { name: "Pricing", path: "/pricing" },
   // { name: "Previous Searches", path: "previous-searches" },
-]
+];
 
 // export const trustedBy = ["mortage-connect.png", "/investors-title.png", "/rhythmic.png", "/catic.png",  "/ltc.png" ]
-export const trustedBy = ["/partners/Lawfer Associates.png", "/partners/remax-logo-og.png", "/partners/Ajax Management.png", "/partners/Carova Acquisitions Logo Example.png" ]
+export const trustedBy = [
+  "/partners/Lawfer Associates.png",
+  "/partners/remax-logo-og.png",
+  "/partners/Ajax Management.png",
+  "/partners/Carova Acquisitions Logo Example.png",
+];
 
 export const whyTitleMunke = [
   {
     icon: "/check.svg",
     title: "Secure Your Investment",
-    description: "Our comprehensive searches uncover all pertinent property details, ensuring you invest with confidence."
+    description:
+      "Our comprehensive searches uncover all pertinent property details, ensuring you invest with confidence.",
   },
   {
     icon: "/newspaper.svg",
     title: "Clarity & Simplicity",
-    description: "We deliver clear, concise reports that make complex property data easy to understand."
+    description:
+      "We deliver clear, concise reports that make complex property data easy to understand.",
   },
   {
     icon: "/profile.svg",
     title: "Efficiency & Expertise",
-    description: "Leveraging AI and industry experience, we provide swift, reliable results so you can move forward without delay."
+    description:
+      "Leveraging AI and industry experience, we provide swift, reliable results so you can move forward without delay.",
   },
-]
-  
+];
 
 export const keyFeatures = [
-    {
-      icon: "/price-tag.svg",
-      title: "Transparent Pricing",
-      description: "Honest, upfront fees with no hidden costs."
-    },
-    {
-      icon: "/line-chart.svg",
-      title: "Expert Insights",
-      description: "Guidance from seasoned professionals to simplify complex searches."
-    },
-    {
-      icon: "/graph.svg",
-      title: "Rapid Reports",
-      description: "Get detailed, accurate title reports quickly and efficiently."
-    },
-    {
-      icon: "/target.svg",
-      title: "Real‑Time Tracking",
-      description: "Monitor status updates and document collection as they happen."
-    },
-    {
-      icon: "/bag.svg",
-      title: "Easy‑to‑Understand Reports",
-      description: "Clear, organized summaries anyone can read without confusion."
-    },
-    {
-      icon: "/resize.svg",
-      title: "Easy‑to‑Use Dashboard",
-      description: "A clean, intuitive workspace that keeps everything in one place."
-    },
-    
-]
-
+  {
+    icon: "/price-tag.svg",
+    title: "Transparent Pricing",
+    description: "Honest, upfront fees with no hidden costs.",
+  },
+  {
+    icon: "/line-chart.svg",
+    title: "Expert Insights",
+    description:
+      "Guidance from seasoned professionals to simplify complex searches.",
+  },
+  {
+    icon: "/graph.svg",
+    title: "Rapid Reports",
+    description:
+      "Get detailed, accurate title reports quickly and efficiently.",
+  },
+  {
+    icon: "/target.svg",
+    title: "Real‑Time Tracking",
+    description:
+      "Monitor status updates and document collection as they happen.",
+  },
+  {
+    icon: "/bag.svg",
+    title: "Easy‑to‑Understand Reports",
+    description:
+      "Clear, organized summaries anyone can read without confusion.",
+  },
+  {
+    icon: "/resize.svg",
+    title: "Easy‑to‑Use Dashboard",
+    description:
+      "A clean, intuitive workspace that keeps everything in one place.",
+  },
+];
 
 export const flexiblePricing = [
   {
     key: "agent",
-    background: '/individual-bg.png',
-    icon: '/individual.svg',
-    title: 'Individual Agent',
-    subTitle: 'Simple. Focused. Independent.',
-    headline: 'Perfect for independent professionals',
-    content: 'Built for solo agents who value speed, clarity, and simplicity. Run title searches effortlessly without unnecessary complexity—just what you need, when you need it.'
+    background: "/individual-bg.png",
+    icon: "/individual.svg",
+    title: "Individual Agent",
+    subTitle: "Simple. Focused. Independent.",
+    headline: "Perfect for independent professionals",
+    content:
+      "Built for solo agents who value speed, clarity, and simplicity. Run title searches effortlessly without unnecessary complexity—just what you need, when you need it.",
   },
   {
     key: "broker",
-    background: '/broker-bg.png',
-    icon: '/broker.svg',
-    title: 'Broker',
-    subTitle: 'Manage more. Stress less.',
-    headline: 'Made for growing brokerages',
-    content: 'Designed for brokers managing multiple agents and higher activity. Streamline workflows, stay organized, and scale operations smoothly as your business expands.'
+    background: "/broker-bg.png",
+    icon: "/broker.svg",
+    title: "Broker",
+    subTitle: "Manage more. Stress less.",
+    headline: "Made for growing brokerages",
+    content:
+      "Designed for brokers managing multiple agents and higher activity. Streamline workflows, stay organized, and scale operations smoothly as your business expands.",
   },
   {
     key: "organisation",
-    background: '/broker-bg.png',
-    icon: '/organization.svg',
-    title: 'Organization',
-    subTitle: 'Powering large-scale operations',
-    headline: 'BEST FOR SCALE',
-    content: 'Built for enterprise teams, investors, and high-volume organization. A robust solution tailored for complex workflows, advanced needs, and long-term growth.'
-  }
-
-]
+    background: "/broker-bg.png",
+    icon: "/organization.svg",
+    title: "Organization",
+    subTitle: "Powering large-scale operations",
+    headline: "BEST FOR SCALE",
+    content:
+      "Built for enterprise teams, investors, and high-volume organization. A robust solution tailored for complex workflows, advanced needs, and long-term growth.",
+  },
+];
 export const pricingPlansIndividual = [
-    {
-      id: "EXPLORE_PLAN",
-      title: "Explore Platform",
-      price: "$0",
-      subtitle: "",
-      features: [
-        "First search free",
-        "View-only access to dashboards and workflows",
-        "Preview property data and platform features",
-        "No credit card required to start",
-      ],
-      note: "To continue using the platform after first search, select Pay As You Go or a Subscription plan.",
-      recommended: false,
-      description:
-        "Get a guided look at how Title Munke works before making any commitment.",
-    },
-    {
-      id: "PROFESSIONAL_PLAN",
-      title: "Subscription",
-      price: "$20",
-      subtitle: "/ month",
-      features: [
-        " Full access to the platform",
-        "2 free searches included",
-        "Additional searches billed at a reduced rate of $12.50 each",
-        "Search history and saved searches",
-        "Monthly usage-based invoice",
-      ],
-      note: "Once included searches are exhausted, additional searches continue automatically at the overage rate ($12.50 per search).",
-      recommended: true,
-      description:
-        "Unlock exclusive benefits, discounted pricing, and priority access.",
-    },
-    {
-      id: "PAY_AS_YOU_GO",
-      title: "Pay as You Go",
-      price: "$15",
-      subtitle: "/ Search",
-      features: [
-        "Full access to all platform features",
-        "Instant invoice generated after search completion ",
-        "Access to search history and results",
-      ],
-      note: "Note: You are charged only when a search returns results. Unsuccessful searches are not billed.",
-      recommended: false,
-      description:
-        "Order reports only when you need them — no subscriptions required.",
-    },
-  ];
-export  const pricingPlansBroker = [
-    {
-      id: "EXPLORE_PLAN",
-      title: "Explore Platform",
-      price: "$0",
-      subtitle: "",
-      features: [
-        "View-only access to dashboards and workflows",
-        "Preview property data and platform features",
-        "No credit card required to start",
-      ],
-      note: "To continue using the platform after first search, select Pay As You Go or a Subscription plan.",
-      recommended: false,
-      description:
-        "Get a guided look at how Title Munke works before making any commitment.",
-    },
-    {
-      id: "PROFESSIONAL_PLAN",
-      title: "Subscription",
-      price: "$10.00",
-      subtitle: "per seat / month",
-      features: [
-        "Full access to all platform features",
-        "$10 per seat / month (Each seat includes 2 searches)",
-        "Add and manage brokers & agents",
-        "Usage-based billing with automatic overage charges",
-        "Additional searches billed at a reduced rate of $7.50 each",
-        "View invoices, users, and search history",
-      ],
-      note: "Note:  After your organization’s included searches are exhausted, Additional searches are charged automatically at $7.50 each.",
-      recommended: true,
-      description:
-        "Unlock exclusive benefits, discounted pricing, and priority access.",
-    },
-    {
-      id: "PAY_AS_YOU_GO",
-      title: "Pay as You Go",
-      price: "$10",
-      subtitle: "/ Search",
-      features: [
-        "Add and manage agents",
-        "Automatic invoice generated for each successful search (broker & agents)",
-        "Broker and agents charged $10 per successful search",
-        "Can view agents search history and their invoices",
-        "Search history and report download",
-      ],
-      note: "Note: You are charged only when a search returns results. Unsuccessful searches are not billed.",
-      recommended: false,
-      description:
-        "Order reports only when you need them — no subscriptions required.",
-    },
-  ];
+  {
+    id: "EXPLORE_PLAN",
+    title: "Explore Platform",
+    price: "$0",
+    subtitle: "",
+    features: [
+      "First search free",
+      "View-only access to dashboards and workflows",
+      "Preview property data and platform features",
+      "No credit card required to start",
+    ],
+    note: "To continue using the platform after first search, select Pay As You Go or a Subscription plan.",
+    recommended: false,
+    description:
+      "Get a guided look at how Title Munke works before making any commitment.",
+  },
+  {
+    id: "PROFESSIONAL_PLAN",
+    title: "Subscription",
+    price: "$20",
+    subtitle: "/ month",
+    features: [
+      " Full access to the platform",
+      "2 free searches included",
+      "Additional searches billed at a reduced rate of $12.50 each",
+      "Search history and saved searches",
+      "Monthly usage-based invoice",
+    ],
+    note: "Once included searches are exhausted, additional searches continue automatically at the overage rate ($12.50 per search).",
+    recommended: true,
+    description:
+      "Unlock exclusive benefits, discounted pricing, and priority access.",
+  },
+  {
+    id: "PAY_AS_YOU_GO",
+    title: "Pay as You Go",
+    price: "$15",
+    subtitle: "/ Search",
+    features: [
+      "Full access to all platform features",
+      "Instant invoice generated after search completion ",
+      "Access to search history and results",
+    ],
+    note: "Note: You are charged only when a search returns results. Unsuccessful searches are not billed.",
+    recommended: false,
+    description:
+      "Order reports only when you need them — no subscriptions required.",
+  },
+];
+export const pricingPlansBroker = [
+  {
+    id: "EXPLORE_PLAN",
+    title: "Explore Platform",
+    price: "$0",
+    subtitle: "",
+    features: [
+      "View-only access to dashboards and workflows",
+      "Preview property data and platform features",
+      "No credit card required to start",
+    ],
+    note: "To continue using the platform after first search, select Pay As You Go or a Subscription plan.",
+    recommended: false,
+    description:
+      "Get a guided look at how Title Munke works before making any commitment.",
+  },
+  {
+    id: "PROFESSIONAL_PLAN",
+    title: "Subscription",
+    price: "$10.00",
+    subtitle: "per seat / month",
+    features: [
+      "Full access to all platform features",
+      "$10 per seat / month (Each seat includes 2 searches)",
+      "Add and manage brokers & agents",
+      "Usage-based billing with automatic overage charges",
+      "Additional searches billed at a reduced rate of $7.50 each",
+      "View invoices, users, and search history",
+    ],
+    note: "Note:  After your organization’s included searches are exhausted, Additional searches are charged automatically at $7.50 each.",
+    recommended: true,
+    description:
+      "Unlock exclusive benefits, discounted pricing, and priority access.",
+  },
+  {
+    id: "PAY_AS_YOU_GO",
+    title: "Pay as You Go",
+    price: "$10",
+    subtitle: "/ Search",
+    features: [
+      "Add and manage agents",
+      "Automatic invoice generated for each successful search (broker & agents)",
+      "Broker and agents charged $10 per successful search",
+      "Can view agents search history and their invoices",
+      "Search history and report download",
+    ],
+    note: "Note: You are charged only when a search returns results. Unsuccessful searches are not billed.",
+    recommended: false,
+    description:
+      "Order reports only when you need them — no subscriptions required.",
+  },
+];
 export const pricingPlansOrganization = [
-    {
-      id: "EXPLORE_PLAN",
-      title: "Explore Platform",
-      price: "$0",
-      subtitle: "",
-      features: [
-        "View-only access to dashboards and workflows",
-        "Preview property data and platform features",
-        "No credit card required to start",
-      ],
-      note: "To continue using the platform after first search, select Pay As You Go or a Subscription plan.",
-      recommended: false,
-      description:
-        "Get a guided look at how Title Munke works before making any commitment.",
-    },
-    {
-      id: "PROFESSIONAL_PLAN",
-      title: "Subscription",
-      price: "$10",
-      subtitle: "per seat/ Search Cost",
-      features: [
-        " Full access to all platform features",
-        "$10 per seat / month(Each seat includes 2 searches)",
-        "Add and manage brokers & agents",
-        "Usage-based billing with automatic overage charges",
-        "Additional searches billed at a reduced rate of $7.50 each",
-        "View invoices, users, and search history",
-      ],
-      note: "Note:  After your organization’s included searches are exhausted, Additional searches are charged automatically at $7.50 each.",
-      recommended: true,
-      description:
-        "Unlock exclusive benefits, discounted pricing, and priority access.",
-    },
-    {
-      id: "PAY_AS_YOU_GO",
-      title: "Pay as You Go",
-      price: "$10",
-      subtitle: "/ Search",
-      features: [
-        " Add and manage agents",
-        "Automatic invoice generated for each successful search (broker & agents)",
-        "Broker and agents charged $10 per successful search",
-        "Can view agents search history and their invoices",
-        "Search history and report download",
-      ],
-      note: "Note: You are charged only when a search returns results. Unsuccessful searches are not billed.",
-      recommended: false,
-      description:
-        "Order reports only when you need them — no subscriptions required.",
-    },
-  ];
-
+  {
+    id: "EXPLORE_PLAN",
+    title: "Explore Platform",
+    price: "$0",
+    subtitle: "",
+    features: [
+      "View-only access to dashboards and workflows",
+      "Preview property data and platform features",
+      "No credit card required to start",
+    ],
+    note: "To continue using the platform after first search, select Pay As You Go or a Subscription plan.",
+    recommended: false,
+    description:
+      "Get a guided look at how Title Munke works before making any commitment.",
+  },
+  {
+    id: "PROFESSIONAL_PLAN",
+    title: "Subscription",
+    price: "$10",
+    subtitle: "per seat/ Search Cost",
+    features: [
+      " Full access to all platform features",
+      "$10 per seat / month(Each seat includes 2 searches)",
+      "Add and manage brokers & agents",
+      "Usage-based billing with automatic overage charges",
+      "Additional searches billed at a reduced rate of $7.50 each",
+      "View invoices, users, and search history",
+    ],
+    note: "Note:  After your organization’s included searches are exhausted, Additional searches are charged automatically at $7.50 each.",
+    recommended: true,
+    description:
+      "Unlock exclusive benefits, discounted pricing, and priority access.",
+  },
+  {
+    id: "PAY_AS_YOU_GO",
+    title: "Pay as You Go",
+    price: "$10",
+    subtitle: "/ Search",
+    features: [
+      " Add and manage agents",
+      "Automatic invoice generated for each successful search (broker & agents)",
+      "Broker and agents charged $10 per successful search",
+      "Can view agents search history and their invoices",
+      "Search history and report download",
+    ],
+    note: "Note: You are charged only when a search returns results. Unsuccessful searches are not billed.",
+    recommended: false,
+    description:
+      "Order reports only when you need them — no subscriptions required.",
+  },
+];
 
 export const previousSearches = [
   {
     icon: "/profile-reverse.svg",
     title: "Ownership",
-    description: "John Marks"
+    description: "John Marks",
   },
   {
     icon: "/circle-split.svg",
     title: "Parcel",
-    description: "#123-343-2324"
+    description: "#123-343-2324",
   },
   {
     icon: "/desk-paper.svg",
     title: "Tax Records",
-    description: "$4,250 (Paid through 2023"
+    description: "$4,250 (Paid through 2023",
   },
   {
     icon: "/receipt.svg",
     title: "Permits",
-    description: "2 Active Permits"
+    description: "2 Active Permits",
   },
-]
-export const excludedPlans = ["EXPLORE_PLAN", "PROFESSIONAL_PLAN", "PAY_AS_YOU_GO"];
+];
+export const excludedPlans = [
+  "EXPLORE_PLAN",
+  "PROFESSIONAL_PLAN",
+  "PAY_AS_YOU_GO",
+];
 
 export const faq = [
   {
     question: "What do I get in the report?",
     answer: (
       <>
-        Each report provides a concise summary of the property’s title status, including:
+        Each report provides a concise summary of the property’s title status,
+        including:
         <ul className="list-disc list-outside ml-5 my-2">
           <li>Current ownership</li>
           <li>A brief ownership history</li>
           <li>Liens, mortgages, and encumbrances on record</li>
           <li>
-            Any issues that could affect the title (e.g., unreleased liens or easements)
+            Any issues that could affect the title (e.g., unreleased liens or
+            easements)
           </li>
         </ul>
-        You’ll also see visual elements such as timelines or parcel maps, making the
-        information easy to understand at a glance. For complete transparency, <strong> all of the original documents collected during the
-          search are provided with your report</strong>—including deeds, lien documents, and tax
-          records—so you can always reference the official sources directly.
-        
+        You’ll also see visual elements such as timelines or parcel maps, making
+        the information easy to understand at a glance. For complete
+        transparency,{" "}
+        <strong>
+          {" "}
+          all of the original documents collected during the search are provided
+          with your report
+        </strong>
+        —including deeds, lien documents, and tax records—so you can always
+        reference the official sources directly.
       </>
     ),
   },
@@ -301,13 +323,13 @@ export const faq = [
     question: "How accurate is the analysis?",
     answer: (
       <>
-        Very accurate. Title Munke’s AI is trained to carefully read and cross-check
-        official records, reducing the risk of human error and catching small
-        inconsistencies that might otherwise be overlooked.
-        Machine precision allows the system to be as reliable—often more so—than a
-          manual search. If the AI encounters anything unclear, it flags it instead of guessing. The data
-        comes directly from county and public records, ensuring your report is based on
-        trustworthy sources.
+        Very accurate. Title Munke’s AI is trained to carefully read and
+        cross-check official records, reducing the risk of human error and
+        catching small inconsistencies that might otherwise be overlooked.
+        Machine precision allows the system to be as reliable—often more so—than
+        a manual search. If the AI encounters anything unclear, it flags it
+        instead of guessing. The data comes directly from county and public
+        records, ensuring your report is based on trustworthy sources.
       </>
     ),
   },
@@ -315,7 +337,12 @@ export const faq = [
     question: "How fast will I get results?",
     answer: (
       <>
-        In most cases, you’ll have your report within minutes of submitting your request. For typical residential properties, turnaround is usually under 10 minutes. This is dramatically faster than traditional title searches, which can take days or even weeks. By automating the process and collecting every relevant document, Title Munke saves you time while ensuring nothing important is missed.
+        In most cases, you’ll have your report within minutes of submitting your
+        request. For typical residential properties, turnaround is usually under
+        10 minutes. This is dramatically faster than traditional title searches,
+        which can take days or even weeks. By automating the process and
+        collecting every relevant document, Title Munke saves you time while
+        ensuring nothing important is missed.
       </>
     ),
   },
@@ -323,7 +350,17 @@ export const faq = [
     question: "Is a Title Munke report legally reliable?",
     answer: (
       <>
-        Title Munke reports are highly reliable for informing your decisions. We pull data directly from official and public records, and we provide all supporting documents alongside your summary. Our AI’s thoroughness means you’re likely getting a report that is more comprehensive and consistent than a quick manual search would be. That said, Title Munke is a research and analysis tool—it is not a legal certification or a title insurance policy. For closings, you would still obtain title insurance from a licensed company. Think of our report as your “homework” on the title: it gives you and your professionals a complete view of the property’s history and potential issues early on, helping you move forward with confidence.
+        Title Munke reports are highly reliable for informing your decisions. We
+        pull data directly from official and public records, and we provide all
+        supporting documents alongside your summary. Our AI’s thoroughness means
+        you’re likely getting a report that is more comprehensive and consistent
+        than a quick manual search would be. That said, Title Munke is a
+        research and analysis tool—it is not a legal certification or a title
+        insurance policy. For closings, you would still obtain title insurance
+        from a licensed company. Think of our report as your “homework” on the
+        title: it gives you and your professionals a complete view of the
+        property’s history and potential issues early on, helping you move
+        forward with confidence.
       </>
     ),
   },
@@ -331,56 +368,59 @@ export const faq = [
     question: "Who can benefit from Title Munke?",
     answer: (
       <>
-        Title Munke is designed for anyone involved in a real estate transaction or
-        property research, including:
+        Title Munke is designed for anyone involved in a real estate transaction
+        or property research, including:
         <ul className="list-disc list-outside ml-5 my-2">
           <li>
-            <strong>Homebuyers and Real Estate Investors:</strong> Get peace of mind about
-            a property’s history before making an offer.
+            <strong>Homebuyers and Real Estate Investors:</strong> Get peace of
+            mind about a property’s history before making an offer.
           </li>
           <li>
-            <strong>Real Estate Agents and Brokers:</strong> Spot title issues early,
-            resolve them proactively, and close deals faster with full transparency.
+            <strong>Real Estate Agents and Brokers:</strong> Spot title issues
+            early, resolve them proactively, and close deals faster with full
+            transparency.
           </li>
           <li>
-            <strong>Attorneys and Legal Professionals:</strong> Save time on due diligence
-            with complete reports and original source documents in one place.
+            <strong>Attorneys and Legal Professionals:</strong> Save time on due
+            diligence with complete reports and original source documents in one
+            place.
           </li>
           <li>
-            <strong>Title Officers and Professionals:</strong> Use Title Munke as a fast,
-            reliable preliminary search tool to handle the heavy data-lifting while you
-            focus on resolving complex issues.
+            <strong>Title Officers and Professionals:</strong> Use Title Munke
+            as a fast, reliable preliminary search tool to handle the heavy
+            data-lifting while you focus on resolving complex issues.
           </li>
         </ul>
-          In short, if you need to understand a property’s title quickly and clearly—with
-          both a professional summary and the original documents—Title Munke is built for
-          you.
+        In short, if you need to understand a property’s title quickly and
+        clearly—with both a professional summary and the original
+        documents—Title Munke is built for you.
       </>
     ),
   },
 ];
-
 
 export const testimonials = [
   {
     image: "/dummy-profile.png",
     content: `"Title Munke has completely changed the way we handle title searches. What used to take hours of manual work is now delivered in minutes with impressive accuracy and clarity. The reports are easy to read, well-organized, and backed by all the original documents we need. It’s a tool that truly makes the process faster, smarter, and more reliable."`,
     name: "Jeff R.",
-    role: "Agent"
+    role: "Agent",
   },
   {
     image: "/dummy-profile.png",
-    content: "As someone who’s worked in real estate for years, I can say with confidence that Title Munke is ahead of the curve. The platform not only saves valuable time but also gives us confidence that no important detail is overlooked. The combination of speed, precision, and professional presentation makes it an essential part of our workflow.",
+    content:
+      "As someone who’s worked in real estate for years, I can say with confidence that Title Munke is ahead of the curve. The platform not only saves valuable time but also gives us confidence that no important detail is overlooked. The combination of speed, precision, and professional presentation makes it an essential part of our workflow.",
     name: "Zack W.",
-    role: "Broker"
+    role: "Broker",
   },
   {
     image: "/dummy-profile.png",
-    content: "The professionalism and innovation behind Title Munke stand out right away. It’s rare to find a system that is both incredibly advanced and user-friendly, but this platform manages both seamlessly. From brokers to agents, everyone benefits from having accurate, comprehensive reports delivered instantly. It’s a true game-changer in the industry.",
+    content:
+      "The professionalism and innovation behind Title Munke stand out right away. It’s rare to find a system that is both incredibly advanced and user-friendly, but this platform manages both seamlessly. From brokers to agents, everyone benefits from having accurate, comprehensive reports delivered instantly. It’s a true game-changer in the industry.",
     name: "Avneet G.",
-    role: "Agent"
-  }
-]
+    role: "Agent",
+  },
+];
 
 export const aboutUsListItems = [
   "First-of-its-kind in Pennsylvania — pioneering AI-driven title reports in a historically manual industry.",
@@ -388,54 +428,60 @@ export const aboutUsListItems = [
   "Superior accuracy with advanced AI validation that catches what humans often miss.",
   "Full-spectrum coverage — property history, ownership chains, liens, easements, and more in one clear report.",
   "Tailored for professionals — built specifically for brokers, agents, and investors who need speed and certainty.",
-  "Transparent pricing model — no hidden fees, just predictable costs you can count on."
-]
-
+  "Transparent pricing model — no hidden fees, just predictable costs you can count on.",
+];
 
 export const howItWorksSteps = [
   {
     icon: "/profile-reverse.svg",
     title: "Enter the Property",
     img: "/Illustrations/Design 1.png",
-    description: "Start by typing in the property address, parcel number, or PIN."
+    description:
+      "Start by typing in the property address, parcel number, or PIN.",
   },
   {
     icon: "/circle-split.svg",
     title: "We Search the Records",
     img: "/Illustrations/Design 2.png",
-    description: "Our system instantly searches the county’s official records database, collecting all documents tied to the property."
+    description:
+      "Our system instantly searches the county’s official records database, collecting all documents tied to the property.",
   },
   {
     icon: "/desk-paper.svg",
     title: "We Pull the Full History",
     img: "/Illustrations/Design 3.png",
-    description: "If those documents reference earlier records, we automatically find and include them—so nothing important gets missed."
+    description:
+      "If those documents reference earlier records, we automatically find and include them—so nothing important gets missed.",
   },
   {
     icon: "/receipt.svg",
     title: "AI Reads the Documents",
     img: "/Illustrations/Design 4.png",
-    description: "Advanced AI scans every deed, mortgage, lien, and easement, carefully reviewing decades of history in minutes."
+    description:
+      "Advanced AI scans every deed, mortgage, lien, and easement, carefully reviewing decades of history in minutes.",
   },
   {
     icon: "/receipt.svg",
     title: "Clear, Easy-to-Read Report",
     img: "/Illustrations/Design 5.png",
-    description: "You receive a simple, professional PDF that summarizes ownership, mortgages, liens, and other critical details."
+    description:
+      "You receive a simple, professional PDF that summarizes ownership, mortgages, liens, and other critical details.",
   },
   {
     icon: "/receipt.svg",
     title: "Source Documents Included",
     img: "/Illustrations/Design 6.png",
-    description: "All original documents collected along the way are provided with your report for full transparency."
+    description:
+      "All original documents collected along the way are provided with your report for full transparency.",
   },
   {
     icon: "/receipt.svg",
     title: "Visuals That Help",
     img: "/Illustrations/Design 7.png",
-    description: "Each report includes property views like GIS maps and Street View images, giving you context beyond the paperwork."
+    description:
+      "Each report includes property views like GIS maps and Street View images, giving you context beyond the paperwork.",
   },
-]
+];
 
 export const pennsylvaniaCities = [
   "Aliquippa",
@@ -493,9 +539,8 @@ export const pennsylvaniaCities = [
   "Washington",
   "Wilkes-Barre",
   "Williamsport",
-  "York"
+  "York",
 ];
-
 
 export const sampleReportItems = [
   {
@@ -542,10 +587,16 @@ export const sampleReportItems = [
     img: "/sample-report/Civil Record Search.png",
     title: "Civil Records Check",
     content: [
-      { label: "No judgments or liens found: ", value: "Search results for Lawfer Associates LP show a clear record." },
-      { label: "Why it matters: ", value: "Confirms there are no active legal claims or creditor judgments tied to the property or current owner." },
+      {
+        label: "No judgments or liens found: ",
+        value: "Search results for Lawfer Associates LP show a clear record.",
+      },
+      {
+        label: "Why it matters: ",
+        value:
+          "Confirms there are no active legal claims or creditor judgments tied to the property or current owner.",
+      },
       { label: "Jurisdiction: ", value: "Sangamon County" },
-
     ],
   },
   {
@@ -554,7 +605,11 @@ export const sampleReportItems = [
     title: "Current Owner & Deed",
     content: [
       { label: "Owner: ", value: "Lawfer Associates, LP" },
-      { label: "Deed recorded: ", value: "November 24, 2008 (Instrument #7507233), transferred from Carova Acquisitions LP." },
+      {
+        label: "Deed recorded: ",
+        value:
+          "November 24, 2008 (Instrument #7507233), transferred from Carova Acquisitions LP.",
+      },
       {
         label: "Why it matters: ",
         value:
@@ -569,7 +624,8 @@ export const sampleReportItems = [
     content: [
       {
         label: "$200,000 – Fox Chase Bank: ",
-        value: "(Open-End Mortgage, recorded October 23, 2015, Instrument #2015031806)",
+        value:
+          "(Open-End Mortgage, recorded October 23, 2015, Instrument #2015031806)",
       },
       {
         label: "Assignment of Rents – Fox Chase Bank: ",
@@ -587,7 +643,11 @@ export const sampleReportItems = [
     img: "sample-report/Legal Description.jpg",
     title: "Legal Description",
     content: [
-      { label: "Metes-and-bounds: ", value: "Begins at a point 98 feet east of South Fairview Avenue, extending 29.5 feet to center line, north 216 feet to South Fairview, then south and east along adjoining property lines. " },
+      {
+        label: "Metes-and-bounds: ",
+        value:
+          "Begins at a point 98 feet east of South Fairview Avenue, extending 29.5 feet to center line, north 216 feet to South Fairview, then south and east along adjoining property lines. ",
+      },
       {
         label: "Lots 89 and 90, Block CC: ",
         value:
@@ -605,30 +665,40 @@ export const sampleReportItems = [
     img: "sample-report/Plat Map (Subdivision Plan).jpg",
     title: "All Source Documents Collected",
     content: [
-      { label: "Deeds:", value: "Current deed, prior deeds, and transfer records confirming ownership history." },
+      {
+        label: "Deeds:",
+        value:
+          "Current deed, prior deeds, and transfer records confirming ownership history.",
+      },
       {
         label: "Mortgages & Assignments: ",
-        value: "Open, satisfied, and released mortgages; assignments of rents and security agreements.",
+        value:
+          "Open, satisfied, and released mortgages; assignments of rents and security agreements.",
       },
       {
         label: "Easements & Restrictions: ",
-        value: "Recorded easements, right-of-ways, covenants, and subdivision plans.",
+        value:
+          "Recorded easements, right-of-ways, covenants, and subdivision plans.",
       },
       {
         label: "Liens & Judgments: ",
-        value: "Civil court searches for active or prior liens, judgments, and claims.",
+        value:
+          "Civil court searches for active or prior liens, judgments, and claims.",
       },
       {
         label: "Legal Descriptions & Plats: ",
-        value: "Full metes-and-bounds descriptions, subdivision maps, and boundary surveys.",
+        value:
+          "Full metes-and-bounds descriptions, subdivision maps, and boundary surveys.",
       },
       {
         label: "Miscellaneous Filings: ",
-        value: "Tax transfer receipts, UCC filings, releases, and any other relevant county records.",
+        value:
+          "Tax transfer receipts, UCC filings, releases, and any other relevant county records.",
       },
       {
         label: "Why it matters: ",
-        value: "A full title search compiles all recorded documents tied to the property, giving a comprehensive view of ownership, financial obligations, and land use restrictions.",
+        value:
+          "A full title search compiles all recorded documents tied to the property, giving a comprehensive view of ownership, financial obligations, and land use restrictions.",
       },
     ],
   },
@@ -638,13 +708,13 @@ export const TEAMS = ["2", "5", "10", "10+", "50+", "100+"];
 
 export const appearance = {
   theme: "stripe",
-  
+
   variables: {
-    colorBackground: '#ffffff',
-    colorText: '#3D2014',
-    fontFamily: 'Poppins, Ideal Sans, system-ui, sans-serif',
-    spacingUnit: '2px',
-    borderRadius: '4px',
+    colorBackground: "#ffffff",
+    colorText: "#3D2014",
+    fontFamily: "Poppins, Ideal Sans, system-ui, sans-serif",
+    spacingUnit: "2px",
+    borderRadius: "4px",
   },
   rules: {
     ".Input": {
@@ -679,4 +749,131 @@ export const appearance = {
       marginBottom: "10px",
     },
   },
+};
+
+export const PRODUCT_TYPES_BY_ROLE = {
+  organisation: [
+    {
+      label: "Subscription Plan - Organisation",
+      value: "PROFESSIONAL_PLAN_ORGANISATION",
+    },
+    {
+      label: "Pay As You Go - Organisation",
+      value: "PAY_AS_YOU_GO_ORGANISATION",
+    },
+    {
+      label: "Explore Plan - Organisation",
+      value: "EXPLORE_PLAN_ORGANISATION",
+    },
+  ],
+  broker: [
+    { label: "Subscription Plan - Broker", value: "PROFESSIONAL_PLAN_BROKER" },
+    { label: "Pay As You Go - Broker", value: "PAY_AS_YOU_GO_BROKER" },
+    { label: "Explore Plan - Broker", value: "EXPLORE_PLAN_BROKER" },
+  ],
+  agent: [
+    { label: "Subscription Plan - Agent", value: "PROFESSIONAL_PLAN" },
+    { label: "Pay As You Go - Agent", value: "PAY_AS_YOU_GO" },
+    { label: "Explore Plan - Agent", value: "EXPLORE_PLAN" },
+  ],
+};
+
+export const PRICE_TYPES_BY_ROLE = {
+  organisation: [
+    {
+      label: "Subscription Plan - Organisation Base Price",
+      value: "BASE_PRICE_PROFESSIONAL_PLAN_ORGANISATION",
+    },
+    {
+      label: "Subscription Plan - Organisation Seat Price",
+      value: "SEAT_PRICE_PROFESSIONAL_PLAN_ORGANISATION",
+    },
+    {
+      label: "Subscription Plan - Organisation Search Usage Price",
+      value: "SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN_ORGANISATION",
+    },
+    {
+      label: "Pay As You Go - Organisation Search Usage Price",
+      value: "SEARCH_USAGE_PRICE_PAY_AS_YOU_GO_ORGANISATION",
+    },
+    {
+      label: "Explore Plan",
+      value: "EXPLORE_PLAN_ORGANISATION",
+    },
+  ],
+  broker: [
+    {
+      label: "Subscription Plan - Broker Base Price",
+      value: "BASE_PRICE_PROFESSIONAL_PLAN_BROKER",
+    },
+    {
+      label: "Subscription Plan - Broker Seat Price",
+      value: "SEAT_PRICE_PROFESSIONAL_PLAN_BROKER",
+    },
+    {
+      label: "Subscription Plan - Broker Search Usage Price",
+      value: "SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN_BROKER",
+    },
+    {
+      label: "Pay As You Go - Broker Search Usage Price",
+      value: "SEARCH_USAGE_PRICE_PAY_AS_YOU_GO_BROKER",
+    },
+     {
+      label: "Explore Plan",
+      value: "EXPLORE_PLAN_BROKER",
+    },
+  ],
+  agent: [
+    {
+      label: "Subscription Plan - Agent Base Price",
+      value: "BASE_PRICE_PROFESSIONAL_PLAN",
+    },
+    {
+      label: "Subscription Plan - Agent Search Usage Price",
+      value: "SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN",
+    },
+    {
+      label: "Pay As You Go - Agent Search Usage Price",
+      value: "SEARCH_USAGE_PRICE_PAY_AS_YOU_GO",
+    },
+      {
+      label: "Explore Plan",
+      value: "EXPLORE_PLAN",
+    },
+  ],
+};
+
+// Mapping product types to their corresponding price types
+export const PRICE_TYPES_BY_PRODUCT = {
+  // Organisation Products
+  PROFESSIONAL_PLAN_ORGANISATION: [
+    "BASE_PRICE_PROFESSIONAL_PLAN_ORGANISATION",
+    "SEAT_PRICE_PROFESSIONAL_PLAN_ORGANISATION",
+    "SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN_ORGANISATION",
+  ],
+  PAY_AS_YOU_GO_ORGANISATION: [
+    "SEARCH_USAGE_PRICE_PAY_AS_YOU_GO_ORGANISATION",
+  ],
+  EXPLORE_PLAN_ORGANISATION: ["EXPLORE_PLAN_ORGANISATION"],
+
+  // Broker Products
+  PROFESSIONAL_PLAN_BROKER: [
+    "BASE_PRICE_PROFESSIONAL_PLAN_BROKER",
+    "SEAT_PRICE_PROFESSIONAL_PLAN_BROKER",
+    "SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN_BROKER",
+  ],
+  PAY_AS_YOU_GO_BROKER: [
+    "SEARCH_USAGE_PRICE_PAY_AS_YOU_GO_BROKER",
+  ],
+  EXPLORE_PLAN_BROKER: ["EXPLORE_PLAN_BROKER"],
+
+  // Agent Products
+  PROFESSIONAL_PLAN: [
+    "BASE_PRICE_PROFESSIONAL_PLAN",
+    "SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN",
+  ],
+  PAY_AS_YOU_GO: [
+    "SEARCH_USAGE_PRICE_PAY_AS_YOU_GO",
+  ],
+  EXPLORE_PLAN: ["EXPLORE_PLAN"],
 };

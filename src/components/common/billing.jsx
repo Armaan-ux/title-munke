@@ -11,46 +11,53 @@ import { SubscriptionCanceledSuccessModal } from "../Modal/SubscriptionCanceledS
 import { CancelSubscriptionModal } from "../Modal/CancelSubscriptionModal";
 import { HelpUsImproveModal } from "../Modal/HelpUsImproveModal";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { cancelSubscription, getSubscriptionDetails } from "../service/userAdmin";
+import {
+  cancelSubscription,
+  getSubscriptionDetails,
+} from "../service/userAdmin";
 import { CenterLoader } from "./Loader";
 import ShowError from "./ShowError";
 import { convertFromTimestamp } from "@/utils";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { toast } from "react-toastify";
+import AdvancedSettings from "./AdvancedSettings";
 
 const Billing = () => {
-
   const navigate = useNavigate();
-  const [cancleSubscriptionSucessModal, setCancleSubscriptionSucessModal] = useState(false);
+  const [cancleSubscriptionSucessModal, setCancleSubscriptionSucessModal] =
+    useState(false);
   const [cancleSubscriptionModal, setCancleSubscriptionModal] = useState(false);
   const [helpUsImproveModal, setHelpUsImproveModal] = useState(false);
-  const {
-    user,
-    setCardListingModal
-  } = useUser();
+  const { user, setCardListingModal } = useUser();
 
-  const userType = user?.signInUserSession?.idToken?.payload['cognito:groups']?.[0];
+  const userType =
+    user?.signInUserSession?.idToken?.payload["cognito:groups"]?.[0];
   const queryClient = useQueryClient();
-  const {userId,userType: userRole} = useUserIdType();
+  const { userId, userType: userRole } = useUserIdType();
   const subcriptionDetailQuery = useQuery({
     queryKey: ["subcription-details"],
     queryFn: () => getSubscriptionDetails(user?.attributes?.sub, userType),
     enabled: !!user?.attributes?.sub && !!userType,
-  })
+  });
   const cancelSubscriptionMutation = useMutation({
-    mutationFn: (reason) => cancelSubscription(userId, userType, user?.cancel_at_period_end ? false : true, reason=""),
+    mutationFn: (reason) =>
+      cancelSubscription(
+        userId,
+        userType,
+        user?.cancel_at_period_end ? false : true,
+        (reason = ""),
+      ),
     onSuccess: (data) => {
-      if(!user?.cancel_at_period_end) {
+      if (!user?.cancel_at_period_end) {
         setCancleSubscriptionModal(false);
         setHelpUsImproveModal(false);
-      } else
-        toast.success(data?.message)
-      queryClient.invalidateQueries({queryKey: ["subcription-details"]})
+      } else toast.success(data?.message);
+      queryClient.invalidateQueries({ queryKey: ["subcription-details"] });
     },
     onError: (err) => {
-      toast.error(err?.response?.data?.message ?? "Something went wrong.")
-    }
-  })
+      toast.error(err?.response?.data?.message ?? "Something went wrong.");
+    },
+  });
   const cardDetail = subcriptionDetailQuery?.data?.payment_methods?.[0] || {};
   return (
     <>
@@ -64,7 +71,7 @@ const Billing = () => {
         onClose={() => setHelpUsImproveModal(false)}
         onSubmit={() => setCancleSubscriptionSucessModal(true)}
         cancelSubscriptionMutation={cancelSubscriptionMutation}
-        />
+      />
       <SubscriptionCanceledSuccessModal
         open={cancleSubscriptionSucessModal}
         onClose={() => setCancleSubscriptionSucessModal(false)}
@@ -91,10 +98,14 @@ const Billing = () => {
           onOpenChange={() => setPaymentFailedModal(false)}
         />
       )} */}
-      <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full h-content shadow-md">
+      <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full h-content shadow-md mb-5">
         {subcriptionDetailQuery?.isLoading && <CenterLoader />}
-        {subcriptionDetailQuery?.isError && <ShowError message={"Subscription required to access this feature."}/>}
-        {subcriptionDetailQuery?.isSuccess &&
+        {subcriptionDetailQuery?.isError && (
+          <ShowError
+            message={"Subscription required to access this feature."}
+          />
+        )}
+        {subcriptionDetailQuery?.isSuccess && (
           <CardContent className="w-full space-y-6">
             <div>
               <h2 className="text-xl font-semibold text-secondary !font-poppins">
@@ -108,7 +119,7 @@ const Billing = () => {
                   Plan
                 </p>
                 <p className="text-base text-secondary font-medium mt-1">
-                 {subcriptionDetailQuery.data.planType?.replaceAll("_", " ")}
+                  {subcriptionDetailQuery.data.planType?.replaceAll("_", " ")}
                 </p>
               </div>
 
@@ -116,15 +127,20 @@ const Billing = () => {
                 <p className="text-sm text-coffee-text-billing font-medium uppercase ">
                   Billing Cycle
                 </p>
-                { subcriptionDetailQuery?.data?.planType && ["PAY_AS_YOU_GO_PLAN", "EXPLORE_PLAN", "NO_ACTIVE_PLAN"]?.includes(subcriptionDetailQuery.data.planType) ? 
+                {subcriptionDetailQuery?.data?.planType &&
+                [
+                  "PAY_AS_YOU_GO_PLAN",
+                  "EXPLORE_PLAN",
+                  "NO_ACTIVE_PLAN",
+                ]?.includes(subcriptionDetailQuery.data.planType) ? (
                   <p className="text-base text-secondary font-medium mt-1">
                     None
-                  </p> 
-                  :
+                  </p>
+                ) : (
                   <p className="text-base font-semibold text-gray-900 mt-1 mb-4">
                     Monthly
                   </p>
-                }
+                )}
                 {/* <button className="text-sm text-secondary  font-medium mt-1 hover:underline">
                   Switch to annual plan
                 </button> */}
@@ -135,28 +151,38 @@ const Billing = () => {
                   Billing Cycle
                 </p>
                 <div className="flex items-center justify-between text-sm text-gray-700">
-                { subcriptionDetailQuery?.data?.planType && ["PAY_AS_YOU_GO_PLAN", "EXPLORE_PLAN", "NO_ACTIVE_PLAN"]?.includes(subcriptionDetailQuery.data.planType) ? 
-                <p className="text-base text-secondary font-medium mt-1">
-                    None
-                  </p> 
-                  :
-                  <>
-                    <div>
-                      <p className="font-semibold">Monthly</p>
-                      <p className="text-secondary  font-medium text-xs">
-                        {convertFromTimestamp(subcriptionDetailQuery?.data?.previousBillingDate, "monthDateYear")}
-                      </p>  
-                    </div>
-                    <span className="mx-2 text-secondary font-medium">↔</span>
-                    <div>
-                      <p className="font-semibold">Next Billing</p>
-                      <p className="text-secondary font-medium text-xs">
-                        {convertFromTimestamp(subcriptionDetailQuery?.data?.nextBillingDate, "monthDateYear")}
-                      </p>
-                    </div>
-                  </>
-                  }
-
+                  {subcriptionDetailQuery?.data?.planType &&
+                  [
+                    "PAY_AS_YOU_GO_PLAN",
+                    "EXPLORE_PLAN",
+                    "NO_ACTIVE_PLAN",
+                  ]?.includes(subcriptionDetailQuery.data.planType) ? (
+                    <p className="text-base text-secondary font-medium mt-1">
+                      None
+                    </p>
+                  ) : (
+                    <>
+                      <div>
+                        <p className="font-semibold">Monthly</p>
+                        <p className="text-secondary  font-medium text-xs">
+                          {convertFromTimestamp(
+                            subcriptionDetailQuery?.data?.previousBillingDate,
+                            "monthDateYear",
+                          )}
+                        </p>
+                      </div>
+                      <span className="mx-2 text-secondary font-medium">↔</span>
+                      <div>
+                        <p className="font-semibold">Next Billing</p>
+                        <p className="text-secondary font-medium text-xs">
+                          {convertFromTimestamp(
+                            subcriptionDetailQuery?.data?.nextBillingDate,
+                            "monthDateYear",
+                          )}
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -180,10 +206,13 @@ const Billing = () => {
                     <div className="flex gap-4">
                       <p className="ttext-secondary font-semibold">
                         {/* {subcriptionDetailQuery?.data?.customerName}  */}
-                        <span className="tracking-widest">**** {cardDetail?.last4}</span>
+                        <span className="tracking-widest">
+                          **** {cardDetail?.last4}
+                        </span>
                       </p>
                       <p className="text-sm text-coffee-text-billing font-medium">
-                        Expire {`${cardDetail?.exp_month}`?.padStart(2, "0")}/{cardDetail?.exp_year}
+                        Expire {`${cardDetail?.exp_month}`?.padStart(2, "0")}/
+                        {cardDetail?.exp_year}
                       </p>
                     </div>
                   </div>
@@ -211,7 +240,13 @@ const Billing = () => {
                   </p>
                   <button
                     className="text-sm text-secondary font-medium mt-1 hover:underline mr-90"
-                    onClick={() => userRole==="broker" ? navigate("/broker/setting/billing-history") : userRole==="organisation" ? navigate("/organisation/setting/billing-history") : navigate("/agent/setting/billing-history")}
+                    onClick={() =>
+                      userRole === "broker"
+                        ? navigate("/broker/setting/billing-history")
+                        : userRole === "organisation"
+                          ? navigate("/organisation/setting/billing-history")
+                          : navigate("/agent/setting/billing-history")
+                    }
                   >
                     View
                   </button>
@@ -247,8 +282,9 @@ const Billing = () => {
               </div>
             </div> */}
           </CardContent>
-        }
+        )}
       </div>
+      <AdvancedSettings />
     </>
   );
 };

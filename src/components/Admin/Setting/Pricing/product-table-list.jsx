@@ -2,6 +2,7 @@
 import { CenterLoader } from "@/components/common/Loader";
 import ShowError from "@/components/common/ShowError";
 import { deleteProduct, listPricing } from "@/components/service/userAdmin";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -35,7 +36,7 @@ const ProductTable = ({ pricingListingQuery, onDelete }) => {
               <TableHead>Product Type</TableHead>
               <TableHead className="text-center">Pricing Type</TableHead>
               <TableHead className="text-center">Created</TableHead>
-              <TableHead>Updated</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -43,7 +44,7 @@ const ProductTable = ({ pricingListingQuery, onDelete }) => {
             {data?.data?.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={7}
                   className="font-medium text-center py-10"
                 >
                   No Records found.
@@ -60,7 +61,16 @@ const ProductTable = ({ pricingListingQuery, onDelete }) => {
                     {convertUnixToLocalTime(item?.created)}
                   </TableCell>
                   <TableCell className="text-center">
-                    {convertUnixToLocalTime(item?.updated)}
+                    <Badge
+                      variant={item?.active ? "default" : "secondary"}
+                      className={
+                        item?.active
+                          ? "bg-green-400 text-white"
+                          : "bg-red-400 text-white"
+                      }
+                    >
+                      {item?.active ? "Active" : "Inactive"}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2 flex-row">

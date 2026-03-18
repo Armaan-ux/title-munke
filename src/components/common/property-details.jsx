@@ -312,27 +312,59 @@ const PropertyDetails = () => {
 
               <div className="flex flex-col gap-4">
                 {(() => {
-                  const lat = parseFloat(propertyDetailQuery?.data?.latitude);
-                  const lng = parseFloat(propertyDetailQuery?.data?.longitude);
-                  const isValidCoords = !isNaN(lat) && !isNaN(lng);
+                  const latVal = propertyDetailQuery?.data?.latitude;
+                  const lngVal = propertyDetailQuery?.data?.longitude;
+                  const lat = latVal ? parseFloat(latVal) : null;
+                  const lng = lngVal ? parseFloat(lngVal) : null;
+                  const isValidCoords =
+                    lat !== null &&
+                    lng !== null &&
+                    isFinite(lat) &&
+                    isFinite(lng) &&
+                    lat >= -90 &&
+                    lat <= 90 &&
+                    lng >= -180 &&
+                    lng <= 180;
                   return (
                     <div
                       className={`rounded-xl overflow-hidden ${isValidCoords ? "border border-[#F1EDEA]" : ""}`}
                     >
-                      <StreetView lat={lat} lng={lng} />
+                      {isValidCoords ? (
+                        <StreetView lat={lat} lng={lng} />
+                      ) : (
+                        <div className="h-[300px] flex items-center justify-center bg-[#F9F6F4] rounded-xl">
+                          <p className="text-[#7A7676]">Street view unavailable</p>
+                        </div>
+                      )}
                     </div>
                   );
                 })()}
 
                 {(() => {
-                  const lat = parseFloat(propertyDetailQuery?.data?.latitude);
-                  const lng = parseFloat(propertyDetailQuery?.data?.longitude);
-                  const isValidCoords = !isNaN(lat) && !isNaN(lng);
+                  const latVal = propertyDetailQuery?.data?.latitude;
+                  const lngVal = propertyDetailQuery?.data?.longitude;
+                  const lat = latVal ? parseFloat(latVal) : null;
+                  const lng = lngVal ? parseFloat(lngVal) : null;
+                  const isValidCoords =
+                    lat !== null &&
+                    lng !== null &&
+                    isFinite(lat) &&
+                    isFinite(lng) &&
+                    lat >= -90 &&
+                    lat <= 90 &&
+                    lng >= -180 &&
+                    lng <= 180;
                   return (
                     <div
                       className={`rounded-xl overflow-hidden ${isValidCoords ? "border border-[#F1EDEA]" : ""}`}
                     >
-                      <GoogleMapView lat={lat} lng={lng} />
+                      {isValidCoords ? (
+                        <GoogleMapView lat={lat} lng={lng} />
+                      ) : (
+                        <div className="h-[300px] flex items-center justify-center bg-[#F9F6F4] rounded-xl">
+                          <p className="text-[#7A7676]">Map location unavailable</p>
+                        </div>
+                      )}
                     </div>
                   );
                 })()}

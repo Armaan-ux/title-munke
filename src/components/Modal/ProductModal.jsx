@@ -3,8 +3,9 @@ import { useForm, Controller } from "react-hook-form";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createPrice, createProduct } from "../service/userAdmin";
+import { queryKeys } from "@/utils";
 import {
   Select,
   SelectContent,
@@ -12,34 +13,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Loader } from "lucide-react";
-
-const PRICE_TYPES_BY_ROLE = {
-  organisation: [
-    {
-      label: "Professional Plan - Organisation",
-      value: "PROFESSIONAL_PLAN_ORGANISATION",
-    },
-    {
-      label: "Pay As You Go - Organisation",
-      value: "PAY_AS_YOU_GO_ORGANISATION",
-    },
-    {
-      label: "Explore Plan - Organisation",
-      value: "EXPLORE_PLAN_ORGANISATION",
-    },
-  ],
-  broker: [
-    { label: "Professional Plan - Broker", value: "PROFESSIONAL_PLAN_BROKER" },
-    { label: "Pay As You Go - Broker", value: "PAY_AS_YOU_GO_BROKER" },
-    { label: "Explore Plan - Broker", value: "EXPLORE_PLAN_BROKER" },
-  ],
-  agent: [
-    { label: "Professional Plan - Agent", value: "PROFESSIONAL_PLAN" },
-    { label: "Pay As You Go - Agent", value: "PAY_AS_YOU_GO" },
-    { label: "Explore Plan - Agent", value: "EXPLORE_PLAN" },
-  ],
-};
+import { Loader, X } from "lucide-react";
+import {
+  PRICE_TYPES_BY_ROLE,
+  PRODUCT_TYPES_BY_ROLE,
+  PRICE_TYPES_BY_PRODUCT,
+} from "@/utils/constant";
 
 // ── Reusable chevron icon ──────────────────────────────────────────────────
 function Chevron({ size = 12, color = "#6b7280" }) {
@@ -72,8 +51,12 @@ function SelectWrap({ children }) {
 // ── Main Component ─────────────────────────────────────────────────────────
 export default function ProductModal({ open, onClose, activeTab }) {
   const [error, setError] = useState(null);
+  const queryClient = useQueryClient();
+
   const [imagePreview, setImagePreview] = useState(null);
   const [taxCode, setTaxCode] = useState(null);
+  const [userTypeInput, setUserTypeInput] = useState("");
+  const [userTypes, setUserTypes] = useState([]);
 
   console.log("taxCode", taxCode);
   const {
@@ -89,6 +72,7 @@ export default function ProductModal({ open, onClose, activeTab }) {
       name: "",
       description: "",
       productType: "",
+      priceType: "",
       imageUrl: "",
       amount: "",
       currency: "usd",
@@ -102,6 +86,7 @@ export default function ProductModal({ open, onClose, activeTab }) {
   });
 
   const pricingType = watch("pricing");
+  const productType = watch("productType");
   const amount = watch("amount");
 
   const parsed = parseFloat(amount) || 0;
@@ -114,6 +99,24 @@ export default function ProductModal({ open, onClose, activeTab }) {
       maximumFractionDigits: 2,
     });
 
+  const handleAddUserType = () => {
+    if (userTypeInput.trim() && !userTypes.includes(userTypeInput.trim())) {
+      setUserTypes([...userTypes, userTypeInput.trim()]);
+      setUserTypeInput("");
+    }
+  };
+
+  const handleRemoveUserType = (typeToRemove) => {
+    setUserTypes(userTypes.filter((type) => type !== typeToRemove));
+  };
+
+  const handleUserTypeKeyDown = (e) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      handleAddUserType();
+    }
+  };
+
   const handleError = (error) => {
     console.log("error", error);
     setError("Something went wrong. Please try again later.");
@@ -122,6 +125,7 @@ export default function ProductModal({ open, onClose, activeTab }) {
   const handleSuccess = () => {
     onClose();
     resetformHandler();
+    queryClient.invalidateQueries({ queryKey: [queryKeys.pricingListing] });
   };
 
   const createPriceMutation = useMutation({
@@ -133,18 +137,17 @@ export default function ProductModal({ open, onClose, activeTab }) {
   const createProductMutation = useMutation({
     mutationFn: createProduct,
     onSuccess: (data, variables) => {
-      console.log("data ---------------------------  createProduct", data);
-
       createPriceMutation.mutate({
         productId: data.id,
         name: data.name,
-        metaData: data.metadata,
+        metadata: data.metadata,
         pricingType: variables.productType,
-        amount: variables.amount, // Already multiplied by 100 in payload
+        amount: variables.amount,
         currency: variables.currency || "usd",
         billingPeriod: variables.billingPeriod,
         taxBehavior: variables.taxBehavior || "unspecified",
         nickname: variables.description,
+        priceType: data?.metadata?.priceType,
       });
     },
     onError: handleError,
@@ -167,27 +170,15 @@ export default function ProductModal({ open, onClose, activeTab }) {
       billingPeriod: data.billingPeriod || "",
       statementDescriptor: data.statementDescriptor || "",
       unitLabel: data.unitLabel || "",
-      metadata: { roleType: activeTab?.id, productType: data.productType },
+      metadata: {
+        roleType: activeTab?.id,
+        productType: data.productType,
+        priceType: data.priceType,
+        product_feature: JSON.stringify(
+          userTypes.map((type) => ({ text: type })),
+        ),
+      },
     };
-
-    // const formData = new FormData();
-
-    // formData.append("name", data.name);
-    // formData.append("description", data.description || "");
-    // formData.append("taxCode", taxCode || "");
-    // formData.append("amount", data.amount * 100);
-    // formData.append("pricing", data.pricing);
-    // formData.append("includeTax", data.includeTax || "");
-    // formData.append("billingPeriod", data.billingPeriod || "");
-    // formData.append("statementDescriptor", data.statementDescriptor || "");
-    // formData.append("unitLabel", data.unitLabel || "");
-
-    // FormData cannot take object directly
-    // formData.append("metadata", JSON.stringify({ roleType: activeTab?.id }));
-
-    // if (data.imageUrl) {
-    //   formData.append("imageUrl", data.imageUrl);
-    // }
 
     createProductMutation.mutate(payload);
   };
@@ -197,6 +188,8 @@ export default function ProductModal({ open, onClose, activeTab }) {
     setImagePreview(null);
     setError(null);
     setTaxCode(null);
+    setUserTypes([]);
+    setUserTypeInput("");
   };
 
   return (
@@ -362,13 +355,61 @@ export default function ProductModal({ open, onClose, activeTab }) {
                           />
                         </SelectTrigger>
                         <SelectContent className="max-h-60">
-                          {(PRICE_TYPES_BY_ROLE[activeTab?.id || activeTab] || [])?.map(
-                            (item) => (
+                          {(
+                            PRODUCT_TYPES_BY_ROLE[activeTab?.id || activeTab] ||
+                            []
+                          )?.map((item) => (
+                            <SelectItem key={item.value} value={item.value}>
+                              {item.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                </div>
+                <div>
+                  <Label className="block text-[13px] font-medium text-gray-800 mb-1">
+                    Price Type <span className="text-red-500">*</span>
+                  </Label>
+                  <Controller
+                    name="priceType"
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => (
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="mt-1 w-full bg-white border-[#E6DFDB] focus-visible:ring-0">
+                          <SelectValue
+                            placeholder="Select price type"
+                            className="text-[#2c150f]"
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {(
+                            PRICE_TYPES_BY_ROLE[activeTab?.id || activeTab] ||
+                            []
+                          )
+                            ?.filter((priceItem) => {
+                              // If no product type selected, show all price types
+                              if (!productType) return true;
+
+                              // Get allowed price types for the selected product
+                              const allowedPriceTypes =
+                                PRICE_TYPES_BY_PRODUCT[productType] || [];
+
+                              // Filter to show only the price types mapped to this product
+                              return allowedPriceTypes.includes(
+                                priceItem.value,
+                              );
+                            })
+                            ?.map((item) => (
                               <SelectItem key={item.value} value={item.value}>
                                 {item.label}
                               </SelectItem>
-                            ),
-                          )}
+                            ))}
                         </SelectContent>
                       </Select>
                     )}
@@ -561,14 +602,18 @@ export default function ProductModal({ open, onClose, activeTab }) {
                   </Button>
                   <Button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={
+                      isSubmitting ||
+                      createProductMutation.isPending ||
+                      createPriceMutation.isPending
+                    }
                     className="bg-[#7a0c20] text-white border-0 px-6  rounded-lg text-[13px] font-medium cursor-pointer hover:opacity-90 transition-opacity disabled:opacity-60"
                   >
                     Add Product{" "}
-                    {createProductMutation.isPending ||
-                      (createPriceMutation.isPending && (
-                        <Loader className="animate-spin" />
-                      ))}
+                    {(createProductMutation.isPending ||
+                      createPriceMutation.isPending) && (
+                      <Loader className="animate-spin" />
+                    )}
                   </Button>
                 </div>
               </form>
@@ -620,7 +665,7 @@ export default function ProductModal({ open, onClose, activeTab }) {
                 </div>
 
                 {/* State */}
-                <div className="mb-5 border-b border-[#d8ccc6] pb-5">
+                <div className="mb-5 pb-5">
                   <p className="text-[11px] font-medium text-secondary mb-1.5">
                     State
                   </p>
@@ -637,29 +682,50 @@ export default function ProductModal({ open, onClose, activeTab }) {
                   </Select>
                 </div>
 
-                {/* Qty line */}
-                <p className="text-[13px] text-primary mb-4">
-                  2 × ${fmt(parsed)} = <strong>${fmt(parsed * 2)}</strong>
-                </p>
-
-                {/* Totals */}
-                <div className="border-t border-[#d8ccc6] pt-3.5 flex flex-col gap-2">
-                  {[
-                    { lbl: "Subtotal", val: fmt(parsed), bold: false },
-                    { lbl: "Sales tax 6%", val: fmt(tax), bold: false },
-                    { lbl: "Total per month", val: fmt(total), bold: true },
-                  ].map(({ lbl, val, bold }) => (
-                    <div
-                      key={lbl}
-                      className={`flex justify-between text-[13px] ${bold ? "font-bold text-secondary" : "text-secondary"}`}
-                    >
-                      <span>{lbl}</span>
-                      <span>${val}</span>
-                    </div>
-                  ))}
-                  <p className="text-[11px] text-secondary mt-0.5">
-                    Billed at the start of the period
+                {/* User Types / Product Features */}
+                <div>
+                  <p className="text-[11px] font-medium text-secondary mb-1.5">
+                    Product Features
                   </p>
+                  <div className="border border-gray-300 rounded-lg bg-white p-2">
+                    {/* Display selected user types as chips */}
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {userTypes.map((type, index) => (
+                        <div
+                          key={index}
+                          className="bg-[#7a0c20] text-white text-[11px] px-2 py-1 rounded-md flex items-center gap-1 max-w-[250px]"
+                        >
+                          <span className="truncate min-w-0">{type}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveUserType(type)}
+                            className="hover:bg-[#5a0a15] rounded transition-colors flex-shrink-0"
+                          >
+                            <X size={12} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Input field for adding new user types */}
+                    <div className="flex gap-1">
+                      <input
+                        type="text"
+                        value={userTypeInput}
+                        onChange={(e) => setUserTypeInput(e.target.value)}
+                        onKeyDown={handleUserTypeKeyDown}
+                        placeholder="Type and press Enter to add"
+                        className="flex-1 border-0 outline-none text-[11px] px-2 py-1 bg-transparent placeholder-gray-400"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddUserType}
+                        className="bg-[#7a0c20] text-white text-[11px] px-2 py-1 rounded hover:bg-[#5a0a15] transition-colors"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

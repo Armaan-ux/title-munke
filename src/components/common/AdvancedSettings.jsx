@@ -89,12 +89,12 @@ const AdvancedSettings = () => {
   }, [userType, isUnderBroker, isUnderOrganisation]);
 
   useEffect(() => {
-  if (isUnderBroker && relationship?.brokerId) {
-    setSelectedId(relationship.brokerId);
-  } else if (isUnderOrganisation && brokerRel?.organisationId) {
-    setSelectedId(brokerRel.organisationId);
-  }
-}, [isUnderBroker, isUnderOrganisation, relationship, brokerRel]);
+    if (isUnderBroker && relationship?.brokerId) {
+      setSelectedId(relationship.brokerId);
+    } else if (isUnderOrganisation && brokerRel?.organisationId) {
+      setSelectedId(brokerRel.organisationId);
+    }
+  }, [isUnderBroker, isUnderOrganisation, relationship, brokerRel]);
 
   /* -------------------- Mutations -------------------- */
   const joinRequestMutation = useMutation({
@@ -218,7 +218,10 @@ const AdvancedSettings = () => {
   }, []);
 
   const handleConnectionClick = useCallback(() => {
-    if ((userType === "agent" && isUnderBroker) || (userType==="broker" && isUnderOrganisation)) {
+    if (
+      (userType === "agent" && isUnderBroker) ||
+      (userType === "broker" && isUnderOrganisation)
+    ) {
       setCancelSubscriptionModal(true);
     } else {
       setJoinBrokerModal(true);
@@ -283,10 +286,9 @@ const AdvancedSettings = () => {
         brokerName={selectedBroker?.name || ""}
         brokerEmail={selectedBroker?.email || "N/A"}
         activeAgents={selectedBroker?.activeAgents || 0}
-       selectedId={selectedId || dropdownOptions?.[0]?.value || ""
-}
+        selectedId={selectedId || dropdownOptions?.[0]?.value || ""}
         isPending={joinRequestMutation?.isPending}
-        isUnderBroker={ isUnderBroker}
+        isUnderBroker={isUnderBroker}
         isUnderOrganisation={isUnderOrganisation}
       />
       <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full shadow-md ">
@@ -294,129 +296,131 @@ const AdvancedSettings = () => {
           <p className="text-lg font-semibold border-b border-gray-200 pb-4">
             Advanced Settings
           </p>
-          {/* Explore Platform Card */}
-          <div className="bg-[#F5F0EC] rounded-xl p-6 md:p-8 w-full shadow-sm my-5">
-            <p className="text-lg font-medium mb-2">Explore Platform</p>
-            <p className="text-gray-500 mb-4">
-              Explore searches and platform features available to you
-            </p>
-            <Button
-              className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
-              disabled
-            >
-              <Lock size={16} /> Explore Platform
-            </Button>
-          </div>
-          {/* Broker Connection Card */}
-          {userType !== "organisation" && (
-            <div className="bg-[#F5F0EC] order border-blue-300 rounded-xl p-6 md:p-8 w-full shadow-sm">
-              <p className="text-lg font-medium mb-2">
-                {" "}
-                {userType === "agent"
-                  ? "Broker Connection"
-                  : "Organization Connection"}
-              </p>
-
-              {userType === "agent" &&
-                (isUnderBroker ? (
-                  <p className="text-gray-500 mb-1">
-                    Connected to:{" "}
-                    <span className="font-semibold">{brokerFirstName}</span>
-                  </p>
-                ) : (
-                  <p className="text-gray-500 mb-1">Select Broker to Join</p>
-                ))}
-
-              {userType === "broker" &&
-                (isUnderOrganisation ? (
-                  <p className="text-gray-500 mb-1">
-                    Connected to:{" "}
-                    <span className="font-semibold">
-                      {organisationFirstName}
-                    </span>
-                  </p>
-                ) : (
-                  <p className="text-gray-500 mb-1">
-                    Select Organization to Join
-                  </p>
-                ))}
-
-              <p className="text-secondary mb-4">
-                Role :{" "}
-                <span className="font-semibold">
-                  {userType === "agent" ? `Agent` : `Broker`}
-                </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+            {/* Explore Platform Card */}
+            <div className="bg-[#F5F0EC] rounded-xl p-6 md:p-8 shadow-sm">
+              <p className="text-lg font-medium mb-2">Explore Platform</p>
+              <p className="text-gray-500 mb-4">
+                Explore searches and platform features available to you
               </p>
               <Button
-                onClick={handleConnectionClick}
-                className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition"
+                className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+                disabled
               >
-                {buttonLabel}
-                <ArrowRight size={16} />
+                <Lock size={16} /> Explore Platform
               </Button>
             </div>
-          )}
-          {/* Pay as You Do Card */}
-          <div
-            className={`rounded-xl p-6 md:p-8 w-full shadow-sm my-5 transition-all duration-200
+            {/* Broker Connection Card */}
+            {userType !== "organisation" && (
+              <div className="bg-[#F5F0EC] border border-blue-300 rounded-xl p-6 md:p-8 shadow-sm">
+                <p className="text-lg font-medium mb-2">
+                  {" "}
+                  {userType === "agent"
+                    ? "Broker Connection"
+                    : "Organization Connection"}
+                </p>
+
+                {userType === "agent" &&
+                  (isUnderBroker ? (
+                    <p className="text-gray-500 mb-1">
+                      Connected to:{" "}
+                      <span className="font-semibold">{brokerFirstName}</span>
+                    </p>
+                  ) : (
+                    <p className="text-gray-500 mb-1">Select Broker to Join</p>
+                  ))}
+
+                {userType === "broker" &&
+                  (isUnderOrganisation ? (
+                    <p className="text-gray-500 mb-1">
+                      Connected to:{" "}
+                      <span className="font-semibold">
+                        {organisationFirstName}
+                      </span>
+                    </p>
+                  ) : (
+                    <p className="text-gray-500 mb-1">
+                      Select Organization to Join
+                    </p>
+                  ))}
+
+                <p className="text-secondary mb-4">
+                  Role :{" "}
+                  <span className="font-semibold">
+                    {userType === "agent" ? `Agent` : `Broker`}
+                  </span>
+                </p>
+                <Button
+                  onClick={handleConnectionClick}
+                  className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition"
+                >
+                  {buttonLabel}
+                  <ArrowRight size={16} />
+                </Button>
+              </div>
+            )}
+            {/* Pay as You Do Card */}
+            <div
+              className={`rounded-xl p-6 md:p-8 shadow-sm transition-all duration-200
     ${
       isPayAsYouGoSelected
         ? "border-2 border-tertiary shadow-lg -translate-y-1 bg-white"
         : "border border-transparent bg-[#F5F0EC]"
     }`}
-          >
-            <p className="text-lg font-medium mb-2">Pay as You Go</p>
-            <p className="text-gray-500 mb-4">
-              Pay only for the searches you run — no subscription required.
-            </p>
-            <Button
-              disabled={
-                isUnderBroker ||
-                isUnderOrganisation ||
-                isPayAsYouGoSelected ||
-                changingPlan === "PAY_AS_YOU_GO"
-              }
-              onClick={() => changePlanModalHandler("PAY_AS_YOU_GO")}
-              className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition"
             >
-              Get Started{" "}
-              {changingPlan === "PAY_AS_YOU_GO" ? (
-                <Loader className="animate-spin" size={18} />
-              ) : (
-                <ArrowRight size={16} />
-              )}
-            </Button>
-          </div>
-          {/* Subscription plan change  */}
-          <div
-            className={`rounded-xl p-6 md:p-8 w-full shadow-sm my-5 transition-all duration-200
+              <p className="text-lg font-medium mb-2">Pay as You Go</p>
+              <p className="text-gray-500 mb-4">
+                Pay only for the searches you run — no subscription required.
+              </p>
+              <Button
+                disabled={
+                  isUnderBroker ||
+                  isUnderOrganisation ||
+                  isPayAsYouGoSelected ||
+                  changingPlan === "PAY_AS_YOU_GO"
+                }
+                onClick={() => changePlanModalHandler("PAY_AS_YOU_GO")}
+                className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition"
+              >
+                Get Started{" "}
+                {changingPlan === "PAY_AS_YOU_GO" ? (
+                  <Loader className="animate-spin" size={18} />
+                ) : (
+                  <ArrowRight size={16} />
+                )}
+              </Button>
+            </div>
+            {/* Subscription plan change  */}
+            <div
+              className={`rounded-xl p-6 md:p-8 shadow-sm transition-all duration-200
     ${
       isProfessionalSelected
         ? "border-2 border-tertiary shadow-lg -translate-y-1 bg-white"
         : "border border-transparent bg-[#F5F0EC]"
     }`}
-          >
-            <p className="text-lg font-medium mb-2">Subscription Plan</p>
-            <p className="text-gray-500 mb-4">
-              Pay a monthly fee for unlimited searches and premium features.
-            </p>
-            <Button
-              disabled={
-                isUnderBroker ||
-                isUnderOrganisation ||
-                isProfessionalSelected ||
-                changingPlan === "PROFESSIONAL_PLAN"
-              }
-              onClick={() => changePlanModalHandler("PROFESSIONAL_PLAN")}
-              className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition"
             >
-              Get Started
-              {changingPlan === "PROFESSIONAL_PLAN" ? (
-                <Loader className="animate-spin" size={18} />
-              ) : (
-                <ArrowRight size={16} />
-              )}
-            </Button>
+              <p className="text-lg font-medium mb-2">Subscription Plan</p>
+              <p className="text-gray-500 mb-4">
+                Pay a monthly fee for unlimited searches and premium features.
+              </p>
+              <Button
+                disabled={
+                  isUnderBroker ||
+                  isUnderOrganisation ||
+                  isProfessionalSelected ||
+                  changingPlan === "PROFESSIONAL_PLAN"
+                }
+                onClick={() => changePlanModalHandler("PROFESSIONAL_PLAN")}
+                className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition"
+              >
+                Get Started
+                {changingPlan === "PROFESSIONAL_PLAN" ? (
+                  <Loader className="animate-spin" size={18} />
+                ) : (
+                  <ArrowRight size={16} />
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </div>

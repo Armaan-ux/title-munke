@@ -5,10 +5,18 @@ import AddPricingModal from "@/components/Modal/AddPricingModal";
 import { deactivePrice } from "@/components/service/userAdmin";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
+import { PRICE_TYPES_BY_ROLE } from "@/utils/constant";
 
 export default function PricingDetails({ data, invalidateFun, isPending }) {
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+
+  // Helper function to get price type label
+  const getPriceTypeLabel = (roleType, priceType) => {
+    const priceTypesArray = PRICE_TYPES_BY_ROLE[roleType] || [];
+    const priceTypeObj = priceTypesArray.find((item) => item.value === priceType);
+    return priceTypeObj?.label || priceType || "-";
+  };
 
   const deleteUserMutation = useMutation({
     mutationFn: ({ priceId, productType }) =>
@@ -80,7 +88,7 @@ export default function PricingDetails({ data, invalidateFun, isPending }) {
               <div className="grid grid-cols-5 bg-[#F2EAE3] text-sm font-medium text-[#6C5E55] p-3">
                 <div>Price</div>
                 <div>Description</div>
-                <div>Subscription</div>
+                <div>Price Type</div>
                 <div>Created</div>
                 <div className="text-right">Action</div>
               </div>
@@ -101,7 +109,7 @@ export default function PricingDetails({ data, invalidateFun, isPending }) {
                         >
                           <div>{`US$ ${prices?.unit_amount / 100}`}</div>
                           <div>{prices?.nickname || "-"}</div>
-                          <div>-</div>
+                          <div>{getPriceTypeLabel(prices?.metadata?.roleType, prices?.metadata?.priceType)}</div>
                           <div>{convertUnixToLocalTime(prices?.created)}</div>
                           <div className="flex justify-end">
                             <button

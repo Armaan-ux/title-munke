@@ -17,16 +17,16 @@ const agentTypes = [
     name: "Billing",
     id: "billing",
   },
-  {
-    name: "Advanced Settings",
-    id: "advanced",
-  },
+  // {
+  //   name: "Advanced Settings",
+  //   id: "advanced",
+  // },
 ];
 
 export default function AdminSettings() {
   const [activeTab, setActiveTab] = useState(agentTypes[0]);
   const [editProfile, setIsProfile] = useState(false);
-  
+
   return (
     <div className="bg-[#F5F0EC] rounded-lg px-7 py-4 mt-3 text-secondary">
       {editProfile !== true && (
@@ -51,7 +51,7 @@ export default function AdminSettings() {
       )}
       {activeTab.id === "notifications" && <Notification />}
       {activeTab.id === "billing" && <Billing />}
-      {activeTab.id === "advanced" && <AdvancedSettings  />}
+      {/* {activeTab.id === "advanced" && <AdvancedSettings  />} */}
     </div>
   );
 }

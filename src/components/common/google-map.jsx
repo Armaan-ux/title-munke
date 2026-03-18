@@ -9,16 +9,26 @@ export default function GoogleMapView({ lat, lng }) {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
   });
+
+  // Ensure coordinates are valid numbers
+  const parsedLat = typeof lat === "number" ? lat : null;
+  const parsedLng = typeof lng === "number" ? lng : null;
+
   const isValidCoords =
-    typeof lat === "number" &&
-    typeof lng === "number" &&
-    !isNaN(lat) &&
-    !isNaN(lng);
+    parsedLat !== null &&
+    parsedLng !== null &&
+    isFinite(parsedLat) &&
+    isFinite(parsedLng) &&
+    parsedLat >= -90 &&
+    parsedLat <= 90 &&
+    parsedLng >= -180 &&
+    parsedLng <= 180;
 
   if (!isLoaded) return <p>Loading map...</p>;
   if (!isValidCoords) return <p className="mt-60">Location unavailable</p>;
-  
-  const center = { lat, lng };
+
+  const center = { lat: parsedLat, lng: parsedLng };
+
   return (
     <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={14}>
       <Marker position={center} />

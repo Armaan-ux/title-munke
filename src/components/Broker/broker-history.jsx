@@ -80,7 +80,7 @@ function History({isAll=false}) {
       console.error("Error fetching search histories:", error);
     }
     setLoading(false);
-  }, [loading, hasMore, nextToken, user, user?.invalidateSearchHistory]);
+  }, [loading, hasMore, nextToken, user, searchHistories, invalidateSearchHistory, setInvalidateSearchHistory]);
 
   const fetchAgentSearchHistories = useCallback(async () => {
     if (loading || !hasMore) return;
@@ -100,7 +100,7 @@ function History({isAll=false}) {
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
 
-      const inProgress = items.filter((item) => item.status === "In Progress");
+      const inProgress = items.filter((item) => item.status === "IN_PROGRESS");
       setInProgressSearches((prev) => [...prev, ...inProgress]);
     } catch (error) {
       console.error("Error fetching agent search histories:", error);
@@ -108,17 +108,9 @@ function History({isAll=false}) {
     setLoading(false);
   }, [loading, hasMore, nextToken, user]);
 
-  const checkSearchStatus = async (searchId, id) => {
+  const checkSearchStatus = useCallback(async (searchId, id) => {
     try {
-      // const response = await axios.post(
-      //   "https://hwk77cjbdtmopznce6tneqknvi0rqvta.lambda-url.us-east-1.on.aws/",
-      //   {
-      //     mode: "CHECK_STATUS",
-      //     search_id: searchId,
-      //   }
-      // );
-      const response = await getSearchedStatus(searchId)
-
+      const response = await getSearchedStatus(searchId);
       const { status, zip_url } = response;
 
       if (status === "SUCCESS") {
@@ -149,7 +141,7 @@ function History({isAll=false}) {
     } catch (error) {
       console.error(`Error checking status for ${searchId}:`, error);
     }
-  };
+  }, []);
 
   const resetStateOnTabChange = () => {
     setInProgressSearches([]);
@@ -160,17 +152,26 @@ function History({isAll=false}) {
   };
 
   useEffect(() => {
+    if (!inProgressSearches.length) return;
+    
+    // Check immediately on mount
     inProgressSearches.forEach((search) => {
       checkSearchStatus(search.searchId, search.id);
     });
+    
+    // Set up interval - don't include inProgressSearches in dependencies
     const interval = setInterval(() => {
-      inProgressSearches.forEach((search) => {
-        checkSearchStatus(search.searchId, search.id);
+      setSearchHistories((currentHistories) => {
+        const currentInProgress = currentHistories.filter((item) => item.status === "IN_PROGRESS");
+        currentInProgress.forEach((search) => {
+          checkSearchStatus(search.searchId, search.id);
+        });
+        return currentHistories;
       });
     }, INTERVALTIME);
 
     return () => clearInterval(interval);
-  }, [inProgressSearches]);
+  }, [checkSearchStatus]);
 
   useEffect(() => {
     if (user?.attributes?.sub) {

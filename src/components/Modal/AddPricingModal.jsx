@@ -24,59 +24,7 @@ import { useMutation } from "@tanstack/react-query";
 import { createPrice } from "../service/userAdmin";
 import { toast } from "react-toastify";
 import { Loader } from "lucide-react";
-
-const PRICE_TYPES_BY_ROLE = {
-  organisation: [
-    {
-      label: "Professional Plan - Organisation Base Price",
-      value: "BASE_PRICE_PROFESSIONAL_PLAN_ORGANISATION",
-    },
-    {
-      label: "Professional Plan - Organisation Seat Price",
-      value: "SEAT_PRICE_PROFESSIONAL_PLAN_ORGANISATION",
-    },
-    {
-      label: "Professional Plan - Organisation Search Usage Price",
-      value: "SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN_ORGANISATION",
-    },
-    {
-      label: "Pay As You Go - Organisation Search Usage Price",
-      value: "SEARCH_USAGE_PRICE_PAY_AS_YOU_GO_ORGANISATION",
-    },
-  ],
-  broker: [
-    {
-      label: "Professional Plan - Broker Base Price",
-      value: "BASE_PRICE_PROFESSIONAL_PLAN_BROKER",
-    },
-    {
-      label: "Professional Plan - Broker Seat Price",
-      value: "SEAT_PRICE_PROFESSIONAL_PLAN_BROKER",
-    },
-    {
-      label: "Professional Plan - Broker Search Usage Price",
-      value: "SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN_BROKER",
-    },
-    {
-      label: "Pay As You Go - Broker Search Usage Price",
-      value: "SEARCH_USAGE_PRICE_PAY_AS_YOU_GO_BROKER",
-    },
-  ],
-  agent: [
-    {
-      label: "Professional Plan - Agent Base Price",
-      value: "BASE_PRICE_PROFESSIONAL_PLAN",
-    },
-    {
-      label: "Professional Plan - Agent Search Usage Price",
-      value: "SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN",
-    },
-    {
-      label: "Pay As You Go - Agent Search Usage Price",
-      value: "SEARCH_USAGE_PRICE_PAY_AS_YOU_GO",
-    },
-  ],
-};
+import { PRICE_TYPES_BY_PRODUCT, PRICE_TYPES_BY_ROLE } from "@/utils/constant";
 
 export default function AddPricingModal({
   open,
@@ -216,11 +164,22 @@ export default function AddPricingModal({
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    {(PRICE_TYPES_BY_ROLE[metadata?.roleType] || [])?.map((item) => (
-                      <SelectItem key={item.value} value={item.value}>
-                        {item.label}
-                      </SelectItem>
-                    ))}
+                    {(PRICE_TYPES_BY_ROLE[metadata?.roleType] || [])?.filter((priceItem) => {
+                                                // If no product type selected, show all price types
+                                                if (!metadata?.productType) return true;
+                                                
+                                                // Get allowed price types for the selected product
+                                                const allowedPriceTypes = PRICE_TYPES_BY_PRODUCT[metadata?.productType] || [];
+                                                
+                                                // Filter to show only the price types mapped to this product
+                                                return allowedPriceTypes.includes(priceItem.value);
+                                              })?.map(
+                      (item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ),
+                    )}
                   </SelectContent>
                 </Select>
               )}

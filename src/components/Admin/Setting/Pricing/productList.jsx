@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import ProductTableList from "@/components/Admin/Setting/Pricing/product-table-list";
 import ProductFilter from "@/components/common/product-filter";
@@ -19,7 +19,14 @@ const ProductList = () => {
       id: "agent",
     },
   ];
-  const [activeTab, setActiveTab] = useState(agentTypes[0]);
+  const [activeTab, setActiveTab] = useState(() => {
+    const savedTabId = localStorage.getItem("productListActiveTab");
+    return agentTypes.find((tab) => tab.id === savedTabId) || agentTypes[0];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("productListActiveTab", activeTab.id);
+  }, [activeTab]);
   const [active, setActive] = useState("all");
   const [showModal , setShowModal] = useState(false);
 
