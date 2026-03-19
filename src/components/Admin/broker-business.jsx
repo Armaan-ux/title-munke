@@ -56,7 +56,7 @@ export default function OrganisationBrokerBusiness() {
             <p
               className={`bg-white text-tertiary font-semibold text-lg transition-all rounded-full px-10 py-3 `}
             >
-              {metricQuery?.isSuccess && <span>${metricQuery?.data?.totalBusinessRevenue ?? "--"}</span>}
+              {metricQuery?.isSuccess && <span>${metricQuery?.data?.brokerRevenueResults ?? "--"}</span>}
               {metricQuery?.isLoading && <Loader2 className="w-6 h-10 animate-spin text-secondary" />}
             </p>
           </div>

@@ -63,7 +63,11 @@ const Pricing = () => {
       setUserType(null);
     }
   }, [view]);
-
+const planOrder = {
+  EXPLORE_PLAN: 1,
+  PROFESSIONAL_PLAN: 2,
+  PAY_AS_YOU_GO: 3,
+};
   const {
     data: stripeProducts,
     isLoading: isStripeLoading,
@@ -244,20 +248,22 @@ const Pricing = () => {
             a member, or pay only when you need a report.`}
             </p>
 
-              {isStripeLoading && (
-             <div className="flex justify-center items-center w-full py-10">
-    <Loader2 className="w-10 h-10 animate-spin text-secondary" />
-  </div>
-              )}
-             {isError && (
-  <div className="flex justify-center items-center w-full mb-4">
-    <div className="text-center text-red-500">
-      Failed to load latest pricing. Showing default plans.
-    </div>
-  </div>
-)}
+            {isStripeLoading && (
+              <div className="flex justify-center items-center w-full py-10">
+                <Loader2 className="w-10 h-10 animate-spin text-secondary" />
+              </div>
+            )}
+            {isError && (
+              <div className="flex justify-center items-center w-full mb-4">
+                <div className="text-center text-red-500">
+                  Failed to load latest pricing. Showing default plans.
+                </div>
+              </div>
+            )}
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-              {stripeProducts?.data?.map((plan, index) => {
+              {stripeProducts?.data?.sort((a, b) => {
+  return planOrder[a.id] - planOrder[b.id];
+})?.map((plan, index) => {
                 const isSelected = selectedPlan === plan.id;
                 return (
                   <motion.div
@@ -309,7 +315,10 @@ const Pricing = () => {
                         size="lg"
                         onClick={() => {
                           setSelectedPlan(plan.id);
-                          localStorage.setItem("price", `$${plan.price?.base ?plan.price?.base :plan.price?.amount}`);
+                          localStorage.setItem(
+                            "price",
+                            `$${plan.price?.base ? plan.price?.base : plan.price?.amount}`,
+                          );
                           navigate(
                             `/subscription-signup/${userType}/${plan.id}`,
                           );
@@ -321,7 +330,6 @@ const Pricing = () => {
                   </motion.div>
                 );
               })}
-             
             </div>
           </div>
         </section>

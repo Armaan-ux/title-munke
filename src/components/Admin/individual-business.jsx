@@ -14,6 +14,7 @@ export default function OrganisationAgentBusiness() {
     queryKey: ['admin-metrics', "all_time", userTimezone],
     queryFn: () => getAdminMetrics({admin_dashboard_global_filter: "all_time", userTimezone })
   })
+  console.log("metricQuery",metricQuery?.data)
     return(
             <>
               <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
@@ -26,7 +27,7 @@ export default function OrganisationAgentBusiness() {
                     <p
                       className={`bg-white text-tertiary font-semibold text-lg transition-all rounded-full px-10 py-3 `}
                     >
-                      {metricQuery?.isSuccess && <span>${metricQuery?.data?.totalBusinessRevenueForIndividual ?? "--"}</span>}
+                      {metricQuery?.isSuccess && <span>${metricQuery?.data?.agentRevenueResults ?? "--"}</span>}
                       {metricQuery?.isLoading && <Loader2 className="w-6 h-10 animate-spin text-secondary" />}
                     </p>
                   </div>
