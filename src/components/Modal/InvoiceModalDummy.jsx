@@ -213,16 +213,17 @@ export function InvoiceModalDummy({ open, onClose, invoice, isPrint = true }) {
                   let priceName = "";
                   if (
                     plan.priceMetadata?.productType ===
-                    "PROFESSIONAL_PLAN_ORGANISATION"
+                    "PROFESSIONAL_PLAN_ORGANISATION" || plan.priceMetadata?.productType === "PROFESSIONAL_PLAN_BROKER"
+                    ||plan.priceMetadata?.productType === "PROFESSIONAL_PLAN"
                   ) {
                     if (
                       plan.priceMetadata?.priceType ===
-                      "BASE_PRICE_PROFESSIONAL_PLAN_ORGANISATION"
+                      "BASE_PRICE_PROFESSIONAL_PLAN_ORGANISATION" ||  plan.priceMetadata?.priceType === "BASE_PRICE_PROFESSIONAL_PLAN_BROKER" || plan?.priceMetadata?.priceType === "BASE_PRICE_PROFESSIONAL_PLAN"
                     ) {
                       priceName = "Base Price";
                     } else if (
                       plan.priceMetadata?.priceType ===
-                      "SEAT_PRICE_PROFESSIONAL_PLAN_ORGANISATION"
+                      "SEAT_PRICE_PROFESSIONAL_PLAN_ORGANISATION" ||  plan.priceMetadata?.priceType ==="SEAT_PRICE_PROFESSIONAL_PLAN_BROKER" || plan.priceMetadata?.priceType ==="SEAT_PRICE_PROFESSIONAL_PLAN"
                     ) {
                       priceName = "Seat Price";
                     }

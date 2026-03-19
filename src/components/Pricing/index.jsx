@@ -1,5 +1,5 @@
 import Navbar from "../Home/navbar";
-import { ArrowRight, MoveRight } from "lucide-react";
+import { ArrowRight, Loader2, MoveRight } from "lucide-react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
@@ -105,7 +105,7 @@ const Pricing = () => {
           )}
 
           <div>
-            <div className="text-2xl font-semibold text-secondary font-poppins">
+            <div className="text-2xl max-w-[200px] w-full font-semibold text-secondary font-poppins">
               {title}
             </div>
 
@@ -244,10 +244,19 @@ const Pricing = () => {
             a member, or pay only when you need a report.`}
             </p>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
               {isStripeLoading && (
-                <div className="text-center py-10">Loading plans...</div>
+             <div className="flex justify-center items-center w-full py-10">
+    <Loader2 className="w-10 h-10 animate-spin text-secondary" />
+  </div>
               )}
+             {isError && (
+  <div className="flex justify-center items-center w-full mb-4">
+    <div className="text-center text-red-500">
+      Failed to load latest pricing. Showing default plans.
+    </div>
+  </div>
+)}
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
               {stripeProducts?.data?.map((plan, index) => {
                 const isSelected = selectedPlan === plan.id;
                 return (
@@ -300,7 +309,7 @@ const Pricing = () => {
                         size="lg"
                         onClick={() => {
                           setSelectedPlan(plan.id);
-                          localStorage.setItem("price", plan.price);
+                          localStorage.setItem("price", `$${plan.price?.base ?plan.price?.base :plan.price?.amount}`);
                           navigate(
                             `/subscription-signup/${userType}/${plan.id}`,
                           );
@@ -312,11 +321,7 @@ const Pricing = () => {
                   </motion.div>
                 );
               })}
-              {isError && (
-                <div className="text-center text-red-500 mb-4">
-                  Failed to load latest pricing. Showing default plans.
-                </div>
-              )}
+             
             </div>
           </div>
         </section>
