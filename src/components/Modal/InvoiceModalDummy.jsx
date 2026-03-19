@@ -20,46 +20,88 @@ export function InvoiceModalDummy({ open, onClose, invoice, isPrint = true }) {
 
   const handleDownloadCSV = () => {
     const csvData = [];
-    
+
     // Add header info
-    csvData.push(['Invoice ID', invoice?.id]);
-    csvData.push(['Bill Date', convertFromTimestamp(invoice?.created, "dateTime")]);
-    csvData.push(['Customer', invoice?.customer_name]);
+    csvData.push(["Invoice ID", invoice?.id]);
+    csvData.push([
+      "Bill Date",
+      convertFromTimestamp(invoice?.created, "dateTime"),
+    ]);
+    csvData.push(["Customer", invoice?.customer_name]);
     csvData.push([]);
-    
+
     // Add table header
-    csvData.push(['Description', 'QTY', 'Price', 'Amount']);
-    
+    csvData.push(["Description", "QTY", "Price", "Amount"]);
+
     // Add line items
-    if (invoice?.plans?.length > 0 && 
-        (invoice?.description?.includes(`1 × Professional Plan (Broker) (at $10.00 / month)`) || 
-         invoice?.description?.includes(`1 × Professional Plan (Organisation) (at $10.00 / month)`))) {
-      invoice.plans.forEach(plan => {
-        const priceName = plan.priceName === "Seat price in Professional Plan (Broker)" || 
-                         plan.priceName === "Seat price in Professional Plan(Organisation)"
-                         ? "Seat price"
-                         : plan.priceName;
-        csvData.push([priceName, plan.quantity, plan.price || "$10.00", `$${(plan.amount / 100).toFixed(2)}`]);
-      });
+    const planRows = (invoice?.plans || [])
+      .map((plan) => {
+        let priceName = "";
+        if (
+          plan.priceMetadata?.productType === "PROFESSIONAL_PLAN_ORGANISATION"
+        ) {
+          if (
+            plan.priceMetadata?.priceType ===
+            "BASE_PRICE_PROFESSIONAL_PLAN_ORGANISATION"
+          ) {
+            priceName = "Base Price";
+          } else if (
+            plan.priceMetadata?.priceType ===
+            "SEAT_PRICE_PROFESSIONAL_PLAN_ORGANISATION"
+          ) {
+            priceName = "Seat Price";
+          }
+        } else if (
+          plan.priceName === "Seat price in Professional Plan (Broker)" ||
+          plan.priceName === "Seat price in Professional Plan(Organisation)"
+        ) {
+          priceName = "Seat price";
+        }
+
+        if (priceName === "") return null;
+
+        return [
+          priceName,
+          plan.quantity,
+          plan.price || "$10.00",
+          `$${(plan.amount / 100).toFixed(2)}`,
+        ];
+      })
+      .filter(Boolean);
+
+    if (planRows.length > 0) {
+      csvData.push(...planRows);
     } else {
-      csvData.push([invoice?.description, '1', `$${invoice?.subtotal / 100}`, `$${invoice?.subtotal / 100}`]);
+      csvData.push([
+        invoice?.description,
+        "1",
+        `$${invoice?.subtotal / 100}`,
+        `$${invoice?.subtotal / 100}`,
+      ]);
     }
-    
+
     csvData.push([]);
-    csvData.push(['Subtotal', '', '', `$${invoice?.subtotal / 100}`]);
-    csvData.push(['Tax', '', '', `$${invoice?.tax || 0}`]);
-    csvData.push(['Total', '', '', `$${invoice?.total / 100 + (invoice?.tax > 0 ? invoice?.tax : 0)}`]);
-    
+    csvData.push(["Subtotal", "", "", `$${invoice?.subtotal / 100}`]);
+    csvData.push(["Tax", "", "", `$${invoice?.tax || 0}`]);
+    csvData.push([
+      "Total",
+      "",
+      "",
+      `$${invoice?.total / 100 + (invoice?.tax > 0 ? invoice?.tax : 0)}`,
+    ]);
+
     // Convert to CSV string
-    const csvString = csvData.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
-    
+    const csvString = csvData
+      .map((row) => row.map((cell) => `"${cell}"`).join(","))
+      .join("\n");
+
     // Create blob and download
-    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
+    const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `invoice-${invoice?.id}.csv`);
-    link.style.visibility = 'hidden';
+    link.setAttribute("href", url);
+    link.setAttribute("download", `invoice-${invoice?.id}.csv`);
+    link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -165,88 +207,119 @@ export function InvoiceModalDummy({ open, onClose, invoice, isPrint = true }) {
 
           {/* Body */}
           <tbody className="bg-[#fdf8f5]">
-            {invoice?.plans?.length > 0 &&
-              (invoice?.description?.includes(
-                `1 × Professional Plan (Broker) (at $10.00 / month)`
-              ) || invoice?.description?.includes(
-                `1 × Professional Plan (Organisation) (at $10.00 / month)`
-              ) || invoice?.description?.includes("1 × Professional Plan (Individual Agent) (at $20.00 / month)")) &&
-              invoice.plans.map((plan, index) => (
-                <tr key={plan.priceId || index}>
+            {(() => {
+              const planRows = (invoice?.plans || [])
+                .map((plan, index) => {
+                  let priceName = "";
+                  if (
+                    plan.priceMetadata?.productType ===
+                    "PROFESSIONAL_PLAN_ORGANISATION"
+                  ) {
+                    if (
+                      plan.priceMetadata?.priceType ===
+                      "BASE_PRICE_PROFESSIONAL_PLAN_ORGANISATION"
+                    ) {
+                      priceName = "Base Price";
+                    } else if (
+                      plan.priceMetadata?.priceType ===
+                      "SEAT_PRICE_PROFESSIONAL_PLAN_ORGANISATION"
+                    ) {
+                      priceName = "Seat Price";
+                    }
+                  } else if (
+                    plan.priceName ===
+                      "Seat price in Professional Plan (Broker)" ||
+                    plan.priceName ===
+                      "Seat price in Professional Plan(Organisation)"
+                  ) {
+                    priceName = "Seat price";
+                  }
+
+                  if (priceName === "") return null;
+
+                  return (
+                    <tr key={plan.priceId || index}>
+                      <td
+                        colSpan={2}
+                        className="px-3 py-2 font-medium text-[#581b1b] "
+                        style={{
+                          padding: isDownloading ? "0 15px 15px" : undefined,
+                        }}
+                      >
+                        {priceName}
+                      </td>
+                      <td
+                        colSpan={1}
+                        className="px-3 py-2 font-medium text-[#581b1b] text-center"
+                        style={{
+                          padding: isDownloading ? "0 15px 15px" : undefined,
+                        }}
+                      >
+                        {plan.quantity}
+                      </td>
+                      <td
+                        colSpan={1}
+                        className="px-3 py-2 font-medium text-[#581b1b] text-center"
+                        style={{
+                          padding: isDownloading ? "0 15px 15px" : undefined,
+                        }}
+                      >
+                        {plan.price || "$10.00"}
+                      </td>
+                      <td
+                        colSpan={1}
+                        className="px-3 py-2 font-medium text-[#581b1b] text-end"
+                        style={{
+                          padding: isDownloading ? "0 15px 15px" : undefined,
+                        }}
+                      >
+                        ${(plan.amount / 100).toFixed(2)}
+                      </td>
+                    </tr>
+                  );
+                })
+                .filter(Boolean);
+
+              if (planRows.length > 0) return planRows;
+
+              return (
+                <tr>
                   <td
                     colSpan={2}
-                    className="px-3 py-2 font-medium text-[#581b1b] "
+                    className="px-3 py-2 font-medium text-[#581b1b]"
                     style={{
                       padding: isDownloading ? "0 15px 15px" : undefined,
                     }}
                   >
-                    {plan.priceName ===
-                    "Seat price in Professional Plan (Broker)" || plan.priceName ==="Seat price in Professional Plan(Organisation)"
-                      ? "Seat price"
-                      : plan.priceName}
+                    {invoice?.description}
                   </td>
                   <td
-                    colSpan={1}
-                    className="px-3 py-2 font-medium text-[#581b1b] text-end"
+                    className="text-center px-3 py-2"
                     style={{
                       padding: isDownloading ? "0 15px 15px" : undefined,
                     }}
                   >
-                    {plan.quantity}
+                    1
                   </td>
                   <td
-                    colSpan={1}
-                    className="px-3 py-2 font-medium text-[#581b1b] text-end"
+                    className="text-center px-3 py-2"
                     style={{
                       padding: isDownloading ? "0 15px 15px" : undefined,
                     }}
                   >
-                    {plan.price || "$10.00"}
+                    ${invoice?.subtotal / 100}
                   </td>
                   <td
-                    colSpan={1}
-                    className="px-3 py-2 font-medium text-[#581b1b] text-end"
+                    className="text-right px-3 py-2"
                     style={{
                       padding: isDownloading ? "0 15px 15px" : undefined,
                     }}
                   >
-                    ${(plan.amount / 100).toFixed(2)}
+                    ${invoice?.subtotal / 100}
                   </td>
                 </tr>
-              ))}
-            {!(invoice?.description?.includes(
-              `1 × Professional Plan (Broker) (at $10.00 / month)`
-            ) || invoice?.description?.includes(
-              `1 × Professional Plan (Organisation) (at $10.00 / month)`
-            ) || invoice?.description?.includes("1 × Professional Plan (Individual Agent) (at $20.00 / month)")) && (
-              <tr>
-                <td
-                  colSpan={2}
-                  className="px-3 py-2 font-medium text-[#581b1b]"
-                  style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
-                >
-                  {invoice?.description}
-                </td>
-                <td
-                  className="text-center px-3 py-2"
-                  style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
-                >
-                  1
-                </td>
-                <td
-                  className="text-center px-3 py-2"
-                  style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
-                >
-                  ${invoice?.subtotal / 100}
-                </td>
-                <td
-                  className="text-right px-3 py-2"
-                  style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
-                >
-                  ${invoice?.subtotal / 100}
-                </td>
-              </tr>
-            )}
+              );
+            })()}
             <tr>
               <td
                 colSpan={2}

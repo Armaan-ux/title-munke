@@ -18,6 +18,9 @@ import {
   PRICE_TYPES_BY_ROLE,
   PRODUCT_TYPES_BY_ROLE,
   PRICE_TYPES_BY_PRODUCT,
+  pricingPlansIndividual,
+  pricingPlansBroker,
+  pricingPlansOrganization,
 } from "@/utils/constant";
 
 // ── Reusable chevron icon ──────────────────────────────────────────────────
@@ -55,8 +58,10 @@ export default function ProductModal({ open, onClose, activeTab }) {
 
   const [imagePreview, setImagePreview] = useState(null);
   const [taxCode, setTaxCode] = useState(null);
+  const [note, setNote] = useState("");
   const [userTypeInput, setUserTypeInput] = useState("");
   const [userTypes, setUserTypes] = useState([]);
+  const [editingIndex, setEditingIndex] = useState(null);
 
   console.log("taxCode", taxCode);
   const {
@@ -99,15 +104,64 @@ export default function ProductModal({ open, onClose, activeTab }) {
       maximumFractionDigits: 2,
     });
 
-  const handleAddUserType = () => {
-    if (userTypeInput.trim() && !userTypes.includes(userTypeInput.trim())) {
-      setUserTypes([...userTypes, userTypeInput.trim()]);
-      setUserTypeInput("");
+  React.useEffect(() => {
+    if (!productType) {
+      setUserTypes([]);
+      return;
     }
+
+    let planList = [];
+    const roleCode = activeTab?.id || activeTab;
+
+    if (roleCode === "agent") {
+      planList = pricingPlansIndividual;
+    } else if (roleCode === "broker") {
+      planList = pricingPlansBroker;
+    } else if (roleCode === "organisation") {
+      planList = pricingPlansOrganization;
+    }
+
+    // Map productType to base plan ID (e.g. PROFESSIONAL_PLAN_ORGANISATION -> PROFESSIONAL_PLAN)
+    const basePlanId = productType
+      .replace("_ORGANISATION", "")
+      .replace("_BROKER", "");
+
+    const selectedPlan = planList.find((p) => p.id === basePlanId);
+    if (selectedPlan && selectedPlan.features) {
+      setUserTypes(selectedPlan.features);
+    } else {
+      setUserTypes([]);
+    }
+  }, [productType, activeTab]);
+
+  const handleAddUserType = () => {
+    const trimmed = userTypeInput.trim();
+    if (!trimmed) return;
+
+    if (editingIndex !== null) {
+      // Update existing item in the same position
+      const updated = [...userTypes];
+      updated[editingIndex] = trimmed;
+      setUserTypes(updated);
+      setEditingIndex(null);
+    } else if (!userTypes.includes(trimmed)) {
+      // Add new item to the end
+      setUserTypes([...userTypes, trimmed]);
+    }
+    setUserTypeInput("");
+  };
+
+  const handleEditUserType = (index) => {
+    setUserTypeInput(userTypes[index]);
+    setEditingIndex(index);
   };
 
   const handleRemoveUserType = (typeToRemove) => {
     setUserTypes(userTypes.filter((type) => type !== typeToRemove));
+    if (editingIndex !== null && userTypes[editingIndex] === typeToRemove) {
+      setEditingIndex(null);
+      setUserTypeInput("");
+    }
   };
 
   const handleUserTypeKeyDown = (e) => {
@@ -141,7 +195,7 @@ export default function ProductModal({ open, onClose, activeTab }) {
         productId: data.id,
         name: data.name,
         metadata: data.metadata,
-        pricingType: variables.productType,
+        pricingType: variables.pricing,
         amount: variables.amount,
         currency: variables.currency || "usd",
         billingPeriod: variables.billingPeriod,
@@ -174,6 +228,7 @@ export default function ProductModal({ open, onClose, activeTab }) {
         roleType: activeTab?.id,
         productType: data.productType,
         priceType: data.priceType,
+        note,
         product_feature: JSON.stringify(
           userTypes.map((type) => ({ text: type })),
         ),
@@ -190,6 +245,7 @@ export default function ProductModal({ open, onClose, activeTab }) {
     setTaxCode(null);
     setUserTypes([]);
     setUserTypeInput("");
+    setEditingIndex(null);
   };
 
   return (
@@ -643,47 +699,27 @@ export default function ProductModal({ open, onClose, activeTab }) {
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] text-gray-500 placeholder-gray-400 outline-none focus:ring-1 focus:ring-tertiary/10 focus:border-[#7a0c20] transition-colors bg-gray-50 cursor-not-allowed"
                   />
                 </div>
-
-                {/* Location */}
-                <div className="mb-3.5">
-                  <p className="text-[11px] font-medium text-secondary mb-1.5">
-                    Location
+                <div className="mt-2">
+                  <p className="text-[11px] font-medium text-secondary mb-1">
+                    Notes
                   </p>
-
-                  <Select defaultValue="us" disabled>
-                    <SelectTrigger className="w-full border border-gray-300 rounded-lg text-xs text-gray-700 bg-[#ece5e0] h-[36px] px-3 focus:ring-0 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed">
-                      <SelectValue placeholder="United States (Head office address)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="us">
-                        United States (Head office address)
-                      </SelectItem>
-                      <SelectItem value="yes">Yes</SelectItem>
-                      <SelectItem value="no">No</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="border border-gray-300 rounded-lg bg-white p-2">
+                    {/* Input field for adding new user types */}
+                    <div className="flex gap-1 ">
+                      <div className="flex-1 relative flex items-center">
+                        <textarea
+                          rows={2}
+                          value={note}
+                          onChange={(e) => setNote(e.target.value)}
+                          placeholder="Add Notes"
+                          className="flex-1 border-0 outline-none text-[11px] px-2 py-1 bg-transparent placeholder-gray-400 resize-none min-h-[20px]"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-
-                {/* State */}
-                <div className="mb-5 pb-5">
-                  <p className="text-[11px] font-medium text-secondary mb-1.5">
-                    State
-                  </p>
-
-                  <Select defaultValue="pa" disabled>
-                    <SelectTrigger className="w-full border border-gray-300 rounded-lg text-sm text-gray-700 bg-[#ece5e0] h-[36px] px-3 focus:ring-0 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed">
-                      <SelectValue placeholder="Pennsylvania" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pa">Pennsylvania</SelectItem>
-                      <SelectItem value="yes">Yes</SelectItem>
-                      <SelectItem value="no">No</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
                 {/* User Types / Product Features */}
-                <div>
+                <div className="mt-2">
                   <p className="text-[11px] font-medium text-secondary mb-1.5">
                     Product Features
                   </p>
@@ -693,13 +729,21 @@ export default function ProductModal({ open, onClose, activeTab }) {
                       {userTypes.map((type, index) => (
                         <div
                           key={index}
-                          className="bg-[#7a0c20] text-white text-[11px] px-2 py-1 rounded-md flex items-center gap-1 max-w-[250px]"
+                          onClick={() => handleEditUserType(index)}
+                          className={`group text-white text-[11px] px-2 py-1 rounded-md flex items-center gap-1 cursor-pointer transition-all ${
+                            editingIndex === index
+                              ? "bg-[#5a0a15] ring-2 ring-[#7a0c20]/50"
+                              : "bg-[#7a0c20] hover:bg-[#5a0a15]"
+                          }`}
                         >
-                          <span className="truncate min-w-0">{type}</span>
+                          <span className="min-w-0 break-words">{type}</span>
                           <button
                             type="button"
-                            onClick={() => handleRemoveUserType(type)}
-                            className="hover:bg-[#5a0a15] rounded transition-colors flex-shrink-0"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveUserType(type);
+                            }}
+                            className="hover:bg-black/20 rounded transition-colors flex-shrink-0"
                           >
                             <X size={12} />
                           </button>
@@ -708,21 +752,39 @@ export default function ProductModal({ open, onClose, activeTab }) {
                     </div>
 
                     {/* Input field for adding new user types */}
-                    <div className="flex gap-1">
-                      <input
-                        type="text"
-                        value={userTypeInput}
-                        onChange={(e) => setUserTypeInput(e.target.value)}
-                        onKeyDown={handleUserTypeKeyDown}
-                        placeholder="Type and press Enter to add"
-                        className="flex-1 border-0 outline-none text-[11px] px-2 py-1 bg-transparent placeholder-gray-400"
-                      />
+                    <div className="flex gap-1 mt-5">
+                      <div className="flex-1 relative flex items-center">
+                        <textarea
+                          rows={2}
+                          value={userTypeInput}
+                          onChange={(e) => setUserTypeInput(e.target.value)}
+                          onKeyDown={handleUserTypeKeyDown}
+                          placeholder={
+                            editingIndex !== null
+                              ? "Edit feature..."
+                              : "Type and press Enter to add"
+                          }
+                          className="flex-1 border-0 outline-none text-[11px] px-2 py-1 bg-transparent placeholder-gray-400 resize-none min-h-[40px]"
+                        />
+                        {editingIndex !== null && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingIndex(null);
+                              setUserTypeInput("");
+                            }}
+                            className="text-[10px] text-gray-500 hover:text-gray-700 mr-1"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                      </div>
                       <button
                         type="button"
                         onClick={handleAddUserType}
-                        className="bg-[#7a0c20] text-white text-[11px] px-2 py-1 rounded hover:bg-[#5a0a15] transition-colors"
+                        className="bg-[#7a0c20] text-white text-[11px] px-2 py-1 rounded hover:bg-[#5a0a15] transition-colors min-w-[50px]"
                       >
-                        Add
+                        {editingIndex !== null ? "Update" : "Add"}
                       </button>
                     </div>
                   </div>

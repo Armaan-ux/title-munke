@@ -121,5 +121,5 @@ export const addPricingSchema = z.object({
   amount: z.coerce.number().min(0.01, "Amount is required"),
   description: z.string().trim().min(1, "Description is required"),
   priceType: z.string().trim().min(1, "Price type selection is required"),
-  subscription: z.string().trim().min(1, "Subscription selection is required"),
+  pricingType: z.string().trim().min(1, "Pricing type selection is required"),
 });

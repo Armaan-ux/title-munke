@@ -36,7 +36,7 @@ const AdminDashboard = () => {
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 *:rounded-2xl *:bg-[#F5F0EC] my-4">
         <div className="p-5 flex justify-between items-end ">
           <div>
-            <p className="mb-4 text-secondary">Total Organisation</p>
+            <p className="mb-4 text-secondary">Total Organization</p>
             {metricQuery?.isSuccess && (
               <p className="text-4xl font-semibold text-tertiary">
                 {metricQuery?.data?.ORGANISATION ?? "--"}
@@ -187,7 +187,7 @@ const AdminDashboard = () => {
               setActiveTab("agent");
             }}
           >
-            Agent
+            Agents
           </button>
         </div>
         {/* <DateFilter /> */}
@@ -196,9 +196,7 @@ const AdminDashboard = () => {
       <div className="bg-[#F5F0EC] px-6 py-4 rounded-2xl ">
         <div className="flex justify-between items-center gap-4 mb-4">
           <div className="flex items-center gap-6">
-            <p className="text-secondary font-medium text-xl">
-              {activeTab === "broker" ? "Business" : "Total Bussiness"}
-            </p>
+            <p className="text-secondary font-medium text-xl">Total Business</p>
             <p
               className={`bg-white text-tertiary font-semibold text-lg transition-all rounded-full px-10 py-3 `}
             >

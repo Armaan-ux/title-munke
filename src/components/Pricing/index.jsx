@@ -11,11 +11,19 @@ import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { demoRequestSchema } from "@/formSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { demoRequest } from "../service/userAdmin";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  demoRequest,
+  listStripeProductsForPricingPage,
+} from "../service/userAdmin";
 import { toast } from "react-toastify";
 import "./index.css";
-import { flexiblePricing, pricingPlansBroker, pricingPlansIndividual, pricingPlansOrganization } from "@/utils/constant";
+import {
+  flexiblePricing,
+  pricingPlansBroker,
+  pricingPlansIndividual,
+  pricingPlansOrganization,
+} from "@/utils/constant";
 const defaultDemoData = {
   name: "",
   state: "",
@@ -48,19 +56,32 @@ const Pricing = () => {
       toast.error("Request submission failed");
     },
   });
- useEffect(() => {
-  if (view) {
-    setUserType(view);
-  } else {
-    setUserType(null);
-  }
-}, [view]);
+  useEffect(() => {
+    if (view) {
+      setUserType(view);
+    } else {
+      setUserType(null);
+    }
+  }, [view]);
 
-  const pricingPlansMap = {
-    agent: pricingPlansIndividual,
-    broker: pricingPlansBroker,
-    organisation: pricingPlansOrganization,
-  };
+  const {
+    data: stripeProducts,
+    isLoading: isStripeLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["stripeProducts", userType],
+    queryFn: () => listStripeProductsForPricingPage(userType || "agent"),
+    enabled: !!userType,
+    staleTime: 1000 * 60 * 30,
+    cacheTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+  });
+  console.log("stripeProducts", stripeProducts?.data);
+  // const pricingPlansMap = {
+  //   agent: pricingPlansIndividual,
+  //   broker: pricingPlansBroker,
+  //   organisation: pricingPlansOrganization,
+  // };
   const PricingCard = ({
     title,
     description,
@@ -95,12 +116,12 @@ const Pricing = () => {
 
           <div className="mt-6 flex items-end">
             <span className="text-3xl font-extrabold text-[#550000]">
-              {price}
+              {`$${price?.base ? price?.base : price?.amount}`}
             </span>
 
-            {priceSuffix && (
+            {price?.display && (
               <span className="ml-2 mb-1 text-sm text-[#977128]">
-                {priceSuffix}
+                {price?.display}
               </span>
             )}
           </div>
@@ -108,14 +129,17 @@ const Pricing = () => {
       </div>
     );
   };
-  const activePricingPlans =
-    pricingPlansMap[userType] || pricingPlansIndividual;
+  // const activePricingPlans =
+  //   pricingPlansMap[userType] || pricingPlansIndividual;
   return (
     <div>
       <div className=" flex items-center justify-center text-base bg-primary text-primary-foreground text-center px-2 py-1 ">
         <p className="">
           Still doing manual searches?{" "}
-          <Link to="/subscription-login" className="inline-flex items-center gap-2">
+          <Link
+            to="/subscription-login"
+            className="inline-flex items-center gap-2"
+          >
             {" "}
             <b> Automate now </b> <ArrowRight className="size-5" />{" "}
           </Link>
@@ -184,7 +208,10 @@ const Pricing = () => {
                     <Button
                       className="hover:scale-105 w-full bg-[#5D4135] hover:bg-[#5D4135]"
                       size="lg"
-                      onClick={() =>{ setUserType(item.key);  navigate(`/pricing?view=${item.key}`)  }}
+                      onClick={() => {
+                        setUserType(item.key);
+                        navigate(`/pricing?view=${item.key}`);
+                      }}
                     >
                       Know More <MoveRight />
                     </Button>
@@ -218,7 +245,10 @@ const Pricing = () => {
             </p>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-              {activePricingPlans.map((plan, index) => {
+              {isStripeLoading && (
+                <div className="text-center py-10">Loading plans...</div>
+              )}
+              {stripeProducts?.data?.map((plan, index) => {
                 const isSelected = selectedPlan === plan.id;
                 return (
                   <motion.div
@@ -236,7 +266,7 @@ const Pricing = () => {
                     <PricingCard
                       title={plan.title}
                       description={plan.description}
-                      price={plan.price}
+                      price={plan?.price}
                       priceSuffix={plan.subtitle}
                       recommended={plan.recommended}
                     />
@@ -271,7 +301,9 @@ const Pricing = () => {
                         onClick={() => {
                           setSelectedPlan(plan.id);
                           localStorage.setItem("price", plan.price);
-                          navigate(`/subscription-signup/${userType}/${plan.id}`);
+                          navigate(
+                            `/subscription-signup/${userType}/${plan.id}`,
+                          );
                         }}
                       >
                         Get Started
@@ -280,6 +312,11 @@ const Pricing = () => {
                   </motion.div>
                 );
               })}
+              {isError && (
+                <div className="text-center text-red-500 mb-4">
+                  Failed to load latest pricing. Showing default plans.
+                </div>
+              )}
             </div>
           </div>
         </section>

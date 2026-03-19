@@ -2022,3 +2022,17 @@ export async function fetchBrokerInOrganisation() {
     "/fetch-broker-in-organisation",
   );
 }
+
+export async function listStripeProductsForPricingPage(roleType) {
+  const payload = {
+    body: {
+      roleType,
+    },
+  };
+  return callGetUserAdminApi(
+    payload,
+    "Success in listStripeProductsForPricingPage:",
+    "Error in listStripeProductsForPricingPage:",
+    "/list-stripe-products-for-pricing-page",
+  );
+}

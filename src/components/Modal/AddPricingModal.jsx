@@ -37,20 +37,27 @@ export default function AddPricingModal({
     control,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
       amount: "",
       description: "",
       priceType: "",
-      subscription: "",
+      pricingType: "recurring",
     },
     resolver: zodResolver(addPricingSchema),
   });
-
+  const typePricing = watch("pricingType");
   useEffect(() => {
     if (open) {
-      reset({ amount: "", description: "", priceType: "", subscription: "" });
+      reset({
+        amount: "",
+        description: "",
+        priceType: "",
+        pricingType: "recurring",
+      });
     }
   }, [open, reset]);
 
@@ -76,7 +83,7 @@ export default function AddPricingModal({
       amount: data.amount * 100,
       priceType: data.priceType,
       nickname: data.description,
-      recurring: data.subscription,
+      pricingType: data.pricingType,
       metadata: { ...metadata, priceType: data.priceType },
     };
     newPricingMutation.mutate(payload);
@@ -164,22 +171,23 @@ export default function AddPricingModal({
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    {(PRICE_TYPES_BY_ROLE[metadata?.roleType] || [])?.filter((priceItem) => {
-                                                // If no product type selected, show all price types
-                                                if (!metadata?.productType) return true;
-                                                
-                                                // Get allowed price types for the selected product
-                                                const allowedPriceTypes = PRICE_TYPES_BY_PRODUCT[metadata?.productType] || [];
-                                                
-                                                // Filter to show only the price types mapped to this product
-                                                return allowedPriceTypes.includes(priceItem.value);
-                                              })?.map(
-                      (item) => (
+                    {(PRICE_TYPES_BY_ROLE[metadata?.roleType] || [])
+                      ?.filter((priceItem) => {
+                        // If no product type selected, show all price types
+                        if (!metadata?.productType) return true;
+
+                        // Get allowed price types for the selected product
+                        const allowedPriceTypes =
+                          PRICE_TYPES_BY_PRODUCT[metadata?.productType] || [];
+
+                        // Filter to show only the price types mapped to this product
+                        return allowedPriceTypes.includes(priceItem.value);
+                      })
+                      ?.map((item) => (
                         <SelectItem key={item.value} value={item.value}>
                           {item.label}
                         </SelectItem>
-                      ),
-                    )}
+                      ))}
                   </SelectContent>
                 </Select>
               )}
@@ -189,30 +197,35 @@ export default function AddPricingModal({
             )}
           </div>
           <div>
-            <Label className="text-sm text-[#6B5E55] mb-1 block">
-              Subscription
+            <Label className="block text-[13px] font-medium text-gray-800 mb-2">
+              Pricing <span className="text-red-500">*</span>
             </Label>
-            <Controller
-              name="subscription"
-              control={control}
-              render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger className="mt-1 w-full bg-white border-[#E6DFDB] focus-visible:ring-0">
-                    <SelectValue
-                      placeholder="Select Subscription"
-                      className="text-[#2c150f]"
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="month">Monthly</SelectItem>
-                    <SelectItem value="day">Daily</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.subscription && (
-              <FormValidationError message={errors.subscription.message} />
-            )}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setValue("pricingType", "recurring")}
+                className={`px-8 py-2 rounded-lg text-sm w-full font-medium cursor-pointer transition-colors border
+                               ${
+                                 typePricing === "recurring"
+                                   ? "bg-[#7a0c20] text-white border-[#7a0c20]"
+                                   : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                               }`}
+              >
+                Recurring
+              </button>
+              <button
+                type="button"
+                onClick={() => setValue("pricingType", "oneoff")}
+                className={`px-8 py-2 rounded-lg text-sm w-full font-medium cursor-pointer transition-colors border
+                               ${
+                                 typePricing === "oneoff"
+                                   ? "bg-[#7a0c20] text-white border-[#7a0c20]"
+                                   : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                               }`}
+              >
+                One-off
+              </button>
+            </div>
           </div>
 
           <div className="flex justify-end gap-3 pt-4 *:flex-1">
