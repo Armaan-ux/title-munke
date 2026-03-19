@@ -18,7 +18,7 @@
     left: -13px;
     top: 0;
     z-index: -9;
-    background-image: url('left-icon.svg');
+    background-image: url('/left-icon.svg');
     background-position: right -9px top 0px;
     background-repeat: no-repeat;
 }
@@ -30,7 +30,7 @@
     right: -13px;
     top: 0;
     z-index: -9;
-    background-image: url('right-icon.svg');
+    background-image: url('/right-icon.svg');
     background-position: left -9px top 0px;
     background-repeat: no-repeat;
 }
