@@ -132,7 +132,9 @@ function Organisation() {
       const response = await listOrganisation(isRefetch ? null : nextToken);
 
       const { updatedOrganisations, nextToken: newNextToken } = response;
-      setOrg((pre) => (isRefetch ? updatedOrganisations : [...pre, ...updatedOrganisations]));
+      setOrg((pre) =>
+        isRefetch ? updatedOrganisations : [...pre, ...updatedOrganisations],
+      );
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
     } catch (error) {
@@ -172,10 +174,10 @@ function Organisation() {
         isOpen={isOpen}
       /> */}
         <div className="flex justify-between gap-4 items-center mb-4">
-          <p className="text-lg font-medium">All Organisation</p>
+          <p className="text-lg font-medium">All Organiz ations</p>
           <Button variant="secondary" onClick={() => setIsOpen(true)}>
             {" "}
-            <PlusCircle /> Add Organisation
+            <PlusCircle /> Add Organization
           </Button>
         </div>
 

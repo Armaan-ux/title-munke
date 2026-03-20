@@ -1,5 +1,9 @@
-import { GoogleMap, StreetViewPanorama, useLoadScript } from "@react-google-maps/api";
-import React, { useMemo } from "react";
+import {
+  GoogleMap,
+  StreetViewPanorama,
+  useLoadScript,
+} from "@react-google-maps/api";
+import React, { useMemo, useState } from "react";
 
 const containerStyle = {
   width: "100%",
@@ -7,8 +11,10 @@ const containerStyle = {
 };
 
 export default function StreetView({ lat, lng }) {
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+  const [map, setMap] = useState(null);
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: apiKey || "",
   });
 
   // Ensure coordinates are valid numbers
@@ -27,26 +33,60 @@ export default function StreetView({ lat, lng }) {
 
   const position = useMemo(
     () => ({ lat: parsedLat, lng: parsedLng }),
-    [parsedLat, parsedLng]
+    [parsedLat, parsedLng],
   );
 
-  if (!isLoaded) return <p>Loading map...</p>;
-  if (!isValidCoords) return <p className="mt-10">Street location unavailable</p>;
+  if (!apiKey)
+    return (
+      <div className="h-[300px] flex items-center justify-center bg-[#F9F6F4] rounded-xl text-red-500 text-sm p-4 text-center">
+        Google Maps API key is missing. Please check your environment variables.
+      </div>
+    );
+
+  if (loadError)
+    return (
+      <div className="h-[300px] flex items-center justify-center bg-[#F9F6F4] rounded-xl text-red-500 text-sm p-4 text-center">
+        Error loading Google Street View. Please check your API key and
+        restriction settings.
+      </div>
+    );
+
+  if (
+    !isLoaded ||
+    !window.google ||
+    !window.google.maps ||
+    !window.google.maps.Map
+  )
+    return <p className="p-4 text-center">Loading map resources...</p>;
+  if (!isValidCoords)
+    return (
+      <div className="h-[300px] flex items-center justify-center bg-[#F9F6F4] rounded-xl text-[#7A7676] text-sm p-4 text-center">
+        Street location unavailable
+      </div>
+    );
 
   return (
-    <GoogleMap mapContainerStyle={containerStyle} center={position} zoom={14}>
-      <StreetViewPanorama
-        position={position}
-        visible={true}
-        options={{
-          pov: { heading: 100, pitch: 0 },
-          zoom: 1,
-          disableDefaultUI: true,
-          panControl: true,
-          zoomControl: true,
-          fullscreenControl: true,
-        }}
-      />
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={position}
+      zoom={14}
+      onLoad={(map) => setMap(map)}
+      onUnmount={() => setMap(null)}
+    >
+      {map && (
+        <StreetViewPanorama
+          position={position}
+          visible={true}
+          options={{
+            pov: { heading: 100, pitch: 0 },
+            zoom: 1,
+            disableDefaultUI: true,
+            panControl: true,
+            zoomControl: true,
+            fullscreenControl: true,
+          }}
+        />
+      )}
     </GoogleMap>
   );
 }

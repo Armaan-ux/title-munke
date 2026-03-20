@@ -333,7 +333,9 @@ const PropertyDetails = () => {
                         <StreetView lat={lat} lng={lng} />
                       ) : (
                         <div className="h-[300px] flex items-center justify-center bg-[#F9F6F4] rounded-xl">
-                          <p className="text-[#7A7676]">Street view unavailable</p>
+                          <p className="text-[#7A7676]">
+                            Street view unavailable
+                          </p>
                         </div>
                       )}
                     </div>
@@ -362,7 +364,9 @@ const PropertyDetails = () => {
                         <GoogleMapView lat={lat} lng={lng} />
                       ) : (
                         <div className="h-[300px] flex items-center justify-center bg-[#F9F6F4] rounded-xl">
-                          <p className="text-[#7A7676]">Map location unavailable</p>
+                          <p className="text-[#7A7676]">
+                            Map location unavailable
+                          </p>
                         </div>
                       )}
                     </div>
