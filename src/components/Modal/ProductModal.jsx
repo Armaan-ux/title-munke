@@ -401,7 +401,14 @@ export default function ProductModal({ open, onClose, activeTab }) {
                     rules={{ required: true }}
                     render={({ field }) => (
                       <Select
-                        onValueChange={field.onChange}
+                        onValueChange={(val) => {
+                          field.onChange(val);
+                          if (val?.includes("PROFESSIONAL")) {
+                            setValue("pricing", "recurring");
+                          } else {
+                            setValue("pricing", "oneoff");
+                          }
+                        }}
                         value={field.value}
                       >
                         <SelectTrigger className="w-full bg-white border border-gray-300 text-[13px] text-gray-700 focus:ring-2 focus:ring-[#7a0c20]/30 focus:border-[#7a0c20] h-[38px] px-3">
@@ -434,7 +441,14 @@ export default function ProductModal({ open, onClose, activeTab }) {
                     rules={{ required: true }}
                     render={({ field }) => (
                       <Select
-                        onValueChange={field.onChange}
+                        onValueChange={(val) => {
+                          field.onChange(val);
+                          if (val?.includes("PROFESSIONAL")) {
+                            setValue("pricing", "recurring");
+                          } else {
+                            setValue("pricing", "oneoff");
+                          }
+                        }}
                         value={field.value}
                       >
                         <SelectTrigger className="mt-1 w-full bg-white border-[#E6DFDB] focus-visible:ring-0">
@@ -512,11 +526,25 @@ export default function ProductModal({ open, onClose, activeTab }) {
                     <button
                       type="button"
                       onClick={() => setValue("pricing", "recurring")}
-                      className={`px-8 py-2 rounded-lg text-sm w-full font-medium cursor-pointer transition-colors border
+                      disabled={
+                        (productType &&
+                          !productType.includes("PROFESSIONAL")) ||
+                        (watch("priceType") &&
+                          !watch("priceType").includes("PROFESSIONAL"))
+                      }
+                      className={`px-8 py-2 rounded-lg text-sm w-full font-medium transition-colors border
                         ${
                           pricingType === "recurring"
                             ? "bg-[#7a0c20] text-white border-[#7a0c20]"
                             : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                        }
+                        ${
+                          (productType &&
+                            !productType.includes("PROFESSIONAL")) ||
+                          (watch("priceType") &&
+                            !watch("priceType").includes("PROFESSIONAL"))
+                            ? "opacity-50 cursor-not-allowed"
+                            : "cursor-pointer"
                         }`}
                     >
                       Recurring
@@ -524,14 +552,24 @@ export default function ProductModal({ open, onClose, activeTab }) {
                     <button
                       type="button"
                       onClick={() => setValue("pricing", "oneoff")}
-                      className={`px-8 py-2 rounded-lg text-sm w-full font-medium cursor-pointer transition-colors border
+                      disabled={
+                        productType?.includes("PROFESSIONAL") ||
+                        watch("priceType")?.includes("PROFESSIONAL")
+                      }
+                      className={`px-8 py-2 rounded-lg text-sm w-full font-medium transition-colors border
                         ${
                           pricingType === "oneoff"
                             ? "bg-[#7a0c20] text-white border-[#7a0c20]"
                             : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                        }
+                        ${
+                          productType?.includes("PROFESSIONAL") ||
+                          watch("priceType")?.includes("PROFESSIONAL")
+                            ? "opacity-50 cursor-not-allowed"
+                            : "cursor-pointer"
                         }`}
                     >
-                      One-off
+                      One Time Only
                     </button>
                   </div>
                 </div>

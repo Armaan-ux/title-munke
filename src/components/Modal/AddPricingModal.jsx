@@ -163,7 +163,17 @@ export default function AddPricingModal({
               name="priceType"
               control={control}
               render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select
+                  onValueChange={(val) => {
+                    field.onChange(val);
+                    if (val?.includes("PROFESSIONAL")) {
+                      setValue("pricingType", "recurring");
+                    } else {
+                      setValue("pricingType", "oneoff");
+                    }
+                  }}
+                  value={field.value}
+                >
                   <SelectTrigger className="mt-1 w-full bg-white border-[#E6DFDB] focus-visible:ring-0">
                     <SelectValue
                       placeholder="Select price type"
@@ -204,11 +214,27 @@ export default function AddPricingModal({
               <button
                 type="button"
                 onClick={() => setValue("pricingType", "recurring")}
-                className={`px-8 py-2 rounded-lg text-sm w-full font-medium cursor-pointer transition-colors border
+                disabled={
+                  (metadata?.productType &&
+                    !metadata.productType.includes("PROFESSIONAL")) ||
+                  (watch("priceType") &&
+                    !watch("priceType").includes("PROFESSIONAL"))
+                }
+                className={`px-8 py-2 rounded-lg text-sm w-full font-medium transition-colors border
                                ${
                                  typePricing === "recurring"
                                    ? "bg-[#7a0c20] text-white border-[#7a0c20]"
                                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                               }
+                               ${
+                                 (metadata?.productType &&
+                                   !metadata.productType.includes(
+                                     "PROFESSIONAL",
+                                   )) ||
+                                 (watch("priceType") &&
+                                   !watch("priceType").includes("PROFESSIONAL"))
+                                   ? "opacity-50 cursor-not-allowed"
+                                   : "cursor-pointer"
                                }`}
               >
                 Recurring
@@ -216,14 +242,26 @@ export default function AddPricingModal({
               <button
                 type="button"
                 onClick={() => setValue("pricingType", "oneoff")}
-                className={`px-8 py-2 rounded-lg text-sm w-full font-medium cursor-pointer transition-colors border
+                disabled={
+                  metadata?.productType?.includes("PROFESSIONAL") ||
+                  watch("priceType")?.includes("PROFESSIONAL")
+                }
+                className={`px-8 py-2 rounded-lg text-sm w-full font-medium transition-colors border
                                ${
                                  typePricing === "oneoff"
                                    ? "bg-[#7a0c20] text-white border-[#7a0c20]"
                                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                               }
+                               ${
+                                 metadata?.productType?.includes(
+                                   "PROFESSIONAL",
+                                 ) ||
+                                 watch("priceType")?.includes("PROFESSIONAL")
+                                   ? "opacity-50 cursor-not-allowed"
+                                   : "cursor-pointer"
                                }`}
               >
-                One-off
+                One Time Only
               </button>
             </div>
           </div>

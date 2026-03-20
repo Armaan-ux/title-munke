@@ -21,6 +21,7 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { excludedPlans } from "@/utils/constant";
+import BrokerDetails from '../Organisation/broker-details';
 
 export default function Search({ isIndivisual = false }) {
   const queryClient = useQueryClient();
@@ -34,8 +35,24 @@ export default function Search({ isIndivisual = false }) {
   const [percentage, setPercentage] = useState(null);
   const [zipUrl, setZipUrl] = useState(null);
   const [isAgent, setIsAgent] = useState(false);
-  const { user, setPaymentModal, setInvalidateSearchHistory, agentDetail } =
+  const { user, setPaymentModal, setInvalidateSearchHistory, agentDetail, brokerDetail,
+        organisationDetail } =
     useUser();
+
+    const PLAN_LIMITS = {
+  EXPLORE_PLAN: 1,
+  PROFESSIONAL_PLAN: Infinity,
+  PAY_AS_YOU_GO: Infinity,
+};
+
+const isSearchDisabled = (detail) => {
+  if (!detail) return false;
+
+  return (
+    detail?.searchCount >=
+    (PLAN_LIMITS[detail?.planType] ?? 0)
+  );
+};
   const {
     userId: agentId,
     userType,
@@ -49,12 +66,13 @@ export default function Search({ isIndivisual = false }) {
     queryFn: () => getAgentBrokerDetails(agentId),
     enabled: userType === "agent",
   });
-  const brokerDetailQuery = useQuery({
-    queryKey: ["agentBrokerDetail"],
-    queryFn: () => getBrokerDetails(agentId),
-    enabled: userType === "broker",
-  });
-
+  // const brokerDetailQuery = useQuery({
+  //   queryKey: ["brokerDetail"],
+  //   queryFn: () => getBrokerDetails(agentId),
+  //   enabled: userType === "broker",
+  // });
+console.log("organisationDetail",organisationDetail)
+console.log("brokerDetail",brokerDetail)
   const clearSearchState = () => {
     const searchKeys = [
       "searchAddress",
@@ -75,7 +93,9 @@ export default function Search({ isIndivisual = false }) {
     );
     setLoading(false);
   };
-
+const organisationDisabled = isSearchDisabled(organisationDetail);
+const brokerDisabled = isSearchDisabled(brokerDetail);
+const agentDisabled = isSearchDisabled(agentDetail);
   const checkSearchStatus = useCallback(
     async (searchId, isRestoring = false) => {
       try {
@@ -100,6 +120,7 @@ export default function Search({ isIndivisual = false }) {
           setMessage(status_message || "Search Complete Successfully");
           setZipUrl(zip_url);
           setLoading(false);
+          handleCreateAuditLog("SEARCH", { address }, isAgent);
           localStorage.setItem("searchStatus", "SUCCESS");
           localStorage.setItem("searchTimestamp", Date.now().toString());
           if (zip_url) localStorage.setItem("zipUrl", zip_url);
@@ -216,7 +237,7 @@ export default function Search({ isIndivisual = false }) {
       localStorage.setItem("searchStatus", "IN_PROGRESS");
       localStorage.setItem("searchTimestamp", Date.now().toString());
 
-      handleCreateAuditLog("SEARCH", { address }, isAgent);
+    
 
       const response = await axios.post(
         "https://iweevgyflmwhamvgraszfn2xp40wvqza.lambda-url.us-east-1.on.aws/",
@@ -285,7 +306,7 @@ export default function Search({ isIndivisual = false }) {
         // const brokerDetail = await API.graphql(
         //   graphqlOperation(getBroker, { id: userId })
         // );
-        username = brokerDetailQuery.data?.name;
+        username = brokerDetail?.name;
       }
 
       await API.graphql(
@@ -327,7 +348,7 @@ export default function Search({ isIndivisual = false }) {
           placeholder="Enter Address here..."
           value={address}
           onChange={(e) => setAddress(e.target.value)}
-          disabled={loading}
+          disabled={loading ||organisationDisabled ||brokerDisabled|| agentDisabled}
         />
         <div className="!mt-3 text-gray-500">Format: 123 Hill St</div>
       </div>
@@ -338,7 +359,7 @@ export default function Search({ isIndivisual = false }) {
             className="bg-white size-5 cursor-pointer"
             checked={isChecked}
             onCheckedChange={(e) => setIsChecked(e)}
-            disabled={loading}
+            disabled={loading || organisationDisabled ||brokerDisabled|| agentDisabled}
           />
           <Label htmlFor="checkbox" className="text-base font-normal pt-3">
             Check this box to confirm the address is correct.
@@ -350,7 +371,7 @@ export default function Search({ isIndivisual = false }) {
           type="submit"
           className="h-[54px] w-full max-w-[20rem] rounded-lg  bg-gradient-to-b from-[#550000] to-[#3D2014] !opacity-80 "
           size="lg"
-          disabled={loading || !address.trim().length || !isChecked}
+          disabled={loading || !address.trim().length || !isChecked || organisationDisabled ||brokerDisabled|| agentDisabled}
         >
           Search <SearchIcon className="size-6 ml-2" />
         </Button>

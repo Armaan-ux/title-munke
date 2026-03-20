@@ -54,8 +54,19 @@ const ProductTable = ({ pricingListingQuery, onDelete }) => {
               data?.data?.map((item, index) => (
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">{index + 1}</TableCell>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.metadata?.productType}</TableCell>
+                  <TableCell>
+                    {item.name
+                      ? item.name.replace(/Organisation/gi, "Organization")
+                      : "-"}
+                  </TableCell>
+                  <TableCell>
+                    {item.metadata?.productType
+                      ? item.metadata.productType.replace(
+                          /ORGANISATION/gi,
+                          "ORGANIZATION",
+                        )
+                      : "-"}
+                  </TableCell>
                   <TableCell className="text-center">{item?.type}</TableCell>
                   <TableCell className="text-center">
                     {convertUnixToLocalTime(item?.created)}

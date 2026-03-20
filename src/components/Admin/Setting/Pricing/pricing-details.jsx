@@ -14,7 +14,9 @@ export default function PricingDetails({ data, invalidateFun, isPending }) {
   // Helper function to get price type label
   const getPriceTypeLabel = (roleType, priceType) => {
     const priceTypesArray = PRICE_TYPES_BY_ROLE[roleType] || [];
-    const priceTypeObj = priceTypesArray.find((item) => item.value === priceType);
+    const priceTypeObj = priceTypesArray.find(
+      (item) => item.value === priceType,
+    );
     return priceTypeObj?.label || priceType || "-";
   };
 
@@ -54,15 +56,6 @@ export default function PricingDetails({ data, invalidateFun, isPending }) {
               <div className="bg-[#F1E6DE] p-3 rounded-md">
                 <Briefcase size={20} className="text-[#7B4B3A]" />
               </div>
-              {/* 
-              <div>
-                <h3 className="font-semibold text-[#3C2F2F]">
-                  {data?.productDetails?.name}
-                </h3>
-                <p className="text-sm text-[#8A7F76]">
-                  {`${data?.prices?.unit_amount / 100} / Search Cost`}
-                </p>
-              </div> */}
             </div>
 
             <button
@@ -109,7 +102,12 @@ export default function PricingDetails({ data, invalidateFun, isPending }) {
                         >
                           <div>{`US$ ${prices?.unit_amount / 100}`}</div>
                           <div>{prices?.nickname || "-"}</div>
-                          <div>{getPriceTypeLabel(prices?.metadata?.roleType, prices?.metadata?.priceType)}</div>
+                          <div>
+                            {getPriceTypeLabel(
+                              prices?.metadata?.roleType,
+                              prices?.metadata?.priceType,
+                            )}
+                          </div>
                           <div>{convertUnixToLocalTime(prices?.created)}</div>
                           <div className="flex justify-end">
                             <button
@@ -144,7 +142,7 @@ export default function PricingDetails({ data, invalidateFun, isPending }) {
 
           {/* Description Section */}
           <div className="mt-6">
-            <h4 className="font-semibold text-[#3A2F2F] mb-2">Description</h4>
+            <p className="font-semibold text-[#3A2F2F] mb-2">Description</p>
             <p className="text-sm text-[#7B6E65]">
               Powerful, customizable solutions built for large organizations,
               investors, and enterprise-scale operations.
@@ -155,7 +153,7 @@ export default function PricingDetails({ data, invalidateFun, isPending }) {
 
           {/* Audit History */}
           <div>
-            <h4 className="font-semibold text-[#3A2F2F] mb-4">Audit History</h4>
+            <p className="font-semibold text-[#3A2F2F] mb-4">Audit History</p>
 
             <div className="space-y-3 text-sm text-[#6F635A]">
               <div className="flex items-center gap-2">
@@ -182,7 +180,7 @@ export default function PricingDetails({ data, invalidateFun, isPending }) {
           <div className="bg-white rounded-lg p-5 border border-[#E6DED6] h-full">
             <div className=" bg-[#F1E6DE] p-3 rounded-md">
               <div className="flex justify-between items-center mb-2">
-                <h4 className="font-semibold text-[#3A2F2F]">Status</h4>
+                <p className="font-semibold text-[#3A2F2F]">Status</p>
                 <div className="flex items-center gap-2 text-green-600 text-sm">
                   <span className="w-2 h-2 bg-green-600 rounded-full"></span>
                   {isPending ? (
@@ -202,7 +200,7 @@ export default function PricingDetails({ data, invalidateFun, isPending }) {
 
             {/* Details Card */}
             <div className="border border-[#F1E6DE] p-3 rounded-md mt-6">
-              <h4 className="font-semibold text-[#3A2F2F] mb-4">Details</h4>
+              <p className="font-semibold text-[#3A2F2F] mb-4">Details</p>
 
               <div className="space-y-4 text-sm">
                 <div>

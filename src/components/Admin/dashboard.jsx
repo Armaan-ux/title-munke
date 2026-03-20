@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TimeFilter from "../common/time-filter";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BrokerIndividualBusiness from "./broker-individual-business";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -15,7 +15,9 @@ import { getAdminMetrics } from "../service/userAdmin";
 const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const AdminDashboard = () => {
   const [isDownload, setIsDoownload] = useState(false);
-  const [activeTab, setActiveTab] = useState("organisation");
+ const [activeTab, setActiveTab] = useState(
+  () => localStorage.getItem("adminDashboardActiveTab") || "organisation"
+);
   const [active, setActive] = useState("all_time");
   const [resetChildState, setResetChildState] = useState(null);
   const metricQuery = useQuery({
@@ -28,6 +30,9 @@ const AdminDashboard = () => {
       resetChildState();
     }
   };
+    useEffect(() => {
+      localStorage.setItem("adminDashboardActiveTab", activeTab);
+    }, [activeTab]);
 
   return (
     <div className="my-4">

@@ -754,15 +754,15 @@ export const appearance = {
 export const PRODUCT_TYPES_BY_ROLE = {
   organisation: [
     {
-      label: "Subscription Plan - Organisation",
+      label: "Subscription Plan - Organization",
       value: "PROFESSIONAL_PLAN_ORGANISATION",
     },
     {
-      label: "Pay As You Go - Organisation",
+      label: "Pay As You Go - Organization",
       value: "PAY_AS_YOU_GO_ORGANISATION",
     },
     {
-      label: "Explore Plan - Organisation",
+      label: "Explore Plan - Organization",
       value: "EXPLORE_PLAN_ORGANISATION",
     },
   ],
@@ -781,19 +781,19 @@ export const PRODUCT_TYPES_BY_ROLE = {
 export const PRICE_TYPES_BY_ROLE = {
   organisation: [
     {
-      label: "Subscription Plan - Organisation Base Price",
+      label: "Subscription Plan - Organization Base Price",
       value: "BASE_PRICE_PROFESSIONAL_PLAN_ORGANISATION",
     },
     {
-      label: "Subscription Plan - Organisation Seat Price",
+      label: "Subscription Plan - Organization Seat Price",
       value: "SEAT_PRICE_PROFESSIONAL_PLAN_ORGANISATION",
     },
     {
-      label: "Subscription Plan - Organisation Search Usage Price",
+      label: "Subscription Plan - Organization Search Usage Price",
       value: "SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN_ORGANISATION",
     },
     {
-      label: "Pay As You Go - Organisation Search Usage Price",
+      label: "Pay As You Go - Organization Search Usage Price",
       value: "SEARCH_USAGE_PRICE_PAY_AS_YOU_GO_ORGANISATION",
     },
     {
@@ -818,7 +818,7 @@ export const PRICE_TYPES_BY_ROLE = {
       label: "Pay As You Go - Broker Search Usage Price",
       value: "SEARCH_USAGE_PRICE_PAY_AS_YOU_GO_BROKER",
     },
-     {
+    {
       label: "Explore Plan",
       value: "EXPLORE_PLAN_BROKER",
     },
@@ -836,7 +836,7 @@ export const PRICE_TYPES_BY_ROLE = {
       label: "Pay As You Go - Agent Search Usage Price",
       value: "SEARCH_USAGE_PRICE_PAY_AS_YOU_GO",
     },
-      {
+    {
       label: "Explore Plan",
       value: "EXPLORE_PLAN",
     },
@@ -851,9 +851,7 @@ export const PRICE_TYPES_BY_PRODUCT = {
     "SEAT_PRICE_PROFESSIONAL_PLAN_ORGANISATION",
     "SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN_ORGANISATION",
   ],
-  PAY_AS_YOU_GO_ORGANISATION: [
-    "SEARCH_USAGE_PRICE_PAY_AS_YOU_GO_ORGANISATION",
-  ],
+  PAY_AS_YOU_GO_ORGANISATION: ["SEARCH_USAGE_PRICE_PAY_AS_YOU_GO_ORGANISATION"],
   EXPLORE_PLAN_ORGANISATION: ["EXPLORE_PLAN_ORGANISATION"],
 
   // Broker Products
@@ -862,9 +860,7 @@ export const PRICE_TYPES_BY_PRODUCT = {
     "SEAT_PRICE_PROFESSIONAL_PLAN_BROKER",
     "SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN_BROKER",
   ],
-  PAY_AS_YOU_GO_BROKER: [
-    "SEARCH_USAGE_PRICE_PAY_AS_YOU_GO_BROKER",
-  ],
+  PAY_AS_YOU_GO_BROKER: ["SEARCH_USAGE_PRICE_PAY_AS_YOU_GO_BROKER"],
   EXPLORE_PLAN_BROKER: ["EXPLORE_PLAN_BROKER"],
 
   // Agent Products
@@ -872,8 +868,6 @@ export const PRICE_TYPES_BY_PRODUCT = {
     "BASE_PRICE_PROFESSIONAL_PLAN",
     "SEARCH_USAGE_PRICE_PROFESSIONAL_PLAN",
   ],
-  PAY_AS_YOU_GO: [
-    "SEARCH_USAGE_PRICE_PAY_AS_YOU_GO",
-  ],
+  PAY_AS_YOU_GO: ["SEARCH_USAGE_PRICE_PAY_AS_YOU_GO"],
   EXPLORE_PLAN: ["EXPLORE_PLAN"],
 };
