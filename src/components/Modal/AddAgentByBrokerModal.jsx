@@ -28,16 +28,26 @@ import { useUser } from "@/context/usercontext";
 import { handleCreateAuditLog } from "@/utils";
 import { useMutation } from "@tanstack/react-query";
 import { updateAgentDetail } from "../service/userAdmin";
-export default function AddAgentByBrokerModal({ open, onOpenChange, setUser, selectedUser, invalidateFun }) {
-  const {user} = useUser();
+export default function AddAgentByBrokerModal({
+  open,
+  onOpenChange,
+  setUser,
+  selectedUser,
+  invalidateFun,
+}) {
+  const { user } = useUser();
   const { userId } = useUserIdType();
-  const {control, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm({
     defaultValues: { name: "", email: "", searchLimit: 10 },
     resolver: zodResolver(newAgentSchema),
   });
 
   const isUpdate = !!selectedUser?.id;
-  
   useEffect(() => {
     if (isUpdate) {
       reset({
@@ -48,53 +58,60 @@ export default function AddAgentByBrokerModal({ open, onOpenChange, setUser, sel
     }
   }, [selectedUser, reset, isUpdate]);
 
-const updateAgentMutation = useMutation({
+  const updateAgentMutation = useMutation({
     mutationFn: (payload) => updateAgentDetail(payload),
     onSuccess: () => {
       onOpenChange();
       invalidateFun();
-    }, 
-    onError: (error) => {
-      toast.error(error?.response?.data?.error || "Something went wrong while adding new user. Please try again.");
     },
-  })
+    onError: (error) => {
+      toast.error(
+        error?.response?.data?.error ||
+          "Something went wrong while adding new user. Please try again.",
+      );
+    },
+  });
 
   const onSubmit = async (data) => {
-      try {
-        const { name, email, searchLimit } = data;
-        if(isUpdate) {
-          updateAgentMutation.mutate({ name, email, searchLimit, id: selectedUser?.id })
-          return;
-        }
-          const response = await createAgentForBroker(
-           userId,
-            name,
-            email,
-            searchLimit
-          );
-          toast.success("Agent Created Successfully.");
-          const newAgent = response.user;
-          console.log("newAgent", newAgent);
-          setUser((prev) => [...prev,
-              { ...newAgent, totalSearches: 0, agentName: name }
-              ]);
-
-          const userGroups =
-            user?.signInUserSession?.idToken?.payload["cognito:groups"] || [];
-          if (userGroups.includes("broker")) {
-            handleCreateAuditLog("AGENT_CREATE", {
-              detail: `Broker has created the agent`,
-            });
-          }
-          reset();
-          onOpenChange();
+    try {
+      const { name, email, searchLimit } = data;
+      if (isUpdate) {
+        updateAgentMutation.mutate({
+          name,
+          email,
+          searchLimit,
+          id: selectedUser?.id,
+        });
+        return;
       }
-    catch(err) {
-      toast.error(err?.response?.data?.message || "Something went wrong.")
+      const response = await createAgentForBroker(
+        userId,
+        name,
+        email,
+        searchLimit,
+      );
+      toast.success("Agent Created Successfully.");
+      const newAgent = response.user;
+      console.log("newAgent", newAgent);
+      setUser((prev) => [
+        ...prev,
+        { ...newAgent, totalSearches: 0, agentName: name },
+      ]);
+
+      const userGroups =
+        user?.signInUserSession?.idToken?.payload["cognito:groups"] || [];
+      if (userGroups.includes("broker")) {
+        handleCreateAuditLog("AGENT_CREATE", {
+          detail: `Broker has created the agent`,
+        });
+      }
+      reset();
+      onOpenChange();
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Something went wrong.");
     }
-  }
+  };
   if (!open) return null;
-  console.log("isSubmitting", isSubmitting)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -105,7 +122,7 @@ const updateAgentMutation = useMutation({
       >
         <DialogHeader className="flex flex-row items-center justify-between">
           <DialogTitle className="text-[26px] text-secondary font-semibold !font-poppins">
-            Add Agent
+            {isUpdate ? "Update Agent" : "Add Agent"}
           </DialogTitle>
           <DialogClose className="text-secondary hover:bg-transparent focus:outline-none">
             <X className="h-5 w-5 text-bold" />
@@ -131,7 +148,9 @@ const updateAgentMutation = useMutation({
                 />
               )}
             />
-            {errors.name && <FormValidationError message={errors.name.message} />}
+            {errors.name && (
+              <FormValidationError message={errors.name.message} />
+            )}
           </div>
 
           <div className="space-y-1">
@@ -149,7 +168,9 @@ const updateAgentMutation = useMutation({
                 />
               )}
             />
-            {errors.email && <FormValidationError message={errors.email.message} />}
+            {errors.email && (
+              <FormValidationError message={errors.email.message} />
+            )}
           </div>
 
           <div className="space-y-1">
@@ -160,16 +181,13 @@ const updateAgentMutation = useMutation({
               name="searchLimit"
               control={control}
               render={({ field }) => (
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value}
-                >
+                <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger className="h-[38px] w-full border border-[#E6DFDB] text-secondary focus:ring-0 focus:ring-offset-0">
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
 
                   <SelectContent className="text-secondary">
-                    {["10", "20", "30", "50", "100"].map((limit) => (
+                    {[10, 20, 30, 50, 100].map((limit) => (
                       <SelectItem key={limit} value={limit}>
                         {limit}
                       </SelectItem>
@@ -199,7 +217,10 @@ const updateAgentMutation = useMutation({
             >
               Cancel
             </Button>
-            <Button className="h-[38px] w-[50%] px-5 bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[14px] font-medium rounded-md" disabled={isSubmitting || updateAgentMutation?.isPending}>
+            <Button
+              className="h-[38px] w-[50%] px-5 bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[14px] font-medium rounded-md"
+              disabled={isSubmitting || updateAgentMutation?.isPending}
+            >
               {isUpdate ? "Update Agent" : "Invite Agent"}
             </Button>
           </div>

@@ -31,7 +31,7 @@ export function InvoiceModalDummy({ open, onClose, invoice, isPrint = true }) {
     csvData.push([]);
 
     // Add table header
-    csvData.push(["Description", "QTY", "Price", "Amount"]);
+    csvData.push(["Description", "Qty", "Price", "Amount"]);
 
     // Add line items
     const planRows = (invoice?.plans || [])
@@ -188,7 +188,7 @@ export function InvoiceModalDummy({ open, onClose, invoice, isPrint = true }) {
                 className="text-center px-3 py-2"
                 style={{ padding: isDownloading ? "0 15px 15px" : undefined }}
               >
-                QTY
+                Qty
               </th>
               <th
                 className="text-center px-3 py-2"
@@ -213,17 +213,27 @@ export function InvoiceModalDummy({ open, onClose, invoice, isPrint = true }) {
                   let priceName = "";
                   if (
                     plan.priceMetadata?.productType ===
-                    "PROFESSIONAL_PLAN_ORGANISATION" || plan.priceMetadata?.productType === "PROFESSIONAL_PLAN_BROKER"
-                    ||plan.priceMetadata?.productType === "PROFESSIONAL_PLAN"
+                      "PROFESSIONAL_PLAN_ORGANISATION" ||
+                    plan.priceMetadata?.productType ===
+                      "PROFESSIONAL_PLAN_BROKER" ||
+                    plan.priceMetadata?.productType === "PROFESSIONAL_PLAN"
                   ) {
                     if (
                       plan.priceMetadata?.priceType ===
-                      "BASE_PRICE_PROFESSIONAL_PLAN_ORGANISATION" ||  plan.priceMetadata?.priceType === "BASE_PRICE_PROFESSIONAL_PLAN_BROKER" || plan?.priceMetadata?.priceType === "BASE_PRICE_PROFESSIONAL_PLAN"
+                        "BASE_PRICE_PROFESSIONAL_PLAN_ORGANISATION" ||
+                      plan.priceMetadata?.priceType ===
+                        "BASE_PRICE_PROFESSIONAL_PLAN_BROKER" ||
+                      plan?.priceMetadata?.priceType ===
+                        "BASE_PRICE_PROFESSIONAL_PLAN"
                     ) {
                       priceName = "Base Price";
                     } else if (
                       plan.priceMetadata?.priceType ===
-                      "SEAT_PRICE_PROFESSIONAL_PLAN_ORGANISATION" ||  plan.priceMetadata?.priceType ==="SEAT_PRICE_PROFESSIONAL_PLAN_BROKER" || plan.priceMetadata?.priceType ==="SEAT_PRICE_PROFESSIONAL_PLAN"
+                        "SEAT_PRICE_PROFESSIONAL_PLAN_ORGANISATION" ||
+                      plan.priceMetadata?.priceType ===
+                        "SEAT_PRICE_PROFESSIONAL_PLAN_BROKER" ||
+                      plan.priceMetadata?.priceType ===
+                        "SEAT_PRICE_PROFESSIONAL_PLAN"
                     ) {
                       priceName = "Seat Price";
                     }

@@ -4,7 +4,12 @@ import { useUser } from '../context/usercontext';
 import NotFound from './NotFound';
 
 const ProtectedRoute = ({ children, allowedGroups }) => {
-    const { user } = useUser();
+    const { user, isLoading } = useUser();
+
+    if (isLoading) {
+        return null;
+    }
+
     if (!user) {
         // If the user is not logged in, redirect to the login page
         return <Navigate to="/subscription-login" />;

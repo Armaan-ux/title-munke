@@ -39,6 +39,7 @@ export const CONSTANTS = {
     GET_AGENT_DETAILS_AND_BROKER: "getAgentDetailsAndBroker",
     UPDATE_AGENT_STATUS: "updateAgentStatus",
     UPDATE_AGENT: "updateAgent",
+    UPDATE_ORGANISATION: "updateOrganisation",
     INITIATE_SEARCH: "InitiateSearch",
     TITLE_SEARCH: "TitleSearch",
     SEND_EMAIL_MESSAGE: "SendEmailMessage",
@@ -385,9 +386,6 @@ export async function getOrganisationAgentDetails(
   );
 }
 
-
-
-
 export async function getBrokerDetails(brokerId) {
   const payload = {
     body: {
@@ -642,7 +640,6 @@ export async function listAdmins(nextToken) {
     "/list-admins",
   );
 }
-
 
 export async function listBrokers(data) {
   const { withSearchCount, limit } = data || {};
@@ -1252,6 +1249,20 @@ export async function updateAgentDetail(updatedData) {
     "Success in " + action,
     "error in " + action,
     "/update-agent",
+  );
+}
+export async function updateOrganisationDetail(updatedData) {
+  const action = CONSTANTS?.ACTIONS?.UPDATE_ORGANISATION;
+  const payload = {
+    body: {
+      input: updatedData,
+    },
+  };
+  return callPutUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/update-organisation",
   );
 }
 export async function updateAdminDetail(updatedData) {

@@ -44,7 +44,6 @@ export default function BrokerBusinessTable({
         Agent: item?.agentCount,
         "Search Count": item?.totalSearches,
         "Last Activity": getFormattedDateTime(item?.lastLogin),
-        Business: `$${item?.revenue}`,
         "Account Created": getFormattedDateTime(item?.createdAt),
       }));
       downloadCSV(data);

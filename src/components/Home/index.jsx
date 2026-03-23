@@ -49,31 +49,36 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormValidationError } from "../common/FormValidationError";
 import { toast } from "react-toastify";
 const defaultDemoData = {
-    name: "",
-    state: "",
-    email: "",
-    country: "",
-    additionalMessage: "",
-  }
+  name: "",
+  state: "",
+  email: "",
+  country: "",
+  additionalMessage: "",
+};
 
 export default function Home() {
   const [openReportDialog, setOpenReportDialog] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [emblaRef] = useEmblaCarousel({ dragFree: true });
-  const {control, handleSubmit, reset, formState: {errors}} = useForm({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
     defaultValues: defaultDemoData,
-     resolver: zodResolver(demoRequestSchema)
+    resolver: zodResolver(demoRequestSchema),
   });
   const demoReqMutation = useMutation({
     mutationFn: (payload) => demoRequest(payload),
     onSuccess: () => {
       reset();
-      toast.success("Request submitted successfully")
+      toast.success("Request submitted successfully");
     },
     onError: () => {
-      toast.error("Request submission failed")
-    }
-  })
+      toast.error("Request submission failed");
+    },
+  });
   const scrollToSection = (id) => {
     const section = document.getElementById(id);
     if (section) {
@@ -98,11 +103,13 @@ export default function Home() {
     <div>
       {/* Announcement */}
 
-      
       <div className=" flex items-center justify-center text-base bg-primary text-primary-foreground text-center px-2 py-1 ">
         <p className="">
           Still doing manual searches?{" "}
-          <Link to="/subscription-login" className="inline-flex items-center gap-2">
+          <Link
+            to="/subscription-login"
+            className="inline-flex items-center gap-2"
+          >
             {" "}
             <b> Automate now </b> <ArrowRight className="size-5" />{" "}
           </Link>
@@ -138,9 +145,9 @@ export default function Home() {
               AI-powered title searches delivered with speed and accuracy.
               Helping brokers and agents make confident decisions.
             </p>
-            
+
             <div className="space-x-3">
-              <Link to="/subscription-login">
+              <Link to="/pricing">
                 <Button className="hover:scale-105" size="lg" variant="outline">
                   Get Started <ArrowRight />
                 </Button>
@@ -163,7 +170,6 @@ export default function Home() {
           />
         </div>
       </motion.section>
-
 
       {/* About section */}
       <section
@@ -291,51 +297,52 @@ export default function Home() {
             })}
           </div>
         </div>
-      </section> 
+      </section>
 
       {/* Sample Report  */}
 
+      <section
+        className="max-w-[1280px] mx-auto mb-10 md:mb-28 px-4 space-y-10 scroll-mt-20"
+        id="report-preview"
+      >
+        <h2 className="text-h2 mb-12 text-center text-secondary">
+          Sample Report{" "}
+        </h2>
 
-      <section  className="max-w-[1280px] mx-auto mb-10 md:mb-28 px-4 space-y-10 scroll-mt-20" id="report-preview"   >
-          <h2 className="text-h2 mb-12 text-center text-secondary"  >Sample Report </h2>
-
-        
-          {
-            sampleReportItems.map((item, index) => (
-          <motion.div 
-
-            className={`flex flex-col max-sm:min-h-[calc(100vh-90px)] md:max-h-[70vh] overflow-hidden sm:flex-row  md:py-20 rounded-4xl  p-5 md:p-10 gap-4 md:gap-8 sm:justify-center items-center sticky bg-[#F5F0EC] top-[10%] md:top-[15%] ${sampleReportItems.length === index + 1  ? "mb-20":"mb-20 md:mb-44"  }`} 
-            key={index} 
-          > 
-          <div className="py-2 sm:basis-[40%] md:basis-1/2" >
-            <img src={item.img} className="max-w-[11rem]  sm:max-w-[60%] mx-auto min-w-0" alt="documents" />
-          </div>
-          <div className="sm:basis-[60%] md:basis-1/2" >
-            <ListForReport
-              titleClass="lg:text-3xl mb-3 md:mb-8"
-              listClass="lg:text-lg"
-              title={item.title}
-              items={item.content}
-            />
-
-          </div>
+        {sampleReportItems.map((item, index) => (
+          <motion.div
+            className={`flex flex-col max-sm:min-h-[calc(100vh-90px)] md:max-h-[70vh] overflow-hidden sm:flex-row  md:py-20 rounded-4xl  p-5 md:p-10 gap-4 md:gap-8 sm:justify-center items-center sticky bg-[#F5F0EC] top-[10%] md:top-[15%] ${sampleReportItems.length === index + 1 ? "mb-20" : "mb-20 md:mb-44"}`}
+            key={index}
+          >
+            <div className="py-2 sm:basis-[40%] md:basis-1/2">
+              <img
+                src={item.img}
+                className="max-w-[11rem]  sm:max-w-[60%] mx-auto min-w-0"
+                alt="documents"
+              />
+            </div>
+            <div className="sm:basis-[60%] md:basis-1/2">
+              <ListForReport
+                titleClass="lg:text-3xl mb-3 md:mb-8"
+                listClass="lg:text-lg"
+                title={item.title}
+                items={item.content}
+              />
+            </div>
           </motion.div>
-          ))
-          }
-          <div className="flex justify-center w-full" >
-            <Link to="/Sample Docs.zip" target="_blank" download>
-            <Button
-              className="hover:scale-105"
-              size="lg"
-              >Download Sample Report <Download /></Button>
-            </Link>
-          </div>
+        ))}
+        <div className="flex justify-center w-full">
+          <Link to="/Sample Docs.zip" target="_blank" download>
+            <Button className="hover:scale-105" size="lg">
+              Download Sample Report <Download />
+            </Button>
+          </Link>
+        </div>
       </section>
-
 
       {/* Why choose Title Munke? */}
 
-        <section className="px-4">
+      <section className="px-4">
         <div className="max-w-[1725px] mx-auto mb-20 bg-coffee-bg rounded-[30px]">
           <div className="max-w-[1280px] mx-auto p-5 lg:p-10 py-10 lg:py-16 text-center">
             <h2 className="text-h2 text-center mb-2 text-secondary-foreground">
@@ -346,10 +353,9 @@ export default function Home() {
               view. See photos, addresses
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 ">
-              
               {whyTitleMunke.map((item, index) => (
                 <motion.div
-                     key={index}
+                  key={index}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{
@@ -359,28 +365,21 @@ export default function Home() {
                   }}
                   viewport={{ once: true }}
                 >
-
-
-                <div
-             
-                  className="flex flex-col items-center hover:bg-coffee-dark/70 transition-all duration-500 bg-coffee-dark p-6 sm:p-10 rounded-[30px]"
-                >
-                  <img src={item.icon} className="mb-6" alt={item.title} />
-                  <h3 className="text-2xl font-semibold mb-2 text-center text-primary-foreground">
-                    {item.title}
-                  </h3>
-                  <p className="text-body text-center text-[#D7C4B6]">
-                    {item.description}
-                  </p>
-                </div>
+                  <div className="flex flex-col items-center hover:bg-coffee-dark/70 transition-all duration-500 bg-coffee-dark p-6 sm:p-10 rounded-[30px]">
+                    <img src={item.icon} className="mb-6" alt={item.title} />
+                    <h3 className="text-2xl font-semibold mb-2 text-center text-primary-foreground">
+                      {item.title}
+                    </h3>
+                    <p className="text-body text-center text-[#D7C4B6]">
+                      {item.description}
+                    </p>
+                  </div>
                 </motion.div>
-
               ))}
             </div>
           </div>
         </div>
       </section>
-
 
       {/* Counties Map */}
       <section
@@ -424,48 +423,45 @@ export default function Home() {
         </h2>
         <Accordion className="max-w-3xl mx-auto  mb-4" type="multiple">
           <motion.div
-                  variants={{
-                    hidden: { opacity: 0 },
-                    show: {
-                      opacity: 1,
-                      transition: { staggerChildren: 0.2 },
-                    },
-                  }}
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true, amount: 0.2 }}
+            variants={{
+              hidden: { opacity: 0 },
+              show: {
+                opacity: 1,
+                transition: { staggerChildren: 0.2 },
+              },
+            }}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
             className="space-y-2 md:space-y-4"
           >
             {faq.map((item, index) => (
               <motion.div
                 key={index}
                 variants={{
-                    hidden: { opacity: 0, x: index % 2 === 0 ? -20 : 20 },
-                    show: {
-                      opacity: 1,
-                      x: 0,
-                      transition: { duration: 0.4, ease: "easeOut" },
-                    },
-                  }}
+                  hidden: { opacity: 0, x: index % 2 === 0 ? -20 : 20 },
+                  show: {
+                    opacity: 1,
+                    x: 0,
+                    transition: { duration: 0.4, ease: "easeOut" },
+                  },
+                }}
               >
-              <div
-
-                className="hover:scale-105 transition-all duration-500"
-              >
-                <AccordionItem
-                  value={(index + 1).toString()}
-                  className="border rounded-xl p-2 md:p-4 px-4 md:px-8 last:border-b "
-                >
-                  <AccordionTrigger className="text-xl font-bold text-secondary *:text-secondary! ">
-                    {item.question}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="text-base text-coffee-light space-y-2">
-                      {item.answer}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </div>
+                <div className="hover:scale-105 transition-all duration-500">
+                  <AccordionItem
+                    value={(index + 1).toString()}
+                    className="border rounded-xl p-2 md:p-4 px-4 md:px-8 last:border-b "
+                  >
+                    <AccordionTrigger className="text-xl font-bold text-secondary *:text-secondary! ">
+                      {item.question}
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="text-base text-coffee-light space-y-2">
+                        {item.answer}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </div>
               </motion.div>
             ))}
           </motion.div>
@@ -534,7 +530,6 @@ export default function Home() {
                   ))}
                 </motion.div>
               </div>
-
             </div>
           </div>
         </div>
@@ -578,60 +573,61 @@ export default function Home() {
 
       {/* Flexible Pricing for Every Scale */}
       <section className="bg-gradient-to-t from-[#FFFFFF] to-[#FFF8EB] py-20">
-          <div className="max-w-[1280px] mx-auto px-4">
-            <h2 className="text-h2 text-center text-secondary mb-6">Flexible Pricing for Every Scale</h2>
-            <p className="text-center max-w-[1000px] mx-auto mb-10 text-body text-coffee-light">
-              Whether you're an individual agent or an enterprise operation, Title Munke offers transparent pricing designed to grow with your business.
-            </p>
+        <div className="max-w-[1280px] mx-auto px-4">
+          <h2 className="text-h2 text-center text-secondary mb-6">
+            Flexible Pricing for Every Scale
+          </h2>
+          <p className="text-center max-w-[1000px] mx-auto mb-10 text-body text-coffee-light">
+            Whether you're an individual agent or an enterprise operation, Title
+            Munke offers transparent pricing designed to grow with your
+            business.
+          </p>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-              {flexiblePricing.map((item, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.5,
-                      delay: index * 0.1,
-                      ease: "easeOut",
-                    }}
-                    viewport={{ once: true, amount: 0.4 }}
-                    style={{
-                      backgroundImage: `url(${item.background})`,
-                      backgroundRepeat: "no-repeat",
-                      backgroundPosition: "top",
-                      backgroundSize: "100% 130px",
-                    }}
-                    className="flex flex-col items-center bg-white p-5 md:p-10 rounded-[20px] border-3 border-[#E8D0A7] shadow-[0px_4px_14px_0px_#D7C4B666] hover:shadow-[0px_28px_34px_0px_#D7C4B666] transition-shadow"
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+            {flexiblePricing.map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.5,
+                  delay: index * 0.1,
+                  ease: "easeOut",
+                }}
+                viewport={{ once: true, amount: 0.4 }}
+                style={{
+                  backgroundImage: `url(${item.background})`,
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "top",
+                  backgroundSize: "100% 130px",
+                }}
+                className="flex flex-col items-center bg-white p-5 md:p-10 rounded-[20px] border-3 border-[#E8D0A7] shadow-[0px_4px_14px_0px_#D7C4B666] hover:shadow-[0px_28px_34px_0px_#D7C4B666] transition-shadow"
+              >
+                <img src={item.icon} className="h-auto mb-5" alt={item.title} />
+                <div className="text-2xl font-semibold text-secondary text-center mb-0">
+                  {item.title}
+                </div>
+                <p className="text-center text-secondary">{item.subTitle}</p>
+
+                <img src="/divider.png" className="h-auto my-4" alt="divider" />
+
+                <div className="text-xl font-semibold text-secondary text-left w-full mb-4">
+                  {item.headline}
+                </div>
+                <p className="text-secondary leading-relaxed">{item.content}</p>
+
+                <div className="mt-auto pt-8 w-full">
+                  <Button
+                    className="hover:scale-105 w-full bg-[#5D4135] hover:bg-[#5D4135]"
+                    size="lg"
                   >
-                    <img src={item.icon} className="h-auto mb-5" alt={item.title} />
-                    <div className="text-2xl font-semibold text-secondary text-center mb-0">
-                      {item.title}
-                    </div>
-                    <p className="text-center text-secondary">
-                      {item.subTitle}
-                    </p>
-
-                    <img src="/divider.png" className="h-auto my-4" alt="divider" />
-
-                    <div className="text-xl font-semibold text-secondary text-left w-full mb-4">
-                      {item.headline}
-                    </div>
-                    <p className="text-secondary leading-relaxed">
-                      {item.content}
-                    </p>
-
-                    <div className="mt-auto pt-8 w-full">
-                      <Button
-                        className="hover:scale-105 w-full bg-[#5D4135] hover:bg-[#5D4135]"
-                        size="lg">
-                          Know More <MoveRight />
-                      </Button>
-                    </div>
-                  </motion.div>
-                ))}
-            </div>
+                    Know More <MoveRight />
+                  </Button>
+                </div>
+              </motion.div>
+            ))}
           </div>
+        </div>
       </section>
 
       {/* Request a Demo */}
@@ -644,7 +640,11 @@ export default function Home() {
             Discover how our solution works for your needs. Fill in your details
             to schedule a personalized demo and explore the features firsthand.
           </p>
-          <form onSubmit={handleSubmit((data) => demoReqMutation.mutate(data))} className="max-w-xl mx-auto" autoComplete="off">
+          <form
+            onSubmit={handleSubmit((data) => demoReqMutation.mutate(data))}
+            className="max-w-xl mx-auto"
+            autoComplete="off"
+          >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
               <div>
                 <Controller
@@ -659,7 +659,12 @@ export default function Home() {
                     />
                   )}
                 />
-                {errors.name && <FormValidationError message={errors.name.message} color={"text-[#e09a9d]"}/>}
+                {errors.name && (
+                  <FormValidationError
+                    message={errors.name.message}
+                    color={"text-[#e09a9d]"}
+                  />
+                )}
               </div>
               {/* <Input
                 className="bg-transparent"
@@ -682,35 +687,45 @@ export default function Home() {
                     }
                   </SelectContent>
                 </Select> */}
-                  <div>
-                    <Controller
-                      name="email"
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          placeholder="Email/Phone"
-                          label="Email/Phone"
-                          className="bg-transparent !rounded-[8px] placeholder:text-coffee-bg-foreground h-12 *:!border-[#977466] text-white"
-                          {...field}
-                        />
-                      )}
+              <div>
+                <Controller
+                  name="email"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      placeholder="Email/Phone"
+                      label="Email/Phone"
+                      className="bg-transparent !rounded-[8px] placeholder:text-coffee-bg-foreground h-12 *:!border-[#977466] text-white"
+                      {...field}
                     />
-                    {errors.email && <FormValidationError message={errors.email.message} color={"text-[#e09a9d]"}/>}
-                </div>
-                <div>
-                  <Controller
-                    name="state"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        placeholder="State"
-                        label="State"
-                        className="bg-transparent !rounded-[8px] placeholder:text-coffee-bg-foreground h-12 *:!border-[#977466] text-white"
-                        {...field}
-                      />
-                    )}
+                  )}
+                />
+                {errors.email && (
+                  <FormValidationError
+                    message={errors.email.message}
+                    color={"text-[#e09a9d]"}
                   />
-                  {errors.state && <FormValidationError message={errors.state.message} color={"text-[#e09a9d]"}/>}
+                )}
+              </div>
+              <div>
+                <Controller
+                  name="state"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      placeholder="State"
+                      label="State"
+                      className="bg-transparent !rounded-[8px] placeholder:text-coffee-bg-foreground h-12 *:!border-[#977466] text-white"
+                      {...field}
+                    />
+                  )}
+                />
+                {errors.state && (
+                  <FormValidationError
+                    message={errors.state.message}
+                    color={"text-[#e09a9d]"}
+                  />
+                )}
               </div>
               {/* <Input
                 className="bg-transparent"
@@ -743,7 +758,12 @@ export default function Home() {
                     />
                   )}
                 />
-                {errors.country && <FormValidationError message={errors.country.message} color={"text-[#e09a9d]"}/>}
+                {errors.country && (
+                  <FormValidationError
+                    message={errors.country.message}
+                    color={"text-[#e09a9d]"}
+                  />
+                )}
               </div>
               {/* <Input
                 className="bg-transparent"
@@ -783,10 +803,10 @@ export default function Home() {
                 size="lg"
                 className="text-tertiary bg-coffee-bg-foreground hover:bg-coffee-bg-foreground/90 hover:scale-105"
                 disabled={demoReqMutation.isPending}
-              > {
-                demoReqMutation.isPending ? "Submitting..." : "Submit"
-              }
-                 <ArrowRight />
+              >
+                {" "}
+                {demoReqMutation.isPending ? "Submitting..." : "Submit"}
+                <ArrowRight />
               </Button>
             </div>
           </form>
@@ -900,13 +920,19 @@ export default function Home() {
   );
 }
 
-function ListForReport({ title, items, titleClass, listClass, containerClass }) {
+function ListForReport({
+  title,
+  items,
+  titleClass,
+  listClass,
+  containerClass,
+}) {
   return (
-    <div className={cn(containerClass)} >
+    <div className={cn(containerClass)}>
       <p
         className={cn(
           "text-lg md:text-[22px] mb-2 font-semibold text-secondary ",
-          titleClass
+          titleClass,
         )}
       >
         {title}

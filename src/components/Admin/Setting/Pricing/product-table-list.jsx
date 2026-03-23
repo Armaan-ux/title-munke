@@ -140,7 +140,7 @@ function ProductTableList({ activeTab, activeFilter }) {
   const deleteProductMutation = useMutation({
     mutationFn: (productId) => deleteProduct(productId),
     onSuccess: () => {
-      pricingListingQuery.refetch();
+      queryClient.invalidateQueries({ queryKey: [queryKeys.pricingListing] });
     },
   });
 

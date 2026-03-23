@@ -483,7 +483,7 @@ function AdminBrokersList() {
 
 function Agents() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user } = useUser();
+  const { user, organisationDetail } = useUser();
   const { userType } = useUserIdType();
   const [agents, setAgents] = useState([]);
   const [hasMore, setHasMore] = useState(true);
@@ -561,6 +561,9 @@ function Agents() {
                 variant="outline"
                 className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
                 onClick={() => setIsBulkUploadOpen(true)}
+                disabled={
+                  loading || organisationDetail?.planType === "EXPLORE_PLAN"
+                }
               >
                 <Upload className="w-4 h-4" />
                 Upload Template
@@ -572,7 +575,11 @@ function Agents() {
                 onSuccess={() => handleFetchAgentListing(true)}
               />
             </div>
-            <Button variant="secondary" onClick={() => setIsOpen(true)}>
+            <Button
+              variant="secondary"
+              onClick={() => setIsOpen(true)}
+              disabled={organisationDetail?.planType === "EXPLORE_PLAN"}
+            >
               {" "}
               <PlusCircle /> Add Agent
             </Button>
@@ -594,7 +601,7 @@ function Agents() {
             {agents?.length === 0 && !hasMore ? (
               <TableRow>
                 <TableCell
-                  colSpan={5}
+                  colSpan={6}
                   className="font-medium text-center py-10 text-muted-foreground"
                 >
                   No Records found.

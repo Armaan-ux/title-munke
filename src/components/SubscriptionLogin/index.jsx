@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "../../context/usercontext";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Eye, EyeOff, Loader } from "lucide-react";
@@ -23,8 +23,11 @@ function SubscriptionLogin() {
 
   const navigate = useNavigate();
 
+  const location = useLocation();
+
   useEffect(() => {
     if (
+      location.pathname === "/subscription-login" &&
       user &&
       user.signInUserSession &&
       user.signInUserSession.idToken &&
@@ -35,8 +38,7 @@ function SubscriptionLogin() {
         "/" + user.signInUserSession.idToken.payload["cognito:groups"][0],
       );
     }
-  }, [user, navigate]);
-
+  }, [user, navigate, location.pathname]);
 
   const resendCodeMutation = useMutation({
     // mutationFn: code => confirmEmail({code: code, email: formData.email, userType: formData.role}),
@@ -112,7 +114,8 @@ function SubscriptionLogin() {
       setIsChecking(false);
     }
   };
-  if (isReset) return <ResetPassword username={username?.trim()} password={password} />;
+  if (isReset)
+    return <ResetPassword username={username?.trim()} password={password} />;
 
   return (
     <div className="relative min-h-dvh w-full overflow-hidden bg-[#2b140c]">
@@ -179,9 +182,7 @@ function SubscriptionLogin() {
           >
             <div className="w-full max-w-sm">
               <div className="border-2 border-[#e6d6c3] rounded-3xl p-4 bg-[#FFFFFF] ">
-                <p className="text-2xl font-semibold text-[#3b1f12]">
-                  Welcome
-                </p>
+                <p className="text-2xl font-semibold text-[#3b1f12]">Welcome</p>
                 <p className="mt-1 text-sm text-[#7a5a49]">
                   Please enter your details to Log in.
                 </p>

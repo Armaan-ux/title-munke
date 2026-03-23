@@ -17,29 +17,47 @@ import { CenterLoader } from "../common/Loader";
 import { useEffect } from "react";
 import { useDownloadCsv } from "@/hooks/useDownloadCsv";
 
-
-export default function IndividualBusinessTable({limit, isDownload, handleDownloadComplete, from, to}) {
+export default function IndividualBusinessTable({
+  limit,
+  isDownload,
+  handleDownloadComplete,
+  from,
+  to,
+}) {
   const individualListingQuery = useQuery({
     queryKey: [queryKeys.individualListingForAdmin, limit, from, to],
-    queryFn: () => getOrgAgentsList({withSearchCount: true, limit, from, to}),
+    queryFn: () => getOrgAgentsList({ withSearchCount: true, limit, from, to }),
   });
-  const {downloadCSV} = useDownloadCsv();
+  const { downloadCSV } = useDownloadCsv();
   useEffect(() => {
-    if (isDownload && individualListingQuery?.data?.items?.length > 0 && handleDownloadComplete) {
-      const data = individualListingQuery?.data?.items?.map((item, idx) => (
-        {"Sr. No.": idx + 1, "Name": item?.name, "Property Search": item?.totalSearches, Business: `$${item?.revenue}`}
-      ))
+    if (
+      isDownload &&
+      individualListingQuery?.data?.items?.length > 0 &&
+      handleDownloadComplete
+    ) {
+      const data = individualListingQuery?.data?.items?.map((item, idx) => ({
+        "Sr. No.": idx + 1,
+        Name: item?.name,
+        "Property Search": item?.totalSearches,
+      }));
       downloadCSV(data);
-      setTimeout(handleDownloadComplete, 500)
-    }
-    else handleDownloadComplete?.();
-
-  }, [isDownload, individualListingQuery?.data?.items, downloadCSV, handleDownloadComplete]);
+      setTimeout(handleDownloadComplete, 500);
+    } else handleDownloadComplete?.();
+  }, [
+    isDownload,
+    individualListingQuery?.data?.items,
+    downloadCSV,
+    handleDownloadComplete,
+  ]);
   return (
     <div>
       {individualListingQuery?.isLoading && <CenterLoader />}
-      {individualListingQuery?.isError && <ShowError message={individualListingQuery?.error?.response?.data?.message} />}
-      {individualListingQuery?.isSuccess &&
+      {individualListingQuery?.isError && (
+        <ShowError
+          message={individualListingQuery?.error?.response?.data?.message}
+        />
+      )}
+      {individualListingQuery?.isSuccess && (
         <Table className="">
           <TableHeader className="bg-[#F5F0EC]">
             <TableRow>
@@ -63,7 +81,10 @@ export default function IndividualBusinessTable({limit, isDownload, handleDownlo
           <TableBody>
             {individualListingQuery?.data?.items?.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="font-medium text-center py-10">
+                <TableCell
+                  colSpan={6}
+                  className="font-medium text-center py-10"
+                >
                   No Records found.
                 </TableCell>
               </TableRow>
@@ -76,7 +97,9 @@ export default function IndividualBusinessTable({limit, isDownload, handleDownlo
                     {item?.totalSearches}
                   </TableCell>
                   <TableCell className="text-center">
-                    <Link to={`/organisation/search/property-search/${item?.id}`}>
+                    <Link
+                      to={`/organisation/search/property-search/${item?.id}`}
+                    >
                       <Button size="icon" className="text-md" variant="ghost">
                         <Eye />
                       </Button>
@@ -87,7 +110,7 @@ export default function IndividualBusinessTable({limit, isDownload, handleDownlo
             )}
           </TableBody>
         </Table>
-      }
+      )}
     </div>
   );
 }

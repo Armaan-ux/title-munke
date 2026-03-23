@@ -33,6 +33,7 @@ import {
   updateAdminDetail,
   updateAgentDetail,
   updateBrokerDetail,
+  updateOrganisationDetail,
   updateOrgBrokerDetail,
 } from "../service/userAdmin";
 import { toast } from "react-toastify";
@@ -114,9 +115,18 @@ export default function AddAdminModal({
 
   const newUserMutation = useMutation({
     mutationFn: (payload) => createUserByAdmin(payload),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       invalidateFun?.();
       onClose();
+      toast.success(
+        variables?.userType === "broker"
+          ? "Broker Added successfully"
+          : variables?.userType === "agent"
+            ? "Agent Added successfully"
+            : variables?.userType === "admin"
+              ? "Admin Added successfully"
+              : "Organization Added successfully",
+      );
     },
     onError: (error) => {
       toast.error(
@@ -131,6 +141,7 @@ export default function AddAdminModal({
     onSuccess: () => {
       invalidateFun?.();
       onClose();
+      toast.success("Broker Updated successfully");
     },
     onError: (error) => {
       toast.error(
@@ -145,6 +156,7 @@ export default function AddAdminModal({
     onSuccess: () => {
       invalidateFun?.();
       onClose();
+      toast.success("Agent Updated successfully");
     },
     onError: (error) => {
       toast.error(
@@ -158,6 +170,22 @@ export default function AddAdminModal({
     onSuccess: () => {
       invalidateFun?.();
       onClose();
+      toast.success("Admin Updated successfully");
+    },
+    onError: (error) => {
+      toast.error(
+        error?.response?.data?.error ||
+          "Something went wrong while adding new user. Please try again.",
+      );
+    },
+  });
+
+  const updateOrgMutation = useMutation({
+    mutationFn: (payload) => updateOrganisationDetail(payload),
+    onSuccess: () => {
+      invalidateFun?.();
+      onClose();
+      toast.success("Organization Updated successfully");
     },
     onError: (error) => {
       toast.error(
@@ -188,6 +216,13 @@ export default function AddAdminModal({
     } else if (isUpdate && userType === "admin") {
       const { email } = rest;
       updateAdminMutation?.mutate({
+        email,
+        name: fullName,
+        id: selectedUser?.id,
+      });
+    } else if (isUpdate && userType === "organisation") {
+      const { email } = rest;
+      updateOrgMutation?.mutate({
         email,
         name: fullName,
         id: selectedUser?.id,

@@ -32,7 +32,7 @@ function SubscriptionSignup() {
   const { userType, planId } = useParams();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const {user, signIn } = useUser();
+  const { user, signIn } = useUser();
   const [error, setError] = useState("");
   const [isReset, setIsReset] = useState(false);
   const [codeModal, setCodeModal] = useState(false);
@@ -59,20 +59,20 @@ function SubscriptionSignup() {
   const phoneValue = watch("phoneNumber");
   const isValidUSPhone = phoneValue?.length === 10;
 
-    useEffect(() => {
-      if (
-        user &&
-        user.signInUserSession &&
-        user.signInUserSession.idToken &&
-        user.signInUserSession.idToken.payload &&
-        user.signInUserSession.idToken.payload["cognito:groups"]
-      ) {
-        navigate(
-          "/" + user.signInUserSession.idToken.payload["cognito:groups"][0],
-        );
-        localStorage.removeItem("price")
-      }
-    }, [user, navigate]);
+  useEffect(() => {
+    if (
+      user &&
+      user.signInUserSession &&
+      user.signInUserSession.idToken &&
+      user.signInUserSession.idToken.payload &&
+      user.signInUserSession.idToken.payload["cognito:groups"]
+    ) {
+      navigate(
+        "/" + user.signInUserSession.idToken.payload["cognito:groups"][0],
+      );
+      localStorage.removeItem("price");
+    }
+  }, [user, navigate]);
 
   // Resgister User Form Mutation
   const registerUserMutation = useMutation({
@@ -82,19 +82,20 @@ function SubscriptionSignup() {
       setCodeModal(true);
     },
     onError: (error) => {
-      console.log("error", error);
-      setError("Something went wrong. Please try again later.");
+      setError(
+        error?.response?.data?.message ||
+          "Something went wrong. Please try again later.",
+      );
     },
   });
-    const logHandler = async()=>{
-         
-        await handleCreateAuditLog(
-              "Account",
-              { detail: `${userType} account created  successfully` },
-              userType === "agent",
-              userType
-            );
-    }
+  const logHandler = async () => {
+    await handleCreateAuditLog(
+      "Account",
+      { detail: `${userType} account created  successfully` },
+      userType === "agent",
+      userType,
+    );
+  };
 
   const onSubmit = (data) => {
     registerUserMutation.mutate({
@@ -137,7 +138,7 @@ function SubscriptionSignup() {
     const userTypeValue =
       signedInUser?.signInUserSession?.idToken?.payload["cognito:groups"]?.[0];
     await updateUserStatus({ userId, userType: userTypeValue });
-    logHandler()
+    logHandler();
     console.log("signedInUser after confirmation:", signedInUser);
   };
 
@@ -187,10 +188,10 @@ function SubscriptionSignup() {
     }
   };
   useEffect(() => {
-      // Cleanup localStorage on unmount    
-      localStorage.removeItem("invitedAgents");
-      localStorage.removeItem("invitedBroker");
-      localStorage.removeItem("invitedOrgAgents");    
+    // Cleanup localStorage on unmount
+    localStorage.removeItem("invitedAgents");
+    localStorage.removeItem("invitedBroker");
+    localStorage.removeItem("invitedOrgAgents");
   }, []);
   // if (isReset) return <ResetPassword username={username} password={password} />;
 
@@ -268,7 +269,7 @@ function SubscriptionSignup() {
               <div className="w-full max-w-lg ">
                 {/* stepper */}
                 <div className="flex items-center justify-center mb-5">
-                  {userType === "broker" ||  userType === "organisation" ? (
+                  {userType === "broker" || userType === "organisation" ? (
                     <div className="flex items-center justify-center mb-5">
                       <div className="flex items-center rounded-full bg-[#f6efe6] px-2 py-1 shadow-sm">
                         {/* Active Step */}

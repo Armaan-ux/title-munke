@@ -6,14 +6,13 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { motion } from "motion/react";
-import {
-  updateBrokerStatus,
-  updateStatusAgent,
-} from "../service/userAdmin";
+import { updateBrokerStatus, updateStatusAgent } from "../service/userAdmin";
 import { handleCreateAuditLog } from "@/utils";
+import { Eye, EyeOff } from "lucide-react";
 
 function ResetPassword({ username, password }) {
   const { signIn } = useUser();
+  const [showPassword, setShowPassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -82,18 +81,32 @@ function ResetPassword({ username, password }) {
                 className="mx-auto w-24 md:w-32 mb-2"
               />
             </div>
-            <div>
+            <div className="relative">
               <Label for="password" className="text-sm">
                 Reset Password
               </Label>
               <Input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
                 value={newPassword}
                 required
                 onChange={(e) => setNewPassword(e.target.value)}
               />
+              <Button
+                variant="ghost"
+                type="button"
+                size="icon"
+                className="absolute right-3 bottom-[14px] cursor-pointer m-0 p-0 px-0 h-auto w-auto"
+                onClick={() => setShowPassword((pre) => !pre)}
+              >
+                {!showPassword && (
+                  <Eye className="text-tertiary text-500 w-4 h-4" />
+                )}
+                {showPassword && (
+                  <EyeOff className="text-tertiary text-500 w-4 h-4" />
+                )}
+              </Button>
             </div>
             <Button
               // type="button"
