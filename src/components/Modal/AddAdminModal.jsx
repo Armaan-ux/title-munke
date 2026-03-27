@@ -30,7 +30,9 @@ import {
   createUserByAdmin,
   getBrokerSelectListing,
   getOrgBrokersList,
+  updateAdmin,
   updateAdminDetail,
+  updateAdminFromAdmin,
   updateAgentDetail,
   updateBrokerDetail,
   updateOrganisationDetail,
@@ -146,7 +148,7 @@ export default function AddAdminModal({
     onError: (error) => {
       toast.error(
         error?.response?.data?.error ||
-          "Something went wrong while adding new user. Please try again.",
+          "Something went wrong while updating broker. Please try again.",
       );
     },
   });
@@ -161,12 +163,12 @@ export default function AddAdminModal({
     onError: (error) => {
       toast.error(
         error?.response?.data?.error ||
-          "Something went wrong while adding new user. Please try again.",
+          "Something went wrong while updating agent. Please try again.",
       );
     },
   });
   const updateAdminMutation = useMutation({
-    mutationFn: (payload) => updateAdminDetail(payload),
+    mutationFn: (payload) => updateAdminFromAdmin(payload),
     onSuccess: () => {
       invalidateFun?.();
       onClose();
@@ -175,7 +177,7 @@ export default function AddAdminModal({
     onError: (error) => {
       toast.error(
         error?.response?.data?.error ||
-          "Something went wrong while adding new user. Please try again.",
+          "Something went wrong while updating admin. Please try again.",
       );
     },
   });
@@ -190,7 +192,7 @@ export default function AddAdminModal({
     onError: (error) => {
       toast.error(
         error?.response?.data?.error ||
-          "Something went wrong while adding new user. Please try again.",
+          "Something went wrong while updating organization. Please try again.",
       );
     },
   });
@@ -387,7 +389,7 @@ export default function AddAdminModal({
             </div>
           )}
 
-          {currentUserType === "admin" && (
+          {currentUserType === "admin" && userType !== "admin" && (
             <p className="text-xs text-[#6B5E55] italic">
               {`Note: The ${userType} will get the explore plan.`}
             </p>

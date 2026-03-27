@@ -568,6 +568,21 @@ export async function updateAdmin(adminId, input) {
   );
 }
 
+export async function updateAdminStatus(adminId, status) {
+  const payload = {
+    body: {
+      adminId: adminId,
+      status: status,
+    },
+  };
+  return callPutUserAdminApi(
+    payload,
+    "Success in updateAdmin:",
+    "Error in updateAdmin:",
+    "/update-admin-status",
+  );
+}
+
 export async function getTotalBrokerSearchesThisMonth() {
   const payload = {
     body: {},
@@ -1278,6 +1293,20 @@ export async function updateAdminDetail(updatedData) {
     "Success in " + action,
     "error in " + action,
     "/users",
+  );
+}
+export async function updateAdminFromAdmin(updatedData) {
+  const action = CONSTANTS?.ACTIONS?.UPDATE_ADMIN;
+  const payload = {
+    body: {
+      input: updatedData,
+    },
+  };
+  return callPutUserAdminApi(
+    payload,
+    "Success in " + action,
+    "error in " + action,
+    "/update-admin",
   );
 }
 export async function deleteUserNew(userDta) {
