@@ -18,7 +18,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
 function History() {
   const [searchHistories, setSearchHistories] = useState([]);
@@ -40,13 +40,14 @@ function History() {
       const response = await API.graphql({
         query: listSearchHistories,
         variables: {
-          filter: { brokerId: { eq: user?.attributes?.sub } },
+          filter: { userId: { eq: user?.attributes?.sub } },
           limit: FETCH_LIMIT,
           nextToken,
         },
       });
 
-      const { items, nextToken: newNextToken } = response.data.listSearchHistories;
+      const { items, nextToken: newNextToken } =
+        response.data.listSearchHistories;
 
       setSearchHistories((prev) => [...prev, ...items]);
       setNextToken(newNextToken);
@@ -67,7 +68,7 @@ function History() {
         {
           mode: "CHECK_STATUS",
           search_id: searchId,
-        }
+        },
       );
 
       const { status, zip_url } = response.data;
@@ -89,12 +90,12 @@ function History() {
           prev.map((record) =>
             record.searchId === searchId
               ? { ...record, status: "SUCCESS", downloadLink: zip_url }
-              : record
-          )
+              : record,
+          ),
         );
 
         setInProgressSearches((prev) =>
-          prev.filter((record) => record.searchId !== searchId)
+          prev.filter((record) => record.searchId !== searchId),
         );
       }
     } catch (error) {
@@ -128,7 +129,10 @@ function History() {
   };
 
   const sortedHistories = [...searchHistories].sort((a, b) => {
-    if (!a.hasOwnProperty(sortConfig.key) || !b.hasOwnProperty(sortConfig.key)) {
+    if (
+      !a.hasOwnProperty(sortConfig.key) ||
+      !b.hasOwnProperty(sortConfig.key)
+    ) {
       return 0;
     }
 
@@ -157,63 +161,59 @@ function History() {
   };
 
   return (
+    <div className="bg-white !p-4 rounded-xl">
+      <Table className="">
+        <TableHeader className="bg-[#F5F0EC]">
+          <TableRow>
+            <TableHead className="w-[100px]">Sr. No.</TableHead>
+            <TableHead>Address</TableHead>
+            <TableHead>Date / Time</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Download Link</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {sortedHistories?.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={5} className="font-medium text-center py-10">
+                No Records found.
+              </TableCell>
+            </TableRow>
+          ) : (
+            sortedHistories?.map((item, index) => (
+              <TableRow key={item.id}>
+                <TableCell className="font-medium">{index + 1}</TableCell>
+                <TableCell>{item.address}</TableCell>
+                <TableCell>{getFormattedDateTime(item?.createdAt)}</TableCell>
+                <TableCell>{item.status}</TableCell>
+                <TableCell>{}</TableCell>
+                <TableCell className="text-right">
+                  {/* <a href={item.downloadLink} download>Download</a> */}
+                  {item?.downloadLink ? (
+                    <a
+                      href={item.downloadLink}
+                      download
+                      onClick={() =>
+                        handleCreateAuditLog(
+                          "DOWNLOAD",
+                          { zipUrl: item.downloadLink },
+                          true,
+                        )
+                      }
+                    >
+                      Click to Download
+                    </a>
+                  ) : (
+                    ""
+                  )}
+                </TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+    </div>
 
-
-      
-        <div className="bg-white !p-4 rounded-xl" >
-
-            <Table className=""  >
-              <TableHeader className="bg-[#F5F0EC]" >
-                <TableRow>
-                  <TableHead className="w-[100px]">Sr. No.</TableHead>
-                  <TableHead>Address</TableHead>
-                  <TableHead>Date / Time</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Download Link</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {
-                  sortedHistories?.length === 0 ?
-                  <TableRow >
-                    <TableCell colSpan={5} className="font-medium text-center py-10">No Records found.</TableCell>
-                  </TableRow>
-                  :
-                  sortedHistories?.map((item, index) => (
-                    <TableRow key={item.id}>
-                      <TableCell className="font-medium">{index + 1}</TableCell>
-                      <TableCell>{item.address}</TableCell>
-                      <TableCell>{getFormattedDateTime(item?.createdAt)}</TableCell>
-                      <TableCell>{item.status}</TableCell>
-                      <TableCell>{}</TableCell>
-                      <TableCell className="text-right">
-                        {/* <a href={item.downloadLink} download>Download</a> */}
-                          {item?.downloadLink ? (
-                          <a
-                            href={item.downloadLink}
-                              download
-                                onClick={() =>
-                                  handleCreateAuditLog(
-                                    "DOWNLOAD",
-                                    { zipUrl: item.downloadLink },
-                                    true
-                                  )
-                                }
-                            >
-                                Click to Download
-                              </a>
-                            ) : (
-                              ""
-                            )}
-                          </TableCell>
-                    </TableRow>
-                  ))
-                }
-
-              </TableBody>
-            </Table>
-          </div>
-     
     // <div className="history-main-content">
     //   <div className="setting-page-title">
     //     <h1>Search History</h1>
