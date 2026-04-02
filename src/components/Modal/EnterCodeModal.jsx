@@ -90,6 +90,9 @@ export function EnterCodeModal({
                 "Something went wrong. Please try again."}
             </p>
           )}
+          <p className="text-gray-500 text-center text-sm font-medium mt-4">
+            <span className="font-bold">Note:</span> <span className="font-bold">OTP</span> valid for 24 hours
+          </p>
         </DialogContent>
       </div>
     </Dialog>

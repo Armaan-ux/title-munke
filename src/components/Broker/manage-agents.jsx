@@ -43,12 +43,20 @@ import {
   Trash2,
   ArchiveRestore,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { API } from "aws-amplify";
 import { listAgents } from "@/graphql/queries";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import AddAgentByBrokerModal from "@/components/Modal/AddAgentByBrokerModal";
+import ConfirmDeleteModal from "@/components/Modal/ConfirmDeleteModal";
 import { useNavigate } from "react-router-dom";
 import { useDeleteUser } from "@/hooks/useDeleteUser";
 import { useRestoreUser } from "@/hooks/useRestoreUser";
@@ -116,6 +124,9 @@ function Agents() {
   const [pendingSearch, setPendingSearch] = useState(0);
   const [topPerformer, setTopPerformer] = useState("");
   const [addAgent, setAddAgent] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
   const underOrganisation = brokerDetail?.isUnderOrganisation;
   const bulkUploadMutation = useMutation({
     mutationFn: (data) => bulkAgentUpload(data),
@@ -342,316 +353,258 @@ function Agents() {
           invalidateFun={fetchData}
         />
       )}
-      {/* <div className="flex items-center gap-2 justify-end mb-3">
-        <Checkbox
-          id="show-deleted-checkbox"
-          className="border-2 size-5 cursor-pointer bg-white"
-          checked={showDeleted}
-          onCheckedChange={(value) => setShowDeleted(value)}
-        />
-        <Label htmlFor="show-deleted-checkbox" className="text-sm mb-0">
-          Show Deleted
-        </Label>
-      </div> */}
-      <div className="w-full  flex flex-wrap items-center justify-between gap-3 mb-4 rounded-md">
-        {/* Left Section */}
-        <div className="flex items-center gap-5 w-full sm:w-auto">
-          <p className="text-xl font-semibold text-[#4C0D0D] whitespace-nowrap">
-            All Agents
-          </p>
-          <div className="relative w-full sm:w-[220px]">
-            {/* <Input
-              type="text"
-              placeholder="Search"
-              className="h-[40px] rounded-md pl-8 border border-[#E2DAD5] bg-white text-[#4C0D0D] placeholder:text-[#B6AAA5] focus-visible:ring-0 focus-visible:ring-offset-0"
-            /> */}
-            {/* <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="absolute left-2.5 top-3 h-4 w-4 text-[#B6AAA5]"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="1.8"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z"
-              />
-            </svg> */}
-          </div>
-        </div>
 
-        {/* Right Section */}
-        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-          <a
-            href={
-              underOrganisation || brokerDetail?.planType === "EXPLORE_PLAN"
-                ? undefined
-                : "https://title-search-storage.s3.us-east-1.amazonaws.com/Bulk+Upload+Template.xlsx"
-            }
-          >
-            <Button
-              variant="outline"
-              disabled={
-                underOrganisation || brokerDetail?.planType === "EXPLORE_PLAN"
-              }
-              className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
-            >
-              <Download className="w-4 h-4" />
-              Download Template
-            </Button>
-          </a>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            className="hidden"
-            accept=".xls,.xlsx"
-          />
-          <Button
-            disabled={
-              underOrganisation ||
-              bulkUploadMutation.isPending ||
-              brokerDetail?.planType === "EXPLORE_PLAN"
-            }
-            variant="outline"
-            className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <Upload className="w-4 h-4" />
-            Upload Template
-          </Button>
-
-          <Button
-            // onClick={() => setAddAgent(user?.status === "active")}
-            onClick={() => setAddAgent(true)}
-            disabled={
-              underOrganisation || brokerDetail?.planType === "EXPLORE_PLAN"
-            }
-            className="h-[36px] bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[13px] font-medium rounded-md flex items-center gap-1.5 px-3"
-            // disabled={user?.status !== "active"}
-          >
-            <PlusCircle className="w-4 h-4" />
-            Add Agent
-          </Button>
-        </div>
-      </div>
       <div className="bg-white !p-4 rounded-xl">
-        <Table className="">
-          <TableHeader className="bg-[#F5F0EC]">
-            <TableRow>
-              <TableHead className="w-[100px]">Sr. No.</TableHead>
-              <TableHead>Agent Name</TableHead>
-              <TableHead className="text-center">
-                Searchers This Month
-              </TableHead>
-              <TableHead>Last Login</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-center">Reinvite</TableHead>
-              <TableHead className="text-center">Action</TableHead>
-              {/* <TableHead>Delete</TableHead> */}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={8}
-                  className="font-medium text-center py-10 text-muted-foreground"
+        {brokerDetail?.planType === "EXPLORE_PLAN" ? (
+          <div className="py-20 text-center border-2 border-dashed rounded-xl bg-gray-100/50">
+            <p className="text-lg font-medium text-muted-foreground italic">
+              Upgrade your plan to access this feature.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="flex justify-between gap-4 items-center mb-4">
+              <div className="flex items-center gap-4">
+                <p className="text-lg font-medium">All Agents</p>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-[180px] bg-white">
+                    <SelectValue placeholder="Filter by Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ALL">All Status</SelectItem>
+                    <SelectItem value="ACTIVE">Active</SelectItem>
+                    <SelectItem value="UNCONFIRMED">Unconfirmed</SelectItem>
+                    <SelectItem value="DELETED">Deleted</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Right Section */}
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <a
+                  href={
+                    underOrganisation ||
+                    brokerDetail?.planType === "EXPLORE_PLAN"
+                      ? undefined
+                      : "https://title-search-storage.s3.us-east-1.amazonaws.com/Bulk+Upload+Template.xlsx"
+                  }
                 >
-                  Loading...
-                </TableCell>
-              </TableRow>
-            ) : filteredAgents?.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={8}
-                  className="font-medium text-center py-10 text-muted-foreground"
+                  <Button
+                    variant="outline"
+                    disabled={
+                      underOrganisation ||
+                      brokerDetail?.planType === "EXPLORE_PLAN"
+                    }
+                    className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download Template
+                  </Button>
+                </a>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+                  accept=".xls,.xlsx"
+                />
+                <Button
+                  disabled={
+                    underOrganisation ||
+                    bulkUploadMutation.isPending ||
+                    brokerDetail?.planType === "EXPLORE_PLAN"
+                  }
+                  variant="outline"
+                  className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
+                  onClick={() => fileInputRef.current?.click()}
                 >
-                  No Records found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredAgents?.map((item, index) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{index + 1}</TableCell>
-                  <TableCell>{item.agentName ? item.agentName : "-"}</TableCell>
-                  <TableCell className="text-center">
-                    {item.totalSearches}
-                  </TableCell>
-                  <TableCell>
-                    {" "}
-                    {item?.lastLogin
-                      ? getFormattedDateTime(item.lastLogin)
-                      : "-"}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      className={`${
-                        item?.status === "ACTIVE"
-                          ? "bg-[#E9F3E9] text-[#1E8221]"
-                          : item?.status === "UNCONFIRMED"
-                            ? "bg-[#FFF3D9] text-[#A2781E]"
-                            : "bg-[#FFE3E2] text-[#FF5F59]"
-                      } text-[13px] font-medium px-3 py-1 rounded-md`}
-                    >
-                      {item?.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {item.status === "UNCONFIRMED" && (
-                      <UserPlus
-                        className="w-5 h-5 mx-auto"
-                        // className={` text-sm`}
-                        disabled={reinviteMutation?.isPending}
-                        onClick={() =>
-                          reinviteMutation?.mutate({ email: item?.email })
-                        }
-                        // variant="outline"
-                        // size="sm"
-                      />
-                    )}
-                    {/* {reinvitingAgentId === item.id
-                        ? "Sending..."
-                        : "Reinvite"} */}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <div className="">
-                      <Button
-                        size="icon"
-                        className="text-sm"
-                        variant="ghost"
-                        onClick={() => {
-                          setAddAgent(true);
-                          setSelectedUser(item);
-                        }}
-                      >
-                        <PencilLine />
-                      </Button>
-                      <Button
-                        size="icon"
-                        className="text-sm"
-                        variant="ghost"
-                        onClick={() =>
-                          navigate(
-                            `/broker/manage-agents/agent-property-details/${item?.id}`,
-                          )
-                        }
-                      >
-                        <Eye />
-                      </Button>
-                      <Button
-                        size="icon"
-                        className="text-md"
-                        variant="ghost"
-                        onClick={() => {
-                          if (item?.status === "DELETED")
-                            restoreUserMutation.mutate({
-                              userId: item.id,
-                              email: item.email,
-                              userType: "agent",
-                            });
-                          else
-                            deleteUserMutation.mutate({
-                              userId: item.id,
-                              email: item.email,
-                              userType: "agent",
-                            });
-                        }}
-                        disabled={
-                          deleteUserMutation?.isLoading ||
-                          restoreUserMutation?.isLoading
-                        }
-                      >
-                        {item?.status === "DELETED" ? (
-                          <ArchiveRestore />
-                        ) : (
-                          <Trash2 />
-                        )}
-                      </Button>
-                      {/* {item.status !== "UNCONFIRMED" && (
-                        <>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger>
-                            
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  unAssignAgent(item.id, item.agentId)
-                                }
-                              >
-                                Unassign
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  toggleAgentStatus(
-                                    item.agentId,
-                                    item.status === "INACTIVE"
-                                      ? "ACTIVE"
-                                      : "INACTIVE"
-                                  )
-                                }
-                              >
-                                {item.status === "ACTIVE"
-                                  ? "Inactive"
-                                  : "Active"}
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </>
-                      )} */}
-                    </div>
-                  </TableCell>
-                  {/* <TableCell>
-                    {item.status === CONSTANTS.USER_STATUS.DELETED ? (
-                      <Button
-                        className="text-sm"
-                        size="sm"
-                        disabled={
-                          undeletingAgentId === item.id ||
-                          reinvitingAgentId ||
-                          deletingAgentId
-                        }
-                        onClick={() => handleUndelete(item)}
-                      >
-                        {undeletingAgentId === item.id
-                          ? "Restoring..."
-                          : "Undelete"}
-                      </Button>
-                    ) : (
-                      <Button
-                        size="sm"
-                        className="text-sm"
-                        variant="destructive"
-                        disabled={
-                          deletingAgentId === item.id ||
-                          reinvitingAgentId ||
-                          undeletingAgentId
-                        }
-                        onClick={() => handleDelete(item)}
-                      >
-                        {deletingAgentId === item.id ? "Deleting..." : "Delete"}
-                      </Button>
-                    )}
-                  </TableCell> */}
+                  <Upload className="w-4 h-4" />
+                  Upload Template
+                </Button>
+
+                <Button
+                  onClick={() => setAddAgent(true)}
+                  disabled={
+                    underOrganisation ||
+                    brokerDetail?.planType === "EXPLORE_PLAN"
+                  }
+                  className="h-[36px] bg-[#4C0D0D] hover:bg-[#4C0D0D]/90 text-white text-[13px] font-medium rounded-md flex items-center gap-1.5 px-3"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  Add Agent
+                </Button>
+              </div>
+            </div>
+
+            <Table className="">
+              <TableHeader className="bg-[#F5F0EC]">
+                <TableRow>
+                  <TableHead className="w-[100px]">Sr. No.</TableHead>
+                  <TableHead>Agent Name</TableHead>
+                  <TableHead className="text-center">
+                    Searchers This Month
+                  </TableHead>
+                  <TableHead>Last Login</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-center">Reinvite</TableHead>
+                  <TableHead className="text-center">Action</TableHead>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={8}
+                      className="font-medium text-center py-10 text-muted-foreground"
+                    >
+                      Loading...
+                    </TableCell>
+                  </TableRow>
+                ) : agents?.filter(
+                    (item) =>
+                      statusFilter === "ALL" || item.status === statusFilter,
+                  )?.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={8}
+                      className="font-medium text-center py-10 text-muted-foreground"
+                    >
+                      No Records found.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  agents
+                    ?.filter(
+                      (item) =>
+                        statusFilter === "ALL" || item.status === statusFilter,
+                    )
+                    ?.map((item, index) => (
+                      <TableRow key={item.id}>
+                        <TableCell className="font-medium">
+                          {index + 1}
+                        </TableCell>
+                        <TableCell>
+                          {item.agentName ? item.agentName : "-"}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {item.totalSearches}
+                        </TableCell>
+                        <TableCell>
+                          {" "}
+                          {item?.lastLogin
+                            ? getFormattedDateTime(item.lastLogin)
+                            : "-"}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            className={`${
+                              item?.status === "ACTIVE"
+                                ? "bg-[#E9F3E9] text-[#1E8221]"
+                                : item?.status === "UNCONFIRMED"
+                                  ? "bg-[#FFF3D9] text-[#A2781E]"
+                                  : "bg-[#FFE3E2] text-[#FF5F59]"
+                            } text-[13px] font-medium px-3 py-1 rounded-md`}
+                          >
+                            {item?.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {item.status === "UNCONFIRMED" && (
+                            <UserPlus
+                              className="w-5 h-5 mx-auto cursor-pointer"
+                              onClick={() =>
+                                reinviteMutation?.mutate({ email: item?.email })
+                              }
+                            />
+                          )}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <div className="flex items-center justify-center gap-2">
+                            <Button
+                              size="icon"
+                              className="text-sm"
+                              variant="ghost"
+                              onClick={() => {
+                                setAddAgent(true);
+                                setSelectedUser(item);
+                              }}
+                            >
+                              <PencilLine />
+                            </Button>
+                            <Button
+                              size="icon"
+                              className="text-sm"
+                              variant="ghost"
+                              onClick={() =>
+                                navigate(
+                                  `/broker/manage-agents/agent-property-details/${item?.id}`,
+                                )
+                              }
+                            >
+                              <Eye />
+                            </Button>
+                            <Button
+                              size="icon"
+                              className="text-md"
+                              variant="ghost"
+                              onClick={() => {
+                                if (item?.status === "DELETED") {
+                                  restoreUserMutation.mutate({
+                                    userId: item.id,
+                                    email: item.email,
+                                    userType: "agent",
+                                  });
+                                } else {
+                                  setUserToDelete(item);
+                                  setIsDeleteDialogOpen(true);
+                                }
+                              }}
+                            >
+                              {item?.status === "DELETED" ? (
+                                <ArchiveRestore />
+                              ) : (
+                                <Trash2 />
+                              )}
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                )}
+              </TableBody>
+            </Table>
+          </>
+        )}
       </div>
 
-      {/* </div> */}
+      <ConfirmDeleteModal
+        open={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={() => {
+          if (userToDelete) {
+            deleteUserMutation.mutate({
+              userId: userToDelete.id,
+              email: userToDelete.email,
+              userType: "agent",
+            });
+            setIsDeleteDialogOpen(false);
+          }
+        }}
+        isLoading={deleteUserMutation?.isPending}
+        title="Delete Agent"
+        description={`Are you sure you want to delete ${userToDelete?.agentName || "this agent"}? This action cannot be undone.`}
+      />
     </>
   );
 }
 
 function UnassignedAgents() {
-  const { user } = useUser();
+  const { user, brokerDetail } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("ALL");
   const [agents, setAgents] = useState([]);
   const [showDeleted, setShowDeleted] = useState(false);
   const [filteredAgents, setFilteredAgents] = useState([]);
@@ -726,94 +679,153 @@ function UnassignedAgents() {
   }, [agents, showDeleted]);
   return (
     <>
-      <div className="flex items-center gap-2 justify-end mb-3">
-        <Checkbox
-          id="show-deleted-checkbox"
-          className="border-2 size-5 cursor-pointer bg-white"
-          checked={showDeleted}
-          onCheckedChange={(value) => setShowDeleted(value)}
-        />
-        <Label htmlFor="show-deleted-checkbox" className="text-sm mb-0">
-          Show Deleted
-        </Label>
-      </div>
       <div className="bg-white !p-4 rounded-xl">
-        <Table className="">
-          <TableHeader className="bg-[#F5F0EC]">
-            <TableRow>
-              <TableHead className="w-[100px]">Sr. No.</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Assign</TableHead>
-              <TableHead>Delete</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="font-medium text-center py-10 text-muted-foreground"
-                >
-                  Loading...
-                </TableCell>
-              </TableRow>
-            ) : filteredAgents?.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="font-medium text-center py-10 text-muted-foreground"
-                >
-                  No Records found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredAgents?.map((item, index) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{index + 1}</TableCell>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell> {item.email}</TableCell>
-                  <TableCell>{item.status}</TableCell>
-                  <TableCell>
-                    <Button
-                      size="sm"
-                      className={`text-sm`}
-                      onClick={() => handleAssignAgent(item.id, item.name)}
-                    >
-                      Assign
-                    </Button>
-                  </TableCell>
-                  <TableCell>
-                    {item.status === CONSTANTS.USER_STATUS.DELETED ? (
-                      <Button
-                        onClick={() =>
-                          handleUndeleteAgent(item.id, item.name, item.email)
-                        }
-                        className="text-sm"
-                        size="sm"
-                      >
-                        Undelete
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={() =>
-                          handleDeleteAgent(item.id, item.name, item.email)
-                        }
-                        className="text-sm"
-                        size="sm"
-                        variant="destructive"
-                      >
-                        Delete
-                      </Button>
-                    )}
-                  </TableCell>
+        {brokerDetail?.planType === "EXPLORE_PLAN" ? (
+          <div className="py-20 text-center border-2 border-dashed rounded-xl bg-gray-100/50">
+            <p className="text-lg font-medium text-muted-foreground italic">
+              Upgrade your plan to access this feature.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center gap-4 justify-end mb-3">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-[180px] bg-white">
+                  <SelectValue placeholder="Filter by Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">All Statuses</SelectItem>
+                  <SelectItem value="ACTIVE">Active</SelectItem>
+                  <SelectItem value="UNCONFIRMED">Unconfirmed</SelectItem>
+                  <SelectItem value="DELETED">Deleted</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Table className="">
+              <TableHeader className="bg-[#F5F0EC]">
+                <TableRow>
+                  <TableHead className="w-[100px]">Sr. No.</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Assign</TableHead>
+                  <TableHead>Delete</TableHead>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={6}
+                      className="font-medium text-center py-10 text-muted-foreground"
+                    >
+                      Loading...
+                    </TableCell>
+                  </TableRow>
+                ) : agents?.filter(
+                    (item) =>
+                      statusFilter === "ALL" || item.status === statusFilter,
+                  )?.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={6}
+                      className="font-medium text-center py-10 text-muted-foreground"
+                    >
+                      No Records found.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  agents
+                    ?.filter(
+                      (item) =>
+                        statusFilter === "ALL" || item.status === statusFilter,
+                    )
+                    ?.map((item, index) => (
+                      <TableRow key={item.id}>
+                        <TableCell className="font-medium">
+                          {index + 1}
+                        </TableCell>
+                        <TableCell>{item.name}</TableCell>
+                        <TableCell> {item.email}</TableCell>
+                        <TableCell>{item.status}</TableCell>
+                        <TableCell>
+                          <Button
+                            size="sm"
+                            className={`text-sm`}
+                            onClick={() =>
+                              handleAssignAgent(item.id, item.name)
+                            }
+                          >
+                            Assign
+                          </Button>
+                        </TableCell>
+                        <TableCell>
+                          {item.status === CONSTANTS.USER_STATUS.DELETED ? (
+                            <Button
+                              onClick={() =>
+                                handleUndeleteAgent(
+                                  item.id,
+                                  item.name,
+                                  item.email,
+                                )
+                              }
+                              className="text-sm"
+                              size="sm"
+                            >
+                              Undelete
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={() => {
+                                setUserToDelete(item);
+                                setIsDeleteDialogOpen(true);
+                              }}
+                              className="text-sm"
+                              size="sm"
+                              variant="destructive"
+                            >
+                              Delete
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                )}
+              </TableBody>
+            </Table>
+          </>
+        )}
       </div>
+
+      <ConfirmDeleteModal
+        open={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={async () => {
+          if (userToDelete) {
+            const result = await deleteUser(
+              userToDelete.id,
+              userToDelete.email,
+              CONSTANTS.USER_TYPES.AGENT,
+            );
+            if (result) {
+              setAgents((prevAgents) =>
+                prevAgents.map((agent) =>
+                  agent.id === userToDelete.id
+                    ? { ...agent, status: result.status }
+                    : agent,
+                ),
+              );
+              toast.success("Agent Deleted Successfully.");
+              handleCreateAuditLog("DELETE", {
+                detail: `Deleted Agent ${userToDelete.name} (${userToDelete.id})`,
+              });
+              setIsDeleteDialogOpen(false);
+            }
+          }
+        }}
+        title="Delete Agent"
+        description={`Are you sure you want to delete ${userToDelete?.name || "this agent"}? This action cannot be undone.`}
+      />
     </>
   );
 }

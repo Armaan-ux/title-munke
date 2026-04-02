@@ -233,7 +233,10 @@ function SubscriptionPayment() {
                       className="space-y-3"
                     >
                       {/* Apple Pay Option */}
-                      <Card className="flex flex-row items-center justify-between px-5 py-3 rounded-xl border hover:border-gray-400 transition">
+                      <Card
+                        className={`flex flex-row items-center justify-between px-5 py-3 rounded-xl border transition cursor-pointer ${paymentMethod === "apple" ? "border-[#3b1f12] bg-[#f6efe6]" : "hover:border-gray-400"}`}
+                        onClick={() => setPaymentMethod("apple")}
+                      >
                         <div className="flex items-center gap-3">
                           <img src="/apple-pay.svg" alt="apple pay" />
                           <span className="font-medium">Apple Pay</span>
@@ -241,7 +244,10 @@ function SubscriptionPayment() {
                         <RadioGroupItem value="apple" />
                       </Card>
                       {/* Add Card Option */}
-                      <Card className="flex flex-row items-center justify-between px-5 py-3 rounded-xl border hover:border-gray-400 transition">
+                      <Card
+                        className={`flex flex-row items-center justify-between px-5 py-3 rounded-xl border transition cursor-pointer ${paymentMethod === "card" ? "border-[#3b1f12] bg-[#f6efe6]" : "hover:border-gray-400"}`}
+                        onClick={() => setPaymentMethod("card")}
+                      >
                         <div className="flex items-center gap-3">
                           <img src="/card.svg" alt="card pay" />
                           <span className="font-medium">

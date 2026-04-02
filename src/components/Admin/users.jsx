@@ -11,6 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import {
   ArchiveRestore,
@@ -43,19 +50,9 @@ import {
   reinviteUser,
   updateBrokerStatus,
 } from "../service/userAdmin";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Badge } from "../ui/badge";
 import AddAdminModal from "../Modal/AddAdminModal";
+import ConfirmDeleteModal from "../Modal/ConfirmDeleteModal";
 import { useDeleteUser } from "@/hooks/useDeleteUser";
 import { useRestoreUser } from "@/hooks/useRestoreUser";
 import { useMutation } from "@tanstack/react-query";
@@ -118,6 +115,9 @@ function Organisation() {
   const [isOrgListLoading, setIsOrgListLoading] = useState(false);
   const [nextToken, setNextToken] = useState(null);
   const [selectedUser, setSelectedUser] = useState({});
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("ALL");
   const { deleteUserMutation } = useDeleteUser(() => {
     handleFetchOrgListing(true);
     setHasMore(true);
@@ -174,7 +174,20 @@ function Organisation() {
         isOpen={isOpen}
       /> */}
         <div className="flex justify-between gap-4 items-center mb-4">
-          <p className="text-lg font-medium">All Organizations</p>
+          <div className="flex items-center gap-4">
+            <p className="text-lg font-medium">All Organizations</p>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[180px] bg-white">
+                <SelectValue placeholder="Filter by Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">All Status</SelectItem>
+                <SelectItem value="ACTIVE">Active</SelectItem>
+                <SelectItem value="UNCONFIRMED">Unconfirmed</SelectItem>
+                <SelectItem value="DELETED">Deleted</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <Button variant="secondary" onClick={() => setIsOpen(true)}>
             {" "}
             <PlusCircle /> Add Organization
@@ -192,7 +205,9 @@ function Organisation() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {org?.length === 0 && !hasMore ? (
+            {org?.filter(
+              (item) => statusFilter === "ALL" || item.status === statusFilter,
+            )?.length === 0 && !hasMore ? (
               <TableRow>
                 <TableCell
                   colSpan={5}
@@ -202,71 +217,73 @@ function Organisation() {
                 </TableCell>
               </TableRow>
             ) : (
-              org?.map((item, index) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium ">{index + 1}</TableCell>
-                  <TableCell className="font-medium text-black">
-                    {item.name}
-                  </TableCell>
-                  <TableCell>{item.email}</TableCell>
-                  <TableCell>
-                    <Badge
-                      className={`${
-                        item?.status === "ACTIVE"
-                          ? "bg-[#E9F3E9] text-[#1E8221]"
-                          : item?.status === "DELETED"
-                            ? " text-destructive/80 bg-destructive/20"
-                            : "bg-[#FFF3D9] text-[#A2781E]"
-                      } text-[13px] font-medium px-3 py-1 rounded-full`}
-                    >
-                      {item?.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2 flex-row">
-                      <Button
-                        size="icon"
-                        className="text-md"
-                        variant="ghost"
-                        onClick={() => {
-                          setSelectedUser(item);
-                          setIsOpen(true);
-                        }}
+              org
+                ?.filter(
+                  (item) =>
+                    statusFilter === "ALL" || item.status === statusFilter,
+                )
+                ?.map((item, index) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium ">{index + 1}</TableCell>
+                    <TableCell className="font-medium text-black">
+                      {item.name}
+                    </TableCell>
+                    <TableCell>{item.email}</TableCell>
+                    <TableCell>
+                      <Badge
+                        className={`${
+                          item?.status === "ACTIVE"
+                            ? "bg-[#E9F3E9] text-[#1E8221]"
+                            : item?.status === "DELETED"
+                              ? " text-destructive/80 bg-destructive/20"
+                              : "bg-[#FFF3D9] text-[#A2781E]"
+                        } text-[13px] font-medium px-3 py-1 rounded-full`}
                       >
-                        <PencilLine />
-                      </Button>
-                      {userId !== item?.id && (
+                        {item?.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2 flex-row">
                         <Button
                           size="icon"
                           className="text-md"
                           variant="ghost"
                           onClick={() => {
-                            if (item?.status === "DELETED")
-                              restoreUserMutation.mutate({
-                                userId: item.id,
-                                email: item.email,
-                                userType: "organisation",
-                              });
-                            else
-                              deleteUserMutation.mutate({
-                                userId: item.id,
-                                email: item.email,
-                                userType: "organisation",
-                              });
+                            setSelectedUser(item);
+                            setIsOpen(true);
                           }}
-                          disabled={loading}
                         >
-                          {item?.status === "DELETED" ? (
-                            <ArchiveRestore />
-                          ) : (
-                            <Trash2 />
-                          )}
+                          <PencilLine />
                         </Button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
+                        {userId !== item?.id && (
+                          <Button
+                            size="icon"
+                            className="text-md"
+                            variant="ghost"
+                            onClick={() => {
+                              if (item?.status === "DELETED") {
+                                restoreUserMutation.mutate({
+                                  userId: item.id,
+                                  email: item.email,
+                                  userType: "organisation",
+                                });
+                              } else {
+                                setUserToDelete(item);
+                                setIsDeleteDialogOpen(true);
+                              }
+                            }}
+                          >
+                            {item?.status === "DELETED" ? (
+                              <ArchiveRestore />
+                            ) : (
+                              <Trash2 />
+                            )}
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
             )}
           </TableBody>
         </Table>
@@ -284,6 +301,24 @@ function Organisation() {
           )}
         </div>
       </div>
+
+      <ConfirmDeleteModal
+        open={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={() => {
+          if (userToDelete) {
+            deleteUserMutation.mutate({
+              userId: userToDelete.id,
+              email: userToDelete.email,
+              userType: "organisation",
+            });
+            setIsDeleteDialogOpen(false);
+          }
+        }}
+        isLoading={deleteUserMutation?.isPending}
+        title="Delete Organisation"
+        description={`Are you sure you want to delete ${userToDelete?.name || "this organisation"}? This action cannot be undone.`}
+      />
     </>
   );
 }
@@ -294,8 +329,11 @@ function Admins() {
   const [admins, setAdmins] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [isAdminListLoading, setIsAdminListLoading] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("ALL");
   const [nextToken, setNextToken] = useState(null);
   const [selectedUser, setSelectedUser] = useState({});
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
   const { deleteUserMutation } = useDeleteUser(() => {
     handleFetchAdminListing(true);
     setHasMore(true);
@@ -321,7 +359,6 @@ function Admins() {
   useEffect(() => {
     handleFetchAdminListing();
   }, []);
-  const loading = deleteUserMutation.isPending || restoreUserMutation.isPending;
 
   return (
     <>
@@ -342,14 +379,21 @@ function Admins() {
         />
       )}
       <div className="bg-white !p-4 rounded-xl">
-        {/* <AddUserModal
-        setIsOpen={setIsOpen}
-        userType="admin"
-        setUser={setAdmins}
-        isOpen={isOpen}
-      /> */}
         <div className="flex justify-between gap-4 items-center mb-4">
-          <p className="text-lg font-medium">All Admins</p>
+          <div className="flex items-center gap-4">
+            <p className="text-lg font-medium">All Admins</p>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[180px] bg-white">
+                <SelectValue placeholder="Filter by Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">All Status</SelectItem>
+                <SelectItem value="ACTIVE">Active</SelectItem>
+                <SelectItem value="UNCONFIRMED">Unconfirmed</SelectItem>
+                <SelectItem value="DELETED">Deleted</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <Button variant="secondary" onClick={() => setIsOpen(true)}>
             {" "}
             <PlusCircle /> Add Admin
@@ -367,7 +411,9 @@ function Admins() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {admins?.length === 0 && !hasMore ? (
+            {admins?.filter(
+              (item) => statusFilter === "ALL" || item.status === statusFilter,
+            )?.length === 0 && !hasMore ? (
               <TableRow>
                 <TableCell
                   colSpan={5}
@@ -377,71 +423,73 @@ function Admins() {
                 </TableCell>
               </TableRow>
             ) : (
-              admins?.map((item, index) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium ">{index + 1}</TableCell>
-                  <TableCell className="font-medium text-black">
-                    {item.name}
-                  </TableCell>
-                  <TableCell>{item.email}</TableCell>
-                  <TableCell>
-                    <Badge
-                      className={`${
-                        item?.status === "ACTIVE"
-                          ? "bg-[#E9F3E9] text-[#1E8221]"
-                          : item?.status === "DELETED"
-                            ? " text-destructive/80 bg-destructive/20"
-                            : "bg-[#FFF3D9] text-[#A2781E]"
-                      } text-[13px] font-medium px-3 py-1 rounded-full`}
-                    >
-                      {item?.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2 flex-row">
-                      <Button
-                        size="icon"
-                        className="text-md"
-                        variant="ghost"
-                        onClick={() => {
-                          setSelectedUser(item);
-                          setIsOpen(true);
-                        }}
+              admins
+                ?.filter(
+                  (item) =>
+                    statusFilter === "ALL" || item.status === statusFilter,
+                )
+                ?.map((item, index) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium ">{index + 1}</TableCell>
+                    <TableCell className="font-medium text-black">
+                      {item.name}
+                    </TableCell>
+                    <TableCell>{item.email}</TableCell>
+                    <TableCell>
+                      <Badge
+                        className={`${
+                          item?.status === "ACTIVE"
+                            ? "bg-[#E9F3E9] text-[#1E8221]"
+                            : item?.status === "DELETED"
+                              ? " text-destructive/80 bg-destructive/20"
+                              : "bg-[#FFF3D9] text-[#A2781E]"
+                        } text-[13px] font-medium px-3 py-1 rounded-full`}
                       >
-                        <PencilLine />
-                      </Button>
-                      {userId !== item?.id && (
+                        {item?.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2 flex-row">
                         <Button
                           size="icon"
                           className="text-md"
                           variant="ghost"
                           onClick={() => {
-                            if (item?.status === "DELETED")
-                              restoreUserMutation.mutate({
-                                userId: item.id,
-                                email: item.email,
-                                userType: "admin",
-                              });
-                            else
-                              deleteUserMutation.mutate({
-                                userId: item.id,
-                                email: item.email,
-                                userType: "admin",
-                              });
+                            setSelectedUser(item);
+                            setIsOpen(true);
                           }}
-                          disabled={loading}
                         >
-                          {item?.status === "DELETED" ? (
-                            <ArchiveRestore />
-                          ) : (
-                            <Trash2 />
-                          )}
+                          <PencilLine />
                         </Button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
+                        {userId !== item?.id && (
+                          <Button
+                            size="icon"
+                            className="text-md"
+                            variant="ghost"
+                            onClick={() => {
+                              if (item?.status === "DELETED") {
+                                restoreUserMutation.mutate({
+                                  userId: item.id,
+                                  email: item.email,
+                                  userType: "admin",
+                                });
+                              } else {
+                                setUserToDelete(item);
+                                setIsDeleteDialogOpen(true);
+                              }
+                            }}
+                          >
+                            {item?.status === "DELETED" ? (
+                              <ArchiveRestore />
+                            ) : (
+                              <Trash2 />
+                            )}
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
             )}
           </TableBody>
         </Table>
@@ -459,6 +507,24 @@ function Admins() {
           )}
         </div>
       </div>
+
+      <ConfirmDeleteModal
+        open={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={() => {
+          if (userToDelete) {
+            deleteUserMutation.mutate({
+              userId: userToDelete.id,
+              email: userToDelete.email,
+              userType: "admin",
+            });
+            setIsDeleteDialogOpen(false);
+          }
+        }}
+        isLoading={deleteUserMutation?.isPending}
+        title="Delete Admin"
+        description={`Are you sure you want to delete ${userToDelete?.name || "this admin"}? This action cannot be undone.`}
+      />
     </>
   );
 }
@@ -467,24 +533,12 @@ function AdminBrokersList() {
   const [isBrokerListLoading, setIsBrokerListLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedBroker, setSelectedBroker] = useState({});
-  const [isAgentCreationModalOpen, setIsAgentCreationModalOpen] =
-    useState(false);
-  const [isAgentListOpen, setIsAgentListOpen] = useState(false);
-  const [isAgentListLoading, setIsAgentListLoading] = useState(false);
-  // State to track which broker's status is currently being updated
-  const [updatingStatusId, setUpdatingStatusId] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [currentBrokerId, setCurrentBrokerId] = useState(null);
   const [brokers, setBrokers] = useState([]);
-  const [agentList, setAgentList] = useState([]);
-  const [activeBrokers, setActiveBrokers] = useState([]);
   const [nextToken, setNextToken] = useState(null);
-  const [totalBrokerCount, setTotalBrokerCount] = useState(0);
-  const [totalActiveBrokerCount, setTotalActiveBrokerCount] = useState(0);
-  const [totalBrokerSearchThisMonthCount, setTotalBrokerSearchThisMonthCount] =
-    useState(0);
-  const [deletingBrokerId, setDeletingBrokerId] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
   const { deleteUserMutation } = useDeleteUser(() => {
     handleFetchBrokersWithSearchCount(true);
     setHasMore(true);
@@ -493,33 +547,6 @@ function AdminBrokersList() {
     handleFetchBrokersWithSearchCount(true);
     setHasMore(true);
   });
-  const loadingDelete =
-    deleteUserMutation.isPending || restoreUserMutation.isPending;
-  const getBroker = async () => {
-    try {
-      setLoading(true);
-      const totalBrokerDict = await getTotalBrokers();
-      const ActiveBrokers = await getActiveBrokers();
-      const TotalBrokerSearchesThisMonthDict =
-        await getTotalBrokerSearchesThisMonth();
-      setTotalBrokerSearchThisMonthCount(
-        TotalBrokerSearchesThisMonthDict.totalSearches,
-      );
-      setTotalBrokerCount(totalBrokerDict?.totalBrokers);
-      setTotalActiveBrokerCount(ActiveBrokers?.length);
-      setActiveBrokers(ActiveBrokers); // Store the fetched active brokers in state
-    } catch (err) {
-      console.error("Error", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    getBroker();
-    const interval = setInterval(getBroker, 1800000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     handleFetchBrokersWithSearchCount();
@@ -544,102 +571,8 @@ function AdminBrokersList() {
     setIsBrokerListLoading(false);
   };
 
-  const handleBrokerStatus = async (elem) => {
-    const { id: brokerId, status: currentStatus } = elem;
-    const newStatus = currentStatus === "ACTIVE" ? "INACTIVE" : "ACTIVE";
-    try {
-      setUpdatingStatusId(brokerId);
-      await updateBrokerStatus(brokerId, newStatus);
-      setBrokers((currentBrokers) =>
-        currentBrokers.map(
-          (broker) =>
-            broker.id === brokerId
-              ? { ...broker, status: newStatus } // Create a new object for the updated item
-              : broker, // Return all other items as they are
-        ),
-      );
-    } catch (error) {
-      // Use the specific error message from the backend if available
-      const errorMessage =
-        error.response?.data?.message || "Failed to update broker status";
-      console.error("Failed to update broker status:", error);
-      toast.error(errorMessage);
-    } finally {
-      setUpdatingStatusId(null);
-    }
-  };
-
-  const refreshCurrentAgentList = async () => {
-    if (!currentBrokerId) return;
-
-    setIsAgentListLoading(true);
-    try {
-      const response = await fetchAgentsWithSearchCount(currentBrokerId);
-      setAgentList(response);
-    } catch (err) {
-      console.error("Failed to refresh agent list:", err);
-    } finally {
-      setIsAgentListLoading(false);
-    }
-  };
-
-  const handleFetchAgentListForBroker = async (brokerId) => {
-    setCurrentBrokerId(brokerId);
-    try {
-      setIsAgentListLoading(true);
-      setIsAgentListOpen(true);
-      const response = await fetchAgentsWithSearchCount(brokerId);
-      setAgentList(response);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsAgentListLoading(false);
-    }
-  };
-
-  const handleDelete = async (broker) => {
-    // if (window.confirm(`Are you sure you want to delete agent ${broker.agentName}? This is a soft delete.`)) {
-    // }
-    setDeletingBrokerId(broker.id);
-    try {
-      await deleteUser(broker.id, broker.email, CONSTANTS.USER_TYPES.BROKER);
-      toast.success(`Broker ${broker.name} has been deleted.`);
-      // Call the refresh function passed from the parent component.
-      // if (onListRefresh) onListRefresh();
-      getBroker();
-    } catch (error) {
-      console.error("Failed to delete broker:", error);
-      toast.error(
-        `Failed to delete broker. ${error?.response?.data?.message || ""}`,
-      );
-    } finally {
-      setDeletingBrokerId(null);
-    }
-  };
-
   return (
     <>
-      {/* <AgentList
-        data={agentList}
-        isOpen={isAgentListOpen}
-        // isOpen={true}
-        setIsOpen={setIsAgentListOpen}
-        isAgentListLoading={isAgentListLoading}
-        onListRefresh={refreshCurrentAgentList}
-      /> */}
-
-      {/* <AddUserModal
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        userType={"broker"}
-        setUser={setBrokers}
-      /> */}
-      {/* 
-      <AddAgentByAdminModal
-        isOpen={isAgentCreationModalOpen}
-        setIsOpen={setIsAgentCreationModalOpen}
-        brokers={activeBrokers}
-      /> */}
       {isOpen && (
         <AddAdminModal
           open={isOpen}
@@ -660,7 +593,20 @@ function AdminBrokersList() {
       <div>
         <div className="bg-white !p-4 rounded-xl">
           <div className="flex justify-between gap-4 items-center mb-4">
-            <p className="text-lg font-medium">All Brokers</p>
+            <div className="flex items-center gap-4">
+              <p className="text-lg font-medium">All Brokers</p>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-[180px] bg-white">
+                  <SelectValue placeholder="Filter by Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">All Status</SelectItem>
+                  <SelectItem value="ACTIVE">Active</SelectItem>
+                  <SelectItem value="UNCONFIRMED">Unconfirmed</SelectItem>
+                  <SelectItem value="DELETED">Deleted</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
             <div className="space-x-2">
               <Button variant="secondary" onClick={() => setIsOpen(true)}>
@@ -675,17 +621,17 @@ function AdminBrokersList() {
               <TableRow>
                 <TableHead>Sr. No.</TableHead>
                 <TableHead>Name</TableHead>
-                {/* <TableHead>Monthly Searches</TableHead>
-                <TableHead>Last Login</TableHead> */}
                 <TableHead>Email</TableHead>
                 <TableHead>Team Strength</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Action</TableHead>
-                {/* <TableHead>Agent List</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {brokers?.length === 0 && !isBrokerListLoading ? (
+              {brokers?.filter(
+                (item) =>
+                  statusFilter === "ALL" || item.status === statusFilter,
+              )?.length === 0 && !isBrokerListLoading ? (
                 <TableRow>
                   <TableCell
                     colSpan={8}
@@ -695,120 +641,75 @@ function AdminBrokersList() {
                   </TableCell>
                 </TableRow>
               ) : (
-                brokers?.map((item, index) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium ">{index + 1}</TableCell>
-                    <TableCell className="font-medium text-black">
-                      {item.name}
-                    </TableCell>
-                    {/* <TableCell>{item.totalSearches}</TableCell> */}
-                    {/* <TableCell>
-                      {getFormattedDateTime(item.lastLogin)}
-                    </TableCell> */}
-                    <TableCell>{item.email}</TableCell>
-                    <TableCell>{item.teamStrength || "-"}</TableCell>
-                    <TableCell>
-                      {" "}
-                      <Badge
-                        className={`${
-                          item?.status === "ACTIVE"
-                            ? "bg-[#E9F3E9] text-[#1E8221]"
-                            : item?.status === "DELETED"
-                              ? " text-destructive/80 bg-destructive/20"
-                              : "bg-[#FFF3D9] text-[#A2781E]"
-                        } text-[13px] font-medium px-3 py-1 rounded-full`}
-                      >
-                        {item?.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2 flex-row">
-                        <Button
-                          size="icon"
-                          className="text-md"
-                          variant="ghost"
-                          onClick={() => {
-                            setSelectedBroker(item);
-                            setIsOpen(true);
-                          }}
+                brokers
+                  ?.filter(
+                    (item) =>
+                      statusFilter === "ALL" || item.status === statusFilter,
+                  )
+                  ?.map((item, index) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="font-medium ">
+                        {index + 1}
+                      </TableCell>
+                      <TableCell className="font-medium text-black">
+                        {item.name}
+                      </TableCell>
+                      <TableCell>{item.email}</TableCell>
+                      <TableCell>{item.teamStrength || "-"}</TableCell>
+                      <TableCell>
+                        {" "}
+                        <Badge
+                          className={`${
+                            item?.status === "ACTIVE"
+                              ? "bg-[#E9F3E9] text-[#1E8221]"
+                              : item?.status === "DELETED"
+                                ? " text-destructive/80 bg-destructive/20"
+                                : "bg-[#FFF3D9] text-[#A2781E]"
+                          } text-[13px] font-medium px-3 py-1 rounded-full`}
                         >
-                          <PencilLine />
-                        </Button>
-                        <Button
-                          size="icon"
-                          className="text-md"
-                          variant="ghost"
-                          onClick={() => {
-                            if (item?.status === "DELETED")
-                              restoreUserMutation.mutate({
-                                userId: item.id,
-                                email: item.email,
-                                userType: "broker",
-                              });
-                            else
-                              deleteUserMutation.mutate({
-                                userId: item.id,
-                                email: item.email,
-                                userType: "broker",
-                              });
-                          }}
-                          disabled={loadingDelete}
-                        >
-                          {item?.status === "DELETED" ? (
-                            <ArchiveRestore />
-                          ) : (
-                            <Trash2 />
-                          )}
-                        </Button>
-                      </div>
-
-                      {/* <div >
-                              {item.status !== "UNCONFIRMED" && (
-                                <>
-
-                              
-                            <DropdownMenu>
-                              <DropdownMenuTrigger>
-                                <Button size="icon" className="text-sm" variant="ghost" > <PencilLine /></Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent>
-                                <DropdownMenuItem onClick={() => handleBrokerStatus(item)}>{item.status === "ACTIVE" ? "Inactive" : "Active"}</DropdownMenuItem>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                  <AlertDialog  >
-                                    <AlertDialogTrigger >
-                                      Delete
-                                    </AlertDialogTrigger>
-
-                                    <AlertDialogContent>
-                                      <AlertDialogHeader>
-                                        <AlertDialogTitle className="!font-poppins font-medium" >Are you absolutely sure?</AlertDialogTitle>
-                                       
-                                      </AlertDialogHeader>
-                                      <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction disabled={deletingBrokerId === item.id} onClick={async () => await handleDelete(item) } >Continue</AlertDialogAction>
-                                      </AlertDialogFooter>
-                                    </AlertDialogContent>
-
-                                  </AlertDialog>
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                                </>
-                              )}
-                            </div> */}
-                    </TableCell>
-                    {/* <TableCell>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => handleFetchAgentListForBroker(item.id)}
-                      >
-                        <EyeIcon />
-                      </Button>
-                    </TableCell> */}
-                  </TableRow>
-                ))
+                          {item?.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2 flex-row">
+                          <Button
+                            size="icon"
+                            className="text-md"
+                            variant="ghost"
+                            onClick={() => {
+                              setSelectedBroker(item);
+                              setIsOpen(true);
+                            }}
+                          >
+                            <PencilLine />
+                          </Button>
+                          <Button
+                            size="icon"
+                            className="text-md"
+                            variant="ghost"
+                            onClick={() => {
+                              if (item?.status === "DELETED") {
+                                restoreUserMutation.mutate({
+                                  userId: item.id,
+                                  email: item.email,
+                                  userType: "broker",
+                                });
+                              } else {
+                                setUserToDelete(item);
+                                setIsDeleteDialogOpen(true);
+                              }
+                            }}
+                          >
+                            {item?.status === "DELETED" ? (
+                              <ArchiveRestore />
+                            ) : (
+                              <Trash2 />
+                            )}
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
               )}
             </TableBody>
           </Table>
@@ -828,6 +729,24 @@ function AdminBrokersList() {
           </div>
         </div>
       </div>
+
+      <ConfirmDeleteModal
+        open={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={() => {
+          if (userToDelete) {
+            deleteUserMutation.mutate({
+              userId: userToDelete.id,
+              email: userToDelete.email,
+              userType: "broker",
+            });
+            setIsDeleteDialogOpen(false);
+          }
+        }}
+        isLoading={deleteUserMutation?.isPending}
+        title="Delete Broker"
+        description={`Are you sure you want to delete ${userToDelete?.name || "this broker"}? This action cannot be undone.`}
+      />
     </>
   );
 }
@@ -839,6 +758,10 @@ function Agents() {
   const [isAgentListLoading, setIsAgentListLoading] = useState(false);
   const [nextToken, setNextToken] = useState(null);
   const [selectedUser, setSelectedUser] = useState({});
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("ALL");
+
   useEffect(() => {
     handleFetchAgentListing();
   }, []);
@@ -872,7 +795,6 @@ function Agents() {
     }
     setIsAgentListLoading(false);
   };
-  const loading = deleteUserMutation.isPending || restoreUserMutation.isPending;
   return (
     <>
       {isOpen && (
@@ -892,14 +814,21 @@ function Agents() {
         />
       )}
       <div className="bg-white !p-4 rounded-xl">
-        {/* <AddUserModal
-        setIsOpen={setIsOpen}
-        userType="admin"
-        setUser={setAdmins}
-        isOpen={isOpen}
-      /> */}
         <div className="flex justify-between gap-4 items-center mb-4">
-          <p className="text-lg font-medium">All Agents</p>
+          <div className="flex items-center gap-4">
+            <p className="text-lg font-medium">All Agents</p>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[180px] bg-white">
+                <SelectValue placeholder="Filter by Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">All Status</SelectItem>
+                <SelectItem value="ACTIVE">Active</SelectItem>
+                <SelectItem value="UNCONFIRMED">Unconfirmed</SelectItem>
+                <SelectItem value="DELETED">Deleted</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <Button variant="secondary" onClick={() => setIsOpen(true)}>
             {" "}
             <PlusCircle /> Add Agent
@@ -918,94 +847,98 @@ function Agents() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {agents?.length === 0 && !hasMore ? (
+            {agents?.filter(
+              (item) => statusFilter === "ALL" || item.status === statusFilter,
+            )?.length === 0 && !hasMore ? (
               <TableRow>
                 <TableCell
-                  colSpan={5}
+                  colSpan={6}
                   className="font-medium text-center py-10 text-muted-foreground"
                 >
                   No Records found.
                 </TableCell>
               </TableRow>
             ) : (
-              agents?.map((item, index) => (
-                <TableRow key={item?.id}>
-                  <TableCell className="font-medium">{index + 1}</TableCell>
-                  <TableCell className="text-black font-medium">
-                    {item?.name}
-                  </TableCell>
-                  <TableCell>{item?.email}</TableCell>
-                  <TableCell>
-                    <Badge
-                      className={`${
-                        item?.status === "ACTIVE"
-                          ? "bg-[#E9F3E9] text-[#1E8221]"
-                          : item?.status === "DELETED"
-                            ? " text-destructive/80 bg-destructive/20"
-                            : "bg-[#FFF3D9] text-[#A2781E]"
-                      } text-[13px] font-medium px-3 py-1 rounded-full`}
-                    >
-                      {item?.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {item?.status === "UNCONFIRMED" && (
-                      <Button
-                        size="icon"
-                        className="text-md"
-                        variant="ghost"
-                        onClick={() =>
-                          reinviteMutation.mutate({ email: item.email })
-                        }
-                        disabled={reinviteMutation.isPending}
+              agents
+                ?.filter(
+                  (item) =>
+                    statusFilter === "ALL" || item.status === statusFilter,
+                )
+                ?.map((item, index) => (
+                  <TableRow key={item?.id}>
+                    <TableCell className="font-medium">{index + 1}</TableCell>
+                    <TableCell className="text-black font-medium">
+                      {item?.name}
+                    </TableCell>
+                    <TableCell>{item?.email}</TableCell>
+                    <TableCell>
+                      <Badge
+                        className={`${
+                          item?.status === "ACTIVE"
+                            ? "bg-[#E9F3E9] text-[#1E8221]"
+                            : item?.status === "DELETED"
+                              ? " text-destructive/80 bg-destructive/20"
+                              : "bg-[#FFF3D9] text-[#A2781E]"
+                        } text-[13px] font-medium px-3 py-1 rounded-full`}
                       >
-                        <UserPlus />
-                      </Button>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2 flex-row">
-                      <Button
-                        size="icon"
-                        className="text-md"
-                        variant="ghost"
-                        onClick={() => {
-                          setSelectedUser(item);
-                          setIsOpen(true);
-                        }}
-                      >
-                        <PencilLine />
-                      </Button>
-                      <Button
-                        size="icon"
-                        className="text-md"
-                        variant="ghost"
-                        onClick={() => {
-                          if (item?.status === "DELETED")
-                            restoreUserMutation.mutate({
-                              userId: item.id,
-                              email: item.email,
-                              userType: "agent",
-                            });
-                          else
-                            deleteUserMutation.mutate({
-                              userId: item.id,
-                              email: item.email,
-                              userType: "agent",
-                            });
-                        }}
-                        disabled={loading}
-                      >
-                        {item?.status === "DELETED" ? (
-                          <ArchiveRestore />
-                        ) : (
-                          <Trash2 />
-                        )}
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
+                        {item?.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {item?.status === "UNCONFIRMED" && (
+                        <Button
+                          size="icon"
+                          className="text-md"
+                          variant="ghost"
+                          onClick={() =>
+                            reinviteMutation.mutate({ email: item.email })
+                          }
+                          disabled={reinviteMutation.isPending}
+                        >
+                          <UserPlus />
+                        </Button>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2 flex-row">
+                        <Button
+                          size="icon"
+                          className="text-md"
+                          variant="ghost"
+                          onClick={() => {
+                            setSelectedUser(item);
+                            setIsOpen(true);
+                          }}
+                        >
+                          <PencilLine />
+                        </Button>
+                        <Button
+                          size="icon"
+                          className="text-md"
+                          variant="ghost"
+                          onClick={() => {
+                            if (item?.status === "DELETED") {
+                              restoreUserMutation.mutate({
+                                userId: item.id,
+                                email: item.email,
+                                userType: "agent",
+                              });
+                            } else {
+                              setUserToDelete(item);
+                              setIsDeleteDialogOpen(true);
+                            }
+                          }}
+                        >
+                          {item?.status === "DELETED" ? (
+                            <ArchiveRestore />
+                          ) : (
+                            <Trash2 />
+                          )}
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
             )}
           </TableBody>
         </Table>
@@ -1019,6 +952,24 @@ function Agents() {
           )}
         </div>
       </div>
+
+      <ConfirmDeleteModal
+        open={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={() => {
+          if (userToDelete) {
+            deleteUserMutation.mutate({
+              userId: userToDelete.id,
+              email: userToDelete.email,
+              userType: "agent",
+            });
+            setIsDeleteDialogOpen(false);
+          }
+        }}
+        isLoading={deleteUserMutation?.isPending}
+        title="Delete Agent"
+        description={`Are you sure you want to delete ${userToDelete?.name || "this agent"}? This action cannot be undone.`}
+      />
     </>
   );
 }

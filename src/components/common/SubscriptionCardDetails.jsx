@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../../context/usercontext";
-import {
-  CreditCard,
-  UserRoundCheck,
-} from "lucide-react";
+import { CreditCard, UserRoundCheck } from "lucide-react";
 import SubscriptionSuccessModal from "../Modal/SubscriptionSuccessModal";
 import CardAddedSuccessModal from "../Modal/CardAddedSuccessModal";
 import PaymentSetup from "../stripe/payment-form";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { createAgentfromSignup } from "../service/userAdmin";
 import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 function SubscriptionCardDetails({ isAddCard = false }) {
   const { planId } = useParams();
@@ -42,7 +40,6 @@ function SubscriptionCardDetails({ isAddCard = false }) {
     }
   }, [location.search]);
 
-
   const handlePaymentSuccess = () => {
     if (userType === "broker" && planId !== "EXPLORE_PLAN") {
       addAgentsBatchMutation.mutate();
@@ -50,9 +47,9 @@ function SubscriptionCardDetails({ isAddCard = false }) {
     if (userType === "organisation" && planId !== "EXPLORE_PLAN") {
       addOrganisationBatchMutation.mutate();
     }
-    if(planId === "PAY_AS_YOU_GO"){
+    if (planId === "PAY_AS_YOU_GO") {
       setShowCardSuccess(true);
-    }else{
+    } else {
       setShowSubscriptionSuccess(true);
     }
   };
@@ -67,6 +64,7 @@ function SubscriptionCardDetails({ isAddCard = false }) {
       navigate(
         "/" + user.signInUserSession.idToken.payload["cognito:groups"][0],
       );
+      toast.success("login successfully");
     }, 2000);
   };
 
@@ -99,93 +97,95 @@ function SubscriptionCardDetails({ isAddCard = false }) {
     },
   });
 
-const addOrganisationBatchMutation = useMutation({
-  mutationFn: async () => {
-    const brokers = getStoredBrokers();
-    const agents = getStoredOrgAgents();
+  const addOrganisationBatchMutation = useMutation({
+    mutationFn: async () => {
+      const brokers = getStoredBrokers();
+      const agents = getStoredOrgAgents();
 
-    if (!brokers.length && !agents.length) return;
+      if (!brokers.length && !agents.length) return;
 
-    const brokerIdMap = {}; // UUID → real brokerId
+      const brokerIdMap = {}; // UUID → real brokerId
 
-    try {
-      //  Create Brokers First (if any)
-      if (brokers.length) {
-        await Promise.all(
-          brokers.map(async (broker) => {
-            const res = await createAgentfromSignup({
-              name: broker.name,
-              email: broker.email,
-              phoneNumber: broker.phoneNumber,
-              userType: "broker",
-              organisationId: broker.organisationId,
-              planType: broker.planType,
-              actionType: "register_broker_from_org",
-              customUUID: broker?.customUUID,
-            });
-
-            const realId = res?.user?.id;
-            const responseUUID = res?.user?.customUUID;
-
-            if (responseUUID && realId) {
-              brokerIdMap[responseUUID] = realId;
-            }
-          })
-        );
-      }
-
-      //  Prepare Agents (only if exist)
-      if (agents.length) {
-        const updatedAgents = agents.map((agent) => {
-          const mappedBrokerId = brokerIdMap[agent.brokerId];
-
-          return {
-            ...agent,
-            brokerId: mappedBrokerId || agent.brokerId,
-          };
-        });
-
-        //  Only validate mapping if brokers were created
+      try {
+        //  Create Brokers First (if any)
         if (brokers.length) {
-          const invalidAgent = updatedAgents.find(
-            (a) => !a.brokerId || a.brokerId.length < 10
+          await Promise.all(
+            brokers.map(async (broker) => {
+              const res = await createAgentfromSignup({
+                name: broker.name,
+                email: broker.email,
+                phoneNumber: broker.phoneNumber,
+                userType: "broker",
+                organisationId: broker.organisationId,
+                planType: broker.planType,
+                actionType: "register_broker_from_org",
+                customUUID: broker?.customUUID,
+              });
+
+              const realId = res?.user?.id;
+              const responseUUID = res?.user?.customUUID;
+
+              if (responseUUID && realId) {
+                brokerIdMap[responseUUID] = realId;
+              }
+            }),
           );
-          if (invalidAgent) {
-            throw new Error("Invalid brokerId mapping. Aborting agent creation.");
-          }
         }
 
-        //  Create Agents
-        await Promise.all(
-          updatedAgents.map((agent) =>
-            createAgentfromSignup({
-              name: agent.name,
-              email: agent.email,
-              phoneNumber: agent.phoneNumber,
-              searchLimit: agent.searchLimit,
-              userType: "agent",
-              brokerId: agent.brokerId,
-              planType: agent.planType,
-              organisationId: agent?.organisationId
-            })
-          )
-        );
+        //  Prepare Agents (only if exist)
+        if (agents.length) {
+          const updatedAgents = agents.map((agent) => {
+            const mappedBrokerId = brokerIdMap[agent.brokerId];
+
+            return {
+              ...agent,
+              brokerId: mappedBrokerId || agent.brokerId,
+            };
+          });
+
+          //  Only validate mapping if brokers were created
+          if (brokers.length) {
+            const invalidAgent = updatedAgents.find(
+              (a) => !a.brokerId || a.brokerId.length < 10,
+            );
+            if (invalidAgent) {
+              throw new Error(
+                "Invalid brokerId mapping. Aborting agent creation.",
+              );
+            }
+          }
+
+          //  Create Agents
+          await Promise.all(
+            updatedAgents.map((agent) =>
+              createAgentfromSignup({
+                name: agent.name,
+                email: agent.email,
+                phoneNumber: agent.phoneNumber,
+                searchLimit: agent.searchLimit,
+                userType: "agent",
+                brokerId: agent.brokerId,
+                planType: agent.planType,
+                organisationId: agent?.organisationId,
+              }),
+            ),
+          );
+        }
+      } catch (error) {
+        console.error("Organisation batch failed:", error);
+        throw error;
       }
-    } catch (error) {
-      console.error("Organisation batch failed:", error);
-      throw error;
-    }
-  },
+    },
 
-  onSuccess: () => {
-    localStorage.removeItem("invitedBroker");
-    localStorage.removeItem("invitedOrgAgents");
-  },
+    onSuccess: () => {
+      localStorage.removeItem("invitedBroker");
+      localStorage.removeItem("invitedOrgAgents");
+    },
 
-  onError: (error) => {
-    console.error("Batch failed. Nothing removed.", error);
-  },
-});
+    onError: (error) => {
+      console.error("Batch failed. Nothing removed.", error);
+    },
+  });
 
   return (
     <>
@@ -195,7 +195,8 @@ const addOrganisationBatchMutation = useMutation({
         onFailed={() => {}}
         isLoading={
           addAgentsBatchMutation?.isPending ||
-          addOrganisationBatchMutation?.isPending || isLoading
+          addOrganisationBatchMutation?.isPending ||
+          isLoading
         }
         showCloseIcon={false}
         planId={planId}
@@ -203,11 +204,12 @@ const addOrganisationBatchMutation = useMutation({
       <CardAddedSuccessModal
         open={showCardSuccess}
         onOpenChange={subscribeModalHandler}
-         isLoading={
+        isLoading={
           addAgentsBatchMutation?.isPending ||
-          addOrganisationBatchMutation?.isPending || isLoading
+          addOrganisationBatchMutation?.isPending ||
+          isLoading
         }
-         showCloseIcon={false}
+        showCloseIcon={false}
         fromSignUp={true}
         onFailed={() => {}}
       />

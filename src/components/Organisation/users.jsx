@@ -2,14 +2,14 @@ import { useEffect, useRef, useState } from "react";
 // import "./index.css";
 import { fetchAgentsWithSearchCount } from "@/components/service/broker";
 import { Button } from "@/components/ui/button";
+import { TableRow } from "@/components/ui/table";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useDeleteUser } from "@/hooks/useDeleteUser";
 import { useRestoreUser } from "@/hooks/useRestoreUser";
 import { useMutation } from "@tanstack/react-query";
@@ -40,6 +40,7 @@ import { handleCreateAuditLog } from "@/utils";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { useUser } from "@/context/usercontext";
 import BulkUploadModal from "../Modal/BulkUploadModal";
+import ConfirmDeleteModal from "../Modal/ConfirmDeleteModal";
 
 const userTypes = [
   // {
@@ -107,6 +108,9 @@ function AdminBrokersList() {
   const [totalActiveBrokerCount, setTotalActiveBrokerCount] = useState(0);
   const [totalBrokerSearchThisMonthCount, setTotalBrokerSearchThisMonthCount] =
     useState(0);
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
   const [deletingBrokerId, setDeletingBrokerId] = useState(null);
   const { deleteUserMutation } = useDeleteUser(() => {
     handleFetchBrokersWithSearchCount(true);
@@ -245,27 +249,6 @@ function AdminBrokersList() {
   };
   return (
     <>
-      {/* <AgentList
-        data={agentList}
-        isOpen={isAgentListOpen}
-        // isOpen={true}
-        setIsOpen={setIsAgentListOpen}
-        isAgentListLoading={isAgentListLoading}
-        onListRefresh={refreshCurrentAgentList}
-      /> */}
-
-      {/* <AddUserModal
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        userType={"broker"}
-        setUser={setBrokers}
-      /> */}
-      {/* 
-      <AddAgentByAdminModal
-        isOpen={isAgentCreationModalOpen}
-        setIsOpen={setIsAgentCreationModalOpen}
-        brokers={activeBrokers}
-      /> */}
       {isOpen && (
         <AddAdminModal
           open={isOpen}
@@ -283,200 +266,191 @@ function AdminBrokersList() {
         />
       )}
 
-      <div>
-        <div className="bg-white !p-4 rounded-xl">
-          <div className="flex justify-between gap-4 items-center mb-4">
-            <p className="text-lg font-medium">All Brokers</p>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
-                onClick={() => setIsBulkUploadOpen(true)}
-                disabled={organisationDetail?.planType === "EXPLORE_PLAN"}
-              >
-                <Upload className="w-4 h-4" />
-                Upload Template
-              </Button>
-              <BulkUploadModal
-                open={isBulkUploadOpen}
-                onClose={() => setIsBulkUploadOpen(false)}
-                type="broker"
-                onSuccess={() => {
-                  getBroker();
-                  handleFetchBrokersWithSearchCount(true);
-                }}
-              />
-              <div className="space-x-2">
+      <div className="bg-white !p-4 rounded-xl">
+        {organisationDetail?.planType === "EXPLORE_PLAN" ? (
+          <div className="py-20 text-center border-2 border-dashed rounded-xl bg-gray-50/50">
+            <p className="text-lg font-medium text-muted-foreground">
+              Upgrade your plan to access this feature.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="flex justify-between gap-4 items-center mb-4">
+              <div className="flex items-center gap-4">
+                <p className="text-lg font-medium">All Brokers</p>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-[180px] bg-white">
+                    <SelectValue placeholder="Filter by Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ALL">All Status</SelectItem>
+                    <SelectItem value="ACTIVE">Active</SelectItem>
+                    <SelectItem value="UNCONFIRMED">Unconfirmed</SelectItem>
+                    <SelectItem value="DELETED">Deleted</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-2">
                 <Button
-                  variant="secondary"
-                  onClick={() => setIsOpen(true)}
-                  disabled={organisationDetail?.planType === "EXPLORE_PLAN"}
+                  variant="outline"
+                  className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
+                  onClick={() => setIsBulkUploadOpen(true)}
                 >
-                  {" "}
-                  <PlusCircle /> Add Broker
+                  <Upload className="w-4 h-4" />
+                  Upload Template
                 </Button>
+                <BulkUploadModal
+                  open={isBulkUploadOpen}
+                  onClose={() => setIsBulkUploadOpen(false)}
+                  type="broker"
+                  onSuccess={() => {
+                    getBroker();
+                    handleFetchBrokersWithSearchCount(true);
+                  }}
+                />
+                <div className="space-x-2">
+                  <Button variant="secondary" onClick={() => setIsOpen(true)}>
+                    {" "}
+                    <PlusCircle /> Add Broker
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
 
-          <Table className="">
-            <TableHeader className="bg-[#F5F0EC]">
-              <TableRow>
-                <TableHead>Sr. No.</TableHead>
-                <TableHead>Name</TableHead>
-                {/* <TableHead>Monthly Searches</TableHead>
-                <TableHead>Last Login</TableHead> */}
-                <TableHead>Email</TableHead>
-                <TableHead>Team Strength</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Action</TableHead>
-                {/* <TableHead>Agent List</TableHead> */}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {brokers?.length === 0 && !isBrokerListLoading ? (
+            <Table className="">
+              <TableHeader className="bg-[#F5F0EC]">
                 <TableRow>
-                  <TableCell
-                    colSpan={8}
-                    className="font-medium text-center py-10 text-muted-foreground"
-                  >
-                    No Records found.
-                  </TableCell>
+                  <TableHead>Sr. No.</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Team Strength</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Action</TableHead>
                 </TableRow>
-              ) : (
-                brokers?.map((item, index) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium ">{index + 1}</TableCell>
-                    <TableCell className="font-medium text-black">
-                      {item.name}
+              </TableHeader>
+              <TableBody>
+                {brokers?.filter(
+                  (item) =>
+                    statusFilter === "ALL" || item.status === statusFilter,
+                )?.length === 0 && !isBrokerListLoading ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={8}
+                      className="font-medium text-center py-10 text-muted-foreground"
+                    >
+                      No Records found.
                     </TableCell>
-                    {/* <TableCell>{item.totalSearches}</TableCell> */}
-                    {/* <TableCell>
-                      {getFormattedDateTime(item.lastLogin)}
-                    </TableCell> */}
-                    <TableCell>{item.email}</TableCell>
-                    <TableCell>{item.teamStrength || "-"}</TableCell>
-                    <TableCell>
-                      {" "}
-                      <Badge
-                        className={`${
-                          item?.status === "ACTIVE"
-                            ? "bg-[#E9F3E9] text-[#1E8221]"
-                            : item?.status === "DELETED"
-                              ? " text-destructive/80 bg-destructive/20"
-                              : "bg-[#FFF3D9] text-[#A2781E]"
-                        } text-[13px] font-medium px-3 py-1 rounded-full`}
-                      >
-                        {item?.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2 flex-row">
-                        <Button
-                          size="icon"
-                          className="text-md"
-                          variant="ghost"
-                          onClick={() => {
-                            setSelectedBroker(item);
-                            setIsOpen(true);
-                          }}
-                        >
-                          <PencilLine />
-                        </Button>
-                        <Button
-                          size="icon"
-                          className="text-md"
-                          variant="ghost"
-                          onClick={() => {
-                            if (item?.status === "DELETED")
-                              restoreUserMutation.mutate({
-                                userId: item.id,
-                                email: item.email,
-                                userType: "broker",
-                              });
-                            else
-                              deleteUserMutation.mutate({
-                                userId: item.id,
-                                email: item.email,
-                                userType: "broker",
-                              });
-                          }}
-                          disabled={loadingDelete}
-                        >
-                          {item?.status === "DELETED" ? (
-                            <ArchiveRestore />
-                          ) : (
-                            <Trash2 />
-                          )}
-                        </Button>
-                      </div>
-
-                      {/* <div >
-                              {item.status !== "UNCONFIRMED" && (
-                                <>
-
-                              
-                            <DropdownMenu>
-                              <DropdownMenuTrigger>
-                                <Button size="icon" className="text-sm" variant="ghost" > <PencilLine /></Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent>
-                                <DropdownMenuItem onClick={() => handleBrokerStatus(item)}>{item.status === "ACTIVE" ? "Inactive" : "Active"}</DropdownMenuItem>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                  <AlertDialog  >
-                                    <AlertDialogTrigger >
-                                      Delete
-                                    </AlertDialogTrigger>
-
-                                    <AlertDialogContent>
-                                      <AlertDialogHeader>
-                                        <AlertDialogTitle className="!font-poppins font-medium" >Are you absolutely sure?</AlertDialogTitle>
-                                       
-                                      </AlertDialogHeader>
-                                      <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction disabled={deletingBrokerId === item.id} onClick={async () => await handleDelete(item) } >Continue</AlertDialogAction>
-                                      </AlertDialogFooter>
-                                    </AlertDialogContent>
-
-                                  </AlertDialog>
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                                </>
-                              )}
-                            </div> */}
-                    </TableCell>
-                    {/* <TableCell>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => handleFetchAgentListForBroker(item.id)}
-                      >
-                        <EyeIcon />
-                      </Button>
-                    </TableCell> */}
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : (
+                  brokers
+                    ?.filter(
+                      (item) =>
+                        statusFilter === "ALL" || item.status === statusFilter,
+                    )
+                    ?.map((item, index) => (
+                      <TableRow key={item.id}>
+                        <TableCell className="font-medium ">
+                          {index + 1}
+                        </TableCell>
+                        <TableCell className="font-medium text-black">
+                          {item.name}
+                        </TableCell>
+                        <TableCell>{item.email}</TableCell>
+                        <TableCell>{item.teamStrength || "-"}</TableCell>
+                        <TableCell>
+                          {" "}
+                          <Badge
+                            className={`${
+                              item?.status === "ACTIVE"
+                                ? "bg-[#E9F3E9] text-[#1E8221]"
+                                : item?.status === "DELETED"
+                                  ? " text-destructive/80 bg-destructive/20"
+                                  : "bg-[#FFF3D9] text-[#A2781E]"
+                            } text-[13px] font-medium px-3 py-1 rounded-full`}
+                          >
+                            {item?.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2 flex-row">
+                            <Button
+                              size="icon"
+                              className="text-md"
+                              variant="ghost"
+                              onClick={() => {
+                                setSelectedBroker(item);
+                                setIsOpen(true);
+                              }}
+                            >
+                              <PencilLine />
+                            </Button>
+                            <Button
+                              size="icon"
+                              className="text-md"
+                              variant="ghost"
+                              onClick={() => {
+                                if (item?.status === "DELETED") {
+                                  restoreUserMutation.mutate({
+                                    userId: item.id,
+                                    email: item.email,
+                                    userType: "broker",
+                                  });
+                                } else {
+                                  setUserToDelete(item);
+                                  setIsDeleteDialogOpen(true);
+                                }
+                              }}
+                            >
+                              {item?.status === "DELETED" ? (
+                                <ArchiveRestore />
+                              ) : (
+                                <Trash2 />
+                              )}
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                )}
+              </TableBody>
+            </Table>
 
-          <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
-            {isBrokerListLoading && <p>Loading...</p>}
-            {!hasMore && brokers?.length !== 0 && <p>No more data to load.</p>}
-            {brokers?.length > 0 && hasMore && !isBrokerListLoading && (
-              <Button
-                size="sm"
-                className=""
-                onClick={() => handleFetchBrokersWithSearchCount()}
-              >
-                Load More
-              </Button>
-            )}
-          </div>
-        </div>
+            <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
+              {isBrokerListLoading && <p>Loading...</p>}
+              {!hasMore && brokers?.length !== 0 && (
+                <p>No more data to load.</p>
+              )}
+              {brokers?.length > 0 && hasMore && !isBrokerListLoading && (
+                <Button
+                  size="sm"
+                  className=""
+                  onClick={() => handleFetchBrokersWithSearchCount()}
+                >
+                  Load More
+                </Button>
+              )}
+            </div>
+          </>
+        )}
       </div>
+
+      <ConfirmDeleteModal
+        open={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={() => {
+          if (userToDelete) {
+            deleteUserMutation.mutate({
+              userId: userToDelete.id,
+              email: userToDelete.email,
+              userType: "broker",
+            });
+            setIsDeleteDialogOpen(false);
+          }
+        }}
+        isLoading={deleteUserMutation?.isPending}
+        title="Delete Broker"
+        description={`Are you sure you want to delete ${userToDelete?.name || "this broker"}? This action cannot be undone.`}
+      />
     </>
   );
 }
@@ -490,6 +464,9 @@ function Agents() {
   const [isAgentListLoading, setIsAgentListLoading] = useState(false);
   const [nextToken, setNextToken] = useState(null);
   const [selectedUser, setSelectedUser] = useState({});
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
   const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false);
   useEffect(() => {
     handleFetchAgentListing();
@@ -547,160 +524,200 @@ function Agents() {
         />
       )}
       <div className="bg-white !p-4 rounded-xl">
-        {/* <AddUserModal
-        setIsOpen={setIsOpen}
-        userType="admin"
-        setUser={setAdmins}
-        isOpen={isOpen}
-      /> */}
-        <div className="flex justify-between gap-4 items-center mb-4">
-          <p className="text-lg font-medium">All Agents</p>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-              <Button
-                variant="outline"
-                className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
-                onClick={() => setIsBulkUploadOpen(true)}
-                disabled={
-                  loading || organisationDetail?.planType === "EXPLORE_PLAN"
-                }
-              >
-                <Upload className="w-4 h-4" />
-                Upload Template
-              </Button>
-              <BulkUploadModal
-                open={isBulkUploadOpen}
-                onClose={() => setIsBulkUploadOpen(false)}
-                type="agent"
-                onSuccess={() => handleFetchAgentListing(true)}
-              />
-            </div>
-            <Button
-              variant="secondary"
-              onClick={() => setIsOpen(true)}
-              disabled={organisationDetail?.planType === "EXPLORE_PLAN"}
-            >
-              {" "}
-              <PlusCircle /> Add Agent
-            </Button>
+        {organisationDetail?.planType === "EXPLORE_PLAN" ? (
+          <div className="py-20 text-center border-2 border-dashed rounded-xl bg-gray-100/50">
+            <p className="text-lg font-medium text-muted-foreground italic">
+              Upgrade your plan to access this feature.
+            </p>
           </div>
-        </div>
+        ) : (
+          <>
+            <div className="flex justify-between gap-4 items-center mb-4">
+              <div className="flex items-center gap-4">
+                <p className="text-lg font-medium">All Agents</p>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-[180px] bg-white">
+                    <SelectValue placeholder="Filter by Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ALL">All Statuses</SelectItem>
+                    <SelectItem value="ACTIVE">Active</SelectItem>
+                    <SelectItem value="UNCONFIRMED">Unconfirmed</SelectItem>
+                    <SelectItem value="DELETED">Deleted</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                  <Button
+                    variant="outline"
+                    className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
+                    onClick={() => setIsBulkUploadOpen(true)}
+                    disabled={loading}
+                  >
+                    <Upload className="w-4 h-4" />
+                    Upload Template
+                  </Button>
+                  <BulkUploadModal
+                    open={isBulkUploadOpen}
+                    onClose={() => setIsBulkUploadOpen(false)}
+                    type="agent"
+                    onSuccess={() => handleFetchAgentListing(true)}
+                  />
+                </div>
+                <Button variant="secondary" onClick={() => setIsOpen(true)}>
+                  {" "}
+                  <PlusCircle /> Add Agent
+                </Button>
+              </div>
+            </div>
 
-        <Table className="">
-          <TableHeader className="bg-[#F5F0EC]">
-            <TableRow>
-              <TableHead>Sr. No.</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-center">Reinvite</TableHead>
-              <TableHead>Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {agents?.length === 0 && !hasMore ? (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="font-medium text-center py-10 text-muted-foreground"
-                >
-                  No Records found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              agents?.map((item, index) => (
-                <TableRow key={item?.id}>
-                  <TableCell className="font-medium">{index + 1}</TableCell>
-                  <TableCell className="text-black font-medium">
-                    {item?.name}
-                  </TableCell>
-                  <TableCell>{item?.email}</TableCell>
-                  <TableCell>
-                    <Badge
-                      className={`${
-                        item?.status === "ACTIVE"
-                          ? "bg-[#E9F3E9] text-[#1E8221]"
-                          : item?.status === "DELETED"
-                            ? " text-destructive/80 bg-destructive/20"
-                            : "bg-[#FFF3D9] text-[#A2781E]"
-                      } text-[13px] font-medium px-3 py-1 rounded-full`}
-                    >
-                      {item?.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {item?.status === "UNCONFIRMED" && (
-                      <Button
-                        size="icon"
-                        className="text-md"
-                        variant="ghost"
-                        onClick={() =>
-                          reinviteMutation.mutate({ email: item.email })
-                        }
-                        disabled={reinviteMutation.isPending}
-                      >
-                        <UserPlus />
-                      </Button>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2 flex-row">
-                      <Button
-                        size="icon"
-                        className="text-md"
-                        variant="ghost"
-                        onClick={() => {
-                          setSelectedUser(item);
-                          setIsOpen(true);
-                        }}
-                      >
-                        <PencilLine />
-                      </Button>
-                      <Button
-                        size="icon"
-                        className="text-md"
-                        variant="ghost"
-                        onClick={() => {
-                          if (item?.status === "DELETED")
-                            restoreUserMutation.mutate({
-                              userId: item.id,
-                              email: item.email,
-                              userType: "agent",
-                            });
-                          else
-                            deleteUserMutation.mutate({
-                              userId: item.id,
-                              email: item.email,
-                              userType: "agent",
-                            });
-                        }}
-                        disabled={loading}
-                      >
-                        {item?.status === "DELETED" ? (
-                          <ArchiveRestore />
-                        ) : (
-                          <Trash2 />
-                        )}
-                      </Button>
-                    </div>
-                  </TableCell>
+            <Table className="">
+              <TableHeader className="bg-[#F5F0EC]">
+                <TableRow>
+                  <TableHead>Sr. No.</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-center">Reinvite</TableHead>
+                  <TableHead>Action</TableHead>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-        <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
-          {isAgentListLoading && <p>Loading...</p>}
-          {!hasMore && !isAgentListLoading && agents?.length !== 0 && (
-            <p>No more data to load.</p>
-          )}
-          {agents?.length > 0 && hasMore && !isAgentListLoading && (
-            <Button size="sm" className="" onClick={handleFetchAgentListing}>
-              Load More
-            </Button>
-          )}
-        </div>
+              </TableHeader>
+              <TableBody>
+                {agents?.filter(
+                  (item) =>
+                    statusFilter === "ALL" || item.status === statusFilter,
+                )?.length === 0 && !hasMore ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={6}
+                      className="font-medium text-center py-10 text-muted-foreground"
+                    >
+                      No Records found.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  agents
+                    ?.filter(
+                      (item) =>
+                        statusFilter === "ALL" || item.status === statusFilter,
+                    )
+                    ?.map((item, index) => (
+                      <TableRow key={item?.id}>
+                        <TableCell className="font-medium">
+                          {index + 1}
+                        </TableCell>
+                        <TableCell className="text-black font-medium">
+                          {item?.name}
+                        </TableCell>
+                        <TableCell>{item?.email}</TableCell>
+                        <TableCell>
+                          <Badge
+                            className={`${
+                              item?.status === "ACTIVE"
+                                ? "bg-[#E9F3E9] text-[#1E8221]"
+                                : item?.status === "DELETED"
+                                  ? " text-destructive/80 bg-destructive/20"
+                                  : "bg-[#FFF3D9] text-[#A2781E]"
+                            } text-[13px] font-medium px-3 py-1 rounded-full`}
+                          >
+                            {item?.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {item?.status === "UNCONFIRMED" && (
+                            <Button
+                              size="icon"
+                              className="text-md"
+                              variant="ghost"
+                              onClick={() =>
+                                reinviteMutation.mutate({ email: item.email })
+                              }
+                              disabled={reinviteMutation.isPending}
+                            >
+                              <UserPlus />
+                            </Button>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2 flex-row">
+                            <Button
+                              size="icon"
+                              className="text-md"
+                              variant="ghost"
+                              onClick={() => {
+                                setSelectedUser(item);
+                                setIsOpen(true);
+                              }}
+                            >
+                              <PencilLine />
+                            </Button>
+                            <Button
+                              size="icon"
+                              className="text-md"
+                              variant="ghost"
+                              onClick={() => {
+                                if (item?.status === "DELETED") {
+                                  restoreUserMutation.mutate({
+                                    userId: item.id,
+                                    email: item.email,
+                                    userType: "agent",
+                                  });
+                                } else {
+                                  setUserToDelete(item);
+                                  setIsDeleteDialogOpen(true);
+                                }
+                              }}
+                            >
+                              {item?.status === "DELETED" ? (
+                                <ArchiveRestore />
+                              ) : (
+                                <Trash2 />
+                              )}
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                )}
+              </TableBody>
+            </Table>
+            <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
+              {isAgentListLoading && <p>Loading...</p>}
+              {!hasMore && !isAgentListLoading && agents?.length !== 0 && (
+                <p>No more data to load.</p>
+              )}
+              {agents?.length > 0 && hasMore && !isAgentListLoading && (
+                <Button
+                  size="sm"
+                  className=""
+                  onClick={handleFetchAgentListing}
+                >
+                  Load More
+                </Button>
+              )}
+            </div>
+          </>
+        )}
       </div>
+
+      <ConfirmDeleteModal
+        open={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={() => {
+          if (userToDelete) {
+            deleteUserMutation.mutate({
+              userId: userToDelete.id,
+              email: userToDelete.email,
+              userType: "agent",
+            });
+            setIsDeleteDialogOpen(false);
+          }
+        }}
+        isLoading={deleteUserMutation?.isPending}
+        title="Delete Agent"
+        description={`Are you sure you want to delete ${userToDelete?.name || "this agent"}? This action cannot be undone.`}
+      />
     </>
   );
 }

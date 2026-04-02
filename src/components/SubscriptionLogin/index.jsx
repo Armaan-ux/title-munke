@@ -10,6 +10,7 @@ import { resendConfirmationCode, updateUserStatus } from "../service/userAdmin";
 import { handleCreateAuditLog } from "@/utils";
 import { motion } from "motion/react";
 import ResetPassword from "../ResetPassword";
+import { toast } from "react-toastify";
 
 function SubscriptionLogin() {
   const [showPassword, setShowPassword] = useState(false);
@@ -86,6 +87,7 @@ function SubscriptionLogin() {
       ) {
         const groups =
           signedInUser.signInUserSession.idToken.payload["cognito:groups"];
+        toast.success("login successfully");
         if (groups.includes("admin")) {
           navigate("/admin");
         } else if (groups.includes("agent")) {
@@ -109,7 +111,11 @@ function SubscriptionLogin() {
         // setShowCodeInput(true); // <-- State variable to show confirmation code input
         return;
       }
-      setError(error.message || "Login failed");
+      setError(
+        error.message === "Incorrect username or password."
+          ? "Incorrect email or password."
+          : error.message || "Login failed",
+      );
     } finally {
       setIsChecking(false);
     }

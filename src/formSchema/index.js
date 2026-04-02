@@ -1,7 +1,10 @@
 import { z } from "zod";
 
 export const newAgentSchema = z.object({
-  name: z.string().min(4, "Name must be at least 4 characters."),
+  name: z
+    .string()
+    .min(4, "Name must be at least 4 characters.")
+    .max(45, "Name must be at most 45 characters"),
 
   email: z.string().email("Invalid email format"),
 
@@ -12,7 +15,11 @@ export const newAgentSchema = z.object({
 });
 
 export const baseUserSchema = z.object({
-  fullName: z.string().trim().min(4, "Name must be at least 4 characters."),
+  fullName: z
+    .string()
+    .trim()
+    .min(4, "Name must be at least 4 characters.")
+    .max(45, "Name must be at most 45 characters"),
   email: z.string().trim().email("Invalid email format"),
   message: z.string().trim().optional(),
 });
@@ -31,7 +38,11 @@ export const addBrokerByAdminSchema = baseUserSchema.extend({
 });
 
 export const demoRequestSchema = z.object({
-  name: z.string().trim().min(1, "Name is required"),
+  name: z
+    .string()
+    .trim()
+    .min(1, "Name is required")
+    .max(45, "Name must be at most 45 characters"),
   state: z.string().trim().nonempty("State is required"),
   email: z
     .string()
@@ -54,7 +65,11 @@ const isPhone = (value) => {
 
 export const signupSchema = z
   .object({
-    name: z.string().min(4, "Name must be at least 4 characters").trim(),
+    name: z
+      .string()
+      .min(4, "Name must be at least 4 characters")
+      .trim()
+      .max(45, "Name must be at most 45 characters"),
 
     phoneNumber: z
       .string()
@@ -64,7 +79,16 @@ export const signupSchema = z
 
     email: z.string().email("Invalid email address").toLowerCase().trim(),
 
-    password: z.string().min(8, "Password must be at least 8 characters"),
+    password: z
+      .string()
+      .min(
+        8,
+        "Password must be 8 characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+      )
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#.])[A-Za-z\d@$!%*?&#.]{8,}$/,
+        "Password must be 8 characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+      ),
 
     confirmPassword: z.string(),
 
@@ -78,7 +102,11 @@ export const signupSchema = z
   });
 
 export const addAgentSchema = z.object({
-  name: z.string().min(4, "Name must be at least 4 characters").trim(),
+  name: z
+    .string()
+    .min(4, "Name must be at least 4 characters")
+    .trim()
+    .max(45, "Name must be at most 45 characters"),
 
   phoneNumber: z.string().length(10, "Phone number must be 10 digits"),
 
@@ -93,7 +121,11 @@ export const addAgentSchema = z.object({
 });
 
 export const addBrokerSchema = z.object({
-  name: z.string().min(4, "Name must be at least 4 characters").trim(),
+  name: z
+    .string()
+    .min(4, "Name must be at least 4 characters")
+    .trim()
+    .max(45, "Name must be at most 45 characters"),
 
   phoneNumber: z.string().length(10, "Phone number must be 10 digits"),
 
@@ -108,7 +140,11 @@ export const addBrokerSchema = z.object({
 });
 
 export const addOrgAgentSchema = z.object({
-  name: z.string().min(4, "Name must be at least 4 characters").trim(),
+  name: z
+    .string()
+    .min(4, "Name must be at least 4 characters")
+    .trim()
+    .max(45, "Name must be at most 45 characters"),
 
   phoneNumber: z.string().length(10, "Phone number must be 10 digits"),
 

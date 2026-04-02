@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { handleCreateAuditLog } from "@/utils";
 import { setLogoutHandler } from "../utils/logoutManager";
+import { toast } from "react-toastify";
 
 const UserContext = createContext();
 
@@ -207,6 +208,7 @@ export const UserProvider = ({ children }) => {
       userType === "agent",
     );
     await Auth.signOut();
+    toast.success("Logged out successfully");
     setUser(null);
     setIsAuthenticated(false);
     localStorage?.clear();
@@ -215,6 +217,7 @@ export const UserProvider = ({ children }) => {
   };
   const logOut = async () => {
     await Auth.signOut();
+    toast.success("Logged out successfully");
     setUser(null);
     setIsAuthenticated(false);
     localStorage?.clear();

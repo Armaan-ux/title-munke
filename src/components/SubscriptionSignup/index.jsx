@@ -511,7 +511,7 @@ function SubscriptionSignup() {
                       className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#3b1f12] to-[#5c2f1b] px-4 py-2 text-sm font-medium text-white"
                       disabled={isSubmitting || registerUserMutation.isPending}
                     >
-                      Continue
+                      Send Verification
                       {registerUserMutation.isPending ? (
                         <Loader className="animate-spin" size={18} />
                       ) : (
