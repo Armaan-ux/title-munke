@@ -112,13 +112,8 @@ function SubscriptionSignup() {
   const registerUserMutation = useMutation({
     mutationFn: (data) => registerUser(data),
     onSuccess: (response) => {
-      // console.log('success');
       setCodeModal(true);
-      console.log("response",response)
-      
-      // Store userId and userType for cleanup if they start fresh later
       const userId = response?.id 
-
       const usertype = response?.__typename.toLowerCase()
       saveSubscriptionData({ userId, usertype }, window.location.pathname);
     },
@@ -380,7 +375,11 @@ function SubscriptionSignup() {
                         name="name"
                         control={control}
                         render={({ field }) => (
-                          <Input placeholder="John Marks" {...field} />
+                          <Input 
+                            placeholder="John Marks" 
+                            {...field} 
+                            maxLength={45}
+                          />
                         )}
                       />
                       {errors.name && (

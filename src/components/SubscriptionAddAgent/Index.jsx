@@ -312,7 +312,11 @@ function SubscriptionAddAgent() {
                             name="name"
                             control={control}
                             render={({ field }) => (
-                              <Input placeholder="John Marks" {...field} />
+                              <Input 
+                                placeholder="John Marks" 
+                                {...field} 
+                                maxLength={45}
+                              />
                             )}
                           />
                           {errors.name && (

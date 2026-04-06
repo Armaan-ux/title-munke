@@ -272,6 +272,7 @@ export default function AddAdminModal({
                   placeholder="John Marks"
                   className="h-[38px] bg-white border border-[#E6DFDB] text-secondary placeholder:text-[#B6AAA5] focus-visible:ring-0 focus-visible:ring-offset-0"
                   {...field}
+                  maxLength={45}
                 />
               )}
             />

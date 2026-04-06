@@ -94,7 +94,7 @@ function AddAgentByAdminModal({ isOpen, setIsOpen, brokers }) {
               </SelectTrigger>
               <SelectContent>
                 {
-                  brokers.map((item) => (
+                  brokers?.map((item) => (
                     <SelectItem key={item.id} value={item.id}>
                       {item.email}
                     </SelectItem>
