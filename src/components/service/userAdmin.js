@@ -920,6 +920,22 @@ export async function undeleteUser(userId, email, userType) {
   );
 }
 
+export async function hardDeleteUser(userId, email, userType) {
+  const payload = {
+    body: {
+      userId,
+      email,
+      userType,
+    },
+  };
+  return callDeleteUserAdminApi(
+    payload,
+    "Success in hardDeleteUser:",
+    "Error in hardDeleteUser:",
+    "/hard-delete-user",
+  );
+}
+
 export async function createAuditLog(
   userId,
   email,

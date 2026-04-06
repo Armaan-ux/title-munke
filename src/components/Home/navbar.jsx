@@ -17,16 +17,6 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const scrollToSection = (id) => {
-    if (id === "/pricing") {
-      if (location.pathname === "/pricing") {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        if (location.search) {
-          navigate(id);
-        }
-      } else {
-        navigate(id);
-      }
-    } else {
       navigate("/");
       setTimeout(() => {
         const section = document.getElementById(id);
@@ -34,7 +24,7 @@ export default function Navbar() {
           section.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       }, 100);
-    }
+    
   };
 
   return (

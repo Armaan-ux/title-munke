@@ -9,6 +9,7 @@ import { useUserIdType } from "@/hooks/useUserIdType";
 import { createAgentfromSignup } from "../service/userAdmin";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { saveSubscriptionData, clearSubscriptionData } from "@/utils/subscriptionStorage";
 
 function SubscriptionCardDetails({ isAddCard = false }) {
   const { planId } = useParams();
@@ -54,8 +55,13 @@ function SubscriptionCardDetails({ isAddCard = false }) {
     }
   };
 
+  useEffect(() => {
+    saveSubscriptionData({}, window.location.pathname);
+  }, []);
+
   const subscribeModalHandler = () => {
     setIsLoading(true);
+    clearSubscriptionData(); // Clear data on final success
 
     setTimeout(() => {
       setIsLoading(false);

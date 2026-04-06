@@ -28,7 +28,7 @@ import { useUserIdType } from "@/hooks/useUserIdType";
 import AgentAddedSuccessModal from "../Modal/AgentAddedSuccessModal";
 import { formatUSPhone } from "@/utils/date";
 import { useUser } from "@/context/usercontext";
-
+import { saveSubscriptionData } from "@/utils/subscriptionStorage";
 function SubscriptionAddOrdAgent() {
   const navigate = useNavigate();
   const { planId } = useParams();
@@ -40,6 +40,11 @@ function SubscriptionAddOrdAgent() {
   const [addBroker, setAddBroker] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const { userType, userId } = useUserIdType();
+
+  useEffect(() => {
+    saveSubscriptionData({}, window.location.pathname);
+  }, []);
+
   const invitedBrokers =
     JSON.parse(localStorage.getItem("invitedBroker")) || [];
   console.log("userType", userType);

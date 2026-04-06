@@ -1,21 +1,32 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Eye } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { getFormattedDateTime, queryKeys } from "@/utils";
-import { getIndividualListing, getOrgAgentsList } from "../service/userAdmin";
+import { queryKeys } from "@/utils";
+import { getOrgAgentsList } from "../service/userAdmin";
 import ShowError from "../common/ShowError";
 import { CenterLoader } from "../common/Loader";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useDownloadCsv } from "@/hooks/useDownloadCsv";
+import { AgGridReact } from "ag-grid-react";
+
+// ─── Cell Renderers ───────────────────────────────────────────────────────────
+
+const SrNoRenderer = (props) => (
+  <span className="font-medium">{props.node.rowIndex + 1}</span>
+);
+
+const ActionRenderer = (props) => (
+  <div className="flex items-center justify-center h-full">
+    <Link to={`/organisation/search/property-search/${props.data?.id}`}>
+      <Button size="icon" className="text-md" variant="ghost">
+        <Eye />
+      </Button>
+    </Link>
+  </div>
+);
+
+// ─── IndividualBusinessTable ──────────────────────────────────────────────────
 
 export default function IndividualBusinessTable({
   limit,
@@ -28,7 +39,9 @@ export default function IndividualBusinessTable({
     queryKey: [queryKeys.individualListingForAdmin, limit, from, to],
     queryFn: () => getOrgAgentsList({ withSearchCount: true, limit, from, to }),
   });
+
   const { downloadCSV } = useDownloadCsv();
+
   useEffect(() => {
     if (
       isDownload &&
@@ -43,73 +56,81 @@ export default function IndividualBusinessTable({
       downloadCSV(data);
       setTimeout(handleDownloadComplete, 500);
     } else handleDownloadComplete?.();
-  }, [
-    isDownload,
-    individualListingQuery?.data?.items,
-    downloadCSV,
-    handleDownloadComplete,
-  ]);
+  }, [isDownload, individualListingQuery?.data?.items, downloadCSV, handleDownloadComplete]);
+
+  const columnDefs = useMemo(
+    () => [
+      {
+        headerName: "Sr. No.",
+        cellRenderer: SrNoRenderer,
+        width: 120,
+        minWidth: 120,
+        maxWidth: 120,
+        flex: 0,
+        filter: false,
+        sortable: false,
+      },
+      {
+        headerName: "Name",
+        field: "name",
+        flex: 1,
+        minWidth: 160,
+        filter: false,
+        cellStyle: { fontWeight: 500, color: "black" },
+      },
+      {
+        headerName: "Property Searches",
+        field: "totalSearches",
+        flex: 1,
+        minWidth: 160,
+        filter: false,
+        cellStyle: { textAlign: "center" },
+        headerClass: "ag-header-cell-center",
+      },
+      {
+        headerName: "Action",
+        field: "action",
+        cellRenderer: ActionRenderer,
+        flex: 1,
+        minWidth: 100,
+        filter: false,
+        sortable: false,
+        cellStyle: { textAlign: "center" },
+        headerClass: "ag-header-cell-center",
+      },
+    ],
+    [],
+  );
+
+  const rowData = individualListingQuery?.data?.items ?? [];
+
   return (
     <div>
       {individualListingQuery?.isLoading && <CenterLoader />}
       {individualListingQuery?.isError && (
-        <ShowError
-          message={individualListingQuery?.error?.response?.data?.message}
-        />
+        <ShowError message={individualListingQuery?.error?.response?.data?.message} />
       )}
       {individualListingQuery?.isSuccess && (
-        <Table className="">
-          <TableHeader className="bg-[#F5F0EC]">
-            <TableRow>
-              <TableHead>Sr. No.</TableHead>
-              <TableHead>
-                Name
-                {/* <p className="flex items-center gap-2">
-                        Name<span>{getSortArrow("address")}</span>
-                      </p> */}
-              </TableHead>
-              <TableHead className="text-center">
-                Property Searches
-                {/* <p className="flex items-center gap-2">
-                        Property Search <span>{getSortArrow("createdAt")}</span>
-                      </p> */}
-              </TableHead>
-
-              <TableHead className="text-center">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {individualListingQuery?.data?.items?.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="font-medium text-center py-10"
-                >
-                  No Records found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              individualListingQuery?.data?.items?.map((item, index) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{index + 1}</TableCell>
-                  <TableCell>{item?.name}</TableCell>
-                  <TableCell className="text-center">
-                    {item?.totalSearches}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Link
-                      to={`/organisation/search/property-search/${item?.id}`}
-                    >
-                      <Button size="icon" className="text-md" variant="ghost">
-                        <Eye />
-                      </Button>
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+        <div className="ag-theme-quartz custom-ag-grid" style={{ width: "100%" }}>
+     
+            <AgGridReact
+              rowData={rowData}
+              columnDefs={columnDefs}
+              defaultColDef={{
+                flex: 1,
+                minWidth: 120,
+                filter: true,
+                sortable: true,
+                resizable: true,
+                unSortIcon: true,
+              }}
+              rowHeight={72}
+              headerHeight={48}
+              domLayout="autoHeight"
+              animateRows={true}
+              overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+            />
+        </div>
       )}
     </div>
   );

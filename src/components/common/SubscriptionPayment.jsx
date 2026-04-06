@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { saveSubscriptionData } from "@/utils/subscriptionStorage";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../../context/usercontext";
 import {
@@ -21,6 +22,10 @@ function SubscriptionPayment() {
   const { userType } = useUserIdType();
   const [showPaymentDetails, setShowPaymentDetails] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("");
+
+  useEffect(() => {
+    saveSubscriptionData({}, window.location.pathname);
+  }, []);
   const getStoredAgents = () =>
     JSON.parse(localStorage.getItem("invitedAgents")) || [];
   const getStoredBrokers = () =>
@@ -306,7 +311,7 @@ function SubscriptionPayment() {
                   </p> */}
                   <div className="text-center my-4 text-sm">
                     <span>Don't have an account? </span>
-                    <Link to="/pricing" className="text-secondary">
+                    <Link to="/" className="text-secondary">
                       Register Now
                     </Link>
                   </div>

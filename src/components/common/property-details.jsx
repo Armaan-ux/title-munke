@@ -1,5 +1,5 @@
 import { ChevronLeft, Loader2 } from "lucide-react";
-import React from "react";
+import React, { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,21 +16,84 @@ import { useDownloadCsv } from "@/hooks/useDownloadCsv";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import GoogleMapView from "./google-map";
 import StreetView from "./street-view";
+import { AgGridReact } from "ag-grid-react";
+
+// ─── Cell Renderers ───────────────────────────────────────────────────────────
+
+const SrNoRenderer = (props) => <span>{props.node.rowIndex + 1}</span>;
+
+const DocTypeRenderer = (props) => (
+  <span className="uppercase">Document {props.node.rowIndex + 1}</span>
+);
+
+const DateRecordedRenderer = (props) => (
+  <span>{format(props.data?.lastEdited, "dd MMM yyyy")}</span>
+);
+
+const ActionRenderer = (props) => (
+  <div className="flex items-center justify-center h-full">
+    <a href={props.data?.url} target="_blank" rel="noreferrer">
+      <Eye className="w-4 h-4 text-[#4C0D0D]" />
+    </a>
+  </div>
+);
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
 const PropertyDetails = () => {
   const { userType } = useUserIdType();
   const navigate = useNavigate();
   const { id } = useParams();
   const { downloadCSV } = useDownloadCsv();
+
   const propertyDetailQuery = useQuery({
     queryKey: [queryKeys?.propertyDetail, id],
     queryFn: () => getSearchedStatus(id),
-    refetchInterval: (query) => {
-      return query?.state?.data?.status === "IN_PROGRESS"
-        ? 5000 // poll every 5 seconds
-        : false; // stop polling
-    },
+    refetchInterval: (query) =>
+      query?.state?.data?.status === "IN_PROGRESS" ? 5000 : false,
     enabled: !!id,
   });
+
+  const columnDefs = useMemo(
+    () => [
+      {
+        headerName: "Sr. No.",
+        cellRenderer: SrNoRenderer,
+        width: 120,
+        minWidth: 120,
+        maxWidth: 120,
+        flex: 0,
+        sortable: false,
+      },
+      {
+        headerName: "Document Type",
+        field: "type",
+        cellRenderer: DocTypeRenderer,
+        flex: 1,
+        minWidth: 160,
+        sortable: false,
+      },
+      {
+        headerName: "Date Recorded",
+        field: "lastEdited",
+        cellRenderer: DateRecordedRenderer,
+        flex: 1,
+        minWidth: 160,
+      },
+      {
+        headerName: "Actions",
+        field: "url",
+        cellRenderer: ActionRenderer,
+        flex: 1,
+        minWidth: 100,
+        sortable: false,
+        cellStyle: { textAlign: "center" },
+        headerClass: "ag-header-cell-center",
+      },
+    ],
+    [],
+  );
+
   if (propertyDetailQuery?.isLoading) return <CenterLoader />;
   if (propertyDetailQuery?.isError)
     return (
@@ -38,23 +101,16 @@ const PropertyDetails = () => {
         message={propertyDetailQuery?.error?.response?.data?.message}
       />
     );
+
   const pdfDocuments =
     propertyDetailQuery?.data?.documents?.filter(
       (item) => item?.type === "pdf",
     ) ?? [];
+
   return (
     <>
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
         <BackBtn />
-        {/* <div className="flex items-center justify-left gap-2">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center text-[#5a0a0a] hover:text-[#3d0606] transition"
-          >
-            <ChevronLeft className="w-6 h-6 mr-1" />
-          </button>
-          <p className="text-lg text-secondary">Back</p>
-        </div> */}
       </div>
       <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
         <div className="bg-white !p-4 rounded-xl">
@@ -90,7 +146,9 @@ const PropertyDetails = () => {
                     ? "bg-[#E9F3E9] text-[#1E8221]"
                     : propertyDetailQuery?.data?.status === "Unconfirmed"
                       ? "bg-[#FFF3D9] text-[#A2781E]"
-                      : "bg-[#FFE3E2] text-[#FF5F59]"
+                      : propertyDetailQuery?.data?.status === "IN_PROGRESS"
+                        ? "bg-[#fff6e2] text-[#ffa200]"
+                        : "bg-[#FFE3E2] text-[#FF5F59]"
                 } text-[13px] font-medium px-3 py-1 rounded-md`}
               >
                 {propertyDetailQuery?.data.status}
@@ -99,9 +157,7 @@ const PropertyDetails = () => {
 
             <Separator />
 
-            <div
-              className={`mt-6 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5`}
-            >
+            <div className="mt-6 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5">
               <div>
                 <p className="font-semibold text-lg text-[#4C0D0D] mb-2">
                   Description
@@ -125,9 +181,7 @@ const PropertyDetails = () => {
                     className={`grid grid-cols-3 gap-8 text-sm text-[#4C0D0D] ${propertyDetailQuery?.data?.status !== "SUCCESS" ? "opacity-5 pointer-events-none" : ""}`}
                   >
                     <div>
-                      <p className="font-semibold uppercase text-sm">
-                        Location
-                      </p>
+                      <p className="font-semibold uppercase text-sm">Location</p>
                       <p className="text-[#7A7676]">
                         {
                           propertyDetailQuery?.data?.propertySummary
@@ -145,17 +199,13 @@ const PropertyDetails = () => {
                       <p className="text-[#7A7676]">Allentown, Lehigh County</p>
                     </div>
                     <div>
-                      <p className="font-semibold uppercase text-sm">
-                        Property
-                      </p>
+                      <p className="font-semibold uppercase text-sm">Property</p>
                       <p className="text-[#7A7676]">
                         {propertyDetailQuery?.data?.address}
                       </p>
                     </div>
                     <div>
-                      <p className="font-semibold uppercase text-sm">
-                        County, State
-                      </p>
+                      <p className="font-semibold uppercase text-sm">County, State</p>
                       <p className="text-[#7A7676]">
                         {
                           propertyDetailQuery?.data?.propertySummary
@@ -165,9 +215,7 @@ const PropertyDetails = () => {
                       </p>
                     </div>
                     <div>
-                      <p className="font-semibold uppercase text-sm">
-                        Municipality
-                      </p>
+                      <p className="font-semibold uppercase text-sm">Municipality</p>
                       <p className="text-[#7A7676]">
                         {
                           propertyDetailQuery?.data?.propertySummary
@@ -177,25 +225,19 @@ const PropertyDetails = () => {
                       </p>
                     </div>
                     <div>
-                      <p className="font-semibold uppercase text-sm">
-                        PIN/Parcel
-                      </p>
+                      <p className="font-semibold uppercase text-sm">PIN/Parcel</p>
                       <p className="text-[#7A7676]">
                         {propertyDetailQuery?.data?.propertySummary?.PIN}
                       </p>
                     </div>
                     <div>
-                      <p className="font-semibold uppercase text-sm">
-                        Span of Search
-                      </p>
+                      <p className="font-semibold uppercase text-sm">Span of Search</p>
                       <p className="text-[#7A7676]">
                         {propertyDetailQuery?.data?.span_of_search || ""}
                       </p>
                     </div>
                     <div>
-                      <p className="font-semibold uppercase text-sm">
-                        Date of Search
-                      </p>
+                      <p className="font-semibold uppercase text-sm">Date of Search</p>
                       <p className="text-[#7A7676]">
                         {
                           propertyDetailQuery?.data?.propertySummary?.[
@@ -221,9 +263,7 @@ const PropertyDetails = () => {
                         </p>
                       </div>
                       <div className="border border-[#F1EDEA] rounded-lg p-4 bg-[#FEFAF5]">
-                        <p className="font-semibold uppercase">
-                          Tax Assessment
-                        </p>
+                        <p className="font-semibold uppercase">Tax Assessment</p>
                         <p className="text-[#7A7676]">
                           {
                             propertyDetailQuery?.data?.propertySummary?.[
@@ -233,7 +273,6 @@ const PropertyDetails = () => {
                         </p>
                       </div>
                     </div>
-
                     <div className="border border-[#F1EDEA] rounded-lg p-4 text-[13px] bg-[#FEFAF5]">
                       <p className="font-semibold uppercase">Title Deed</p>
                       <p className="text-[#7A7676]">
@@ -247,65 +286,45 @@ const PropertyDetails = () => {
                   </div>
                 </div>
 
+                {/* ── Document Processing Status ── */}
                 <div className="mt-8">
                   <p className="font-semibold text-lg text-[#4C0D0D] mb-3">
                     Document Processing Status
                   </p>
 
-                  <div className="overflow-hidden border border-[#F1EDEA] rounded-xl">
-                    <table className="w-full text-sm">
-                      <thead className="bg-[#F9F6F4] text-[#4C0D0D]  text-left">
-                        <tr className="*:!font-medium">
-                          <th className="py-3 px-4">Sr. No.</th>
-                          <th className="py-3 px-4">Document Type</th>
-                          <th className="py-3 px-4">Date Recorded</th>
-                          {/* <th className="py-3 px-4">Document ID</th> */}
-                          {/* <th className="py-3 px-4">Progress</th> */}
-                          <th className="py-3 px-4 text-center">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {pdfDocuments?.map((item, i) => (
-                          <tr
-                            key={i}
-                            className="border-t border-[#F1EDEA] text-[#4C0D0D]"
-                          >
-                            <td className="py-3 px-4">{i + 1}</td>
-                            <td className="py-3 px-4 uppercase">
-                              Document {i + 1}
-                            </td>
-                            <td className="py-3 px-4">
-                              {format(item?.lastEdited, "dd MMM yyyy")}
-                            </td>
-                            {/* <td className="py-3 px-4">{item.id}</td> */}
-                            {/* <td className="py-3 px-4">
-                              <div className="w-[100px] bg-[#EAF7ED] rounded-full h-[6px] overflow-hidden">
-                                <div className="bg-[#3A9447] h-[6px] w-[90%] rounded-full"></div>
-                              </div>
-                            </td> */}
-                            <td className="py-3 px-4">
-                              <a
-                                href={item?.url}
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                <Eye className="w-4 h-4 text-[#4C0D0D] mx-auto" />
-                              </a>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                      {propertyDetailQuery?.data?.status === "IN_PROGRESS" && (
-                        <tr>
-                          <td colSpan={5} className="py-3 px-4">
-                            <p className="text-center text-[#4C0D0D] flex items-center justify-between mx-auto w-fit">
-                              Loading ...{" "}
-                              <Loader2 className="ml-2 w-4 h-4 mx-auto animate-spin" />
-                            </p>
-                          </td>
-                        </tr>
-                      )}
-                    </table>
+                  <div className="ag-theme-quartz custom-ag-grid overflow-hidden border border-[#F1EDEA] rounded-xl">
+                    {propertyDetailQuery?.data?.status === "IN_PROGRESS" &&
+                    pdfDocuments.length === 0 ? (
+                      <div className="flex items-center justify-center py-6 text-[#4C0D0D] gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      </div>
+                    ) :  (
+                      <>
+                        <AgGridReact
+                          rowData={pdfDocuments}
+                          columnDefs={columnDefs}
+                          defaultColDef={{
+                            flex: 1,
+                            minWidth: 100,
+                            filter: false,
+                            sortable: true,
+                            resizable: true,
+                            unSortIcon: true,
+                          }}
+                          rowHeight={56}
+                          headerHeight={48}
+                          domLayout="autoHeight"
+                          animateRows={true}
+                          overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+
+                        />
+                        {propertyDetailQuery?.data?.status === "IN_PROGRESS" && (
+                          <div className="flex items-center justify-center py-3 border-t border-[#F1EDEA] text-[#4C0D0D] gap-2 text-sm">
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -333,15 +352,12 @@ const PropertyDetails = () => {
                         <StreetView lat={lat} lng={lng} />
                       ) : (
                         <div className="h-[300px] flex items-center justify-center bg-[#F9F6F4] rounded-xl">
-                          <p className="text-[#7A7676]">
-                            Street view unavailable
-                          </p>
+                          <p className="text-[#7A7676]">Street view unavailable</p>
                         </div>
                       )}
                     </div>
                   );
                 })()}
-
                 {(() => {
                   const latVal = propertyDetailQuery?.data?.latitude;
                   const lngVal = propertyDetailQuery?.data?.longitude;
@@ -364,9 +380,7 @@ const PropertyDetails = () => {
                         <GoogleMapView lat={lat} lng={lng} />
                       ) : (
                         <div className="h-[300px] flex items-center justify-center bg-[#F9F6F4] rounded-xl">
-                          <p className="text-[#7A7676]">
-                            Map location unavailable
-                          </p>
+                          <p className="text-[#7A7676]">Map location unavailable</p>
                         </div>
                       )}
                     </div>
@@ -379,9 +393,7 @@ const PropertyDetails = () => {
             <div className="flex justify-between items-center mt-4 text-[13px]">
               <p className="text-[#4C0D0D]">
                 Total Documents Completed:{" "}
-                <span className="font-semibold">
-                  {pdfDocuments?.length ?? 0}
-                </span>
+                <span className="font-semibold">{pdfDocuments?.length ?? 0}</span>
                 <br />
                 Status:{" "}
                 <Badge
@@ -411,10 +423,7 @@ const PropertyDetails = () => {
                       pdfDocuments?.map?.((item, index) => ({
                         "Sr. No.": index + 1,
                         "Document Type": `Document ${index + 1}`,
-                        "Date Recorded": format(
-                          item?.lastEdited,
-                          "dd MMM yyyy",
-                        ),
+                        "Date Recorded": format(item?.lastEdited, "dd MMM yyyy"),
                         "Download Link": item?.url,
                       })),
                     )

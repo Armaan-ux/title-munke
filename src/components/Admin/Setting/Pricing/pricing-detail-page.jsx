@@ -25,13 +25,13 @@ export default function PricingDetailPage() {
         <BackBtn />
       </div>
       <PricingDetailsHeader
-        isPending={productDetailsQuery?.isPending}
+        isPending={productDetailsQuery?.isPending || productDetailsQuery?.isFetching}
         product={productDetailsQuery?.data?.product}
       />
       <PricingDetails
         data={productDetailsQuery?.data}
         invalidateFun={productDetailsQuery.refetch}
-        isPending={productDetailsQuery?.isPending}
+        isPending={productDetailsQuery?.isPending || productDetailsQuery?.isFetching}
       />
     </>
   );

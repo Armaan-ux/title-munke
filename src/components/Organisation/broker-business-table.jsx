@@ -1,23 +1,40 @@
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { convertFromTimestamp, getFormattedDateTime, queryKeys } from "@/utils";
+import { getFormattedDateTime, queryKeys } from "@/utils";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Eye } from "lucide-react";
-import { format } from "date-fns-tz";
-import { getOrgBrokersList, listBrokers } from "../service/userAdmin";
+import { getOrgBrokersList } from "../service/userAdmin";
 import { useQuery } from "@tanstack/react-query";
 import { CenterLoader } from "../common/Loader";
 import ShowError from "../common/ShowError";
 import { useDownloadCsv } from "@/hooks/useDownloadCsv";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import { AgGridReact } from "ag-grid-react";
+
+// ─── Cell Renderers ───────────────────────────────────────────────────────────
+
+const SrNoRenderer = (props) => (
+  <span className="font-medium">{props.node.rowIndex + 1}</span>
+);
+
+const LastActivityRenderer = (props) => (
+  <span>{getFormattedDateTime(props.data?.lastLogin)}</span>
+);
+
+const AccountCreatedRenderer = (props) => (
+  <span>{getFormattedDateTime(props.data?.createdAt)}</span>
+);
+
+const ActionRenderer = (props) => (
+  <div className="flex items-center gap-2 h-full">
+    <Link to={`/organisation/search/broker-property-search/${props.data?.id}`}>
+      <Button size="icon" className="text-md" variant="ghost">
+        <Eye />
+      </Button>
+    </Link>
+  </div>
+);
+
+// ─── BrokerBusinessTable ──────────────────────────────────────────────────────
 
 export default function BrokerBusinessTable({
   limit,
@@ -28,10 +45,11 @@ export default function BrokerBusinessTable({
 }) {
   const brokerListingQuery = useQuery({
     queryKey: [queryKeys.brokerListingForAdminDefault, limit, from, to],
-    queryFn: () =>
-      getOrgBrokersList({ withSearchCount: true, limit, from, to }),
+    queryFn: () => getOrgBrokersList({ withSearchCount: true, limit, from, to }),
   });
+
   const { downloadCSV } = useDownloadCsv();
+
   useEffect(() => {
     if (
       isDownload &&
@@ -49,82 +67,106 @@ export default function BrokerBusinessTable({
       downloadCSV(data);
       setTimeout(() => handleDownloadComplete?.(), 500);
     } else handleDownloadComplete?.();
-  }, [
-    isDownload,
-    brokerListingQuery?.data?.items,
-    downloadCSV,
-    handleDownloadComplete,
-  ]);
+  }, [isDownload, brokerListingQuery?.data?.items, downloadCSV, handleDownloadComplete]);
+
+  const columnDefs = useMemo(
+    () => [
+      {
+        headerName: "Sr. No.",
+        cellRenderer: SrNoRenderer,
+        width: 120,
+        minWidth: 120,
+        maxWidth: 120,
+        flex: 0,
+        filter: false,
+        sortable: false,
+      },
+      {
+        headerName: "Broker Name",
+        field: "name",
+        flex: 1,
+        minWidth: 160,
+        filter: false,
+        cellStyle: { fontWeight: 500, color: "black" },
+      },
+      {
+        headerName: "Agents",
+        field: "agentCount",
+        flex: 0.8,
+        minWidth: 100,
+        filter: false,
+        cellStyle: { textAlign: "center" },
+        headerClass: "ag-header-cell-center",
+      },
+      {
+        headerName: "Search Count",
+        field: "totalSearches",
+        flex: 1,
+        minWidth: 100,
+        filter: false,
+        cellStyle: { textAlign: "center" },
+        headerClass: "ag-header-cell-center",
+      },
+      {
+        headerName: "Last Activity",
+        field: "lastLogin",
+        cellRenderer: LastActivityRenderer,
+        flex: 1,
+        minWidth: 180,
+        filter: false,
+      },
+      {
+        headerName: "Account Created",
+        field: "createdAt",
+        cellRenderer: AccountCreatedRenderer,
+        flex: 1,
+        minWidth: 180,
+        filter: false,
+        cellStyle: { textAlign: "center" },
+        headerClass: "ag-header-cell-center",
+      },
+      {
+        headerName: "Action",
+        field: "action",
+        cellRenderer: ActionRenderer,
+        flex: 1,
+        minWidth: 100,
+        filter: false,
+        sortable: false,
+      },
+    ],
+    [],
+  );
+
+  const rowData = brokerListingQuery?.data?.items ?? [];
+
   return (
     <div>
       {brokerListingQuery?.isLoading && <CenterLoader />}
       {brokerListingQuery?.isError && (
-        <ShowError
-          message={brokerListingQuery?.error?.response?.data?.message}
-        />
+        <ShowError message={brokerListingQuery?.error?.response?.data?.message} />
       )}
       {brokerListingQuery?.isSuccess && (
-        <Table className="w-full">
-          <TableHeader className="bg-[#F5F0EC] w-full">
-            <TableRow className="w-full">
-              <TableHead>Sr. No.</TableHead>
-              <TableHead>Broker Name</TableHead>
-              <TableHead className="text-center">Agents</TableHead>
-              <TableHead className="text-center">Search Count</TableHead>
-              <TableHead>Last Activity</TableHead>
-              {/* <TableHead className="text-center" >Business</TableHead> */}
-              <TableHead className="text-center">Account Created</TableHead>
-              <TableHead>Action</TableHead>
-              {/* <TableHead></TableHead> */}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {brokerListingQuery?.data?.items?.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="font-medium text-center py-10"
-                >
-                  No Records found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              brokerListingQuery?.data?.items?.map((item, index) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{index + 1}</TableCell>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell className="text-center">
-                    {item?.agentCount}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {item?.totalSearches}
-                  </TableCell>
-                  <TableCell>
-                    {getFormattedDateTime(item?.lastLogin)}
-                    {/* {convertFromTimestamp(item?.lastLogin)} */}
-                  </TableCell>
-                  {/* <TableCell className="text-center" >${item?.revenue}</TableCell> */}
-                  <TableCell className="text-center">
-                    {getFormattedDateTime(item?.createdAt)}
-                  </TableCell>
-                  <TableCell>
-                    {" "}
-                    <div className="flex items-center gap-2 flex-row">
-                      <Link
-                        to={`/organisation/search/broker-property-search/${item?.id}`}
-                      >
-                        <Button size="icon" className="text-md" variant="ghost">
-                          <Eye />
-                        </Button>
-                      </Link>
-                    </div>
-                  </TableCell>
-                  {/* <TableCell className="text-right"></TableCell> */}
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+        <div className="ag-theme-quartz custom-ag-grid" style={{ width: "100%" }}>
+       
+            <AgGridReact
+              rowData={rowData}
+              columnDefs={columnDefs}
+              defaultColDef={{
+                flex: 1,
+                minWidth: 120,
+                filter: true,
+                sortable: true,
+                resizable: true,
+                unSortIcon: true,
+              }}
+              rowHeight={72}
+              headerHeight={48}
+              domLayout="autoHeight"
+              animateRows={true}
+              overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+            />
+        </div>
       )}
     </div>
   );

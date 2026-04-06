@@ -4,7 +4,7 @@ export const navItems = [
   { name: "How It Works", path: "how-it-works" },
   { name: "Sample Report", path: "report-preview" },
   { name: "Counties", path: "counties" },
-  { name: "Pricing", path: "/pricing" },
+  { name: "Pricing", path: "pricing" },
   // { name: "Previous Searches", path: "previous-searches" },
 ];
 

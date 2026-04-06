@@ -29,6 +29,7 @@ import AgentAddedSuccessModal from "../Modal/AgentAddedSuccessModal";
 import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@/context/usercontext";
 import { formatUSPhone } from "@/utils/date";
+import { saveSubscriptionData } from "@/utils/subscriptionStorage";
 function SubscriptionAddBroker() {
   const navigate = useNavigate();
   const { planId } = useParams();
@@ -40,6 +41,10 @@ function SubscriptionAddBroker() {
   const [addBroker, setAddBroker] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const { userType, userId } = useUserIdType();
+
+  useEffect(() => {
+    saveSubscriptionData({}, window.location.pathname);
+  }, []);
 
   const { id: organisationId } = organisationDetail || {};
 

@@ -1,40 +1,23 @@
-import { useState } from "react";
-// import "./index.css";
+import { useState, useMemo } from "react";
 import { getFormattedDateTime, queryKeys } from "@/utils";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Link,
-  Share2,
-  Printer,
-  Eye,
-  ChevronLeft,
-  ArrowDownToLine,
-  Pencil,
-  Trash2,
-  PencilLine,
-} from "lucide-react";
+import { Eye } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import DateFilter from "../common/date-filter";
 import BackBtn from "../back-btn";
-import UserDetailHeader from "../user-detail-header";
 import { useQuery } from "@tanstack/react-query";
 import {
-  getBrokerAgentsDetails,
   getOrganisationAgentDetails,
   getOrganisationBrokerDetails,
 } from "../service/userAdmin";
 import { CenterLoader } from "../common/Loader";
 import ShowError from "../common/ShowError";
 import OrgDetailHeader from "../org-detail-header";
+import { AgGridReact } from "ag-grid-react";
+
+const SrNoRenderer = (props) => {
+  return <span>{props.node.rowIndex + 1}</span>;
+};
 
 function OrganisationDetails() {
   const navigate = useNavigate();
@@ -67,6 +50,78 @@ function OrganisationDetails() {
     enabled: !!id,
   });
 
+  const ActionRenderer = (props) => {
+    return (
+      <div className="flex items-center justify-center gap-2 flex-row h-full">
+        <Button
+          size="icon"
+          className="text-md"
+          variant="ghost"
+          onClick={() =>
+            navigate(
+              activeTab.id === "broker"
+                ? `/admin/dashboard/broker-details/${props.data?.brokerId}`
+                : `/admin/dashboard/property-search/${props.data?.agentId}`,
+            )
+          }
+        >
+          <Eye />
+        </Button>
+      </div>
+    );
+  };
+
+  const columnDefs = useMemo(
+    () => [
+      {
+        headerName: "Sr. No.",
+        field: "index",
+        cellRenderer: SrNoRenderer,
+        width: 120,
+        minWidth: 120,
+        maxWidth: 120,
+        flex: 0,
+        filter: false,
+        sortable: false,
+      },
+      {
+        headerName: "Name",
+        field: "agentName",
+        flex: 1.5,
+        minWidth: 200,
+        filter: false,
+      },
+      {
+        headerName: "Last Activity",
+        field: "lastLogin",
+        valueGetter: (params) => getFormattedDateTime(params.data?.lastLogin),
+        flex: 1,
+        minWidth: 200,
+        filter: false,
+      },
+      {
+        headerName: "Searches",
+        field: "totalSearches",
+        flex: 1,
+        minWidth: 150,
+        filter: false,
+        cellStyle: { textAlign: "center" },
+      },
+      {
+        headerName: "Action",
+        field: "id",
+        cellRenderer: ActionRenderer,
+        width: 150,
+        minWidth: 150,
+        maxWidth: 150,
+        flex: 0,
+        sortable: false,
+        filter: false,
+      },
+    ],
+    [activeTab],
+  );
+
   return (
     <>
       <div className="bg-[#F5F0EC] rounded-lg p-4 my-4 text-secondary">
@@ -77,7 +132,7 @@ function OrganisationDetails() {
       <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
         <div className="bg-white !p-4 rounded-xl">
           <div className="space-x-3 mb-4">
-            {tabTypes.map((item, index) => (
+            {tabTypes.map((item) => (
               <button
                 key={item.id}
                 className={` ${
@@ -112,66 +167,31 @@ function OrganisationDetails() {
             />
           )}
           {brokersAgentListingAdminQuery?.isSuccess && (
-            <Table className="">
-              <TableHeader className="bg-[#F5F0EC]">
-                <TableRow>
-                  <TableHead>Sr. No.</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Last Activity</TableHead>
-                  <TableHead className="text-center">Searches</TableHead>
-                  <TableHead className="text-center">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody className="text-black">
-                {brokersAgentListingAdminQuery?.data?.length === 0 ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={5}
-                      className="font-medium text-center py-10"
-                    >
-                      No Records found.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  brokersAgentListingAdminQuery?.data?.map((item, index) => (
-                    <TableRow key={item.id} className="text-black">
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>{item?.agentName}</TableCell>
-                      <TableCell>
-                        {getFormattedDateTime(item?.lastLogin)}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {item?.totalSearches}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Button
-                          size="icon"
-                          className="text-md"
-                          variant="ghost"
-                          onClick={() =>
-                            navigate(
-                              activeTab.id === "broker"
-                                ? `/admin/dashboard/broker-details/${item?.brokerId}`
-                                : `/admin/dashboard/property-search/${item?.agentId}`,
-                            )
-                          }
-                        >
-                          <Eye />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          )}
-
-          {/* {!hasMore && <p>No more data to load.</p>}
-          {logs?.length > 0 && hasMore && !loading && (
-            <div className="flex justify-center" >
-              <button className=" mt-4">Load More</button>
+            <div
+              className="ag-theme-quartz custom-ag-grid"
+              style={{ width: "100%" }}
+            >
+          
+                <AgGridReact
+                  rowData={brokersAgentListingAdminQuery?.data || []}
+                  columnDefs={columnDefs}
+                  defaultColDef={{
+                    flex: 1,
+                    minWidth: 120,
+                    filter: true,
+                    sortable: true,
+                    resizable: true,
+                    unSortIcon: true,
+                  }}
+                  rowHeight={72}
+                  headerHeight={48}
+                  domLayout="autoHeight"
+                  animateRows={true}
+                  overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+                />
+            
             </div>
-          )} */}
+          )}
         </div>
       </div>
     </>

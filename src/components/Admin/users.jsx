@@ -1,8 +1,9 @@
 import { API } from "aws-amplify";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 // import "./index.css";
 import { getFormattedDateTime } from "@/utils";
 import { fetchAgentsWithSearchCount } from "@/components/service/broker";
+import { AgGridReact } from "ag-grid-react";
 import {
   Table,
   TableBody,
@@ -58,6 +59,27 @@ import { useRestoreUser } from "@/hooks/useRestoreUser";
 import { useMutation } from "@tanstack/react-query";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { set } from "zod";
+
+const SrNoRenderer = (props) => {
+  return <span>{props.node.rowIndex + 1}</span>;
+};
+
+const StatusRenderer = (props) => {
+  const status = props.value;
+  return (
+    <Badge
+      className={`${
+        status === "ACTIVE"
+          ? "bg-[#E9F3E9] text-[#1E8221]"
+          : status === "DELETED"
+            ? " text-destructive/80 bg-destructive/20"
+            : "bg-[#FFF3D9] text-[#A2781E]"
+      } text-[13px] font-medium px-3 py-1 rounded-full`}
+    >
+      {status}
+    </Badge>
+  );
+};
 
 const userTypes = [
   {
@@ -132,9 +154,14 @@ function Organisation() {
       const response = await listOrganisation(isRefetch ? null : nextToken);
 
       const { updatedOrganisations, nextToken: newNextToken } = response;
-      setOrg((pre) =>
-        isRefetch ? updatedOrganisations : [...pre, ...updatedOrganisations],
-      );
+      setOrg((pre) => {
+        const allData = isRefetch
+          ? updatedOrganisations
+          : [...pre, ...updatedOrganisations];
+        return Array.from(
+          new Map(allData.map((item) => [item.id, item])).values(),
+        );
+      });
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
     } catch (error) {
@@ -146,8 +173,93 @@ function Organisation() {
   useEffect(() => {
     handleFetchOrgListing();
   }, []);
-  const loading = deleteUserMutation.isPending || restoreUserMutation.isPending;
 
+  const columnDefs = useMemo(
+    () => [
+      {
+        headerName: "Sr. No.",
+        field: "index",
+        cellRenderer: SrNoRenderer,
+        width: 120,
+        minWidth: 120,
+        maxWidth: 120,
+        flex: 0,
+        sortable: false,
+        filter: false,
+      },
+      {
+        headerName: "Name",
+        field: "name",
+        cellStyle: { fontWeight: "500", color: "black" },
+        filter: false,
+      },
+      {
+        headerName: "Email",
+        field: "email",
+        filter: false,
+        flex: 1,
+      },
+      {
+        headerName: "Status",
+        field: "status",
+        filter: false,
+
+        cellRenderer: StatusRenderer,
+      },
+      {
+        headerName: "Action",
+        field: "id",
+        filter: false,
+        sortable: false,
+        cellRenderer: (params) => {
+          const item = params.data;
+          return (
+            <div className="flex items-center gap-2 h-full">
+              <Button
+                size="icon"
+                className="text-md"
+                variant="ghost"
+                onClick={() => {
+                  setSelectedUser(item);
+                  setIsOpen(true);
+                }}
+              >
+                <PencilLine />
+              </Button>
+              {userId !== item?.id && (
+                <Button
+                  size="icon"
+                  className="text-md"
+                  variant="ghost"
+                  onClick={() => {
+                    if (item?.status === "DELETED") {
+                      restoreUserMutation.mutate({
+                        userId: item.id,
+                        email: item.email,
+                        userType: "organisation",
+                      });
+                    } else {
+                      setUserToDelete(item);
+                      setIsDeleteDialogOpen(true);
+                    }
+                  }}
+                >
+                  {item?.status === "DELETED" ? <ArchiveRestore /> : <Trash2 />}
+                </Button>
+              )}
+            </div>
+          );
+        },
+      },
+    ],
+    [userId, restoreUserMutation, deleteUserMutation],
+  );
+
+  const filteredData = useMemo(() => {
+    return org?.filter(
+      (item) => statusFilter === "ALL" || item.status === statusFilter,
+    );
+  }, [org, statusFilter]);
   return (
     <>
       {isOpen && (
@@ -167,12 +279,6 @@ function Organisation() {
         />
       )}
       <div className="bg-white !p-4 rounded-xl">
-        {/* <AddUserModal
-        setIsOpen={setIsOpen}
-        userType="admin"
-        setUser={setAdmins}
-        isOpen={isOpen}
-      /> */}
         <div className="flex justify-between gap-4 items-center mb-4">
           <div className="flex items-center gap-4">
             <p className="text-lg font-medium">All Organizations</p>
@@ -194,99 +300,28 @@ function Organisation() {
           </Button>
         </div>
 
-        <Table className="">
-          <TableHeader className="bg-[#F5F0EC]">
-            <TableRow>
-              <TableHead className="">Sr. No.</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {org?.filter(
-              (item) => statusFilter === "ALL" || item.status === statusFilter,
-            )?.length === 0 && !hasMore ? (
-              <TableRow>
-                <TableCell
-                  colSpan={5}
-                  className="font-medium text-center py-10 text-muted-foreground"
-                >
-                  No Records found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              org
-                ?.filter(
-                  (item) =>
-                    statusFilter === "ALL" || item.status === statusFilter,
-                )
-                ?.map((item, index) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium ">{index + 1}</TableCell>
-                    <TableCell className="font-medium text-black">
-                      {item.name}
-                    </TableCell>
-                    <TableCell>{item.email}</TableCell>
-                    <TableCell>
-                      <Badge
-                        className={`${
-                          item?.status === "ACTIVE"
-                            ? "bg-[#E9F3E9] text-[#1E8221]"
-                            : item?.status === "DELETED"
-                              ? " text-destructive/80 bg-destructive/20"
-                              : "bg-[#FFF3D9] text-[#A2781E]"
-                        } text-[13px] font-medium px-3 py-1 rounded-full`}
-                      >
-                        {item?.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2 flex-row">
-                        <Button
-                          size="icon"
-                          className="text-md"
-                          variant="ghost"
-                          onClick={() => {
-                            setSelectedUser(item);
-                            setIsOpen(true);
-                          }}
-                        >
-                          <PencilLine />
-                        </Button>
-                        {userId !== item?.id && (
-                          <Button
-                            size="icon"
-                            className="text-md"
-                            variant="ghost"
-                            onClick={() => {
-                              if (item?.status === "DELETED") {
-                                restoreUserMutation.mutate({
-                                  userId: item.id,
-                                  email: item.email,
-                                  userType: "organisation",
-                                });
-                              } else {
-                                setUserToDelete(item);
-                                setIsDeleteDialogOpen(true);
-                              }
-                            }}
-                          >
-                            {item?.status === "DELETED" ? (
-                              <ArchiveRestore />
-                            ) : (
-                              <Trash2 />
-                            )}
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-            )}
-          </TableBody>
-        </Table>
+        <div
+          className="ag-theme-quartz custom-ag-grid"
+          style={{ width: "100%" }}
+        >
+          <AgGridReact
+            rowData={filteredData || []}
+            columnDefs={columnDefs}
+            defaultColDef={{
+              flex: 1,
+              minWidth: 120,
+              filter: false,
+              sortable: true,
+              resizable: true,
+              unSortIcon: true,
+            }}
+            rowHeight={72}
+            headerHeight={48}
+            domLayout="autoHeight"
+            animateRows={true}
+            overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+          />
+        </div>
         <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
           {isOrgListLoading && <p>Loading...</p>}
           {!hasMore && !isOrgListLoading && <p>No more data to load.</p>}
@@ -347,7 +382,12 @@ function Admins() {
     try {
       const response = await listAdmins(isRefetch ? null : nextToken);
       const { items, nextToken: newNextToken } = response;
-      setAdmins((pre) => (isRefetch ? items : [...pre, ...items]));
+      setAdmins((pre) => {
+        const allData = isRefetch ? items : [...pre, ...items];
+        return Array.from(
+          new Map(allData.map((item) => [item.id, item])).values(),
+        );
+      });
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
     } catch (error) {
@@ -359,6 +399,97 @@ function Admins() {
   useEffect(() => {
     handleFetchAdminListing();
   }, []);
+
+  const columnDefs = useMemo(
+    () => [
+      {
+        headerName: "Sr. No.",
+        field: "index",
+        cellRenderer: SrNoRenderer,
+        width: 120,
+        minWidth: 120,
+        maxWidth: 120,
+        flex: 0,
+        filter: false,
+        sortable: false,
+      },
+      {
+        headerName: "Name",
+        field: "name",
+        cellStyle: { fontWeight: "500", color: "black" },
+        filter: false,
+        flex: 1,
+      },
+      {
+        headerName: "Email",
+        field: "email",
+        filter: false,
+        flex: 1,
+      },
+      {
+        headerName: "Status",
+        field: "status",
+        cellRenderer: StatusRenderer,
+        filter: false,
+      },
+      {
+        headerName: "Action",
+        field: "id",
+        width: 150,
+        minWidth: 150,
+        maxWidth: 150,
+        flex: 0,
+        filter: false,
+        sortable: false,
+        cellRenderer: (params) => {
+          const item = params.data;
+          return (
+            <div className="flex items-center gap-2 h-full">
+              <Button
+                size="icon"
+                className="text-md"
+                variant="ghost"
+                onClick={() => {
+                  setSelectedUser(item);
+                  setIsOpen(true);
+                }}
+              >
+                <PencilLine />
+              </Button>
+              {userId !== item?.id && (
+                <Button
+                  size="icon"
+                  className="text-md"
+                  variant="ghost"
+                  onClick={() => {
+                    if (item?.status === "DELETED") {
+                      restoreUserMutation.mutate({
+                        userId: item.id,
+                        email: item.email,
+                        userType: "admin",
+                      });
+                    } else {
+                      setUserToDelete(item);
+                      setIsDeleteDialogOpen(true);
+                    }
+                  }}
+                >
+                  {item?.status === "DELETED" ? <ArchiveRestore /> : <Trash2 />}
+                </Button>
+              )}
+            </div>
+          );
+        },
+      },
+    ],
+    [userId, restoreUserMutation, deleteUserMutation],
+  );
+
+  const filteredData = useMemo(() => {
+    return admins?.filter(
+      (item) => statusFilter === "ALL" || item.status === statusFilter,
+    );
+  }, [admins, statusFilter]);
 
   return (
     <>
@@ -400,99 +531,28 @@ function Admins() {
           </Button>
         </div>
 
-        <Table className="">
-          <TableHeader className="bg-[#F5F0EC]">
-            <TableRow>
-              <TableHead className="">Sr. No.</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {admins?.filter(
-              (item) => statusFilter === "ALL" || item.status === statusFilter,
-            )?.length === 0 && !hasMore ? (
-              <TableRow>
-                <TableCell
-                  colSpan={5}
-                  className="font-medium text-center py-10 text-muted-foreground"
-                >
-                  No Records found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              admins
-                ?.filter(
-                  (item) =>
-                    statusFilter === "ALL" || item.status === statusFilter,
-                )
-                ?.map((item, index) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium ">{index + 1}</TableCell>
-                    <TableCell className="font-medium text-black">
-                      {item.name}
-                    </TableCell>
-                    <TableCell>{item.email}</TableCell>
-                    <TableCell>
-                      <Badge
-                        className={`${
-                          item?.status === "ACTIVE"
-                            ? "bg-[#E9F3E9] text-[#1E8221]"
-                            : item?.status === "DELETED"
-                              ? " text-destructive/80 bg-destructive/20"
-                              : "bg-[#FFF3D9] text-[#A2781E]"
-                        } text-[13px] font-medium px-3 py-1 rounded-full`}
-                      >
-                        {item?.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2 flex-row">
-                        <Button
-                          size="icon"
-                          className="text-md"
-                          variant="ghost"
-                          onClick={() => {
-                            setSelectedUser(item);
-                            setIsOpen(true);
-                          }}
-                        >
-                          <PencilLine />
-                        </Button>
-                        {userId !== item?.id && (
-                          <Button
-                            size="icon"
-                            className="text-md"
-                            variant="ghost"
-                            onClick={() => {
-                              if (item?.status === "DELETED") {
-                                restoreUserMutation.mutate({
-                                  userId: item.id,
-                                  email: item.email,
-                                  userType: "admin",
-                                });
-                              } else {
-                                setUserToDelete(item);
-                                setIsDeleteDialogOpen(true);
-                              }
-                            }}
-                          >
-                            {item?.status === "DELETED" ? (
-                              <ArchiveRestore />
-                            ) : (
-                              <Trash2 />
-                            )}
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-            )}
-          </TableBody>
-        </Table>
+        <div
+          className="ag-theme-quartz custom-ag-grid"
+          style={{ width: "100%" }}
+        >
+          <AgGridReact
+            rowData={filteredData || []}
+            columnDefs={columnDefs}
+            defaultColDef={{
+              flex: 1,
+              minWidth: 120,
+              filter: false,
+              sortable: true,
+              resizable: true,
+              unSortIcon: true,
+            }}
+            rowHeight={72}
+            headerHeight={48}
+            domLayout="autoHeight"
+            animateRows={true}
+            overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+          />
+        </div>
         <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
           {isAdminListLoading && <p>Loading...</p>}
           {!hasMore && !isAdminListLoading && <p>No more data to load.</p>}
@@ -560,16 +620,112 @@ function AdminBrokersList() {
       );
       const { updatedBrokers, nextToken: newNextToken } = response;
 
-      setBrokers((prev) =>
-        isRefetch ? updatedBrokers : [...prev, ...updatedBrokers],
-      );
+      setBrokers((pre) => {
+        const allData = isRefetch
+          ? updatedBrokers
+          : [...pre, ...updatedBrokers];
+        return Array.from(
+          new Map(allData.map((item) => [item.id, item])).values(),
+        );
+      });
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
-    } catch (error) {
-      console.error("Error fetching search histories:", error);
-    }
+    } catch (error) {}
     setIsBrokerListLoading(false);
   };
+
+  const columnDefs = useMemo(
+    () => [
+      {
+        headerName: "Sr. No.",
+        field: "index",
+        cellRenderer: SrNoRenderer,
+        width: 120,
+        minWidth: 120,
+        maxWidth: 120,
+        flex: 0,
+        filter: false,
+        sortable: false,
+      },
+      {
+        headerName: "Name",
+        field: "name",
+        filter: false,
+        cellStyle: { fontWeight: "500", color: "black" },
+      },
+      {
+        headerName: "Email",
+        field: "email",
+        filter: false,
+      },
+      {
+        headerName: "Team Strength",
+        field: "teamStrength",
+        filter: false,
+        valueGetter: (params) => params.data.teamStrength || "-",
+      },
+      {
+        headerName: "Status",
+        field: "status",
+        cellRenderer: StatusRenderer,
+        filter: false,
+      },
+      {
+        headerName: "Action",
+        field: "id",
+        width: 150,
+        minWidth: 150,
+        maxWidth: 150,
+        flex: 0,
+        filter: false,
+        sortable: false,
+        cellRenderer: (params) => {
+          const item = params.data;
+          return (
+            <div className="flex items-center gap-2 h-full">
+              <Button
+                size="icon"
+                className="text-md"
+                variant="ghost"
+                onClick={() => {
+                  setSelectedBroker(item);
+                  setIsOpen(true);
+                }}
+              >
+                <PencilLine />
+              </Button>
+              <Button
+                size="icon"
+                className="text-md"
+                variant="ghost"
+                onClick={() => {
+                  if (item?.status === "DELETED") {
+                    restoreUserMutation.mutate({
+                      userId: item.id,
+                      email: item.email,
+                      userType: "broker",
+                    });
+                  } else {
+                    setUserToDelete(item);
+                    setIsDeleteDialogOpen(true);
+                  }
+                }}
+              >
+                {item?.status === "DELETED" ? <ArchiveRestore /> : <Trash2 />}
+              </Button>
+            </div>
+          );
+        },
+      },
+    ],
+    [restoreUserMutation, deleteUserMutation],
+  );
+
+  const filteredData = useMemo(() => {
+    return brokers?.filter(
+      (item) => statusFilter === "ALL" || item.status === statusFilter,
+    );
+  }, [brokers, statusFilter]);
 
   return (
     <>
@@ -616,103 +772,28 @@ function AdminBrokersList() {
             </div>
           </div>
 
-          <Table className="">
-            <TableHeader className="bg-[#F5F0EC]">
-              <TableRow>
-                <TableHead>Sr. No.</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Team Strength</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {brokers?.filter(
-                (item) =>
-                  statusFilter === "ALL" || item.status === statusFilter,
-              )?.length === 0 && !isBrokerListLoading ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={8}
-                    className="font-medium text-center py-10 text-muted-foreground"
-                  >
-                    No Records found.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                brokers
-                  ?.filter(
-                    (item) =>
-                      statusFilter === "ALL" || item.status === statusFilter,
-                  )
-                  ?.map((item, index) => (
-                    <TableRow key={item.id}>
-                      <TableCell className="font-medium ">
-                        {index + 1}
-                      </TableCell>
-                      <TableCell className="font-medium text-black">
-                        {item.name}
-                      </TableCell>
-                      <TableCell>{item.email}</TableCell>
-                      <TableCell>{item.teamStrength || "-"}</TableCell>
-                      <TableCell>
-                        {" "}
-                        <Badge
-                          className={`${
-                            item?.status === "ACTIVE"
-                              ? "bg-[#E9F3E9] text-[#1E8221]"
-                              : item?.status === "DELETED"
-                                ? " text-destructive/80 bg-destructive/20"
-                                : "bg-[#FFF3D9] text-[#A2781E]"
-                          } text-[13px] font-medium px-3 py-1 rounded-full`}
-                        >
-                          {item?.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2 flex-row">
-                          <Button
-                            size="icon"
-                            className="text-md"
-                            variant="ghost"
-                            onClick={() => {
-                              setSelectedBroker(item);
-                              setIsOpen(true);
-                            }}
-                          >
-                            <PencilLine />
-                          </Button>
-                          <Button
-                            size="icon"
-                            className="text-md"
-                            variant="ghost"
-                            onClick={() => {
-                              if (item?.status === "DELETED") {
-                                restoreUserMutation.mutate({
-                                  userId: item.id,
-                                  email: item.email,
-                                  userType: "broker",
-                                });
-                              } else {
-                                setUserToDelete(item);
-                                setIsDeleteDialogOpen(true);
-                              }
-                            }}
-                          >
-                            {item?.status === "DELETED" ? (
-                              <ArchiveRestore />
-                            ) : (
-                              <Trash2 />
-                            )}
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-              )}
-            </TableBody>
-          </Table>
+          <div
+            className="ag-theme-quartz custom-ag-grid"
+            style={{ width: "100%" }}
+          >
+            <AgGridReact
+              rowData={filteredData || []}
+              columnDefs={columnDefs}
+              defaultColDef={{
+                flex: 1,
+                minWidth: 120,
+                filter: false,
+                sortable: true,
+                resizable: true,
+                unSortIcon: true,
+              }}
+              rowHeight={72}
+              headerHeight={48}
+              domLayout="autoHeight"
+              animateRows={true}
+              overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+            />
+          </div>
 
           <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
             {isBrokerListLoading && <p>Loading...</p>}
@@ -787,18 +868,133 @@ function Agents() {
       const response = await getAgentListings(isRefetch ? null : nextToken);
       const { items, nextToken: newNextToken } = response;
 
-      setAgents((prev) => (isRefetch ? items : [...prev, ...items]));
+      setAgents((pre) => {
+        const allData = isRefetch ? items : [...pre, ...items];
+        return Array.from(
+          new Map(allData.map((item) => [item.id, item])).values(),
+        );
+      });
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
-    } catch (error) {
-      console.error("Error fetching search histories:", error);
-    }
+    } catch (error) {}
     setIsAgentListLoading(false);
   };
+
+  const columnDefs = useMemo(
+    () => [
+      {
+        headerName: "Sr. No.",
+        field: "index",
+        cellRenderer: SrNoRenderer,
+        width: 120,
+        minWidth: 120,
+        maxWidth: 120,
+        flex: 0,
+        filter: false,
+        sortable: false,
+      },
+      {
+        headerName: "Name",
+        field: "name",
+        filter: false,
+        cellStyle: { fontWeight: "500", color: "black" },
+      },
+      {
+        headerName: "Email",
+        field: "email",
+        filter: false,
+      },
+      {
+        headerName: "Status",
+        field: "status",
+        cellRenderer: StatusRenderer,
+        filter: false,
+      },
+      {
+        headerName: "Reinvite",
+        field: "reinvite",
+        filter: false,
+        width: 150,
+        minWidth: 150,
+        maxWidth: 150,
+        flex: 0,
+        sortable: false,
+        cellRenderer: (params) => {
+          const item = params.data;
+          return (
+            item?.status === "UNCONFIRMED" && (
+              <div className="flex justify-center items-center h-full">
+                <Button
+                  size="icon"
+                  className="text-md"
+                  variant="ghost"
+                  onClick={() => reinviteMutation.mutate({ email: item.email })}
+                  disabled={reinviteMutation.isPending}
+                >
+                  <UserPlus />
+                </Button>
+              </div>
+            )
+          );
+        },
+      },
+      {
+        headerName: "Action",
+        field: "id",
+        filter: false,
+        sortable: false,
+        cellRenderer: (params) => {
+          const item = params.data;
+          return (
+            <div className="flex items-center gap-2 h-full">
+              <Button
+                size="icon"
+                className="text-md"
+                variant="ghost"
+                onClick={() => {
+                  setSelectedUser(item);
+                  setIsOpen(true);
+                }}
+              >
+                <PencilLine />
+              </Button>
+              <Button
+                size="icon"
+                className="text-md"
+                variant="ghost"
+                onClick={() => {
+                  if (item?.status === "DELETED") {
+                    restoreUserMutation.mutate({
+                      userId: item.id,
+                      email: item.email,
+                      userType: "agent",
+                    });
+                  } else {
+                    setUserToDelete(item);
+                    setIsDeleteDialogOpen(true);
+                  }
+                }}
+              >
+                {item?.status === "DELETED" ? <ArchiveRestore /> : <Trash2 />}
+              </Button>
+            </div>
+          );
+        },
+      },
+    ],
+    [reinviteMutation, restoreUserMutation, deleteUserMutation],
+  );
+
+  const filteredData = useMemo(() => {
+    return agents?.filter(
+      (item) => statusFilter === "ALL" || item.status === statusFilter,
+    );
+  }, [agents, statusFilter]);
+
   return (
     <>
       {isOpen && (
-        <AddAdminModal
+        <AddAgentByAdminModal
           open={isOpen}
           onClose={() => {
             setIsOpen(false);
@@ -806,10 +1002,7 @@ function Agents() {
           }}
           title="Agent"
           userType="agent"
-          invalidateFun={() => {
-            handleFetchAgentListing(true);
-            setHasMore(true);
-          }}
+          onSuccess={() => handleFetchAgentListing(true)}
           selectedUser={selectedUser}
         />
       )}
@@ -835,118 +1028,38 @@ function Agents() {
           </Button>
         </div>
 
-        <Table className="">
-          <TableHeader className="bg-[#F5F0EC]">
-            <TableRow>
-              <TableHead>Sr. No.</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-center">Reinvite</TableHead>
-              <TableHead>Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {agents?.filter(
-              (item) => statusFilter === "ALL" || item.status === statusFilter,
-            )?.length === 0 && !hasMore ? (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="font-medium text-center py-10 text-muted-foreground"
-                >
-                  No Records found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              agents
-                ?.filter(
-                  (item) =>
-                    statusFilter === "ALL" || item.status === statusFilter,
-                )
-                ?.map((item, index) => (
-                  <TableRow key={item?.id}>
-                    <TableCell className="font-medium">{index + 1}</TableCell>
-                    <TableCell className="text-black font-medium">
-                      {item?.name}
-                    </TableCell>
-                    <TableCell>{item?.email}</TableCell>
-                    <TableCell>
-                      <Badge
-                        className={`${
-                          item?.status === "ACTIVE"
-                            ? "bg-[#E9F3E9] text-[#1E8221]"
-                            : item?.status === "DELETED"
-                              ? " text-destructive/80 bg-destructive/20"
-                              : "bg-[#FFF3D9] text-[#A2781E]"
-                        } text-[13px] font-medium px-3 py-1 rounded-full`}
-                      >
-                        {item?.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {item?.status === "UNCONFIRMED" && (
-                        <Button
-                          size="icon"
-                          className="text-md"
-                          variant="ghost"
-                          onClick={() =>
-                            reinviteMutation.mutate({ email: item.email })
-                          }
-                          disabled={reinviteMutation.isPending}
-                        >
-                          <UserPlus />
-                        </Button>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2 flex-row">
-                        <Button
-                          size="icon"
-                          className="text-md"
-                          variant="ghost"
-                          onClick={() => {
-                            setSelectedUser(item);
-                            setIsOpen(true);
-                          }}
-                        >
-                          <PencilLine />
-                        </Button>
-                        <Button
-                          size="icon"
-                          className="text-md"
-                          variant="ghost"
-                          onClick={() => {
-                            if (item?.status === "DELETED") {
-                              restoreUserMutation.mutate({
-                                userId: item.id,
-                                email: item.email,
-                                userType: "agent",
-                              });
-                            } else {
-                              setUserToDelete(item);
-                              setIsDeleteDialogOpen(true);
-                            }
-                          }}
-                        >
-                          {item?.status === "DELETED" ? (
-                            <ArchiveRestore />
-                          ) : (
-                            <Trash2 />
-                          )}
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-            )}
-          </TableBody>
-        </Table>
+        <div
+          className="ag-theme-quartz custom-ag-grid"
+          style={{ width: "100%" }}
+        >
+          <AgGridReact
+            rowData={filteredData || []}
+            columnDefs={columnDefs}
+            defaultColDef={{
+              flex: 1,
+              minWidth: 120,
+              filter: false,
+              sortable: true,
+              resizable: true,
+              unSortIcon: true,
+            }}
+            rowHeight={72}
+            headerHeight={48}
+            domLayout="autoHeight"
+            animateRows={true}
+            overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+          />
+        </div>
+
         <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
           {isAgentListLoading && <p>Loading...</p>}
           {!hasMore && !isAgentListLoading && <p>No more data to load.</p>}
           {agents?.length > 0 && hasMore && !isAgentListLoading && (
-            <Button size="sm" className="" onClick={handleFetchAgentListing}>
+            <Button
+              size="sm"
+              className=""
+              onClick={() => handleFetchAgentListing()}
+            >
               Load More
             </Button>
           )}

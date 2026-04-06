@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -42,12 +42,15 @@ import {
 import { cn } from "@/lib/utils";
 
 import { useMutation } from "@tanstack/react-query";
-import { demoRequest } from "../service/userAdmin";
+import { demoRequest, hardDeleteUser } from "../service/userAdmin";
 import { Controller, useForm } from "react-hook-form";
 import { demoRequestSchema } from "@/formSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormValidationError } from "../common/FormValidationError";
 import { toast } from "react-toastify";
+import Pricing from "../Pricing";
+import ResumeSubscriptionModal from "../Modal/ResumeSubscriptionModal";
+import { hasSavedSubscription, getSubscriptionData, clearSubscriptionData } from "@/utils/subscriptionStorage";
 const defaultDemoData = {
   name: "",
   state: "",
@@ -60,6 +63,47 @@ export default function Home() {
   const [openReportDialog, setOpenReportDialog] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [emblaRef] = useEmblaCarousel({ dragFree: true });
+  const navigate = useNavigate()
+  const [showResumeModal, setShowResumeModal] = useState(false);
+
+  useEffect(() => {
+    // Show resume modal if there's a saved session
+    if (hasSavedSubscription()) {
+      setShowResumeModal(true);
+    }
+  }, []);
+
+  const handleResume = () => {
+    const data = getSubscriptionData();
+    if (data && data.lastStep) {
+      navigate(data.lastStep);
+    }
+    setShowResumeModal(false);
+  };
+
+  const hardDeleteMutation = useMutation({
+    mutationFn: ({ userId, email, userType }) => hardDeleteUser(userId, email, userType),
+  });
+
+  const handleStartFresh = async () => {
+    try {
+      const data = getSubscriptionData();
+      // userType may be stored as 'usertype' or 'userType'
+      const email = data?.email;
+      const userId = data?.userId;
+      const userType = data?.usertype || data?.userType;
+
+      if (email && userId && userType) {
+        // Run hard delete for the partially created user using mutation
+        await hardDeleteMutation.mutateAsync({ userId, email, userType });
+      }
+    } catch (error) {
+      console.error("Fresh start cleanup failed:", error);
+    } finally {
+      clearSubscriptionData();
+      setShowResumeModal(false);
+    }
+  };
   const {
     control,
     handleSubmit,
@@ -101,6 +145,12 @@ export default function Home() {
 
   return (
     <div>
+      <ResumeSubscriptionModal
+        open={showResumeModal}
+        onResume={handleResume}
+        onStartFresh={handleStartFresh}
+        isLoading={hardDeleteMutation.isPending}
+      />
       {/* Announcement */}
 
       <div className=" flex items-center justify-center text-base bg-primary text-primary-foreground text-center px-2 py-1 ">
@@ -572,7 +622,7 @@ export default function Home() {
       </section>
 
       {/* Flexible Pricing for Every Scale */}
-      <section className="bg-gradient-to-t from-[#FFFFFF] to-[#FFF8EB] py-20">
+      <section className="bg-gradient-to-t from-[#FFFFFF] to-[#FFF8EB] py-20 " id="pricing" >
         <div className="max-w-[1280px] mx-auto px-4">
           <h2 className="text-h2 text-center text-secondary mb-6">
             Flexible Pricing for Every Scale
@@ -620,6 +670,9 @@ export default function Home() {
                   <Button
                     className="hover:scale-105 w-full bg-[#5D4135] hover:bg-[#5D4135]"
                     size="lg"
+                       onClick={() => {
+                        navigate(`/pricing?view=${item.key}`);
+                      }}
                   >
                     Know More <MoveRight />
                   </Button>

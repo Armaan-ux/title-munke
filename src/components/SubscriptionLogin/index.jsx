@@ -297,7 +297,7 @@ function SubscriptionLogin() {
                   </p> */}
                   <div className="text-center my-4 text-sm">
                     <span>Don't have an account? </span>
-                    <Link to="/pricing" className="text-secondary">
+                    <Link to="/" className="text-secondary">
                       Register Now
                     </Link>
                   </div>

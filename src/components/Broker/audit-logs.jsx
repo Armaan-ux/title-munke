@@ -20,6 +20,7 @@ const AuditLogs = () => {
       <div className="space-x-3 mb-4">
         {agentTypes.map((item, index) => (
           <button
+            key={item.id}
             className={` ${
               activeTab.id === item.id
                 ? "bg-tertiary text-white"

@@ -31,7 +31,7 @@ const defaultDemoData = {
   country: "",
   additionalMessage: "",
 };
-const Pricing = () => {
+const Pricing = ({id}) => {
   const navigate = useNavigate();
   const [userType, setUserType] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState("PROFESSIONAL_PLAN");
@@ -57,6 +57,10 @@ const Pricing = () => {
     },
   });
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [params]);
+
+  useEffect(() => {
     if (view) {
       setUserType(view);
     } else {
@@ -80,12 +84,7 @@ const planOrder = {
     cacheTime: 1000 * 60 * 30,
     refetchOnWindowFocus: false,
   });
-  console.log("stripeProducts", stripeProducts?.data);
-  // const pricingPlansMap = {
-  //   agent: pricingPlansIndividual,
-  //   broker: pricingPlansBroker,
-  //   organisation: pricingPlansOrganization,
-  // };
+
   const PricingCard = ({
     title,
     description,
@@ -136,7 +135,7 @@ const planOrder = {
   // const activePricingPlans =
   //   pricingPlansMap[userType] || pricingPlansIndividual;
   return (
-    <div>
+    <div id={id}>
       <div className=" flex items-center justify-center text-base bg-primary text-primary-foreground text-center px-2 py-1 ">
         <p className="">
           Still doing manual searches?{" "}
@@ -153,7 +152,7 @@ const planOrder = {
       {/* navbar */}
       <Navbar />
 
-      {userType === null && (
+      {/* {userType === null && (
         <section className="bg-gradient-to-t from-[#FFFFFF] to-[#FFF8EB] py-20">
           <div className="max-w-[1280px] mx-auto px-4">
             <h2 className="text-h2 text-center text-secondary mb-6">
@@ -225,7 +224,7 @@ const planOrder = {
             </div>
           </div>
         </section>
-      )}
+      )} */}
 
       {/* Flexible Pricing for Every Scale */}
       {userType !== null && (
@@ -371,27 +370,7 @@ const planOrder = {
                   />
                 )}
               </div>
-              {/* <Input
-                className="bg-transparent"
-                placeholder="Name"
-                label="Name"
-                required
-                value={demoData.name}
-                onChange={(e) => setDemoData(pre => ({...pre, name: e.target.value}))}
-              /> */}
-              {/* <Input className="" placeholder="State" label="State" required /> */}
-              {/* <Select>
-                  <SelectTrigger className="w-full !h-12 data-[placeholder]:!text-coffee-bg-foreground [&_svg]:!text-coffee-bg-foreground">
-                    <SelectValue placeholder="State" className="" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {
-                      pennsylvaniaCities.map((item, index) => (
-                        <SelectItem key={index} value={item}>{item}</SelectItem>
-                      ))
-                    }
-                  </SelectContent>
-                </Select> */}
+       
               <div>
                 <Controller
                   name="email"
@@ -432,24 +411,7 @@ const planOrder = {
                   />
                 )}
               </div>
-              {/* <Input
-                className="bg-transparent"
-                placeholder="State"
-                label="State"
-                type="text"
-                required
-                value={demoData.state}
-                onChange={(e) => setDemoData(pre => ({...pre, state: e.target.value}))}
-              /> */}
-              {/* <Input
-                className="bg-transparent"
-                placeholder="Email/Phone"
-                label="Email"
-                type={Number(demoData.email) ? "text" : "email"}
-                required
-                value={demoData.email}
-                onChange={(e) => setDemoData(pre => ({...pre, email: e.target.value}))}
-              /> */}
+      
               <div>
                 <Controller
                   name="country"
@@ -470,15 +432,7 @@ const planOrder = {
                   />
                 )}
               </div>
-              {/* <Input
-                className="bg-transparent"
-                placeholder="County"
-                label="Country"
-                type="text"
-                required
-                value={demoData.country}
-                onChange={(e) => setDemoData(pre => ({...pre, country: e.target.value}))}
-              /> */}
+        
               <div className="sm:col-span-2">
                 <Controller
                   className="w-full"
@@ -494,14 +448,7 @@ const planOrder = {
                   )}
                 />
               </div>
-              {/* <Textarea
-                className="sm:col-span-2 placeholder:!text-[#A78B7F] placeholder:italic"
-                placeholder="Enter additional info here..."
-                label="Message"
-                required
-                value={demoData.additionalMessage}
-                onChange={(e) => setDemoData(pre => ({...pre, additionalMessage: e.target.value}))}
-              /> */}
+      
             </div>
             <div className="flex justify-center">
               <Button

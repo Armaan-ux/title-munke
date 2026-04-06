@@ -1,112 +1,56 @@
-import { getFormattedDateTime } from "@/utils";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import { getFormattedDateTime, queryKeys } from "@/utils";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  addRequestToJoinUser,
   listRequestByUserId,
   processLeaveRequestToJoinUser,
   processRequestToJoinUser,
-  withdrawRequestToJoinUser,
 } from "@/components/service/userAdmin";
 import { CenterLoader } from "@/components/common/Loader";
-
-import { queryKeys } from "@/utils";
-import { useState } from "react";
-import { Check, RefreshCcw, Trash2 } from "lucide-react";
+import { useState, useMemo, useCallback } from "react";
+import { Check, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
+import { AgGridReact } from "ag-grid-react";
+
 const brokerTypes = [
-  {
-    name: "Pending",
-    id: "pending",
-  },
-  {
-    name: "Approved",
-    id: "approved",
-  },
-  {
-    name: "Rejected",
-    id: "rejected",
-  },
+  { name: "Pending", id: "pending" },
+  { name: "Approved", id: "approved" },
+  { name: "Rejected", id: "rejected" },
 ];
 
-const LoaderRow = ({ colSpan }) => (
-  <TableRow>
-    <TableCell colSpan={colSpan} className="text-center py-10">
-      <CenterLoader />
-    </TableCell>
-  </TableRow>
+// ─── Cell Renderers ───────────────────────────────────────────────────────────
+
+const SrNoRenderer = (props) => <span>{props.node.rowIndex + 1}</span>;
+
+const NameRenderer = (props) => (
+  <span>{props.data?.name?.toUpperCase()}</span>
 );
 
-const EmptyRow = ({ colSpan }) => (
-  <TableRow>
-    <TableCell colSpan={colSpan} className="text-center py-10">
-      No Records found.
-    </TableCell>
-  </TableRow>
-);
-
-const ActionButtons = ({
-  onApprove,
-  onReject,
-  onRetry,
-  onDelete,
-  disabled,
-}) => (
-  <div className="flex gap-2">
-    {onApprove && (
+const ActionRenderer = (props) => {
+  const { onApprove, onReject, disabled } = props;
+  return (
+    <div className="flex items-center gap-2 h-full">
       <Button
         className="p-2 rounded-md hover:bg-[#eef9ff] text-secondary bg-[#F5F0EC]"
         disabled={disabled}
-        onClick={onApprove}
+        onClick={() => onApprove(props.data)}
       >
         <Check size={16} />
       </Button>
-    )}
-    {onRetry && (
-      <Button
-        className="p-2 rounded-md hover:bg-[#eef9ff] text-secondary bg-[#F5F0EC]"
-        disabled={disabled}
-        onClick={onRetry}
-      >
-        <RefreshCcw size={16} />
-      </Button>
-    )}
-    {(onReject || onDelete) && (
       <Button
         className="p-2 rounded-md hover:bg-[#eef9ff] text-[#FF645E] bg-[#F5F0EC]"
         disabled={disabled}
-        onClick={onReject || onDelete}
+        onClick={() => onReject(props.data)}
       >
         <Trash2 size={16} />
       </Button>
-    )}
-  </div>
-);
-
-const StatusBadge = ({ status }) => {
-  const styles =
-    status === "Success" || status === "Completed"
-      ? "bg-[#E9F3E9] text-[#1E8221]"
-      : status === "Updated"
-        ? "bg-[#eef9ff] text-[#2494C7]"
-        : "bg-[#FFF3D9] text-[#A2781E]";
-
-  return (
-    <Badge className={`${styles} text-[13px] px-3 py-1 rounded-md`}>
-      {status}
-    </Badge>
+    </div>
   );
 };
+
+// ─── RequestListTable ─────────────────────────────────────────────────────────
+
 const RequestListTable = ({
   data = [],
   isRequestPending,
@@ -117,61 +61,109 @@ const RequestListTable = ({
   processLeaveRequestMutation,
 }) => {
   const showAction = activeTab === "pending";
+  const isActionDisabled =
+    processJoinRequestMutation?.isPending ||
+    processLeaveRequestMutation?.isPending;
+
+  const columnDefs = useMemo(() => {
+    const cols = [
+      {
+        headerName: "Sr. No.",
+        cellRenderer: SrNoRenderer,
+        width: 120,
+        minWidth: 120,
+        maxWidth: 120,
+        flex: 0,
+        sortable: false,
+      },
+      {
+        headerName: "Name",
+        field: "name",
+        cellRenderer: NameRenderer,
+        flex: 1,
+        minWidth: 160,
+      },
+      {
+        headerName: "Email / Phone",
+        field: "email",
+        flex: 1,
+        minWidth: 200,
+      },
+      {
+        headerName: "Date (Received)",
+        field: "updatedAt",
+        valueGetter: (params) => getFormattedDateTime(params.data?.updatedAt),
+        flex: 1,
+        minWidth: 180,
+      },
+      {
+        headerName: "Description",
+        field: "requestMessage",
+        flex: 2,
+        minWidth: 200,
+      },
+    ];
+
+    if (showAction) {
+      cols.push({
+        headerName: "Action",
+        field: "action",
+        cellRenderer: ActionRenderer,
+        cellRendererParams: {
+          onApprove,
+          onReject,
+          disabled: isActionDisabled,
+        },
+        flex: 1,
+        minWidth: 120,
+        sortable: false,
+      });
+    }
+
+    return cols;
+  }, [showAction, onApprove, onReject, isActionDisabled]);
 
   return (
     <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
       <div className="bg-white !p-4 rounded-xl">
-        <Table>
-          <TableHeader className="bg-[#F5F0EC]">
-            <TableRow>
-              <TableHead className="w-[100px]">Sr. No.</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Email / Phone</TableHead>
-              <TableHead>Date (Received)</TableHead>
-              <TableHead>Description</TableHead>
-              {showAction && <TableHead>Action</TableHead>}
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            {isRequestPending ? (
-              <LoaderRow colSpan={showAction ? 6 : 5} />
-            ) : data?.length === 0 ? (
-              <EmptyRow colSpan={showAction ? 6 : 5} />
-            ) : (
-              data?.map((item, index) => (
-                <TableRow key={item.id}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{item.name?.toUpperCase()}</TableCell>
-                  <TableCell>{item.email}</TableCell>
-                  <TableCell>{getFormattedDateTime(item.updatedAt)}</TableCell>
-                  <TableCell>{item.requestMessage}</TableCell>
-
-                  {showAction && (
-                    <TableCell>
-                      <ActionButtons
-                        disabled={
-                          processJoinRequestMutation?.isPending ||
-                          processLeaveRequestMutation?.isPending
-                        }
-                        onApprove={() => onApprove(item)}
-                        onReject={() => onReject(item)}
-                      />
-                    </TableCell>
-                  )}
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+        {isRequestPending ? (
+          <CenterLoader />
+        ) : (
+          <div className="ag-theme-quartz custom-ag-grid" style={{ width: "100%" }}>
+            {/* {data.length === 0 ? (
+              <div className="flex items-center justify-center py-20 text-muted-foreground font-medium text-lg border rounded-xl bg-gray-50/50">
+                No Records found.
+              </div>
+            ) : ( */}
+              <AgGridReact
+                rowData={data}
+                columnDefs={columnDefs}
+                defaultColDef={{
+                  flex: 1,
+                  minWidth: 120,
+                  filter: false,
+                  sortable: true,
+                  resizable: true,
+                  unSortIcon: true,
+                }}
+                rowHeight={72}
+                headerHeight={48}
+                domLayout="autoHeight"
+                animateRows={true}
+                overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+              />
+            {/* )} */}
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
+// ─── Main Export ──────────────────────────────────────────────────────────────
 
 export default function Request() {
-  const { userId, userType } = useUserIdType();
+  const { userId } = useUserIdType();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState(brokerTypes[0]);
   const [processingId, setProcessingId] = useState(null);
@@ -191,12 +183,10 @@ export default function Request() {
 
   const processJoinRequestMutation = useMutation({
     mutationFn: processRequestToJoinUser,
-
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: [queryKeys.listRequestsByUserId, activeTab.id],
       });
-
       toast.success(
         variables?.action === "accept"
           ? "Request approved successfully"
@@ -205,7 +195,6 @@ export default function Request() {
             : "Request sent successfully",
       );
     },
-
     onError: (error) => {
       toast.error(
         error?.response?.data?.error ||
@@ -217,12 +206,10 @@ export default function Request() {
 
   const processLeaveRequestMutation = useMutation({
     mutationFn: processLeaveRequestToJoinUser,
-
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: [queryKeys.listRequestsByUserId, activeTab.id],
       });
-
       toast.success(
         variables?.action === "accept"
           ? "Request approved successfully"
@@ -231,7 +218,6 @@ export default function Request() {
             : "Request sent successfully",
       );
     },
-
     onError: (error) => {
       toast.error(
         error?.response?.data?.error ||
@@ -241,68 +227,61 @@ export default function Request() {
     },
   });
 
+  const handleApprove = useCallback(
+    (item) => {
+      const id = item?.id;
+      if (!id || processingId === id) return;
+      setProcessingId(id);
+      if (item?.requestType === "LEAVE") {
+        processLeaveRequestMutation.mutate(
+          { requestId: id, action: "accept" },
+          { onSettled: () => setProcessingId(null) },
+        );
+      }
+      if (item?.requestType === "JOIN") {
+        processJoinRequestMutation.mutate(
+          { requestId: id, action: "accept" },
+          { onSettled: () => setProcessingId(null) },
+        );
+      }
+    },
+    [processingId, processJoinRequestMutation, processLeaveRequestMutation],
+  );
 
-  // const buildRetryPayload = (item) => ({
-  //   requestId: item.id,
-  //   organizationId: item.organizationId,
-  //   note: item.description,
-  //   actionType: "retry",
-  // });
-
-
-  const handleApprove = (item) => {
-    console.log("Approving item", item);
-    const id = item?.id;
-    if (!id || processingId === id) return;
-
-    setProcessingId(id);
-    if (item?.requestType === "LEAVE") {
-      processLeaveRequestMutation.mutate(
-        { requestId: id, action: "accept" },
-        { onSettled: () => setProcessingId(null) },
-      );
-    }
-    if (item?.requestType === "JOIN") {
-      processJoinRequestMutation.mutate(
-        { requestId: id, action: "accept" },
-        { onSettled: () => setProcessingId(null) },
-      );
-    }
-  };
-
-  const handleReject = (item) => {
-    const id = item?.id;
-    console.log("Rejecting item", item);
-    if (!id || processingId === id) return;
-
-    setProcessingId(id);
-
-    if (item?.requestType === "LEAVE") {
-      processLeaveRequestMutation.mutate(
-        { requestId: id, action: "reject" },
-        { onSettled: () => setProcessingId(null) },
-      );
-    }
-
-    if (item?.requestType === "JOIN") {
-      processJoinRequestMutation.mutate(
-        { requestId: id, action: "reject" },
-        { onSettled: () => setProcessingId(null) },
-      );
-    }
-  };
+  const handleReject = useCallback(
+    (item) => {
+      const id = item?.id;
+      if (!id || processingId === id) return;
+      setProcessingId(id);
+      if (item?.requestType === "LEAVE") {
+        processLeaveRequestMutation.mutate(
+          { requestId: id, action: "reject" },
+          { onSettled: () => setProcessingId(null) },
+        );
+      }
+      if (item?.requestType === "JOIN") {
+        processJoinRequestMutation.mutate(
+          { requestId: id, action: "reject" },
+          { onSettled: () => setProcessingId(null) },
+        );
+      }
+    },
+    [processingId, processJoinRequestMutation, processLeaveRequestMutation],
+  );
 
   const data = requestList?.data || [];
+
   return (
     <div className="bg-[#F5F0EC] rounded-lg px-7 py-4 mt-3 text-secondary">
       <div className="space-x-3 mb-4">
-        {brokerTypes.map((item, index) => (
+        {brokerTypes.map((item) => (
           <button
-            className={` ${
+            key={item.id}
+            className={`${
               activeTab.id === item.id
                 ? "bg-tertiary text-white"
-                : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] "
-            } transition-all  rounded-full px-10 py-3 `}
+                : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055]"
+            } transition-all rounded-full px-10 py-3`}
             onClick={() => setActiveTab(item)}
           >
             {item.name}
@@ -310,16 +289,15 @@ export default function Request() {
         ))}
       </div>
 
-        <RequestListTable
-          data={data}
-          isRequestPending={isRequestPending}
-          activeTab={activeTab.id}
-          onApprove={handleApprove}
-          onReject={handleReject}
-          processRequestMutation={processJoinRequestMutation}
-          processLeaveRequestMutation={processLeaveRequestMutation}
-        />
-    
+      <RequestListTable
+        data={data}
+        isRequestPending={isRequestPending}
+        activeTab={activeTab.id}
+        onApprove={handleApprove}
+        onReject={handleReject}
+        processJoinRequestMutation={processJoinRequestMutation}
+        processLeaveRequestMutation={processLeaveRequestMutation}
+      />
     </div>
   );
 }

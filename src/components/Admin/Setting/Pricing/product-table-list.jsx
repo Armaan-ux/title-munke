@@ -4,114 +4,181 @@ import ShowError from "@/components/common/ShowError";
 import { deleteProduct, listPricing } from "@/components/service/userAdmin";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useUserIdType } from "@/hooks/useUserIdType";
-import { getFormattedDateTime, queryKeys } from "@/utils";
+import { queryKeys } from "@/utils";
 import { convertUnixToLocalTime } from "@/utils/date";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Eye, Trash } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { AgGridReact } from "ag-grid-react";
+import { useMemo } from "react";
 
-const ProductTable = ({ pricingListingQuery, onDelete }) => {
+const SrNoRenderer = (props) => {
+  return <span>{props.node.rowIndex + 1}</span>;
+};
+
+const StatusRenderer = (props) => {
+  const active = props.data?.active;
+  return (
+    <Badge
+      variant={active ? "default" : "secondary"}
+      className={
+        active
+          ? "bg-[#E9F3E9] text-[#1E8221]"
+          : "text-destructive/80 bg-destructive/20"
+      }
+    >
+      {active ? "Active" : "Inactive"}
+    </Badge>
+  );
+};
+
+const ActionRenderer = (props) => {
   const navigate = useNavigate();
-  const { data, isError, error, isSuccess, isPending } = pricingListingQuery;
+  const item = props?.data;
+  const onDelete = props?.onDelete;
 
   return (
-    <div>
-      {isPending && <CenterLoader />}
+    <div className="flex items-center gap-2 flex-row h-full">
+      <Button
+        size="icon"
+        className="text-md"
+        variant="ghost"
+        onClick={() => {
+          navigate(`/admin/settings/pricing-details/${item?.id}`);
+        }}
+      >
+        <Eye />
+      </Button>
+      <Button
+        size="icon"
+        className="text-md"
+        variant="ghost"
+        onClick={() => onDelete(item?.id)}
+      >
+        <Trash />
+      </Button>
+    </div>
+  );
+};
+
+const ProductTable = ({ pricingListingQuery, onDelete }) => {
+  const { data, isError, error, isSuccess, isPending } = pricingListingQuery;
+
+  const columnDefs = useMemo(
+    () => [
+      {
+        headerName: "Sr. No.",
+        field: "serial",
+        cellRenderer: SrNoRenderer,
+        width: 120,
+        minWidth: 120,
+        maxWidth: 120,
+        flex: 0,
+        sortable: false,
+      },
+      {
+        headerName: "Name",
+        field: "name",
+        valueGetter: (params) =>
+          params.data.name
+            ? params.data.name.replace(/Organisation/gi, "Organization")
+            : "-",
+        flex: 1,
+        minWidth: 150,
+        wrapText: true,
+        autoHeight: true,
+      },
+      {
+        headerName: "Product Type",
+        field: "metadata.productType",
+        valueGetter: (params) =>
+          params.data.metadata?.productType
+            ? params.data.metadata.productType.replace(
+                /ORGANISATION/gi,
+                "ORGANIZATION",
+              )
+            : "-",
+        flex: 1,
+        minWidth: 150,
+        wrapText: true,
+        autoHeight: true,
+      },
+      {
+        headerName: "Pricing Type",
+        field: "type",
+        flex: 1,
+        minWidth: 120,
+        wrapText: true,
+        autoHeight: true,
+        cellStyle: { textAlign: "start" },
+        headerClass: "header-center",
+      },
+      {
+        headerName: "Created",
+        field: "created",
+        valueGetter: (params) => convertUnixToLocalTime(params.data?.created),
+        flex: 1,
+        minWidth: 150,
+        wrapText: true,
+        autoHeight: true,
+        cellStyle: { textAlign: "start" },
+        headerClass: "header-center",
+      },
+      {
+        headerName: "Status",
+        field: "active",
+        cellRenderer: StatusRenderer,
+        flex: 1,
+        minWidth: 120,
+        cellStyle: { textAlign: "start" },
+        headerClass: "header-center",
+      },
+      {
+        headerName: "Action",
+        field: "action",
+        cellRenderer: ActionRenderer,
+        cellRendererParams: {
+          onDelete: onDelete,
+        },
+        flex: 1,
+        minWidth: 120,
+      },
+    ],
+    [onDelete],
+  );
+
+  const isFetching = pricingListingQuery.isFetching;
+
+  return (
+    <div className="relative min-h-[150px]">
+      {(isPending || isFetching) && <CenterLoader />}
       {isError && <ShowError message={error?.response?.data?.message} />}
-      {isSuccess && (
-        <Table className="w-full">
-          <TableHeader className="bg-[#F5F0EC] w-full">
-            <TableRow className="w-full">
-              <TableHead>Sr. No.</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Product Type</TableHead>
-              <TableHead className="text-center">Pricing Type</TableHead>
-              <TableHead className="text-center">Created</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data?.data?.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={7}
-                  className="font-medium text-center py-10"
-                >
-                  No Records found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              data?.data?.map((item, index) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{index + 1}</TableCell>
-                  <TableCell>
-                    {item.name
-                      ? item.name.replace(/Organisation/gi, "Organization")
-                      : "-"}
-                  </TableCell>
-                  <TableCell>
-                    {item.metadata?.productType
-                      ? item.metadata.productType.replace(
-                          /ORGANISATION/gi,
-                          "ORGANIZATION",
-                        )
-                      : "-"}
-                  </TableCell>
-                  <TableCell className="text-center">{item?.type}</TableCell>
-                  <TableCell className="text-center">
-                    {convertUnixToLocalTime(item?.created)}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge
-                      variant={item?.active ? "default" : "secondary"}
-                      className={
-                        item?.active
-                          ? "bg-green-400 text-white"
-                          : "bg-red-400 text-white"
-                      }
-                    >
-                      {item?.active ? "Active" : "Inactive"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2 flex-row">
-                      <Button
-                        size="icon"
-                        className="text-md"
-                        variant="ghost"
-                        onClick={() => {
-                          navigate(
-                            `/admin/settings/pricing-details/${item?.id}`,
-                          );
-                        }}
-                      >
-                        <Eye />
-                      </Button>
-                      <Button
-                        size="icon"
-                        className="text-md"
-                        variant="ghost"
-                        onClick={() => onDelete(item?.id)}
-                      >
-                        <Trash />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+      {isSuccess && !isPending && !isFetching && (
+        <div
+          className="ag-theme-quartz custom-ag-grid"
+          style={{ width: "100%" }}
+        >
+          
+            <AgGridReact
+              rowData={data?.data || []}
+              columnDefs={columnDefs}
+              defaultColDef={{
+                flex: 1,
+                minWidth: 120,
+                filter: false,
+                sortable: true,
+                resizable: true,
+                unSortIcon: true,
+              }}
+              rowHeight={72}
+              headerHeight={48}
+              domLayout="autoHeight"
+              animateRows={true}
+              overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+            />
+          
+        </div>
       )}
     </div>
   );
@@ -119,6 +186,7 @@ const ProductTable = ({ pricingListingQuery, onDelete }) => {
 
 function ProductTableList({ activeTab, activeFilter }) {
   const { userId } = useUserIdType();
+  const queryClient = useQueryClient();
 
   const tabToApiParam = {
     organisation: "organisation",

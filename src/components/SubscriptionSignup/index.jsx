@@ -27,6 +27,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema } from "@/formSchema";
 import { formatUSPhone } from "@/utils/date";
 import { handleCreateAuditLog } from "@/utils";
+import { saveSubscriptionData, getSubscriptionData } from "@/utils/subscriptionStorage";
 function SubscriptionSignup() {
   const navigate = useNavigate();
   const { userType, planId } = useParams();
@@ -43,6 +44,7 @@ function SubscriptionSignup() {
     watch,
     getValues,
     formState: { errors, isSubmitting },
+    reset
   } = useForm({
     resolver: zodResolver(signupSchema),
     mode: "onChange",
@@ -56,6 +58,38 @@ function SubscriptionSignup() {
       termsAccepted: false,
     },
   });
+
+  // Load existing data if available
+  useEffect(() => {
+    const savedData = getSubscriptionData();
+    if (savedData) {
+      reset({
+        name: savedData.name || "",
+        phoneNumber: savedData.phoneNumber || "",
+        email: savedData.email || "",
+        password: savedData.password || "",
+        confirmPassword: savedData.password || "",
+        termsAccepted: true
+      });
+      // If the user was on the OTP screen, show it again
+      if (savedData.isOtpVisible) {
+        setCodeModal(true);
+      }
+    }
+  }, [reset]);
+
+  const formValues = watch();
+  useEffect(() => {
+    // Save to localStorage whenever important fields change, including OTP modal state
+    const { name, email, phoneNumber, password } = formValues;
+    if (name || email || phoneNumber) {
+      saveSubscriptionData(
+        { name, email, phoneNumber, password, isOtpVisible: codeModal },
+        window.location.pathname
+      );
+    }
+  }, [formValues, codeModal]);
+
   const phoneValue = watch("phoneNumber");
   const isValidUSPhone = phoneValue?.length === 10;
 
@@ -77,9 +111,16 @@ function SubscriptionSignup() {
   // Resgister User Form Mutation
   const registerUserMutation = useMutation({
     mutationFn: (data) => registerUser(data),
-    onSuccess: () => {
+    onSuccess: (response) => {
       // console.log('success');
       setCodeModal(true);
+      console.log("response",response)
+      
+      // Store userId and userType for cleanup if they start fresh later
+      const userId = response?.id 
+
+      const usertype = response?.__typename.toLowerCase()
+      saveSubscriptionData({ userId, usertype }, window.location.pathname);
     },
     onError: (error) => {
       setError(
@@ -106,6 +147,7 @@ function SubscriptionSignup() {
       userType,
       planType: planId,
     });
+    // Immediately persist that we are in OTP mode on success handled in mutation
   };
 
   // Countdown timer effect

@@ -1,19 +1,16 @@
 import { API } from "aws-amplify";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 // import "./index.css";
 import { useUser } from "@/context/usercontext";
 import { FETCH_LIMIT, getFormattedDateTime } from "@/utils";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { AgGridReact } from "ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { listAuditLogs } from "../service/userAdmin";
 import { valueFromStringifyObject } from "@/lib/utils";
+
+const SrNoRenderer = (props) => {
+  return <span>{props.node.rowIndex + 1}</span>;
+};
 
 function AuditLogs() {
   const [logs, setLogs] = useState([]);
@@ -23,15 +20,67 @@ function AuditLogs() {
   const [activeTab, setActiveTab] = useState("organisation");
   const { user } = useUser();
 
-  const fetchLogs = async (value) => {
-    if (loading || !hasMore) return;
+  const columnDefs = useMemo(
+    () => [
+      {
+        headerName: "Sr. No.",
+        field: "index",
+        cellRenderer: SrNoRenderer,
+        width: 120,
+        minWidth: 120,
+        maxWidth: 120,
+        flex: 0,
+        filter: false,
+        sortable: false,
+      },
+      {
+        headerName: "Details",
+        field: "detail",
+        valueGetter: (params) => valueFromStringifyObject(params.data.detail),
+        flex: 2,
+        minWidth: 300,
+        filter: false,
+      },
+      {
+        headerName: "Email",
+        field: "email",
+        flex: 1,
+        minWidth: 200,
+        filter: false,
+      },
+      {
+        headerName: "Date & Time",
+        field: "createdAt",
+        valueGetter: (params) => getFormattedDateTime(params.data.createdAt),
+        flex: 1,
+        minWidth: 180,
+        filter: false,
+      },
+    ],
+    [],
+  );
+
+  const fetchLogs = async (isInitial = false) => {
+    if ((loading || !hasMore) && !isInitial) return;
 
     setLoading(true);
     try {
-      const response = await listAuditLogs(activeTab, null, nextToken);
+      const response = await listAuditLogs(
+        activeTab,
+        null,
+        isInitial ? null : nextToken,
+      );
       const { items, nextToken: newNextToken } = response;
 
-      setLogs((prev) => [...prev, ...items]);
+      setLogs((prev) => {
+        const logMap = new Map();
+        if (!isInitial) {
+          prev.forEach((item) => logMap.set(item.id, item));
+        }
+        items.forEach((item) => logMap.set(item.id, item));
+        return Array.from(logMap.values());
+      });
+
       setNextToken(newNextToken);
       if (items.length === 0) {
         setHasMore(false);
@@ -39,7 +88,7 @@ function AuditLogs() {
         setHasMore(!!newNextToken);
       }
     } catch (error) {
-      console.error("Error fetching search histories:", error);
+      console.error("Error fetching audit logs:", error);
     }
     setLoading(false);
   };
@@ -53,8 +102,7 @@ function AuditLogs() {
 
   useEffect(() => {
     if (user?.attributes?.sub) {
-      if (activeTab === "broker") fetchLogs(false);
-      else fetchLogs(true);
+      fetchLogs(true);
     }
   }, [user, activeTab]);
 
@@ -91,52 +139,36 @@ function AuditLogs() {
       </div>
 
       <div className="bg-white !p-4 rounded-xl">
-        <Table className="">
-          <TableHeader className="bg-[#F5F0EC]">
-            <TableRow>
-              <TableHead className="w-[100px]">Sr. No.</TableHead>
-              <TableHead>Details</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Date & Time</TableHead>
-              {/* <TableHead>Action</TableHead> */}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {logs?.length === 0 && !loading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={5}
-                  className="font-medium text-center py-10 text-muted-foreground"
-                >
-                  No Records found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              logs?.map((item, index) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{index + 1}</TableCell>
-                  <TableCell className="break-all break-words whitespace-break-spaces max-w-sm min-w-[300px]">
-                    {valueFromStringifyObject(item?.detail)}
-                  </TableCell>
-                  <TableCell>{item.email}</TableCell>
-                  <TableCell>{getFormattedDateTime(item?.createdAt)}</TableCell>
-                  {/* <TableCell>{item.action}</TableCell> */}
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+        <div
+          className="ag-theme-quartz custom-ag-grid"
+          style={{ width: "100%" }}
+        >
+          <AgGridReact
+            rowData={logs || []}
+            columnDefs={columnDefs}
+            defaultColDef={{
+              flex: 1,
+              minWidth: 120,
+              filter: true,
+              sortable: true,
+              resizable: true,
+              unSortIcon: true,
+            }}
+            rowHeight={72}
+            headerHeight={48}
+            domLayout="autoHeight"
+            animateRows={true}
+            overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+          />
+        </div>
 
         <div className="text-center space-y-2 my-4 text-muted-foreground">
           {loading && <p>Loading...</p>}
-          {!hasMore && <p>No more data to load.</p>}
+          {!hasMore && !loading && <p>No more data to load.</p>}
 
           {logs?.length > 0 && hasMore && !loading && (
             <div className="flex justify-center my-4">
-              <Button
-                className="mx-auto "
-                onClick={() => fetchLogs(activeTab === "broker" ? false : true)}
-              >
+              <Button className="mx-auto" onClick={() => fetchLogs(false)}>
                 Load More
               </Button>
             </div>

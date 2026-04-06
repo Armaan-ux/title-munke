@@ -1,35 +1,141 @@
 import { convertFromTimestamp, getFormattedDateTime, queryKeys } from "@/utils";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Repeat2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "../ui/button";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getListDemoReq, markDemoRequestContacted } from "../service/userAdmin";
 import { CenterLoader } from "../common/Loader";
 import ShowError from "../common/ShowError";
+import { AgGridReact } from "ag-grid-react";
+
+const SrNoRenderer = (props) => {
+  return <span>{props.node.rowIndex + 1}</span>;
+};
 
 export default function DemoRequests() {
   const [activeTab, setActiveTab] = useState("pending");
   const demoReqQuery = useQuery({
-    queryKey: ['getListDemoReq'],
-    queryFn: getListDemoReq
-  })
+    queryKey: ["getListDemoReq"],
+    queryFn: getListDemoReq,
+  });
   const demoReqContactedQuery = useQuery({
     queryKey: [queryKeys.getListDemoReqContacted],
-    queryFn: () => getListDemoReq("CONTACTED")
-  })
+    queryFn: () => getListDemoReq("CONTACTED"),
+  });
 
   const markDemoRequestContactedMutation = useMutation({
     mutationFn: (id) => markDemoRequestContacted(id),
-    onSuccess: () => {demoReqQuery.refetch(); demoReqContactedQuery.refetch()}
-  })
+    onSuccess: () => {
+      demoReqQuery.refetch();
+      demoReqContactedQuery.refetch();
+    },
+  });
+
+  const columnDefs = useMemo(() => {
+    const baseCols = [
+      {
+        headerName: "Sr. No.",
+        field: "index",
+        cellRenderer: SrNoRenderer,
+        width: 120,
+        minWidth: 120,
+        maxWidth: 120,
+        flex: 0,
+        sortable: false,
+      },
+      {
+        headerName: "Name",
+        field: "name",
+        flex: 1,
+        minWidth: 150,
+        cellStyle: { fontWeight: "500", color: "black" },
+        wrapText: true,
+        autoHeight: true,
+      },
+      {
+        headerName: "Email / Phone No.",
+        field: "email",
+        flex: 1.5,
+        minWidth: 200,
+        wrapText: true,
+        autoHeight: true,
+      },
+      {
+        headerName: "County",
+        field: "country",
+        flex: 1,
+        minWidth: 120,
+        wrapText: true,
+        autoHeight: true,
+      },
+      {
+        headerName: "State",
+        field: "state",
+        flex: 1,
+        minWidth: 120,
+        wrapText: true,
+        autoHeight: true,
+      },
+      {
+        headerName: "Date",
+        field: "createdAt",
+        valueGetter: (params) =>
+          convertFromTimestamp(
+            parseInt(new Date(params.data?.createdAt).getTime() / 1000),
+            "monthDateYear",
+          ),
+        flex: 1,
+        minWidth: 150,
+        wrapText: true,
+        autoHeight: true,
+        cellStyle: { lineHeight: "1.5", padding: "12px 24px" },
+      },
+      {
+        headerName: "Description",
+        field: "additionalMessage",
+        flex: 2,
+        minWidth: 250,
+        wrapText: true,
+        autoHeight: true,
+        cellStyle: { lineHeight: "1.5", padding: "12px 24px" },
+      },
+    ];
+
+    if (activeTab === "pending") {
+      baseCols.push({
+        headerName: "Action",
+        field: "id",
+        width: 120,
+        minWidth: 120,
+        maxWidth: 120,
+        flex: 0,
+        sortable: false,
+        cellRenderer: (params) => (
+          <div className="flex items-center justify-center h-full">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-coffee-bg-foreground"
+              onClick={() =>
+                markDemoRequestContactedMutation.mutate(params.data?.id)
+              }
+              disabled={markDemoRequestContactedMutation.isPending}
+            >
+              <Repeat2 className="mx-auto size-5 text-[#8B4513]" />
+            </Button>
+          </div>
+        ),
+      });
+    }
+
+    return baseCols;
+  }, [activeTab, markDemoRequestContactedMutation.isPending]);
+
+  const rowData = useMemo(() => {
+    return activeTab === "pending"
+      ? demoReqQuery?.data?.items || []
+      : demoReqContactedQuery?.data?.items || [];
+  }, [activeTab, demoReqQuery.data, demoReqContactedQuery.data]);
 
   return (
     <div className="bg-[#F5F0EC] rounded-lg px-7 py-4 my-4 text-secondary">
@@ -57,107 +163,36 @@ export default function DemoRequests() {
       </div>
 
       <div className="bg-white !p-4 rounded-xl">
-        {activeTab === "pending" ? (
-          <>
-            {demoReqQuery?.isLoading && <CenterLoader />}
-            {demoReqQuery?.isError && <ShowError />}
-            {demoReqQuery?.isSuccess && 
-              <Table className="">
-                <TableHeader className="bg-[#F5F0EC]">
-                  <TableRow>
-                    <TableHead className="text-center">Sr. No.</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email / Phone No.</TableHead>
-                    <TableHead>County</TableHead>
-                    <TableHead>State</TableHead>
-                    <TableHead>Date (Received)</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {demoReqQuery?.data?.items?.length === 0 ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={9}
-                        className="font-medium text-center py-10"
-                      >
-                        No Records found.
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    demoReqQuery?.data?.items?.map((item, index) => (
-                      <TableRow key={item.id} >
-                        <TableCell className="font-medium text-center">{index + 1}</TableCell>
-                        <TableCell className="text-black font-medium" >{item?.name}</TableCell>
-                        <TableCell>{item?.email}</TableCell>
-                        <TableCell>{item?.country}</TableCell>
-                        <TableCell>{item?.state}</TableCell>
-                        <TableCell>
-                          {/* {new Date(item.createdAt).toLocaleDateString()} */}
-                          {convertFromTimestamp(parseInt(new Date(item?.createdAt).getTime() / 1000), "monthDateYear")}
-                        </TableCell>
-                        <TableCell>{item?.additionalMessage}</TableCell>
-                        <TableCell className="text-center" >
-                          <Button variant="ghost" size="icon" onClick={() => markDemoRequestContactedMutation.mutate(item?.id)} disabled={markDemoRequestContactedMutation.isPending}>
-                            <Repeat2 className="mx-auto size-5"  />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            }
-          </>
-        ) : (
-          <>
-            {demoReqContactedQuery?.isLoading && <CenterLoader />}
-            {demoReqContactedQuery?.isError && <ShowError />}
-            {demoReqContactedQuery?.isSuccess &&
-              <Table className="">
-                <TableHeader className="bg-[#F5F0EC]">
-                  <TableRow>
-                    <TableHead className="text-center">Sr. No.</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email / Phone No.</TableHead>
-                    <TableHead>County</TableHead>
-                    <TableHead>State</TableHead>
-                    <TableHead>Date (Received)</TableHead>
-                    <TableHead>Description</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {demoReqContactedQuery?.data?.items?.length === 0 ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={9}
-                        className="font-medium text-center py-10"
-                      >
-                        No Records found.
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    demoReqContactedQuery?.data?.items?.map((item, index) => (
-                      <TableRow key={item.id}>
-                        <TableCell className="font-medium text-center">{index + 1}</TableCell>
-                        <TableCell className="text-black font-medium" >{item?.name}</TableCell>
-                        <TableCell>{item?.email}</TableCell>
-                        <TableCell>{item?.country}</TableCell>
-                        <TableCell>{item?.state}</TableCell>
-                        <TableCell>
-                          {/* {new Date(item.createdAt).toLocaleDateString()} */}
-                          {convertFromTimestamp(parseInt(new Date(item?.createdAt).getTime() / 1000), "monthDateYear")}
-                        </TableCell>
-                        <TableCell>{item?.additionalMessage}</TableCell>
-                    
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            }
-          </>
+        {(activeTab === "pending"
+          ? demoReqQuery?.isLoading
+          : demoReqContactedQuery?.isLoading) && <CenterLoader />}
+        {(activeTab === "pending"
+          ? demoReqQuery?.isError
+          : demoReqContactedQuery?.isError) && <ShowError />}
+
+        {((activeTab === "pending" && demoReqQuery?.isSuccess) ||
+          (activeTab === "contacted" && demoReqContactedQuery?.isSuccess)) && (
+          <div
+            className="ag-theme-quartz custom-ag-grid"
+            style={{ width: "100%" }}
+          >
+            <AgGridReact
+              rowData={rowData}
+              columnDefs={columnDefs}
+              defaultColDef={{
+                flex: 1,
+                minWidth: 120,
+                filter: false,
+                sortable: true,
+                resizable: true,
+                unSortIcon: true,
+              }}
+              headerHeight={48}
+              domLayout="autoHeight"
+              animateRows={true}
+              overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+            />
+          </div>
         )}
       </div>
     </div>

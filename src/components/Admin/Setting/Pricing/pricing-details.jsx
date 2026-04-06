@@ -6,6 +6,7 @@ import { deactivePrice } from "@/components/service/userAdmin";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
 import { PRICE_TYPES_BY_ROLE } from "@/utils/constant";
+import { AgGridReact } from "ag-grid-react";
 
 export default function PricingDetails({ data, invalidateFun, isPending }) {
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
@@ -76,68 +77,107 @@ export default function PricingDetails({ data, invalidateFun, isPending }) {
           <hr className="my-6 border-[#EEE6DF]" />
 
           {/* Pricing Table */}
-          <div className="rounded-md border border-[#ECE4DC] overflow-x-auto">
-            <div className="min-w-[600px]">
-              <div className="grid grid-cols-5 bg-[#F2EAE3] text-sm font-medium text-[#6C5E55] p-3">
-                <div>Price</div>
-                <div>Description</div>
-                <div>Price Type</div>
-                <div>Created</div>
-                <div className="text-right">Action</div>
+          <div className="relative min-h-[150px]">
+            {isPending ? (
+              <div className="py-10">
+                <Loader2 className="animate-spin text-[#7B4B3A] mx-auto" size={32} />
               </div>
-              {data?.prices === undefined ? (
-                <div className="p-8 flex justify-center items-center">
-                  <Loader2 className="animate-spin text-[#7B4B3A]" size={24} />
-                </div>
-              ) : data?.prices?.filter((prices) => prices.active)?.length >
-                0 ? (
-                <div className="max-h-60 overflow-y-auto">
-                  {data?.prices
-                    ?.filter((prices) => prices.active)
-                    ?.map((prices, index) => {
-                      return (
-                        <div
-                          key={index}
-                          className="grid grid-cols-5 items-center text-sm p-3 text-[#5E534A] border-b border-[#ECE4DC] last:border-0"
-                        >
-                          <div>{`US$ ${prices?.unit_amount / 100}`}</div>
-                          <div>{prices?.nickname || "-"}</div>
-                          <div>
-                            {getPriceTypeLabel(
-                              prices?.metadata?.roleType,
-                              prices?.metadata?.priceType,
+            ) : (
+              <div
+                className="ag-theme-quartz custom-ag-grid"
+                style={{ width: "100%" }}
+              >
+                <AgGridReact
+                  rowData={data?.prices?.filter((price) => price.active) || []}
+                  columnDefs={[
+                    {
+                      headerName: "Price",
+                      field: "unit_amount",
+                      valueGetter: (params) =>
+                        `US$ ${params.data.unit_amount / 100}`,
+                      flex: 1,
+                      minWidth: 100,
+                    },
+                    {
+                      headerName: "Description",
+                      field: "nickname",
+                      valueGetter: (params) => params.data.nickname || "-",
+                      flex: 1.5,
+                      minWidth: 150,
+                      wrapText: true,
+                      autoHeight: true,
+                    },
+                    {
+                      headerName: "Price Type",
+                      field: "metadata.priceType",
+                      valueGetter: (params) =>
+                        getPriceTypeLabel(
+                          params.data.metadata?.roleType,
+                          params.data.metadata?.priceType,
+                        ),
+                      flex: 1.5,
+                      minWidth: 150,
+                      wrapText: true,
+                      autoHeight: true,
+                    },
+                    {
+                      headerName: "Created",
+                      field: "created",
+                      valueGetter: (params) =>
+                        convertUnixToLocalTime(params.data?.created),
+                      flex: 1.5,
+                      minWidth: 150,
+                      wrapText: true,
+                      autoHeight: true,
+                    },
+                    {
+                      headerName: "Action",
+                      field: "id",
+                      width: 120,
+                      minWidth: 120,
+                      maxWidth: 120,
+                      flex: 0,
+                      sortable: false,
+                      cellRenderer: (params) => (
+                        <div className="flex items-center justify-end h-full">
+                          <button
+                            onClick={() =>
+                              handleDeletePrice(
+                                params.data?.id,
+                                data?.product?.metadata?.productType,
+                              )
+                            }
+                            disabled={deletingId === params.data?.id}
+                            className="text-red-500 hover:text-red-700 disabled:opacity-50 flex items-center justify-center p-1 cursor-pointer transition-colors"
+                            title="Delete Pricing"
+                          >
+                            {deletingId === params.data?.id ? (
+                              <Loader2 size={16} className="animate-spin" />
+                            ) : (
+                              <Trash2 size={16} />
                             )}
-                          </div>
-                          <div>{convertUnixToLocalTime(prices?.created)}</div>
-                          <div className="flex justify-end">
-                            <button
-                              onClick={() =>
-                                handleDeletePrice(
-                                  prices?.id,
-                                  data?.product?.metadata?.productType,
-                                )
-                              }
-                              disabled={deletingId === prices?.id}
-                              className="text-red-500 hover:text-red-700 disabled:opacity-50 flex items-center justify-center p-1 cursor-pointer transition-colors"
-                              title="Delete Pricing"
-                            >
-                              {deletingId === prices?.id ? (
-                                <Loader2 size={16} className="animate-spin" />
-                              ) : (
-                                <Trash2 size={16} />
-                              )}
-                            </button>
-                          </div>
+                          </button>
                         </div>
-                      );
-                    })}
-                </div>
-              ) : (
-                <div className="p-8 text-center text-sm text-[#7A6E65]">
-                  No pricing available for this product.
-                </div>
-              )}
-            </div>
+                      ),
+                    },
+                  ]}
+                  defaultColDef={{
+                    flex: 1,
+                    minWidth: 100,
+                    sortable: true,
+                    resizable: true,
+                    unSortIcon: true,
+                    wrapHeaderText: true,
+                    autoHeaderHeight: true,
+                  }}
+                  rowHeight={60}
+                  headerHeight={56}
+                  domLayout="autoHeight"
+                  animateRows={true}
+                  overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+                />
+              </div>
+            )}
           </div>
 
           {/* Description Section */}
