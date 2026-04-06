@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { ChevronRight, LogOut } from "lucide-react";
+import { useState } from "react";
+import LogoutConfirmationModal from "../Modal/LogoutConfirmationModal";
 
 function AppSidebar() {
   const { state } = useSidebar();
@@ -29,9 +31,20 @@ function AppSidebar() {
 
   const userRole = userGroups?.[0];
   const roleRoutes = routes[userRole] || [];
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const memberHandler = () => {
     setMemberModal(true);
+  };
+
+  const handleLogoutClick = (e) => {
+    e.preventDefault();
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
+    signOut();
+    setShowLogoutModal(false);
   };
 
   return (
@@ -83,7 +96,7 @@ function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              onClick={signOut}
+              onClick={handleLogoutClick}
               className=" w-full group/btn flex justify-between items-center gap-2 p-3 px-5 h-14 bg-white text-secondary rounded-full text-sm hover:bg-[#e7dcd3] hover:shadow-sm transition-all cursor-pointer"
             >
               <span className="inline-flex text-base gap-4 items-center">
@@ -125,6 +138,11 @@ function AppSidebar() {
           
         </SidebarMenu>
       </SidebarFooter>
+      <LogoutConfirmationModal
+        open={showLogoutModal}
+        onOpenChange={setShowLogoutModal}
+        onConfirm={confirmLogout}
+      />
     </Sidebar>
 
     // <div className="sidebar">
