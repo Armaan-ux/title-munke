@@ -159,6 +159,8 @@ const RequestListTable = () => {
         cellRenderer: BrokerNameRenderer,
         flex: 1,
         minWidth: 180,
+         wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Date & Time",
@@ -172,6 +174,8 @@ const RequestListTable = () => {
         field: "requestType",
         flex: 1,
         minWidth: 140,
+         wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Status",
@@ -179,6 +183,8 @@ const RequestListTable = () => {
         cellRenderer: StatusRenderer,
         flex: 1,
         minWidth: 140,
+         wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Action",

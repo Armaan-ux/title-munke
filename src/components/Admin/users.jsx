@@ -192,18 +192,22 @@ function Organisation() {
         field: "name",
         cellStyle: { fontWeight: "500", color: "black" },
         filter: false,
+        flex: 1,
+        minWidth: 160,
       },
       {
         headerName: "Email",
         field: "email",
         filter: false,
-        flex: 1,
+        flex: 1.5,
+        minWidth: 200,
       },
       {
         headerName: "Status",
         field: "status",
         filter: false,
-
+        flex: 1,
+        minWidth: 160,
         cellRenderer: StatusRenderer,
       },
       {
@@ -419,18 +423,22 @@ function Admins() {
         cellStyle: { fontWeight: "500", color: "black" },
         filter: false,
         flex: 1,
+        minWidth: 180,
       },
       {
         headerName: "Email",
         field: "email",
         filter: false,
-        flex: 1,
+        flex: 1.5,
+        minWidth: 220,
       },
       {
         headerName: "Status",
         field: "status",
         cellRenderer: StatusRenderer,
         filter: false,
+        flex: 1,
+        minWidth: 160,
       },
       {
         headerName: "Action",
@@ -510,7 +518,7 @@ function Admins() {
         />
       )}
       <div className="bg-white !p-4 rounded-xl">
-        <div className="flex justify-between gap-4 items-center mb-4">
+        <div className="flex justify-between gap-4 items-center mb-4 flex-wrap">
           <div className="flex items-center gap-4">
             <p className="text-lg font-medium">All Admins</p>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -652,23 +660,30 @@ function AdminBrokersList() {
         field: "name",
         filter: false,
         cellStyle: { fontWeight: "500", color: "black" },
+        flex: 1,
+        minWidth: 180,
       },
       {
         headerName: "Email",
         field: "email",
         filter: false,
+        flex: 1.5,
+        minWidth: 220,
       },
       {
         headerName: "Team Strength",
         field: "teamStrength",
         filter: false,
         valueGetter: (params) => params.data.teamStrength || "-",
+        minWidth: 140,
       },
       {
         headerName: "Status",
         field: "status",
         cellRenderer: StatusRenderer,
         filter: false,
+        flex: 1,
+        minWidth: 160,
       },
       {
         headerName: "Action",
@@ -748,7 +763,7 @@ function AdminBrokersList() {
 
       <div>
         <div className="bg-white !p-4 rounded-xl">
-          <div className="flex justify-between gap-4 items-center mb-4">
+          <div className="flex justify-between gap-4 items-center mb-4 flex-wrap">
             <div className="flex items-center gap-4">
               <p className="text-lg font-medium">All Brokers</p>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -898,17 +913,23 @@ function Agents() {
         field: "name",
         filter: false,
         cellStyle: { fontWeight: "500", color: "black" },
+        flex: 1,
+        minWidth: 180,
       },
       {
         headerName: "Email",
         field: "email",
         filter: false,
+        flex: 1.5,
+        minWidth: 220,
       },
       {
         headerName: "Status",
         field: "status",
         cellRenderer: StatusRenderer,
         filter: false,
+        flex: 1,
+        minWidth: 160,
       },
       {
         headerName: "Reinvite",
@@ -943,6 +964,9 @@ function Agents() {
         field: "id",
         filter: false,
         sortable: false,
+        width: 150,
+        minWidth: 150,
+        flex: 0,
         cellRenderer: (params) => {
           const item = params.data;
           return (
@@ -1007,7 +1031,7 @@ function Agents() {
         />
       )}
       <div className="bg-white !p-4 rounded-xl">
-        <div className="flex justify-between gap-4 items-center mb-4">
+        <div className="flex justify-between gap-4 items-center mb-4 flex-wrap">
           <div className="flex items-center gap-4">
             <p className="text-lg font-medium">All Agents</p>
             <Select value={statusFilter} onValueChange={setStatusFilter}>

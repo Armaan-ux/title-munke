@@ -24,13 +24,71 @@ import { CenterLoader } from "./Loader";
 import ShowError from "./ShowError";
 import { InvoiceModalDummy } from "../Modal/InvoiceModalDummy";
 import { Dialog, DialogContent } from "../ui/dialog";
+import { useMemo } from "react";
+import { AgGridReact } from "ag-grid-react";
+
+const SrNoRenderer = (props) => (
+  <span className="font-medium text-black">{props.node.rowIndex + 1}</span>
+);
+
+const AmountRenderer = (props) => (
+  <span>${props.data?.total / 100}</span>
+);
+
+const StatusRenderer = (props) => (
+  <div className="flex flow-row gap-2 items-center">
+    <CircleCheck
+      className={`${
+        props.data?.status === "paid"
+          ? "text-[#1E8221]"
+          : props.data?.status === "open"
+          ? "text-[#A2781E]"
+          : "text-[#FF5F59]"
+      }`}
+    />{" "}
+    <span className={`${
+      props.data?.status === "paid"
+        ? "text-[#1E8221]"
+        : props.data?.status === "open"
+        ? "text-[#A2781E]"
+        : "text-[#FF5F59]"
+    } text-[13px] font-medium`}>
+      {props.data?.status}
+    </span>
+  </div>
+);
+
+const DownloadRenderer = ({ data, setInvoiceModal, setSelectedInvoice }) => (
+  <div className="flex items-center justify-center h-full">
+    <Button variant="ghost" size="icon" 
+      onClick={() => {
+        setInvoiceModal(true);
+        setSelectedInvoice(data)
+      }}
+    >
+      <FileDown className="size-5" />
+    </Button>
+  </div>
+);
+
+const ActionRenderer = ({ data, setInvoiceHistoryModal, setSelectedInvoice }) => (
+  <div className="flex items-center gap-2 flex-row justify-center h-full">
+    <Button
+      size="icon"
+      variant="ghost"
+      onClick={() => {
+        setInvoiceHistoryModal(true);
+        setSelectedInvoice(data)
+      }}
+    >
+      <Eye className="size-5" />
+    </Button>
+  </div>
+);
 
 const BillingHistory = () => {
 
   const navigate = useNavigate();
-  const [searchHistories, setSearchHistories] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
   const [invoiceModal, setInvoiceModal] = useState(false);
   const [cancleSubscriptionModal, setCancleSubscriptionModal] = useState(false);
   const [helpUsImproveModal, setHelpUsImproveModal] = useState(false);
@@ -44,6 +102,82 @@ const BillingHistory = () => {
     queryFn: () => getInvoice(user?.attributes?.sub, userType),
     refetchOnWindowFocus: false
   })
+
+  const columnDefs = useMemo(
+    () => [
+      {
+        headerName: "Sr. No.",
+        cellRenderer: SrNoRenderer,
+        width: 120,
+        minWidth: 120,
+        maxWidth: 120,
+        flex: 0,
+        sortable: false,
+      },
+      {
+        headerName: "Invoice ID",
+        field: "id",
+        flex: 1,
+        minWidth: 150,
+        wrapText: true,
+        autoHeight: true,
+      },
+      {
+        headerName: "Date",
+        field: "created",
+        valueGetter: (params) => convertFromTimestamp(params.data?.created, "dateTime"),
+        flex: 1,
+        minWidth: 180,
+        wrapText: true,
+        autoHeight: true,
+      },
+      {
+        headerName: "Amount",
+        cellRenderer: AmountRenderer,
+        flex: 1,
+        minWidth: 150,
+        wrapText: true,
+        autoHeight: true,
+      },
+      {
+        headerName: "Status",
+        cellRenderer: StatusRenderer,
+        flex: 1,
+        minWidth: 140,
+        wrapText: true,
+        autoHeight: true,
+      },
+      {
+        headerName: "Download",
+        cellRenderer: (params) => (
+          <DownloadRenderer 
+            data={params.data} 
+            setInvoiceModal={setInvoiceModal} 
+            setSelectedInvoice={setSelectedInvoice} 
+          />
+        ),
+        flex: 1,
+        minWidth: 160,
+        cellStyle: { textAlign: "center" },
+        headerClass: "ag-header-cell-center",
+      },
+      {
+        headerName: "Action",
+        cellRenderer: (params) => (
+          <ActionRenderer 
+            data={params.data} 
+            setInvoiceHistoryModal={setInvoiceHistoryModal} 
+            setSelectedInvoice={setSelectedInvoice} 
+          />
+        ),
+        flex: 1,
+        minWidth: 160,
+        cellStyle: { textAlign: "center" },
+        headerClass: "ag-header-cell-center",
+      },
+    ],
+    [],
+  );
 
   return (
     <div className="relative">
@@ -117,122 +251,31 @@ const BillingHistory = () => {
             <ShowError message={invoiceListingQuery?.error?.response?.data?.message}/>
           }
           {invoiceListingQuery?.isLoading && <CenterLoader />}
-          {invoiceListingQuery.isSuccess && invoiceListingQuery?.data?.invoices?.length > 0  &&
-            <div className="bg-white !p-4 rounded-xl w-full">
+          {invoiceListingQuery.isSuccess && (
+            <div className="bg-white !p-4 rounded-xl w-full h-full">
               <p className="text-lg text-secondary font-medium mb-4">Invoice History</p>
-              <Table className="">
-                <TableHeader className="bg-[#F5F0EC]">
-                  <TableRow>
-                    <TableHead className="w-[100px]">Sr. No.</TableHead>
-                    <TableHead>
-                      <p className="flex items-center gap-2">Invoice ID</p>
-                    </TableHead>
-                    <TableHead>
-                      <p className="flex items-center gap-2">Date </p>
-                    </TableHead>
-                    <TableHead>
-                      <p className="flex items-center gap-2">Amount</p>
-                    </TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-center" >Download</TableHead>
-                    <TableHead className="text-center" >Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {invoiceListingQuery?.data?.invoices?.map((invoice, index) => (
-                    <TableRow key={invoice.id}>
-                      <TableCell className="font-medium text-black">{index + 1}</TableCell>
-                      <TableCell className="text-black font-medium" >{invoice?.id}</TableCell>
-                      <TableCell >
-                        {convertFromTimestamp(invoice?.created, "dateTime")}
-                      </TableCell>
-                      <TableCell>${invoice?.total / 100}</TableCell>
-                      <TableCell  onClick={() => setCancleSubscriptionModal(true)}
-                        className={`${
-                          invoice?.status === "paid"
-                            ? "text-[#1E8221]"
-                            : invoice?.status === "open"
-                            ? "text-[#A2781E]"
-                            : "text-[#FF5F59]"
-                        } text-[13px] font-medium px-3 py-1 rounded-md`}
-                      >
-                        <div className="flex flow-row gap-2 items-center">
-                          <CircleCheck
-                           
-                          />{" "}
-                          {invoice?.status}
-                        </div>
-                      </TableCell>
-
-                      <TableCell className="text-center" >
-                        <Button variant="ghost" size="icon" 
-                          onClick={() => {
-                            setInvoiceModal(true);
-                            setSelectedInvoice(invoice)
-                          }}
-                        >
-                          <FileDown className="size-5" />
-                        </Button>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2 flex-row justify-center">
-                          <Button
-                            size="icon"
-                            // className="text-md"
-                            variant="ghost"
-                            onClick={() => {
-                              setInvoiceHistoryModal(true);
-                              setSelectedInvoice(invoice)
-                            }}
-                          >
-                            <Eye className="size-5" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-
-              <div className="text-center space-y-2 my-4 text-muted-foreground">
-                {loading && <p>Loading...</p>}
-                {!hasMore && searchHistories.length > 0 && (
-                  <p>No more data to load.</p>
-                )}
-
-                {searchHistories?.length > 0 && hasMore && !loading && (
-                  <div className="flex justify-center">
-                    <Button
-                      // className="loadmore"
-                      size="sm"
-                    >
-                      Load More
-                    </Button>
-                  </div>
-                )}
+              <div className="ag-theme-quartz custom-ag-grid" style={{ width: "100%" }}>
+                <AgGridReact
+                  rowData={invoiceListingQuery?.data?.invoices || []}
+                  columnDefs={columnDefs}
+                  defaultColDef={{
+                    flex: 1,
+                    minWidth: 120,
+                    filter: false,
+                    sortable: true,
+                    resizable: true,
+                    unSortIcon: true,
+                  }}
+                  rowHeight={72}
+                  headerHeight={48}
+                  domLayout="autoHeight"
+                  animateRows={true}
+                  overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+                />
               </div>
             </div>
-          }
+          )}
 
-          {invoiceListingQuery.isSuccess && invoiceListingQuery?.data?.invoices?.length === 0  &&
-            <div className="flex flex-col items-center justify-center text-center py-16 w-full gap-4">
-                <img
-                  src="/search-icon.svg"
-                  alt="invoice icon"
-                  className="w-20 h-20"
-                />
-
-                <h2 className="text-3xl font-semibold text-secondary mb-2">
-                  No Invoice Yet
-                </h2>
-
-                <p className="max-w-md text-md text-secondary">
-                  It looks like you haven’t initiated any property searches yet.
-                  Once you start exploring, your search invoice history records
-                  will appear here.
-                </p>
-            </div>
-          }
 
         </div>
       </div>

@@ -49,6 +49,7 @@ import { useMutation } from "@tanstack/react-query";
 import * as XLSX from "xlsx";
 import { useUserIdType } from "@/hooks/useUserIdType";
 import { AgGridReact } from "ag-grid-react";
+import { CenterLoader } from "../common/Loader";
 
 const agentTypes = [
   { name: "Agents", id: "agents" },
@@ -340,6 +341,8 @@ function Agents() {
         valueGetter: (params) => params.data?.agentName || "-",
         flex: 1,
         minWidth: 160,
+         wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Searches This Month",
@@ -349,6 +352,7 @@ function Agents() {
         minWidth: 120,
         cellStyle: { textAlign: "center" },
         headerClass: "ag-header-cell-center",
+
       },
       {
         headerName: "Last Login",
@@ -359,13 +363,15 @@ function Agents() {
             : "-",
         flex: 1,
         minWidth: 180,
+         wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Status",
         field: "status",
         cellRenderer: AgentStatusRenderer,
         flex: 1,
-        minWidth: 140,
+        minWidth: 160,
       },
       {
         headerName: "Reinvite",
@@ -373,8 +379,8 @@ function Agents() {
         cellRenderer: ReinviteRenderer,
         cellRendererParams: { reinviteMutation },
         flex: 0.7,
-        minWidth: 80,
-        width: 80,
+        minWidth: 140,
+        width: 140,
         sortable: false,
         cellStyle: { textAlign: "center" },
         headerClass: "ag-header-cell-center",
@@ -392,8 +398,8 @@ function Agents() {
           setIsDeleteDialogOpen,
         },
         flex: 0.8,
-        minWidth: 80,
-        width: 80,
+        minWidth: 140,
+        width: 140,
         sortable: false,
         cellStyle: { textAlign: "center" },
         headerClass: "ag-header-cell-center",
@@ -433,7 +439,7 @@ function Agents() {
           </div>
         ) : (
           <>
-            <div className="flex justify-between gap-4 items-center mb-4">
+            <div className="flex justify-between gap-4 items-center mb-4 flex-wrap">
               <div className="flex items-center gap-4">
                 <p className="text-lg font-medium">All Agents</p>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -449,7 +455,7 @@ function Agents() {
                 </Select>
               </div>
 
-              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
                 <a
                   href={
                     underOrganisation ||
@@ -506,7 +512,7 @@ function Agents() {
 
             {loading ? (
               <div className="flex items-center justify-center py-20 text-muted-foreground font-medium text-lg">
-                Loading...
+                <CenterLoader />
               </div>
             ) : (
               <div className="ag-theme-quartz custom-ag-grid" style={{ width: "100%" }}>
@@ -643,6 +649,8 @@ function UnassignedAgents() {
         flex: 1,
         minWidth: 160,
         filter: false,
+         wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Email",
@@ -650,13 +658,17 @@ function UnassignedAgents() {
         flex: 1,
         minWidth: 200,
         filter: false,
+         wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Status",
         field: "status",
         flex: 1,
-        minWidth: 130,
+        minWidth: 160,
         filter: false,
+         wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Assign",
@@ -664,9 +676,11 @@ function UnassignedAgents() {
         cellRenderer: AssignRenderer,
         cellRendererParams: { handleAssignAgent },
         flex: 1,
-        minWidth: 120,
+        minWidth: 140,
         filter: false,
         sortable: false,
+         wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Delete",
@@ -674,7 +688,7 @@ function UnassignedAgents() {
         cellRenderer: UnassignedDeleteRenderer,
         cellRendererParams: { handleUndeleteAgent, setUserToDelete, setIsDeleteDialogOpen },
         flex: 1,
-        minWidth: 120,
+        minWidth: 140,
         filter: false,
         sortable: false,
       },
@@ -709,7 +723,7 @@ function UnassignedAgents() {
 
             {isLoading ? (
               <div className="flex items-center justify-center py-20 text-muted-foreground font-medium text-lg">
-                Loading...
+                <CenterLoader />
               </div>
             ) : (
               <div className="ag-theme-quartz custom-ag-grid" style={{ width: "100%" }}>

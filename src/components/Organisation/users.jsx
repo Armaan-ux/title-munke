@@ -216,9 +216,9 @@ function AdminBrokersList() {
       {
         headerName: "Sr. No.",
         cellRenderer: SrNoRenderer,
-        width: 100,
-        minWidth: 100,
-        maxWidth: 100,
+        width: 120,
+        minWidth: 120,
+        maxWidth: 120,
         flex: 0,
         filter: false,
         sortable: false,
@@ -228,7 +228,7 @@ function AdminBrokersList() {
         field: "name",
         valueGetter: (params) => params.data?.name,
         flex: 1,
-        minWidth: 160,
+        minWidth: 180,
         filter: false,
         cellStyle: { fontWeight: 500, color: "black" },
       },
@@ -238,6 +238,8 @@ function AdminBrokersList() {
         flex: 1,
         minWidth: 200,
         filter: false,
+        wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Team Strength",
@@ -252,7 +254,7 @@ function AdminBrokersList() {
         field: "status",
         cellRenderer: StatusBadgeRenderer,
         flex: 1,
-        minWidth: 140,
+        minWidth: 160,
         filter: false,
       },
       {
@@ -267,7 +269,7 @@ function AdminBrokersList() {
           setIsDeleteDialogOpen,
         },
         flex: 1,
-        minWidth: 120,
+        minWidth: 140,
         filter: false,
         sortable: false,
       },
@@ -318,7 +320,7 @@ function AdminBrokersList() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                 <Button
                   variant="outline"
                   className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
@@ -344,7 +346,7 @@ function AdminBrokersList() {
 
             {isBrokerListLoading && rowData.length === 0 ? (
               <div className="flex items-center justify-center py-20 text-muted-foreground font-medium">
-                Loading...
+                    <CenterLoader />
               </div>
             ) : (
               <div className="ag-theme-quartz custom-ag-grid" style={{ width: "100%" }}>
@@ -536,7 +538,7 @@ function Agents() {
         headerName: "Name",
         field: "name",
         flex: 1,
-        minWidth: 160,
+        minWidth: 180,
         filter: false,
         cellStyle: { fontWeight: 500, color: "black" },
       },
@@ -546,13 +548,15 @@ function Agents() {
         flex: 1,
         minWidth: 200,
         filter: false,
+        wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Status",
         field: "status",
         cellRenderer: StatusBadgeRenderer,
         flex: 1,
-        minWidth: 140,
+        minWidth: 160,
         filter: false,
       },
       {
@@ -561,7 +565,7 @@ function Agents() {
         cellRenderer: AgentReinviteRenderer,
         cellRendererParams: { reinviteMutation },
         flex: 1,
-        minWidth: 100,
+        minWidth: 140,
         filter: false,
         sortable: false,
         cellStyle: { textAlign: "center" },
@@ -579,7 +583,7 @@ function Agents() {
           setIsDeleteDialogOpen,
         },
         flex: 1,
-        minWidth: 120,
+        minWidth: 140,
         filter: false,
         sortable: false,
       },
@@ -631,7 +635,7 @@ function Agents() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                 <Button
                   variant="outline"
                   className="h-[36px] border border-[#4C0D0D] text-[#4C0D0D] text-[13px] font-medium rounded-md hover:bg-[#4C0D0D]/5 flex items-center gap-1.5 px-3"
@@ -666,7 +670,7 @@ function Agents() {
                     defaultColDef={{
                       flex: 1,
                       minWidth: 120,
-                      filter: true,
+                      filter: false,
                       sortable: true,
                       resizable: true,
                       unSortIcon: true,

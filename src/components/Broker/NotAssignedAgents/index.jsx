@@ -6,6 +6,7 @@ import { API } from "aws-amplify";
 import { assignAgent } from "../../service/agent";
 import { toast } from "react-toastify";
 import { handleCreateAuditLog } from "../../../utils";
+import { CenterLoader } from "@/components/common/Loader";
 
 const NotAssignedAgents = () => {
   const { user } = useUser();
@@ -81,7 +82,7 @@ const NotAssignedAgents = () => {
             <tbody>
               {isLoading ? (
                 <p key={"loading"} style={{ display: "flex" }}>
-                  Loading.....
+                  <CenterLoader />
                 </p>
               ) : agents?.length === 0 ? (
                 <p key={"No-records"} style={{ display: "flex" }}>

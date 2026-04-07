@@ -394,15 +394,15 @@ th:last-child {
 
 .custom-ag-grid.ag-theme-quartz .ag-header-cell-label {
   justify-content: start;
-  white-space: normal !important;
-  text-overflow: clip !important;
-  line-height: 1.2 !important;
+  white-space: nowrap !important;
+  text-overflow: initial !important;
+  line-height: normal !important;
 }
 
 .custom-ag-grid.ag-theme-quartz .ag-header-cell-text {
-  white-space: normal !important;
+  white-space: nowrap !important;
   overflow: visible !important;
-  text-overflow: clip !important;
+  text-overflow: initial !important;
 }
 
 /* Outer border of the grid */

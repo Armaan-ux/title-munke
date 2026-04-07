@@ -27,6 +27,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { CenterLoader } from "../common/Loader";
 
 const AgentList = ({isOpen, setIsOpen, data, isAgentListLoading, onListRefresh }) => {
   const [reinvitingAgentId, setReinvitingAgentId] = useState(null);
@@ -131,7 +132,7 @@ const AgentList = ({isOpen, setIsOpen, data, isAgentListLoading, onListRefresh }
                   {
                     isAgentListLoading ?
                     <TableRow >
-                      <TableCell colSpan={7} className="font-medium text-center py-10 text-muted-foreground">Loading...</TableCell>
+                      <TableCell colSpan={7} className="font-medium text-center py-10 text-muted-foreground"><CenterLoader /></TableCell>
                     </TableRow>
                     :
                     filteredData?.length === 0 ?

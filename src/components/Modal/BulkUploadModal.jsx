@@ -154,7 +154,7 @@ export default function BulkUploadModal({ open, onClose, type, onSuccess }) {
                   {brokerQuery.isLoading ? (
                     <div className="p-2 text-center text-sm text-[#6B5E55]">
                       <Loader2 className="w-4 h-4 animate-spin inline mr-2 text-tertiary" />
-                      Loading...
+                    
                     </div>
                   ) : brokers.length === 0 ? (
                     <div className="p-2 text-center text-sm text-[#6B5E55]">

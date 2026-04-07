@@ -49,6 +49,7 @@ export default function AuditLogs() {
         cellRenderer: DetailsRenderer,
         flex: 2,
         minWidth: 300,
+         wrapText: true,
         autoHeight: true,
       },
       {
@@ -57,6 +58,8 @@ export default function AuditLogs() {
         valueGetter: (params) => getFormattedDateTime(params.data?.createdAt),
         flex: 1,
         minWidth: 180,
+         wrapText: true,
+        autoHeight: true,
       },
     ],
     [],

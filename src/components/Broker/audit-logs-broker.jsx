@@ -45,6 +45,7 @@ function AuditLogsForBroker() {
         flex: 3,
         minWidth: 300,
         filter: false,
+         wrapText: true,
         autoHeight: true,
       },
       {
@@ -56,6 +57,8 @@ function AuditLogsForBroker() {
         filter: false,
         cellStyle: { textAlign: "right" },
         headerClass: "ag-header-cell-right",
+         wrapText: true,
+        autoHeight: true,
       },
     ],
     [],

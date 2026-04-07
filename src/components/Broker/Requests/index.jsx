@@ -119,6 +119,8 @@ const RequestListTable = ({
         flex: 1,
         minWidth: 160,
         filter: false,
+         wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Email / Phone",
@@ -126,6 +128,8 @@ const RequestListTable = ({
         flex: 1,
         minWidth: 180,
         filter: false,
+         wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Date",
@@ -134,6 +138,8 @@ const RequestListTable = ({
         flex: 1,
         minWidth: 180,
         filter: false,
+         wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Description",
@@ -141,6 +147,8 @@ const RequestListTable = ({
         flex: 2,
         minWidth: 200,
         filter: false,
+         wrapText: true,
+        autoHeight: true,
       },
     ];
 
@@ -230,6 +238,8 @@ const MyRequestList = ({
         flex: 2,
         minWidth: 200,
         filter: false,
+         wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Date & Time",
@@ -238,6 +248,8 @@ const MyRequestList = ({
         flex: 1,
         minWidth: 180,
         filter: false,
+         wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Status",
@@ -246,6 +258,8 @@ const MyRequestList = ({
         flex: 1,
         minWidth: 140,
         filter: false,
+         wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Action",

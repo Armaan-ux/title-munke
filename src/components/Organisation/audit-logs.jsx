@@ -101,6 +101,7 @@ function AuditLogs() {
         flex: 2,
         minWidth: 300,
         filter: false,
+         wrapText: true,
         autoHeight: true,
       },
       {
@@ -109,6 +110,8 @@ function AuditLogs() {
         flex: 1,
         minWidth: 200,
         filter: false,
+         wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Date & Time",
@@ -117,6 +120,8 @@ function AuditLogs() {
         flex: 1,
         minWidth: 180,
         filter: false,
+         wrapText: true,
+        autoHeight: true,
       },
     ],
     [],

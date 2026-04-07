@@ -60,6 +60,8 @@ function AuditLogsAgent() {
         valueGetter: (params) => getFormattedDateTime(params.data?.createdAt),
         flex: 1,
         minWidth: 180,
+         wrapText: true,
+        autoHeight: true,
       },
     ],
     [],

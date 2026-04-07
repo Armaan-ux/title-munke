@@ -82,12 +82,16 @@ const RequestListTable = ({
         cellRenderer: NameRenderer,
         flex: 1,
         minWidth: 160,
+         wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Email / Phone",
         field: "email",
         flex: 1,
         minWidth: 200,
+         wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Date (Received)",
@@ -101,6 +105,8 @@ const RequestListTable = ({
         field: "requestMessage",
         flex: 2,
         minWidth: 200,
+         wrapText: true,
+        autoHeight: true,
       },
     ];
 
