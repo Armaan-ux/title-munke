@@ -135,7 +135,7 @@ export default function Home() {
       setShowBackToTop(window.scrollY > 700);
     });
     return () => {
-      window.removeEventListener("scroll", () => {});
+      window.removeEventListener("scroll", () => { });
     };
   }, []);
   // const handleSubmit = (e) => {
@@ -197,11 +197,11 @@ export default function Home() {
             </p>
 
             <div className="space-x-3">
-              <Link to="/pricing">
-                <Button className="hover:scale-105" size="lg" variant="outline">
-                  Get Started <ArrowRight />
-                </Button>
-              </Link>
+              <Button className="hover:scale-105" size="lg" variant="outline"
+                onClick={() => scrollToSection("pricing")}
+              >
+                Get Started <ArrowRight />
+              </Button>
               <Button
                 className="hover:scale-105"
                 size="lg"
@@ -670,9 +670,9 @@ export default function Home() {
                   <Button
                     className="hover:scale-105 w-full bg-[#5D4135] hover:bg-[#5D4135]"
                     size="lg"
-                       onClick={() => {
-                        navigate(`/pricing?view=${item.key}`);
-                      }}
+                    onClick={() => {
+                      navigate(`/pricing?view=${item.key}`);
+                    }}
                   >
                     Know More <MoveRight />
                   </Button>
@@ -871,9 +871,8 @@ export default function Home() {
 
       {/* Back to Top */}
       <div
-        className={`fixed bottom-2 right-2 z-10 flex items-center gap-2 p-3 text-secondary pt-8 hover:opacity-100 ${
-          showBackToTop ? "opacity-40" : "opacity-0"
-        } transition-all `}
+        className={`fixed bottom-2 right-2 z-10 flex items-center gap-2 p-3 text-secondary pt-8 hover:opacity-100 ${showBackToTop ? "opacity-40" : "opacity-0"
+          } transition-all `}
       >
         <p className="hidden md:block">Back to top</p>
         <Button
