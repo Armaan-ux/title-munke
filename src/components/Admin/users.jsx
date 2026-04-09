@@ -68,13 +68,12 @@ const StatusRenderer = (props) => {
   const status = props.value;
   return (
     <Badge
-      className={`${
-        status === "ACTIVE"
-          ? "bg-[#E9F3E9] text-[#1E8221]"
-          : status === "DELETED"
-            ? " text-destructive/80 bg-destructive/20"
-            : "bg-[#FFF3D9] text-[#A2781E]"
-      } text-[13px] font-medium px-3 py-1 rounded-full`}
+      className={`${status === "ACTIVE"
+        ? "bg-[#E9F3E9] text-[#1E8221]"
+        : status === "DELETED"
+          ? " text-destructive/80 bg-destructive/20"
+          : "bg-[#FFF3D9] text-[#A2781E]"
+        } text-[13px] font-medium px-3 py-1 rounded-full`}
     >
       {status}
     </Badge>
@@ -109,11 +108,10 @@ export default function Users() {
         {userTypes.map((item, index) => (
           <button
             key={item.id}
-            className={` ${
-              activeTab.id === item.id
-                ? "bg-tertiary text-white"
-                : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] "
-            } transition-all  rounded-full px-10 py-3 `}
+            className={` ${activeTab.id === item.id
+              ? "bg-tertiary text-white"
+              : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] "
+              } transition-all  rounded-full px-10 py-3 `}
             onClick={() => setActiveTab(item)}
           >
             {item.name}
@@ -642,7 +640,7 @@ function AdminBrokersList() {
       });
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
-    } catch (error) {}
+    } catch (error) { }
     setIsBrokerListLoading(false);
   };
 
@@ -897,7 +895,7 @@ function Agents() {
       });
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
-    } catch (error) {}
+    } catch (error) { }
     setIsAgentListLoading(false);
   };
 
@@ -1020,11 +1018,11 @@ function Agents() {
       (item) => statusFilter === "ALL" || item.status === statusFilter,
     );
   }, [agents, statusFilter]);
-
+  console.log("isOpen", isOpen)
   return (
     <>
       {isOpen && (
-        <AddAgentByAdminModal
+        <AddAdminModal
           open={isOpen}
           onClose={() => {
             setIsOpen(false);
@@ -1032,7 +1030,10 @@ function Agents() {
           }}
           title="Agent"
           userType="agent"
-          onSuccess={() => handleFetchAgentListing(true)}
+          invalidateFun={() => {
+            handleFetchAgentListing(true);
+            setHasMore(true);
+          }}
           selectedUser={selectedUser}
         />
       )}
