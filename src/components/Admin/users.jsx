@@ -318,6 +318,8 @@ function Organisation() {
               sortable: true,
               resizable: true,
               unSortIcon: true,
+              wrapHeaderText: true,
+              autoHeaderHeight: true,
             }}
             rowHeight={72}
             headerHeight={48}
@@ -553,6 +555,8 @@ function Admins() {
               sortable: true,
               resizable: true,
               unSortIcon: true,
+              wrapHeaderText: true,
+              autoHeaderHeight: true,
             }}
             rowHeight={72}
             headerHeight={48}
@@ -801,6 +805,8 @@ function AdminBrokersList() {
                 sortable: true,
                 resizable: true,
                 unSortIcon: true,
+                wrapHeaderText: true,
+                autoHeaderHeight: true,
               }}
               rowHeight={72}
               headerHeight={48}
@@ -1066,6 +1072,8 @@ function Agents() {
               sortable: true,
               resizable: true,
               unSortIcon: true,
+              wrapHeaderText: true,
+              autoHeaderHeight: true,
             }}
             rowHeight={72}
             headerHeight={48}

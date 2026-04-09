@@ -310,6 +310,8 @@ const PropertyDetails = () => {
                             sortable: true,
                             resizable: true,
                             unSortIcon: true,
+                            wrapHeaderText: true,
+                            autoHeaderHeight: true,
                           }}
                           rowHeight={56}
                           headerHeight={48}

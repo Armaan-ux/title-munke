@@ -148,6 +148,9 @@ export default function AgentBusinessTable({
               headerHeight={56}
               domLayout="autoHeight"
               animateRows={true}
+              enableCellTextSelection={true}
+              ensureDomOrder={true}
+              suppressCellFocus={true}
               overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
             />
         </div>

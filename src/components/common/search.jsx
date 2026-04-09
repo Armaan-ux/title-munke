@@ -4,7 +4,6 @@ import { API, graphqlOperation } from "aws-amplify";
 import { createSearchHistory } from "@/graphql/mutations";
 import { useUser } from "@/context/usercontext";
 import { handleCreateAuditLog } from "@/utils";
-import { getAgent, getBroker, relationshipsByAgentId } from "@/graphql/queries";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Download, MapPin, Search as SearchIcon } from "lucide-react";
@@ -14,14 +13,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import {
   getAgentBrokerDetails,
-  getBrokerDetails,
   getSearchedStatus,
   iniitateSearch,
 } from "../service/userAdmin";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUserIdType } from "@/hooks/useUserIdType";
-import { excludedPlans } from "@/utils/constant";
-import BrokerDetails from '../Organisation/broker-details';
 
 export default function Search({ isIndivisual = false }) {
   const queryClient = useQueryClient();
@@ -36,23 +32,23 @@ export default function Search({ isIndivisual = false }) {
   const [zipUrl, setZipUrl] = useState(null);
   const [isAgent, setIsAgent] = useState(false);
   const { user, setPaymentModal, setInvalidateSearchHistory, agentDetail, brokerDetail,
-        organisationDetail } =
+    organisationDetail } =
     useUser();
 
-    const PLAN_LIMITS = {
-  EXPLORE_PLAN: 1,
-  PROFESSIONAL_PLAN: Infinity,
-  PAY_AS_YOU_GO: Infinity,
-};
+  const PLAN_LIMITS = {
+    EXPLORE_PLAN: 1,
+    PROFESSIONAL_PLAN: Infinity,
+    PAY_AS_YOU_GO: Infinity,
+  };
 
-const isSearchDisabled = (detail) => {
-  if (!detail) return false;
+  const isSearchDisabled = (detail) => {
+    if (!detail) return false;
 
-  return (
-    detail?.searchCount >=
-    (PLAN_LIMITS[detail?.planType] ?? 0)
-  );
-};
+    return (
+      detail?.searchCount >=
+      (PLAN_LIMITS[detail?.planType] ?? 0)
+    );
+  };
   const {
     userId: agentId,
     userType,
@@ -71,9 +67,8 @@ const isSearchDisabled = (detail) => {
   //   queryFn: () => getBrokerDetails(agentId),
   //   enabled: userType === "broker",
   // });
-console.log("organisationDetail",organisationDetail)
-console.log("brokerDetail",brokerDetail)
-  const clearSearchState = () => {
+
+  const clearSearchState = useCallback(() => {
     const searchKeys = [
       "searchAddress",
       "searchId",
@@ -92,18 +87,13 @@ console.log("brokerDetail",brokerDetail)
       "Initializing title search... This process may take a few minutes.",
     );
     setLoading(false);
-  };
-const organisationDisabled = isSearchDisabled(organisationDetail);
-const brokerDisabled = isSearchDisabled(brokerDetail);
-const agentDisabled = isSearchDisabled(agentDetail);
+  }, []);
+  const organisationDisabled = isSearchDisabled(organisationDetail);
+  const brokerDisabled = isSearchDisabled(brokerDetail);
+  const agentDisabled = isSearchDisabled(agentDetail);
   const checkSearchStatus = useCallback(
     async (searchId, isRestoring = false) => {
       try {
-        // const response = await axios.post(
-        //   "https://ffdldf2c4ozijgyvor26zr5qyu0ulsie.lambda-url.us-east-1.on.aws/",
-        //   { mode: "CHECK_STATUS", searchId, action: "GetSearchStatus" },
-        //   { timeout: 10000 }
-        // );
         const response = await getSearchedStatus(searchId);
         const { status, status_message, zip_url, percent_completion } =
           response;
@@ -120,7 +110,10 @@ const agentDisabled = isSearchDisabled(agentDetail);
           setMessage(status_message || "Search Complete Successfully");
           setZipUrl(zip_url);
           setLoading(false);
-          handleCreateAuditLog("SEARCH", { address }, isAgent);
+
+          const searchAddress = address || localStorage.getItem("searchAddress");
+          handleCreateAuditLog("SEARCH", { address: searchAddress }, isAgent);
+
           localStorage.setItem("searchStatus", "SUCCESS");
           localStorage.setItem("searchTimestamp", Date.now().toString());
           if (zip_url) localStorage.setItem("zipUrl", zip_url);
@@ -146,7 +139,7 @@ const agentDisabled = isSearchDisabled(agentDetail);
         setLoading(false);
       }
     },
-    [],
+    [address, isAgent, userType, queryClient, setInvalidateSearchHistory, clearSearchState],
   );
 
   useEffect(() => {
@@ -237,7 +230,7 @@ const agentDisabled = isSearchDisabled(agentDetail);
       localStorage.setItem("searchStatus", "IN_PROGRESS");
       localStorage.setItem("searchTimestamp", Date.now().toString());
 
-    
+
 
       const response = await axios.post(
         "https://iweevgyflmwhamvgraszfn2xp40wvqza.lambda-url.us-east-1.on.aws/",
@@ -251,7 +244,7 @@ const agentDisabled = isSearchDisabled(agentDetail);
 
       // const initiateResponse = await axios.post(
       //   "https://jdk8dyza99.execute-api.us-east-1.amazonaws.com/initiate-search",
-        
+
       //   {
       //     // mode: "INITIATE_SEARCH", 
       //     pin,
@@ -265,9 +258,9 @@ const agentDisabled = isSearchDisabled(agentDetail);
       //   }
       // );
 
-      const initiateResponse = await iniitateSearch({pin, parnum, address: matched_address, tax_assessment})
+      const initiateResponse = await iniitateSearch({ pin, parnum, address: matched_address, tax_assessment })
 
-     const { search_id } = initiateResponse || {};
+      const { search_id } = initiateResponse || {};
       localStorage.setItem("searchId", search_id);
 
       await addToDynamoDB(address, search_id, user?.attributes?.sub);
@@ -276,8 +269,8 @@ const agentDisabled = isSearchDisabled(agentDetail);
       console.error("Error during search:", error.message);
       toast.error(
         error?.response?.data?.message ||
-          error.message ||
-          "Search failed: Invalid address or server error.",
+        error.message ||
+        "Search failed: Invalid address or server error.",
       );
       setLoading(false);
       clearSearchState();
@@ -348,7 +341,7 @@ const agentDisabled = isSearchDisabled(agentDetail);
           placeholder="Enter Address here..."
           value={address}
           onChange={(e) => setAddress(e.target.value)}
-          disabled={loading ||organisationDisabled ||brokerDisabled|| agentDisabled}
+          disabled={loading || organisationDisabled || brokerDisabled || agentDisabled}
         />
         <div className="!mt-3 text-gray-500">Format: 123 Hill St</div>
       </div>
@@ -359,7 +352,7 @@ const agentDisabled = isSearchDisabled(agentDetail);
             className="bg-white size-5 cursor-pointer"
             checked={isChecked}
             onCheckedChange={(e) => setIsChecked(e)}
-            disabled={loading || organisationDisabled ||brokerDisabled|| agentDisabled}
+            disabled={loading || organisationDisabled || brokerDisabled || agentDisabled}
           />
           <Label htmlFor="checkbox" className="text-base font-normal pt-3">
             Check this box to confirm the address is correct.
@@ -371,7 +364,7 @@ const agentDisabled = isSearchDisabled(agentDetail);
           type="submit"
           className="h-[54px] w-full max-w-[20rem] rounded-lg  bg-gradient-to-b from-[#550000] to-[#3D2014] !opacity-80 "
           size="lg"
-          disabled={loading || !address.trim().length || !isChecked || organisationDisabled ||brokerDisabled|| agentDisabled}
+          disabled={loading || !address.trim().length || !isChecked || organisationDisabled || brokerDisabled || agentDisabled}
         >
           Search <SearchIcon className="size-6 ml-2" />
         </Button>

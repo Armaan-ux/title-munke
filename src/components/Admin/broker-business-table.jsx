@@ -157,24 +157,29 @@ export default function BrokerBusinessTable({
           className="ag-theme-quartz custom-ag-grid"
           style={{ width: "100%" }}
         >
-         
-            <AgGridReact
-              rowData={brokerListingQuery?.data?.items || []}
-              columnDefs={columnDefs}
-              defaultColDef={{
-                flex: 1,
-                minWidth: 100,
-                sortable: true,
-                resizable: true,
-                unSortIcon: true,
-              }}
-              rowHeight={72}
-              headerHeight={48}
-              domLayout="autoHeight"
-              animateRows={true}
-              overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
-            />
-          
+
+          <AgGridReact
+            rowData={brokerListingQuery?.data?.items || []}
+            columnDefs={columnDefs}
+            defaultColDef={{
+              flex: 1,
+              minWidth: 120,
+              sortable: true,
+              resizable: true,
+              unSortIcon: true,
+              wrapHeaderText: true,
+              autoHeaderHeight: true,
+            }}
+            rowHeight={72}
+            headerHeight={56}
+            domLayout="autoHeight"
+            animateRows={true}
+            enableCellTextSelection={true}
+            ensureDomOrder={true}
+            suppressCellFocus={true}
+            overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+          />
+
         </div>
       )}
     </div>

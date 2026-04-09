@@ -527,11 +527,16 @@ function Agents() {
                       sortable: true,
                       resizable: true,
                       unSortIcon: true,
+                      wrapHeaderText: true,
+                      autoHeaderHeight: true,
                     }}
                     rowHeight={72}
                     headerHeight={48}
                     domLayout="autoHeight"
                     animateRows={true}
+                    enableCellTextSelection={true}
+                    ensureDomOrder={true}
+                    suppressCellFocus={true}
                     overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
                   />
                 
@@ -738,6 +743,8 @@ function UnassignedAgents() {
                       sortable: true,
                       resizable: true,
                       unSortIcon: true,
+                      wrapHeaderText: true,
+                      autoHeaderHeight: true,
                     }}
                     rowHeight={72}
                     headerHeight={48}

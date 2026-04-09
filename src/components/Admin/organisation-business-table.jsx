@@ -85,8 +85,8 @@ export default function OrganisationBusinessTable({
       {
         headerName: "Name",
         field: "name",
-        flex: 1.5,
-        minWidth: 200,
+        flex: 1,
+        minWidth: 150,
         wrapText: true,
         autoHeight: true,
       },
@@ -94,7 +94,9 @@ export default function OrganisationBusinessTable({
         headerName: "Team Strength",
         field: "teamStrength",
         flex: 1,
-        minWidth: 140,
+        minWidth: 150,
+        wrapText: true,
+        autoHeight: true,
         cellStyle: { textAlign: "start" },
       },
       {
@@ -102,6 +104,8 @@ export default function OrganisationBusinessTable({
         field: "totalSearches",
         flex: 1,
         minWidth: 160,
+        wrapText: true,
+        autoHeight: true,
         cellStyle: { textAlign: "center" },
       },
       {
@@ -126,7 +130,7 @@ export default function OrganisationBusinessTable({
         field: "createdAt",
         valueGetter: (params) => getFormattedDateTime(params.data?.createdAt),
         flex: 1,
-        minWidth: 100,
+        minWidth: 160,
         wrapText: true,
         autoHeight: true,
       },
@@ -157,26 +161,29 @@ export default function OrganisationBusinessTable({
           className="ag-theme-quartz custom-ag-grid"
           style={{ width: "100%" }}
         >
-       
-            <AgGridReact
-              rowData={orgListingQuery?.data?.updatedOrganisations || []}
-              columnDefs={columnDefs}
-              defaultColDef={{
-                flex: 1,
-                minWidth: 100,
-                sortable: true,
-                resizable: true,
-                unSortIcon: true,
-                wrapHeaderText: true,
-                autoHeaderHeight: true,
-              }}
-              rowHeight={60}
-              headerHeight={56}
-              domLayout="autoHeight"
-              animateRows={true}
-              overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
-            />
-          
+
+          <AgGridReact
+            rowData={orgListingQuery?.data?.updatedOrganisations || []}
+            columnDefs={columnDefs}
+            defaultColDef={{
+              flex: 1,
+              minWidth: 100,
+              sortable: true,
+              resizable: true,
+              unSortIcon: true,
+              wrapHeaderText: true,
+              autoHeaderHeight: true,
+            }}
+            rowHeight={60}
+            headerHeight={56}
+            domLayout="autoHeight"
+            animateRows={true}
+            enableCellTextSelection={true}
+            ensureDomOrder={true}
+            suppressCellFocus={true}
+            overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+          />
+
         </div>
       )}
     </div>

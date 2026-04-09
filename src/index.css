@@ -394,13 +394,13 @@ th:last-child {
 
 .custom-ag-grid.ag-theme-quartz .ag-header-cell-label {
   justify-content: start;
-  white-space: nowrap !important;
+  white-space: normal !important;
   text-overflow: initial !important;
   line-height: normal !important;
 }
 
 .custom-ag-grid.ag-theme-quartz .ag-header-cell-text {
-  white-space: nowrap !important;
+  white-space: normal !important;
   overflow: visible !important;
   text-overflow: initial !important;
 }
@@ -592,3 +592,17 @@ th:last-child {
   color: #a08070 !important;
   font-size: 16px !important;
 }
+
+/* Suppress cell focus outline and ensure text is selectable */
+.custom-ag-grid.ag-theme-quartz .ag-cell:focus,
+.custom-ag-grid.ag-theme-quartz .ag-cell-focus,
+.custom-ag-grid.ag-theme-quartz .ag-cell-focus:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.custom-ag-grid.ag-theme-quartz .ag-cell {
+  user-select: text !important;
+}
+

@@ -89,6 +89,8 @@ function AuditLogsAgent() {
                   sortable: true,
                   resizable: true,
                   unSortIcon: true,
+                  wrapHeaderText: true,
+                  autoHeaderHeight: true,
                 }}
                 rowHeight={72}
                 headerHeight={48}

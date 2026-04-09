@@ -84,11 +84,13 @@ export const UserProvider = ({ children }) => {
     staleTime: 0,
     retry: false,
   });
+
   const brokerDetailQuery = useQuery({
     queryKey: ["brokerDetail", user?.attributes?.sub],
     queryFn: () => getBrokerDetails(user?.attributes?.sub),
     enabled: userType === "broker" && !!user?.attributes?.sub,
-    staleTime: 1 * 60 * 1000,
+    staleTime: 0,
+    retry: false,
   });
 
   useEffect(() => {

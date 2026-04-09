@@ -186,6 +186,8 @@ export default function DemoRequests() {
                 sortable: true,
                 resizable: true,
                 unSortIcon: true,
+                wrapHeaderText: true,
+                autoHeaderHeight: true,
               }}
               headerHeight={48}
               domLayout="autoHeight"
