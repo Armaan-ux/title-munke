@@ -860,6 +860,8 @@ function Agents() {
   const [selectedUser, setSelectedUser] = useState({});
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+  const [isReinviteDialogOpen, setIsReinviteDialogOpen] = useState(false);
+  const [userToReinvite, setUserToReinvite] = useState(null);
   const [statusFilter, setStatusFilter] = useState("ALL");
 
   useEffect(() => {
@@ -953,7 +955,10 @@ function Agents() {
                   size="icon"
                   className="text-md"
                   variant="ghost"
-                  onClick={() => reinviteMutation.mutate({ email: item.email })}
+                  onClick={() => {
+                    setUserToReinvite(item);
+                    setIsReinviteDialogOpen(true);
+                  }}
                   disabled={reinviteMutation.isPending}
                 >
                   <UserPlus />
@@ -1115,6 +1120,23 @@ function Agents() {
         isLoading={deleteUserMutation?.isPending}
         title="Delete Agent"
         description={`Are you sure you want to delete ${userToDelete?.name || "this agent"}? This action cannot be undone.`}
+      />
+
+      <ConfirmDeleteModal
+        open={isReinviteDialogOpen}
+        onClose={() => setIsReinviteDialogOpen(false)}
+        onConfirm={() => {
+          if (userToReinvite) {
+            reinviteMutation.mutate({ email: userToReinvite.email }, {
+              onSettled: () => setIsReinviteDialogOpen(false)
+            });
+          }
+        }}
+        isLoading={reinviteMutation?.isPending}
+        title="Reinvite Agent"
+        description={`Are you sure you want to send a reinvitation email to ${userToReinvite?.name || userToReinvite?.agentName || "this agent"}?`}
+        confirmText="Reinvite"
+        loadingText="Sending..."
       />
     </>
   );

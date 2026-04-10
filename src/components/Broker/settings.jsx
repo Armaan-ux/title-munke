@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Setting from "@/components/common/settings";
 import ProfileSetting from "@/components/common/profile-setting";
 import Notification from "@/components/common/notification-setting";
@@ -25,7 +25,14 @@ const agentTypes = [
 ];
 
 export default function ManageAgents() {
-  const [activeTab, setActiveTab] = useState(agentTypes[0]);
+  const [activeTab, setActiveTab] = useState(() => {
+    const savedTabId = localStorage.getItem("brokerSettingsActiveTab");
+    return agentTypes.find((tab) => tab.id === savedTabId) || agentTypes[0];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("brokerSettingsActiveTab", activeTab.id);
+  }, [activeTab]);
   const [editProfile, setIsProfile] = useState(false);
 
   return (

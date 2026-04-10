@@ -89,13 +89,16 @@ const AgentStatusRenderer = (props) => {
 };
 
 const ReinviteRenderer = (props) => {
-  const { reinviteMutation } = props;
+  const { reinviteMutation, setUserToReinvite, setIsReinviteDialogOpen } = props;
   if (props.data?.status !== "UNCONFIRMED") return null;
   return (
     <div className="flex items-center justify-center h-full">
       <UserPlus
         className="w-5 h-5 cursor-pointer"
-        onClick={() => reinviteMutation?.mutate({ email: props.data?.email })}
+        onClick={() => {
+          setUserToReinvite(props.data);
+          setIsReinviteDialogOpen(true);
+        }}
       />
     </div>
   );
@@ -217,6 +220,8 @@ function Agents() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+  const [isReinviteDialogOpen, setIsReinviteDialogOpen] = useState(false);
+  const [userToReinvite, setUserToReinvite] = useState(null);
   const underOrganisation = brokerDetail?.isUnderOrganisation;
 
   const bulkUploadMutation = useMutation({
@@ -341,7 +346,7 @@ function Agents() {
         valueGetter: (params) => params.data?.agentName || "-",
         flex: 1,
         minWidth: 160,
-         wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
       {
@@ -363,7 +368,7 @@ function Agents() {
             : "-",
         flex: 1,
         minWidth: 180,
-         wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
       {
@@ -377,7 +382,7 @@ function Agents() {
         headerName: "Reinvite",
         field: "reinvite",
         cellRenderer: ReinviteRenderer,
-        cellRendererParams: { reinviteMutation },
+        cellRendererParams: { reinviteMutation, setUserToReinvite, setIsReinviteDialogOpen },
         flex: 0.7,
         minWidth: 140,
         width: 140,
@@ -459,7 +464,7 @@ function Agents() {
                 <a
                   href={
                     underOrganisation ||
-                    brokerDetail?.planType === "EXPLORE_PLAN"
+                      brokerDetail?.planType === "EXPLORE_PLAN"
                       ? undefined
                       : "https://title-search-storage.s3.us-east-1.amazonaws.com/Bulk+Upload+Template.xlsx"
                   }
@@ -516,36 +521,51 @@ function Agents() {
               </div>
             ) : (
               <div className="ag-theme-quartz custom-ag-grid" style={{ width: "100%" }}>
-               
-                  <AgGridReact
-                    rowData={rowData}
-                    columnDefs={columnDefs}
-                    defaultColDef={{
-                      flex: 1,
-                      minWidth: 120,
-                      filter: false,
-                      sortable: true,
-                      resizable: true,
-                      unSortIcon: true,
-                      wrapHeaderText: true,
-                      autoHeaderHeight: true,
-                    }}
-                    rowHeight={72}
-                    headerHeight={48}
-                    domLayout="autoHeight"
-                    animateRows={true}
-                    enableCellTextSelection={true}
-                    ensureDomOrder={true}
-                    suppressCellFocus={true}
-                    overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
-                  />
-                
+
+                <AgGridReact
+                  rowData={rowData}
+                  columnDefs={columnDefs}
+                  defaultColDef={{
+                    flex: 1,
+                    minWidth: 120,
+                    filter: false,
+                    sortable: true,
+                    resizable: true,
+                    unSortIcon: true,
+                    wrapHeaderText: true,
+                    autoHeaderHeight: true,
+                  }}
+                  rowHeight={72}
+                  headerHeight={48}
+                  domLayout="autoHeight"
+                  animateRows={true}
+                  enableCellTextSelection={true}
+                  ensureDomOrder={true}
+                  suppressCellFocus={true}
+                  overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+                />
+
               </div>
             )}
           </>
         )}
       </div>
-
+      <ConfirmDeleteModal
+        open={isReinviteDialogOpen}
+        onClose={() => setIsReinviteDialogOpen(false)}
+        onConfirm={() => {
+          if (userToReinvite) {
+            reinviteMutation.mutate({ email: userToReinvite.email }, {
+              onSettled: () => setIsReinviteDialogOpen(false)
+            });
+          }
+        }}
+        isLoading={reinviteMutation?.isPending}
+        title="Reinvite Agent"
+        description={`Are you sure you want to send a reinvitation email to ${userToReinvite?.name || userToReinvite?.agentName || "this agent"}?`}
+        confirmText="Reinvite"
+        loadingText="Sending..."
+      />
       <ConfirmDeleteModal
         open={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
@@ -654,7 +674,7 @@ function UnassignedAgents() {
         flex: 1,
         minWidth: 160,
         filter: false,
-         wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
       {
@@ -663,7 +683,7 @@ function UnassignedAgents() {
         flex: 1,
         minWidth: 200,
         filter: false,
-         wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
       {
@@ -672,7 +692,7 @@ function UnassignedAgents() {
         flex: 1,
         minWidth: 160,
         filter: false,
-         wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
       {
@@ -684,7 +704,7 @@ function UnassignedAgents() {
         minWidth: 140,
         filter: false,
         sortable: false,
-         wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
       {
@@ -732,27 +752,27 @@ function UnassignedAgents() {
               </div>
             ) : (
               <div className="ag-theme-quartz custom-ag-grid" style={{ width: "100%" }}>
-               
-                  <AgGridReact
-                    rowData={rowData}
-                    columnDefs={columnDefs}
-                    defaultColDef={{
-                      flex: 1,
-                      minWidth: 120,
-                      filter: true,
-                      sortable: true,
-                      resizable: true,
-                      unSortIcon: true,
-                      wrapHeaderText: true,
-                      autoHeaderHeight: true,
-                    }}
-                    rowHeight={72}
-                    headerHeight={48}
-                    domLayout="autoHeight"
-                    animateRows={true}
-                    overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
-                  />
-                
+
+                <AgGridReact
+                  rowData={rowData}
+                  columnDefs={columnDefs}
+                  defaultColDef={{
+                    flex: 1,
+                    minWidth: 120,
+                    filter: true,
+                    sortable: true,
+                    resizable: true,
+                    unSortIcon: true,
+                    wrapHeaderText: true,
+                    autoHeaderHeight: true,
+                  }}
+                  rowHeight={72}
+                  headerHeight={48}
+                  domLayout="autoHeight"
+                  animateRows={true}
+                  overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+                />
+
               </div>
             )}
           </>

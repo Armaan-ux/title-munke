@@ -27,6 +27,13 @@ function ResetPassword({ username, password }) {
   };
   const handlePasswordReset = async (e) => {
     e.preventDefault();
+    setError("");
+    
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#.])[A-Za-z\d@$!%*?&#.]{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      setError("Password must be 8 characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character.");
+      return;
+    }
     try {
       setLoading(true);
       const user = await Auth.signIn(username, password);

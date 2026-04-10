@@ -206,6 +206,7 @@ function SubscriptionSignup() {
     mutationFn: (email) => resendConfirmationCode(email),
     onSuccess: () => {
       setCooldown(30); // start 30-second timer
+      toast.success("Resent code successfully send");
     },
     onError: (error) => {
       console.log("error", error);

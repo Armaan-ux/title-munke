@@ -1,3 +1,4 @@
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { navItems } from "@/utils/constant";
 import { ArrowRight, Menu } from "lucide-react";
@@ -16,15 +17,53 @@ import {
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const scrollToSection = (id) => {
-      navigate("/");
-      setTimeout(() => {
-        const section = document.getElementById(id);
-        if (section) {
-          section.scrollIntoView({ behavior: "smooth", block: "start" });
+  const [activeSection, setActiveSection] = useState("");
+  const isScrolling = useRef(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isScrolling.current) return;
+
+      const sections = navItems.map((item) => document.getElementById(item.path)).filter(Boolean);
+      let currentSection = "";
+
+      // Look slightly further down the screen to trigger earlier when scrolling down
+      for (const section of sections) {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= 150 && rect.bottom >= 150) {
+          currentSection = section.id;
+          break;
         }
-      }, 100);
-    
+      }
+
+      if (window.scrollY === 0) {
+        currentSection = navItems[0]?.path;
+      }
+
+      setActiveSection((prev) => currentSection ? currentSection : prev);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // Call once on mount
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToSection = (id) => {
+    navigate("/");
+    setActiveSection(id);
+    isScrolling.current = true;
+    setTimeout(() => {
+      const section = document.getElementById(id);
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      // Unlock scroll tracking after animation completes
+      setTimeout(() => {
+        isScrolling.current = false;
+      }, 1000);
+    }, 100);
+
   };
 
   return (
@@ -41,7 +80,10 @@ export default function Navbar() {
               <li
                 onClick={() => scrollToSection(item.path)}
                 key={item.name}
-                className="text-[#554536] hover:text-tertiary transition-all text-lg cursor-pointer"
+                className={`transition-all text-lg cursor-pointer ${activeSection === item.path
+                    ? "text-tertiary border-b-2 border-tertiary pb-1"
+                    : "text-[#554536] hover:text-tertiary"
+                  }`}
               >
                 {item.name}
               </li>
@@ -80,7 +122,10 @@ export default function Navbar() {
                     {navItems.map((item) => (
                       <li
                         key={item.name}
-                        className="text-[#554536] text-lg"
+                        className={`text-lg cursor-pointer transition-all ${activeSection === item.path
+                            ? "text-tertiary border-b-2 border-tertiary w-max pb-1"
+                            : "text-[#554536]"
+                          }`}
                         onClick={() => {
                           scrollToSection(item.path);
                         }}

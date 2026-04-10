@@ -279,13 +279,13 @@ export default function Home() {
             ))}
           </ul>
           <div className="space-x-3">
-            <Button
+            {/* <Button
               size="lg"
               variant="outline"
               className="text-primary border-primary outline-primary hover:scale-105"
             >
               View More
-            </Button>
+            </Button> */}
             <Button
               size="lg"
               className="hover:scale-105"
@@ -886,7 +886,7 @@ export default function Home() {
 
       {/* Back to Top */}
       <div
-        className={`fixed bottom-2 right-2 z-10 flex items-center gap-2 p-3 text-secondary pt-8 hover:opacity-100 ${showBackToTop ? "opacity-40" : "opacity-0"
+        className={`fixed bottom-2 right-2 z-10 flex items-center gap-2 p-3 text-secondary pt-8 hover:opacity-100 ${showBackToTop ? "opacity-60" : "opacity-0"
           } transition-all `}
       >
         <p className="hidden md:block">Back to top</p>

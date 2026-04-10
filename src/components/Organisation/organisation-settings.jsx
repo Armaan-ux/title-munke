@@ -1,6 +1,6 @@
 import Billing from "@/components/common/billing";
 import ProfileSetting from "@/components/common/profile-setting";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AdvancedSettings from "../common/AdvancedSettings";
 
 const agentTypes = [
@@ -19,7 +19,15 @@ const agentTypes = [
 ];
 
 export default function AdminSettings() {
-  const [activeTab, setActiveTab] = useState(agentTypes[0]);
+  const [activeTab, setActiveTab] = useState(() => {
+    const savedTabId = localStorage.getItem("orgSettingsActiveTab");
+    return agentTypes.find((tab) => tab.id === savedTabId) || agentTypes[0];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("orgSettingsActiveTab", activeTab.id);
+  }, [activeTab]);
+
   const [editProfile, setIsProfile] = useState(false);
 
   return (

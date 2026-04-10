@@ -412,7 +412,7 @@ function AdminBrokersList() {
 // ─── Agents ───────────────────────────────────────────────────────────────────
 
 const AgentReinviteRenderer = (props) => {
-  const { reinviteMutation } = props;
+  const { reinviteMutation, setUserToReinvite, setIsReinviteDialogOpen } = props;
   if (props.data?.status !== "UNCONFIRMED") return null;
   return (
     <div className="flex items-center justify-center h-full">
@@ -420,7 +420,10 @@ const AgentReinviteRenderer = (props) => {
         size="icon"
         className="text-md"
         variant="ghost"
-        onClick={() => reinviteMutation.mutate({ email: props.data?.email })}
+        onClick={() => {
+          setUserToReinvite(props.data);
+          setIsReinviteDialogOpen(true);
+        }}
         disabled={reinviteMutation.isPending}
       >
         <UserPlus />
@@ -480,6 +483,8 @@ function Agents() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
   const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false);
+  const [isReinviteDialogOpen, setIsReinviteDialogOpen] = useState(false);
+  const [userToReinvite, setUserToReinvite] = useState(null);
 
   const { deleteUserMutation } = useDeleteUser(() => {
     handleFetchAgentListing(true);
@@ -565,7 +570,7 @@ function Agents() {
         headerName: "Reinvite",
         field: "reinvite",
         cellRenderer: AgentReinviteRenderer,
-        cellRendererParams: { reinviteMutation },
+        cellRendererParams: { reinviteMutation, setUserToReinvite, setIsReinviteDialogOpen },
         flex: 1,
         minWidth: 140,
         filter: false,
@@ -721,6 +726,23 @@ function Agents() {
         isLoading={deleteUserMutation?.isPending}
         title="Delete Agent"
         description={`Are you sure you want to delete ${userToDelete?.name || "this agent"}? This action cannot be undone.`}
+      />
+
+      <ConfirmDeleteModal
+        open={isReinviteDialogOpen}
+        onClose={() => setIsReinviteDialogOpen(false)}
+        onConfirm={() => {
+          if (userToReinvite) {
+            reinviteMutation.mutate({ email: userToReinvite.email }, {
+              onSettled: () => setIsReinviteDialogOpen(false)
+            });
+          }
+        }}
+        isLoading={reinviteMutation?.isPending}
+        title="Reinvite Agent"
+        description={`Are you sure you want to send a reinvitation email to ${userToReinvite?.name || userToReinvite?.agentName || "this agent"}?`}
+        confirmText="Reinvite"
+        loadingText="Sending..."
       />
     </>
   );

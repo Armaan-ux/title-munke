@@ -5,7 +5,7 @@ import AuditLogsForAgents from "./audit-logs-agent";
 const AuditLogs = () => {
   const agentTypes = [
     {
-      name: "Broker",
+      name: "Brokers",
       id: "brokers",
     },
     {
@@ -21,18 +21,17 @@ const AuditLogs = () => {
         {agentTypes.map((item, index) => (
           <button
             key={item.id}
-            className={` ${
-              activeTab.id === item.id
+            className={` ${activeTab.id === item.id
                 ? "bg-tertiary text-white"
                 : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] "
-            } transition-all  rounded-full px-10 py-3 `}
+              } transition-all  rounded-full px-10 py-3 `}
             onClick={() => setActiveTab(item)}
           >
             {item.name}
           </button>
         ))}
       </div>
-      
+
       <div >
         {activeTab.id === "brokers" && <AuditLogsForBroker />}
         {activeTab.id === "agents" && <AuditLogsForAgents />}

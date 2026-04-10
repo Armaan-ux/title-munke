@@ -62,7 +62,9 @@ export default function AddAgentByBrokerModal({
     mutationFn: (payload) => updateAgentDetail(payload),
     onSuccess: () => {
       onOpenChange();
+      toast.success("Agent Updated Successfully.");
       invalidateFun();
+
     },
     onError: (error) => {
       toast.error(
