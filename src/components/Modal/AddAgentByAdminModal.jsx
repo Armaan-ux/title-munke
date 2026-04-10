@@ -92,7 +92,7 @@ function AddAgentByAdminModal({ isOpen, setIsOpen, brokers }) {
               <SelectTrigger className="w-full !h-12 border-[#BEA999] rounded-lg">
                 <SelectValue placeholder="Select Broker" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[100]">
                 {
                   brokers?.map((item) => (
                     <SelectItem key={item.id} value={item.id}>

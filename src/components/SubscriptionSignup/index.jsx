@@ -113,14 +113,14 @@ function SubscriptionSignup() {
     mutationFn: (data) => registerUser(data),
     onSuccess: (response) => {
       setCodeModal(true);
-      const userId = response?.id 
+      const userId = response?.id
       const usertype = response?.__typename.toLowerCase()
       saveSubscriptionData({ userId, usertype }, window.location.pathname);
     },
     onError: (error) => {
       setError(
         error?.response?.data?.message ||
-          "Something went wrong. Please try again later.",
+        "Something went wrong. Please try again later.",
       );
     },
   });
@@ -240,6 +240,7 @@ function SubscriptionSignup() {
         onVerify={submitModalHandler}
         onResend={handleResend}
         confirmCodeMutation={confirmCodeMutation}
+        email={getValues("email")}
       />
       <div className="relative min-h-dvh w-full overflow-hidden bg-[#2b140c]">
         {/* background */}
@@ -375,9 +376,9 @@ function SubscriptionSignup() {
                         name="name"
                         control={control}
                         render={({ field }) => (
-                          <Input 
-                            placeholder="John Marks" 
-                            {...field} 
+                          <Input
+                            placeholder="John Marks"
+                            {...field}
                             maxLength={45}
                           />
                         )}

@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -42,7 +42,7 @@ import {
 import { cn } from "@/lib/utils";
 
 import { useMutation } from "@tanstack/react-query";
-import { demoRequest, hardDeleteUser } from "../service/userAdmin";
+import { demoRequest, hardDeleteUser, updateUserStatus } from "../service/userAdmin";
 import { Controller, useForm } from "react-hook-form";
 import { demoRequestSchema } from "@/formSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -51,6 +51,7 @@ import { toast } from "react-toastify";
 import Pricing from "../Pricing";
 import ResumeSubscriptionModal from "../Modal/ResumeSubscriptionModal";
 import { hasSavedSubscription, getSubscriptionData, clearSubscriptionData } from "@/utils/subscriptionStorage";
+import { useUser } from "@/context/usercontext";
 const defaultDemoData = {
   name: "",
   state: "",
@@ -64,7 +65,9 @@ export default function Home() {
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [emblaRef] = useEmblaCarousel({ dragFree: true });
   const navigate = useNavigate()
+  const location = useLocation();
   const [showResumeModal, setShowResumeModal] = useState(false);
+  const { signIn } = useUser();
 
   useEffect(() => {
     // Show resume modal if there's a saved session
@@ -123,6 +126,18 @@ export default function Home() {
       toast.error("Request submission failed");
     },
   });
+
+  useEffect(() => {
+    if (location.state?.scrollTo) {
+      // Small timeout ensures the page has rendered before scrolling
+      setTimeout(() => {
+        const element = document.getElementById(location.state.scrollTo);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 100);
+    }
+  }, [location.state]);
   const scrollToSection = (id) => {
     const section = document.getElementById(id);
     if (section) {

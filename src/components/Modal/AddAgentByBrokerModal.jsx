@@ -43,7 +43,7 @@ export default function AddAgentByBrokerModal({
     reset,
     formState: { errors, isSubmitting },
   } = useForm({
-    defaultValues: { name: "", email: "", searchLimit: 10 },
+    defaultValues: { name: "", email: "", searchLimit: "10" },
     resolver: zodResolver(newAgentSchema),
   });
 
@@ -67,7 +67,7 @@ export default function AddAgentByBrokerModal({
     onError: (error) => {
       toast.error(
         error?.response?.data?.error ||
-          "Something went wrong while adding new user. Please try again.",
+        "Something went wrong while adding new user. Please try again.",
       );
     },
   });
@@ -92,7 +92,6 @@ export default function AddAgentByBrokerModal({
       );
       toast.success("Agent Created Successfully.");
       const newAgent = response.user;
-      console.log("newAgent", newAgent);
       setUser((prev) => [
         ...prev,
         { ...newAgent, totalSearches: 0, agentName: name },
@@ -105,6 +104,7 @@ export default function AddAgentByBrokerModal({
           detail: `Broker has created the agent`,
         });
       }
+      invalidateFun();
       reset();
       onOpenChange();
     } catch (err) {
@@ -182,14 +182,14 @@ export default function AddAgentByBrokerModal({
               name="searchLimit"
               control={control}
               render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select onValueChange={field.onChange} value={field.value?.toString()}>
                   <SelectTrigger className="h-[38px] w-full border border-[#E6DFDB] text-secondary focus:ring-0 focus:ring-offset-0">
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
 
                   <SelectContent className="text-secondary">
                     {[10, 20, 30, 50, 100].map((limit) => (
-                      <SelectItem key={limit} value={limit}>
+                      <SelectItem key={limit} value={limit.toString()}>
                         {limit}
                       </SelectItem>
                     ))}

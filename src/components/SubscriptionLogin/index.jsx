@@ -70,7 +70,7 @@ function SubscriptionLogin() {
       const userId = signedInUser?.attributes?.sub;
       const userType =
         signedInUser?.signInUserSession?.idToken?.payload[
-          "cognito:groups"
+        "cognito:groups"
         ]?.[0];
       await handleCreateAuditLog(
         "login",
@@ -297,9 +297,12 @@ function SubscriptionLogin() {
                   </p> */}
                   <div className="text-center my-4 text-sm">
                     <span>Don't have an account? </span>
-                    <Link to="/" className="text-secondary">
+                    <span
+                      onClick={() => navigate("/", { state: { scrollTo: "pricing" } })}
+                      className="text-secondary cursor-pointer"
+                    >
                       Register Now
-                    </Link>
+                    </span>
                   </div>
                 </form>
               </div>

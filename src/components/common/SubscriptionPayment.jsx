@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { saveSubscriptionData } from "@/utils/subscriptionStorage";
+import { clearSubscriptionData, saveSubscriptionData } from "@/utils/subscriptionStorage";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../../context/usercontext";
 import {
@@ -66,6 +66,7 @@ function SubscriptionPayment() {
   // if (isReset) return <ResetPassword username={username} password={password} />;
 
   const skipPaymentHandler = () => {
+    clearSubscriptionData()
     navigate("/" + user.signInUserSession.idToken.payload["cognito:groups"][0]);
   };
   return (
@@ -311,9 +312,12 @@ function SubscriptionPayment() {
                   </p> */}
                   <div className="text-center my-4 text-sm">
                     <span>Don't have an account? </span>
-                    <Link to="/" className="text-secondary">
+                    <span
+                      onClick={() => navigate("/", { state: { scrollTo: "pricing" } })}
+                      className="text-secondary cursor-pointer"
+                    >
                       Register Now
-                    </Link>
+                    </span>
                   </div>
                 </div>
               </div>

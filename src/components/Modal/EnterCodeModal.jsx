@@ -9,12 +9,12 @@ export function EnterCodeModal({
   onVerify,
   onResend,
   confirmCodeMutation,
+  email
 }) {
-  console.log("confirmCodeMutation.error.response", confirmCodeMutation.error);
   const [code, setCode] = useState("");
   if (!open) return null;
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={() => { }} >
       <div
         className="fixed inset-0 z-40 flex items-center justify-center"
         style={{
@@ -25,6 +25,8 @@ export function EnterCodeModal({
       >
         <DialogContent
           showCloseButton={false}
+          onInteractOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
           className="relative z-50 w-[340px] rounded-2xl bg-white border-none p-6"
           style={{
             top: "50% !important",
@@ -45,7 +47,10 @@ export function EnterCodeModal({
           </h2>
 
           <p className="text-center text-sm text-[#6B4F3F] ">
-            Please enter the code sent to your email.
+            Please enter the code sent to your email
+          </p>
+          <p className="text-center text-sm text-[#6B4F3F] ">
+            {email}
           </p>
 
           <p className="text-center text-xs text-[#6B4F3F]">

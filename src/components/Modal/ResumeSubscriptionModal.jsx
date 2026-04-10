@@ -13,7 +13,7 @@ import { Loader2 } from "lucide-react";
 const ResumeSubscriptionModal = ({ open, onResume, onStartFresh, isLoading }) => {
   return (
     <Dialog open={open}>
-      <DialogContent 
+      <DialogContent
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
         className="sm:max-w-md bg-[#fffaf3] border-none shadow-2xl rounded-2xl p-8 [&>button]:hidden"

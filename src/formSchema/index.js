@@ -4,7 +4,7 @@ export const newAgentSchema = z.object({
   name: z
     .string()
     .min(4, "Name must be at least 4 characters.")
-    .max(45, "Name must be at most 45 characters"),
+    .max(45, "Name must be at most 45 characters").regex(/^[a-zA-Z\s]+$/, "Name must contain only letters"),
 
   email: z.string().email("Invalid email format"),
 
@@ -19,7 +19,7 @@ export const baseUserSchema = z.object({
     .string()
     .trim()
     .min(4, "Name must be at least 4 characters.")
-    .max(45, "Name must be at most 45 characters"),
+    .max(45, "Name must be at most 45 characters").regex(/^[a-zA-Z\s]+$/, "Name must contain only letters"),
   email: z.string().trim().email("Invalid email format"),
   message: z.string().trim().optional(),
 });
@@ -41,8 +41,8 @@ export const demoRequestSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(1, "Name is required")
-    .max(45, "Name must be at most 45 characters"),
+    .min(4, "Name must be at least 4 characters")
+    .max(45, "Name must be at most 45 characters").regex(/^[a-zA-Z\s]+$/, "Name must contain only letters"),
   state: z.string().trim().nonempty("State is required"),
   email: z
     .string()
@@ -69,7 +69,7 @@ export const signupSchema = z
       .string()
       .min(4, "Name must be at least 4 characters")
       .trim()
-      .max(45, "Name must be at most 45 characters"),
+      .max(45, "Name must be at most 45 characters").regex(/^[a-zA-Z\s]+$/, "Name must contain only letters"),
 
     phoneNumber: z
       .string()
@@ -106,7 +106,7 @@ export const addAgentSchema = z.object({
     .string()
     .min(4, "Name must be at least 4 characters")
     .trim()
-    .max(45, "Name must be at most 45 characters"),
+    .max(45, "Name must be at most 45 characters").regex(/^[a-zA-Z\s]+$/, "Name must contain only letters"),
 
   phoneNumber: z.string().length(10, "Phone number must be 10 digits"),
 
@@ -125,7 +125,7 @@ export const addBrokerSchema = z.object({
     .string()
     .min(4, "Name must be at least 4 characters")
     .trim()
-    .max(45, "Name must be at most 45 characters"),
+    .max(45, "Name must be at most 45 characters").regex(/^[a-zA-Z\s]+$/, "Name must contain only letters"),
 
   phoneNumber: z.string().length(10, "Phone number must be 10 digits"),
 
@@ -144,7 +144,7 @@ export const addOrgAgentSchema = z.object({
     .string()
     .min(4, "Name must be at least 4 characters")
     .trim()
-    .max(45, "Name must be at most 45 characters"),
+    .max(45, "Name must be at most 45 characters").regex(/^[a-zA-Z\s]+$/, "Name must contain only letters"),
 
   phoneNumber: z.string().length(10, "Phone number must be 10 digits"),
 
