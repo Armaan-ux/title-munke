@@ -26,9 +26,18 @@ const DocTypeRenderer = (props) => (
   <span className="uppercase">Document {props.node.rowIndex + 1}</span>
 );
 
-const DateRecordedRenderer = (props) => (
-  <span>{format(props.data?.lastEdited, "dd MMM yyyy")}</span>
-);
+
+const DateRecordedRenderer = (props) => {
+  const value = props?.data?.date_of_record;
+
+  return (
+    <span>
+      {value === null || value === "null" || value === undefined
+        ? "-"
+        : value}
+    </span>
+  );
+};
 
 const ActionRenderer = (props) => (
   <div className="flex items-center justify-center h-full">
@@ -130,7 +139,7 @@ const PropertyDetails = () => {
                   <span className="font-semibold text-[#4C0D0D]">
                     {
                       propertyDetailQuery?.data?.propertySummary?.[
-                        "Date of Search"
+                      "Date of Search"
                       ]
                     }
                   </span>
@@ -141,15 +150,14 @@ const PropertyDetails = () => {
                 </p>
               </div>
               <Badge
-                className={`${
-                  propertyDetailQuery?.data?.status === "SUCCESS"
+                className={`${propertyDetailQuery?.data?.status === "SUCCESS"
                     ? "bg-[#E9F3E9] text-[#1E8221]"
                     : propertyDetailQuery?.data?.status === "Unconfirmed"
                       ? "bg-[#FFF3D9] text-[#A2781E]"
                       : propertyDetailQuery?.data?.status === "IN_PROGRESS"
                         ? "bg-[#fff6e2] text-[#ffa200]"
                         : "bg-[#FFE3E2] text-[#FF5F59]"
-                } text-[13px] font-medium px-3 py-1 rounded-md`}
+                  } text-[13px] font-medium px-3 py-1 rounded-md`}
               >
                 {propertyDetailQuery?.data.status}
               </Badge>
@@ -241,7 +249,7 @@ const PropertyDetails = () => {
                       <p className="text-[#7A7676]">
                         {
                           propertyDetailQuery?.data?.propertySummary?.[
-                            "Date of Search"
+                          "Date of Search"
                           ]
                         }
                       </p>
@@ -267,7 +275,7 @@ const PropertyDetails = () => {
                         <p className="text-[#7A7676]">
                           {
                             propertyDetailQuery?.data?.propertySummary?.[
-                              "Tax Assessment"
+                            "Tax Assessment"
                             ]
                           }
                         </p>
@@ -294,11 +302,11 @@ const PropertyDetails = () => {
 
                   <div className="ag-theme-quartz custom-ag-grid overflow-hidden border border-[#F1EDEA] rounded-xl">
                     {propertyDetailQuery?.data?.status === "IN_PROGRESS" &&
-                    pdfDocuments.length === 0 ? (
+                      pdfDocuments.length === 0 ? (
                       <div className="flex items-center justify-center py-6 text-[#4C0D0D] gap-2">
                         <Loader2 className="w-4 h-4 animate-spin" />
                       </div>
-                    ) :  (
+                    ) : (
                       <>
                         <AgGridReact
                           rowData={pdfDocuments}
@@ -399,15 +407,14 @@ const PropertyDetails = () => {
                 <br />
                 Status:{" "}
                 <Badge
-                  className={`${
-                    propertyDetailQuery?.data?.status === "SUCCESS"
+                  className={`${propertyDetailQuery?.data?.status === "SUCCESS"
                       ? "bg-[#E9F3E9] text-[#1E8221]"
                       : propertyDetailQuery?.data?.status === "Unconfirmed"
                         ? "bg-[#FFF3D9] text-[#A2781E]"
                         : propertyDetailQuery?.data?.status === "IN_PROGRESS"
                           ? "bg-[#fff6e2] text-[#ffa200]"
                           : "bg-[#FFE3E2] text-[#FF5F59]"
-                  } text-[13px] font-medium px-3 py-1 rounded-md`}
+                    } text-[13px] font-medium px-3 py-1 rounded-md`}
                 >
                   {propertyDetailQuery?.data.status === "IN_PROGRESS"
                     ? "In Progress"
