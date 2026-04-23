@@ -932,7 +932,7 @@ export async function hardDeleteUser(userId, email, userType) {
     payload,
     "Success in hardDeleteUser:",
     "Error in hardDeleteUser:",
-    "/hard-delete-user",
+    "/start-fresh-user",
   );
 }
 
