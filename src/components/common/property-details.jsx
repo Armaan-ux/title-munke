@@ -26,15 +26,12 @@ const DocTypeRenderer = (props) => (
   <span className="uppercase">Document {props.node.rowIndex + 1}</span>
 );
 
-
 const DateRecordedRenderer = (props) => {
   const value = props?.data?.date_of_record;
 
   return (
     <span>
-      {value === null || value === "null" || value === undefined
-        ? "-"
-        : value}
+      {value === null || value === "null" || value === undefined ? "-" : value}
     </span>
   );
 };
@@ -62,7 +59,7 @@ const PropertyDetails = () => {
       query?.state?.data?.status === "IN_PROGRESS" ? 5000 : false,
     enabled: !!id,
   });
-
+  console.log("propertyDetailQuery>>>>>>>", propertyDetailQuery?.data);
   const columnDefs = useMemo(
     () => [
       {
@@ -139,25 +136,26 @@ const PropertyDetails = () => {
                   <span className="font-semibold text-[#4C0D0D]">
                     {
                       propertyDetailQuery?.data?.propertySummary?.[
-                      "Date of Search"
+                        "Date of Search"
                       ]
                     }
                   </span>
-                  | Reference ID:
+                  | Search ID:
                   <span className="font-semibold text-[#4C0D0D]">
-                    SR-230145(pending)
+                    {propertyDetailQuery?.data?.searchId}
                   </span>
                 </p>
               </div>
               <Badge
-                className={`${propertyDetailQuery?.data?.status === "SUCCESS"
+                className={`${
+                  propertyDetailQuery?.data?.status === "SUCCESS"
                     ? "bg-[#E9F3E9] text-[#1E8221]"
                     : propertyDetailQuery?.data?.status === "Unconfirmed"
                       ? "bg-[#FFF3D9] text-[#A2781E]"
                       : propertyDetailQuery?.data?.status === "IN_PROGRESS"
                         ? "bg-[#fff6e2] text-[#ffa200]"
                         : "bg-[#FFE3E2] text-[#FF5F59]"
-                  } text-[13px] font-medium px-3 py-1 rounded-md`}
+                } text-[13px] font-medium px-3 py-1 rounded-md`}
               >
                 {propertyDetailQuery?.data.status}
               </Badge>
@@ -189,7 +187,9 @@ const PropertyDetails = () => {
                     className={`grid grid-cols-3 gap-8 text-sm text-[#4C0D0D] ${propertyDetailQuery?.data?.status !== "SUCCESS" ? "opacity-5 pointer-events-none" : ""}`}
                   >
                     <div>
-                      <p className="font-semibold uppercase text-sm">Location</p>
+                      <p className="font-semibold uppercase text-sm">
+                        Location
+                      </p>
                       <p className="text-[#7A7676]">
                         {
                           propertyDetailQuery?.data?.propertySummary
@@ -207,13 +207,17 @@ const PropertyDetails = () => {
                       <p className="text-[#7A7676]">Allentown, Lehigh County</p>
                     </div>
                     <div>
-                      <p className="font-semibold uppercase text-sm">Property</p>
+                      <p className="font-semibold uppercase text-sm">
+                        Property
+                      </p>
                       <p className="text-[#7A7676]">
                         {propertyDetailQuery?.data?.address}
                       </p>
                     </div>
                     <div>
-                      <p className="font-semibold uppercase text-sm">County, State</p>
+                      <p className="font-semibold uppercase text-sm">
+                        County, State
+                      </p>
                       <p className="text-[#7A7676]">
                         {
                           propertyDetailQuery?.data?.propertySummary
@@ -223,7 +227,9 @@ const PropertyDetails = () => {
                       </p>
                     </div>
                     <div>
-                      <p className="font-semibold uppercase text-sm">Municipality</p>
+                      <p className="font-semibold uppercase text-sm">
+                        Municipality
+                      </p>
                       <p className="text-[#7A7676]">
                         {
                           propertyDetailQuery?.data?.propertySummary
@@ -233,23 +239,29 @@ const PropertyDetails = () => {
                       </p>
                     </div>
                     <div>
-                      <p className="font-semibold uppercase text-sm">PIN/Parcel</p>
+                      <p className="font-semibold uppercase text-sm">
+                        PIN/Parcel
+                      </p>
                       <p className="text-[#7A7676]">
                         {propertyDetailQuery?.data?.propertySummary?.PIN}
                       </p>
                     </div>
                     <div>
-                      <p className="font-semibold uppercase text-sm">Span of Search</p>
+                      <p className="font-semibold uppercase text-sm">
+                        Span of Search
+                      </p>
                       <p className="text-[#7A7676]">
                         {propertyDetailQuery?.data?.span_of_search || ""}
                       </p>
                     </div>
                     <div>
-                      <p className="font-semibold uppercase text-sm">Date of Search</p>
+                      <p className="font-semibold uppercase text-sm">
+                        Date of Search
+                      </p>
                       <p className="text-[#7A7676]">
                         {
                           propertyDetailQuery?.data?.propertySummary?.[
-                          "Date of Search"
+                            "Date of Search"
                           ]
                         }
                       </p>
@@ -271,11 +283,13 @@ const PropertyDetails = () => {
                         </p>
                       </div>
                       <div className="border border-[#F1EDEA] rounded-lg p-4 bg-[#FEFAF5]">
-                        <p className="font-semibold uppercase">Tax Assessment</p>
+                        <p className="font-semibold uppercase">
+                          Tax Assessment
+                        </p>
                         <p className="text-[#7A7676]">
                           {
                             propertyDetailQuery?.data?.propertySummary?.[
-                            "Tax Assessment"
+                              "Tax Assessment"
                             ]
                           }
                         </p>
@@ -302,7 +316,7 @@ const PropertyDetails = () => {
 
                   <div className="ag-theme-quartz custom-ag-grid overflow-hidden border border-[#F1EDEA] rounded-xl">
                     {propertyDetailQuery?.data?.status === "IN_PROGRESS" &&
-                      pdfDocuments.length === 0 ? (
+                    pdfDocuments.length === 0 ? (
                       <div className="flex items-center justify-center py-6 text-[#4C0D0D] gap-2">
                         <Loader2 className="w-4 h-4 animate-spin" />
                       </div>
@@ -326,9 +340,9 @@ const PropertyDetails = () => {
                           domLayout="autoHeight"
                           animateRows={true}
                           overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
-
                         />
-                        {propertyDetailQuery?.data?.status === "IN_PROGRESS" && (
+                        {propertyDetailQuery?.data?.status ===
+                          "IN_PROGRESS" && (
                           <div className="flex items-center justify-center py-3 border-t border-[#F1EDEA] text-[#4C0D0D] gap-2 text-sm">
                             <Loader2 className="w-4 h-4 animate-spin" />
                           </div>
@@ -362,7 +376,9 @@ const PropertyDetails = () => {
                         <StreetView lat={lat} lng={lng} />
                       ) : (
                         <div className="h-[300px] flex items-center justify-center bg-[#F9F6F4] rounded-xl">
-                          <p className="text-[#7A7676]">Street view unavailable</p>
+                          <p className="text-[#7A7676]">
+                            Street view unavailable
+                          </p>
                         </div>
                       )}
                     </div>
@@ -390,7 +406,9 @@ const PropertyDetails = () => {
                         <GoogleMapView lat={lat} lng={lng} />
                       ) : (
                         <div className="h-[300px] flex items-center justify-center bg-[#F9F6F4] rounded-xl">
-                          <p className="text-[#7A7676]">Map location unavailable</p>
+                          <p className="text-[#7A7676]">
+                            Map location unavailable
+                          </p>
                         </div>
                       )}
                     </div>
@@ -403,18 +421,21 @@ const PropertyDetails = () => {
             <div className="flex justify-between items-center mt-4 text-[13px]">
               <p className="text-[#4C0D0D]">
                 Total Documents Completed:{" "}
-                <span className="font-semibold">{pdfDocuments?.length ?? 0}</span>
+                <span className="font-semibold">
+                  {pdfDocuments?.length ?? 0}
+                </span>
                 <br />
                 Status:{" "}
                 <Badge
-                  className={`${propertyDetailQuery?.data?.status === "SUCCESS"
+                  className={`${
+                    propertyDetailQuery?.data?.status === "SUCCESS"
                       ? "bg-[#E9F3E9] text-[#1E8221]"
                       : propertyDetailQuery?.data?.status === "Unconfirmed"
                         ? "bg-[#FFF3D9] text-[#A2781E]"
                         : propertyDetailQuery?.data?.status === "IN_PROGRESS"
                           ? "bg-[#fff6e2] text-[#ffa200]"
                           : "bg-[#FFE3E2] text-[#FF5F59]"
-                    } text-[13px] font-medium px-3 py-1 rounded-md`}
+                  } text-[13px] font-medium px-3 py-1 rounded-md`}
                 >
                   {propertyDetailQuery?.data.status === "IN_PROGRESS"
                     ? "In Progress"
@@ -432,7 +453,10 @@ const PropertyDetails = () => {
                       pdfDocuments?.map?.((item, index) => ({
                         "Sr. No.": index + 1,
                         "Document Type": `Document ${index + 1}`,
-                        "Date Recorded": format(item?.lastEdited, "dd MMM yyyy"),
+                        "Date Recorded": format(
+                          item?.lastEdited,
+                          "dd MMM yyyy",
+                        ),
                         "Download Link": item?.url,
                       })),
                     )
