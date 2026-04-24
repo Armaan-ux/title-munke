@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import axios from "axios";
 import { API, graphqlOperation } from "aws-amplify";
 import { createSearchHistory } from "@/graphql/mutations";
@@ -18,10 +18,14 @@ import {
 } from "../service/userAdmin";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUserIdType } from "@/hooks/useUserIdType";
+import { algoliasearch } from "algoliasearch";
 
 export default function Search({ isIndivisual = false }) {
   const queryClient = useQueryClient();
+  const debounceTimeout = useRef(null);
   const [address, setAddress] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState("");
   const [isChecked, setIsChecked] = useState(false);
@@ -68,6 +72,54 @@ export default function Search({ isIndivisual = false }) {
   //   enabled: userType === "broker",
   // });
 
+  const algoliaClient = algoliasearch(
+    import.meta.env.VITE_ALGOLIA_APP_ID || "",
+    import.meta.env.VITE_ALGOLIA_SEARCH_KEY || "",
+  );
+
+  const fetchSuggestions = async (query) => {
+    if (!query) {
+      setSuggestions([]);
+      return;
+    }
+    try {
+      const response = await algoliaClient.searchSingleIndex({
+        indexName: import.meta.env.VITE_ALGOLIA_INDEX_NAME || "",
+        searchParams: {
+          query: query,
+          hitsPerPage: 5,
+        },
+      });
+      setSuggestions(response.hits);
+    } catch (error) {
+      console.error("Algolia search error:", error);
+    }
+  };
+
+  const handleAddressChange = (e) => {
+    const val = e.target.value;
+    setAddress(val);
+    setShowSuggestions(true);
+
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+    debounceTimeout.current = setTimeout(() => {
+      fetchSuggestions(val);
+    }, 300);
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    // Modify based on the structure of your Algolia index
+    setAddress(
+      suggestion["PROPERTY ADDRESS"] ||
+        suggestion.address ||
+        suggestion.name ||
+        "",
+    );
+    setShowSuggestions(false);
+  };
+
   const clearSearchState = useCallback(() => {
     const searchKeys = [
       "searchAddress",
@@ -82,7 +134,7 @@ export default function Search({ isIndivisual = false }) {
     setProgress("");
     setPercentage(null);
     setZipUrl(null);
-    setIsChecked(false)
+    setIsChecked(false);
     setMessage(
       "Initializing title search... This process may take a few minutes.",
     );
@@ -246,7 +298,7 @@ export default function Search({ isIndivisual = false }) {
       //   "https://jdk8dyza99.execute-api.us-east-1.amazonaws.com/initiate-search",
 
       //   {
-      //     // mode: "INITIATE_SEARCH", 
+      //     // mode: "INITIATE_SEARCH",
       //     pin,
       //     parnum,
       //     address: matched_address,
@@ -269,8 +321,8 @@ export default function Search({ isIndivisual = false }) {
       console.error("Error during search:", error.message);
       toast.error(
         error?.response?.data?.message ||
-        error.message ||
-        "Search failed: Invalid address or server error.",
+          error.message ||
+          "Search failed: Invalid address or server error.",
       );
       setLoading(false);
       clearSearchState();
@@ -340,9 +392,31 @@ export default function Search({ isIndivisual = false }) {
           className="border-none w-full bg-white h-[75px] px-12 md:px-16 pr-12 md:pr-56 py-8 !rounded-[20px] !text-xl placeholder:text-primary text-tertiary shadow-lg"
           placeholder="Enter Address here..."
           value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          disabled={loading || organisationDisabled || brokerDisabled || agentDisabled}
+          onChange={handleAddressChange}
+          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+          onFocus={() => {
+            if (address) setShowSuggestions(true);
+          }}
+          disabled={
+            loading || organisationDisabled || brokerDisabled || agentDisabled
+          }
         />
+        {showSuggestions && suggestions.length > 0 && (
+          <div className="absolute top-[80px] left-0 w-full bg-white rounded-xl shadow-lg z-50 overflow-hidden max-h-[300px] overflow-y-auto">
+            {suggestions.map((suggestion, index) => (
+              <div
+                key={suggestion.objectID || index}
+                className="px-6 py-3 cursor-pointer hover:bg-gray-100 border-b last:border-b-0 text-left text-[#5D4135]"
+                onClick={() => handleSuggestionClick(suggestion)}
+              >
+                {suggestion["PROPERTY ADDRESS"] ||
+                  suggestion.address ||
+                  suggestion.name ||
+                  Object.values(suggestion)[0]}
+              </div>
+            ))}
+          </div>
+        )}
         <div className="!mt-3 text-gray-500">Format: 123 Hill St</div>
       </div>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full max-w-4xl mb-6 ">
