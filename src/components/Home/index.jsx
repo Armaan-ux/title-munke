@@ -1,11 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowRight,
-  ArrowUp,
-  CircleCheck,
-  Download,
-} from "lucide-react";
+import { ArrowRight, ArrowUp, CircleCheck, Download } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import {
   Accordion,
@@ -39,8 +34,6 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
-
-
 export default function Home() {
   const [openReportDialog, setOpenReportDialog] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -66,7 +59,6 @@ export default function Home() {
     <div>
       {/* Announcement */}
 
-      
       <div className=" flex items-center justify-center text-base bg-primary text-primary-foreground text-center px-2 py-1 ">
         <p className="">
           Still doing manual searches?{" "}
@@ -130,7 +122,6 @@ export default function Home() {
           />
         </div>
       </motion.section>
-
 
       {/* About section */}
       <section
@@ -258,51 +249,52 @@ export default function Home() {
             })}
           </div>
         </div>
-      </section> 
+      </section>
 
       {/* Sample Report  */}
 
+      <section
+        className="max-w-[1280px] mx-auto mb-10 md:mb-28 px-4 space-y-10 scroll-mt-20"
+        id="report-preview"
+      >
+        <h2 className="text-h2 mb-12 text-center text-secondary">
+          Sample Report{" "}
+        </h2>
 
-      <section  className="max-w-[1280px] mx-auto mb-10 md:mb-28 px-4 space-y-10 scroll-mt-20" id="report-preview"   >
-          <h2 className="text-h2 mb-12 text-center text-secondary"  >Sample Report </h2>
-
-        
-          {
-            sampleReportItems.map((item, index) => (
-          <motion.div 
-
-            className={`flex flex-col max-sm:min-h-[calc(100vh-90px)] md:max-h-[70vh] overflow-hidden sm:flex-row  md:py-20 rounded-4xl  p-5 md:p-10 gap-4 md:gap-8 sm:justify-center items-center sticky bg-[#F5F0EC] top-[10%] md:top-[15%] ${sampleReportItems.length === index + 1  ? "mb-20":"mb-20 md:mb-44"  }`} 
-            key={index} 
-          > 
-          <div className="py-2 sm:basis-[40%] md:basis-1/2" >
-            <img src={item.img} className="max-w-[11rem]  sm:max-w-[60%] mx-auto min-w-0" alt="documents" />
-          </div>
-          <div className="sm:basis-[60%] md:basis-1/2" >
-            <ListForReport
-              titleClass="lg:text-3xl mb-3 md:mb-8"
-              listClass="lg:text-lg"
-              title={item.title}
-              items={item.content}
-            />
-
-          </div>
+        {sampleReportItems.map((item, index) => (
+          <motion.div
+            className={`flex flex-col max-sm:min-h-[calc(100vh-90px)] md:max-h-[70vh] overflow-hidden sm:flex-row  md:py-20 rounded-4xl  p-5 md:p-10 gap-4 md:gap-8 sm:justify-center items-center sticky bg-[#F5F0EC] top-[10%] md:top-[15%] ${sampleReportItems.length === index + 1 ? "mb-20" : "mb-20 md:mb-44"}`}
+            key={index}
+          >
+            <div className="py-2 sm:basis-[40%] md:basis-1/2">
+              <img
+                src={item.img}
+                className="max-w-[11rem]  sm:max-w-[60%] mx-auto min-w-0"
+                alt="documents"
+              />
+            </div>
+            <div className="sm:basis-[60%] md:basis-1/2">
+              <ListForReport
+                titleClass="lg:text-3xl mb-3 md:mb-8"
+                listClass="lg:text-lg"
+                title={item.title}
+                items={item.content}
+              />
+            </div>
           </motion.div>
-          ))
-          }
-          <div className="flex justify-center w-full" >
-            <Link to="/Sample Docs.zip" target="_blank" download>
-            <Button
-              className="hover:scale-105"
-              size="lg"
-              >Download Sample Report <Download /></Button>
-            </Link>
-          </div>
+        ))}
+        <div className="flex justify-center w-full">
+          <a href="/SampleDocs.zip" download>
+            <Button className="hover:scale-105" size="lg">
+              Download Sample Report <Download />
+            </Button>
+          </a>
+        </div>
       </section>
-
 
       {/* Why choose Title Munke? */}
 
-        <section className="px-4">
+      <section className="px-4">
         <div className="max-w-[1725px] mx-auto mb-20 bg-coffee-bg rounded-[30px]">
           <div className="max-w-[1280px] mx-auto p-5 lg:p-10 py-10 lg:py-16 text-center">
             <h2 className="text-h2 text-center mb-2 text-secondary-foreground">
@@ -313,10 +305,9 @@ export default function Home() {
               view. See photos, addresses
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 ">
-              
               {whyTitleMunke.map((item, index) => (
                 <motion.div
-                     key={index}
+                  key={index}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{
@@ -326,28 +317,21 @@ export default function Home() {
                   }}
                   viewport={{ once: true }}
                 >
-
-
-                <div
-             
-                  className="flex flex-col items-center hover:bg-coffee-dark/70 transition-all duration-500 bg-coffee-dark p-6 sm:p-10 rounded-[30px]"
-                >
-                  <img src={item.icon} className="mb-6" alt={item.title} />
-                  <h3 className="text-2xl font-semibold mb-2 text-center text-primary-foreground">
-                    {item.title}
-                  </h3>
-                  <p className="text-body text-center text-[#D7C4B6]">
-                    {item.description}
-                  </p>
-                </div>
+                  <div className="flex flex-col items-center hover:bg-coffee-dark/70 transition-all duration-500 bg-coffee-dark p-6 sm:p-10 rounded-[30px]">
+                    <img src={item.icon} className="mb-6" alt={item.title} />
+                    <h3 className="text-2xl font-semibold mb-2 text-center text-primary-foreground">
+                      {item.title}
+                    </h3>
+                    <p className="text-body text-center text-[#D7C4B6]">
+                      {item.description}
+                    </p>
+                  </div>
                 </motion.div>
-
               ))}
             </div>
           </div>
         </div>
       </section>
-
 
       {/* Counties Map */}
       <section
@@ -391,48 +375,45 @@ export default function Home() {
         </h2>
         <Accordion className="max-w-3xl mx-auto  mb-4" type="multiple">
           <motion.div
-                  variants={{
-                    hidden: { opacity: 0 },
-                    show: {
-                      opacity: 1,
-                      transition: { staggerChildren: 0.2 },
-                    },
-                  }}
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true, amount: 0.2 }}
+            variants={{
+              hidden: { opacity: 0 },
+              show: {
+                opacity: 1,
+                transition: { staggerChildren: 0.2 },
+              },
+            }}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
             className="space-y-2 md:space-y-4"
           >
             {faq.map((item, index) => (
               <motion.div
                 key={index}
                 variants={{
-                    hidden: { opacity: 0, x: index % 2 === 0 ? -20 : 20 },
-                    show: {
-                      opacity: 1,
-                      x: 0,
-                      transition: { duration: 0.4, ease: "easeOut" },
-                    },
-                  }}
+                  hidden: { opacity: 0, x: index % 2 === 0 ? -20 : 20 },
+                  show: {
+                    opacity: 1,
+                    x: 0,
+                    transition: { duration: 0.4, ease: "easeOut" },
+                  },
+                }}
               >
-              <div
-
-                className="hover:scale-105 transition-all duration-500"
-              >
-                <AccordionItem
-                  value={(index + 1).toString()}
-                  className="border rounded-xl p-2 md:p-4 px-4 md:px-8 last:border-b "
-                >
-                  <AccordionTrigger className="text-xl font-bold text-secondary *:text-secondary! ">
-                    {item.question}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="text-base text-coffee-light space-y-2">
-                      {item.answer}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </div>
+                <div className="hover:scale-105 transition-all duration-500">
+                  <AccordionItem
+                    value={(index + 1).toString()}
+                    className="border rounded-xl p-2 md:p-4 px-4 md:px-8 last:border-b "
+                  >
+                    <AccordionTrigger className="text-xl font-bold text-secondary *:text-secondary! ">
+                      {item.question}
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="text-base text-coffee-light space-y-2">
+                        {item.answer}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </div>
               </motion.div>
             ))}
           </motion.div>
@@ -501,7 +482,6 @@ export default function Home() {
                   ))}
                 </motion.div>
               </div>
-
             </div>
           </div>
         </div>
@@ -574,13 +554,13 @@ export default function Home() {
                     }
                   </SelectContent>
                 </Select> */}
-                <Input
-                  className="bg-transparent"
-                  placeholder="Email / Phone"
-                  label="Email / Phone"
-                  type="text"
-                  required
-                />
+              <Input
+                className="bg-transparent"
+                placeholder="Email / Phone"
+                label="Email / Phone"
+                type="text"
+                required
+              />
               <Input
                 className="bg-transparent"
                 placeholder="State"
@@ -702,9 +682,11 @@ export default function Home() {
             </DialogDescription> */}
           <DialogFooter>
             <div className="mt-1 flex justify-center gap-4 w-full">
-              <Button className="hover:scale-105" size="lg">
-                Download Now
-              </Button>
+              <a href="/SampleDocs.zip" download>
+                <Button className="hover:scale-105" size="lg">
+                  Download Now
+                </Button>
+              </a>
               <Button
                 variant="outline"
                 className="outline-primary border-primary text-primary hover:scale-105 "
@@ -721,13 +703,19 @@ export default function Home() {
   );
 }
 
-function ListForReport({ title, items, titleClass, listClass, containerClass }) {
+function ListForReport({
+  title,
+  items,
+  titleClass,
+  listClass,
+  containerClass,
+}) {
   return (
-    <div className={cn(containerClass)} >
+    <div className={cn(containerClass)}>
       <p
         className={cn(
           "text-lg md:text-[22px] mb-2 font-semibold text-secondary ",
-          titleClass
+          titleClass,
         )}
       >
         {title}
