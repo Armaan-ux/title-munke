@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import sampleDocsUrl from "@/assets/docs/sample-report.zip?url";
 import { ArrowRight, ArrowUp, CircleCheck, Download } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import {
@@ -284,7 +285,7 @@ export default function Home() {
           </motion.div>
         ))}
         <div className="flex justify-center w-full">
-          <a href="/SampleDocs.zip" download>
+          <a href={sampleDocsUrl} download="SampleDocs.zip">
             <Button className="hover:scale-105" size="lg">
               Download Sample Report <Download />
             </Button>
@@ -682,7 +683,7 @@ export default function Home() {
             </DialogDescription> */}
           <DialogFooter>
             <div className="mt-1 flex justify-center gap-4 w-full">
-              <a href="/SampleDocs.zip" download>
+              <a href={sampleDocsUrl} download="SampleDocs.zip">
                 <Button className="hover:scale-105" size="lg">
                   Download Now
                 </Button>
