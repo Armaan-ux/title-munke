@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 // import sampleDocsUrl from "@/assets/docs/sample-report.zip?url";
-const sampleDocsUrl = "/docs/SampleDocs.zip";
+const sampleDocsUrl = "/SampleDocs.zip";
 import { ArrowRight, ArrowUp, CircleCheck, Download } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import {
