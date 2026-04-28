@@ -43,6 +43,7 @@ export default function Search({ isIndivisual = false }) {
     EXPLORE_PLAN: 1,
     PROFESSIONAL_PLAN: Infinity,
     PAY_AS_YOU_GO: Infinity,
+    NO_ACTIVE_PLAN: Infinity
   };
 
   const isSearchDisabled = (detail) => {
@@ -113,9 +114,9 @@ export default function Search({ isIndivisual = false }) {
     // Modify based on the structure of your Algolia index
     setAddress(
       suggestion["PROPERTY ADDRESS"] ||
-        suggestion.address ||
-        suggestion.name ||
-        "",
+      suggestion.address ||
+      suggestion.name ||
+      "",
     );
     setShowSuggestions(false);
   };
@@ -321,8 +322,8 @@ export default function Search({ isIndivisual = false }) {
       console.error("Error during search:", error.message);
       toast.error(
         error?.response?.data?.message ||
-          error.message ||
-          "Search failed: Invalid address or server error.",
+        error.message ||
+        "Search failed: Invalid address or server error.",
       );
       setLoading(false);
       clearSearchState();
