@@ -130,7 +130,7 @@ function SubscriptionSignup() {
   const logHandler = async () => {
     await handleCreateAuditLog(
       "Account",
-      { detail: `${userType} account created  successfully` },
+      { detail: `${userType} account created successfully` },
       userType === "agent",
       userType,
     );
