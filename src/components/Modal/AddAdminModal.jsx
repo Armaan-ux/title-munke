@@ -390,11 +390,13 @@ export default function AddAdminModal({
             </div>
           )}
 
-          {currentUserType === "admin" && userType !== "admin" && (
-            <p className="text-xs text-[#6B5E55] italic">
-              {`Note: The ${userType} will get the explore plan.`}
-            </p>
-          )}
+          {currentUserType === "admin" &&
+            userType !== "admin" &&
+            (!selectedUser || Object.keys(selectedUser).length === 0) && (
+              <p className="text-xs text-[#6B5E55] italic">
+                {`Note: The ${userType} will get the explore plan.`}
+              </p>
+            )}
 
           <div className="flex justify-end gap-3 pt-2 *:flex-1">
             <Button

@@ -87,7 +87,9 @@ const StatusBadgeRenderer = (props) => {
         : "bg-[#FFF3D9] text-[#A2781E]";
   return (
     <div className="flex items-center h-full">
-      <Badge className={`${styles} text-[13px] font-medium px-3 py-1 rounded-full`}>
+      <Badge
+        className={`${styles} text-[13px] font-medium px-3 py-1 rounded-full`}
+      >
         {status}
       </Badge>
     </div>
@@ -97,7 +99,13 @@ const StatusBadgeRenderer = (props) => {
 // ─── AdminBrokersList ─────────────────────────────────────────────────────────
 
 const BrokerActionRenderer = (props) => {
-  const { setSelectedBroker, setIsOpen, restoreUserMutation, setUserToDelete, setIsDeleteDialogOpen } = props;
+  const {
+    setSelectedBroker,
+    setIsOpen,
+    restoreUserMutation,
+    setUserToDelete,
+    setIsDeleteDialogOpen,
+  } = props;
   const item = props.data;
   return (
     <div className="flex items-center gap-2 h-full">
@@ -148,7 +156,8 @@ function AdminBrokersList() {
   const [nextToken, setNextToken] = useState(null);
   const [totalBrokerCount, setTotalBrokerCount] = useState(0);
   const [totalActiveBrokerCount, setTotalActiveBrokerCount] = useState(0);
-  const [totalBrokerSearchThisMonthCount, setTotalBrokerSearchThisMonthCount] = useState(0);
+  const [totalBrokerSearchThisMonthCount, setTotalBrokerSearchThisMonthCount] =
+    useState(0);
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
@@ -168,8 +177,11 @@ function AdminBrokersList() {
       setLoading(true);
       const totalBrokerDict = await getTotalBrokers();
       const ActiveBrokers = await getActiveBrokers();
-      const TotalBrokerSearchesThisMonthDict = await getTotalBrokerSearchesThisMonth();
-      setTotalBrokerSearchThisMonthCount(TotalBrokerSearchesThisMonthDict.totalSearches);
+      const TotalBrokerSearchesThisMonthDict =
+        await getTotalBrokerSearchesThisMonth();
+      setTotalBrokerSearchThisMonthCount(
+        TotalBrokerSearchesThisMonthDict.totalSearches,
+      );
       setTotalBrokerCount(totalBrokerDict?.totalBrokers);
       setTotalActiveBrokerCount(ActiveBrokers?.length);
     } catch (err) {
@@ -197,7 +209,9 @@ function AdminBrokersList() {
         limit: 10,
       });
       const { items: updatedBrokers, nextToken: newNextToken } = response;
-      setBrokers((prev) => (isRefetch ? updatedBrokers : [...prev, ...updatedBrokers]));
+      setBrokers((prev) =>
+        isRefetch ? updatedBrokers : [...prev, ...updatedBrokers],
+      );
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
     } catch (error) {
@@ -207,7 +221,10 @@ function AdminBrokersList() {
   };
 
   const rowData = useMemo(
-    () => brokers.filter((item) => statusFilter === "ALL" || item.status === statusFilter),
+    () =>
+      brokers.filter(
+        (item) => statusFilter === "ALL" || item.status === statusFilter,
+      ),
     [brokers, statusFilter],
   );
 
@@ -230,6 +247,8 @@ function AdminBrokersList() {
         flex: 1,
         minWidth: 180,
         filter: false,
+        wrapText: true,
+        autoHeight: true,
         cellStyle: { fontWeight: 500, color: "black" },
       },
       {
@@ -346,40 +365,45 @@ function AdminBrokersList() {
 
             {isBrokerListLoading && rowData.length === 0 ? (
               <div className="flex items-center justify-center py-20 text-muted-foreground font-medium">
-                    <CenterLoader />
+                <CenterLoader />
               </div>
             ) : (
-              <div className="ag-theme-quartz custom-ag-grid" style={{ width: "100%" }}>
-            
-                  <AgGridReact
-                    rowData={rowData}
-                    columnDefs={columnDefs}
-                    defaultColDef={{
-                      flex: 1,
-                      minWidth: 120,
-                      filter: true,
-                      sortable: true,
-                      resizable: true,
-                      unSortIcon: true,
-                      wrapHeaderText: true,
-                      autoHeaderHeight: true,
-                    }}
-                    rowHeight={72}
-                    headerHeight={48}
-                    domLayout="autoHeight"
-                    animateRows={true}
-                    overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
-
-                  />
-                
+              <div
+                className="ag-theme-quartz custom-ag-grid"
+                style={{ width: "100%" }}
+              >
+                <AgGridReact
+                  rowData={rowData}
+                  columnDefs={columnDefs}
+                  defaultColDef={{
+                    flex: 1,
+                    minWidth: 120,
+                    filter: true,
+                    sortable: true,
+                    resizable: true,
+                    unSortIcon: true,
+                    wrapHeaderText: true,
+                    autoHeaderHeight: true,
+                  }}
+                  rowHeight={72}
+                  headerHeight={48}
+                  domLayout="autoHeight"
+                  animateRows={true}
+                  overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+                />
               </div>
             )}
 
             <div className="text-center flex flex-col gap-4 my-4 text-muted-foreground">
               {isBrokerListLoading && rowData.length > 0 && <p>Loading...</p>}
-              {!hasMore && brokers?.length !== 0 && <p>No more data to load.</p>}
+              {!hasMore && brokers?.length !== 0 && (
+                <p>No more data to load.</p>
+              )}
               {brokers?.length > 0 && hasMore && !isBrokerListLoading && (
-                <Button size="sm" onClick={() => handleFetchBrokersWithSearchCount()}>
+                <Button
+                  size="sm"
+                  onClick={() => handleFetchBrokersWithSearchCount()}
+                >
                   Load More
                 </Button>
               )}
@@ -412,7 +436,8 @@ function AdminBrokersList() {
 // ─── Agents ───────────────────────────────────────────────────────────────────
 
 const AgentReinviteRenderer = (props) => {
-  const { reinviteMutation, setUserToReinvite, setIsReinviteDialogOpen } = props;
+  const { reinviteMutation, setUserToReinvite, setIsReinviteDialogOpen } =
+    props;
   if (props.data?.status !== "UNCONFIRMED") return null;
   return (
     <div className="flex items-center justify-center h-full">
@@ -433,7 +458,13 @@ const AgentReinviteRenderer = (props) => {
 };
 
 const AgentActionRenderer = (props) => {
-  const { setSelectedUser, setIsOpen, restoreUserMutation, setUserToDelete, setIsDeleteDialogOpen } = props;
+  const {
+    setSelectedUser,
+    setIsOpen,
+    restoreUserMutation,
+    setUserToDelete,
+    setIsDeleteDialogOpen,
+  } = props;
   const item = props.data;
   return (
     <div className="flex items-center gap-2 h-full">
@@ -525,7 +556,10 @@ function Agents() {
   };
 
   const rowData = useMemo(
-    () => agents.filter((item) => statusFilter === "ALL" || item.status === statusFilter),
+    () =>
+      agents.filter(
+        (item) => statusFilter === "ALL" || item.status === statusFilter,
+      ),
     [agents, statusFilter],
   );
 
@@ -547,6 +581,8 @@ function Agents() {
         flex: 1,
         minWidth: 180,
         filter: false,
+        wrapText: true,
+        autoHeight: true,
         cellStyle: { fontWeight: 500, color: "black" },
       },
       {
@@ -570,7 +606,11 @@ function Agents() {
         headerName: "Reinvite",
         field: "reinvite",
         cellRenderer: AgentReinviteRenderer,
-        cellRendererParams: { reinviteMutation, setUserToReinvite, setIsReinviteDialogOpen },
+        cellRendererParams: {
+          reinviteMutation,
+          setUserToReinvite,
+          setIsReinviteDialogOpen,
+        },
         flex: 1,
         minWidth: 140,
         filter: false,
@@ -669,29 +709,29 @@ function Agents() {
                 <CenterLoader />
               </div>
             ) : (
-              <div className="ag-theme-quartz custom-ag-grid" style={{ width: "100%" }}>
-           
-                  <AgGridReact
-                    rowData={rowData}
-                    columnDefs={columnDefs}
-                    defaultColDef={{
-                      flex: 1,
-                      minWidth: 120,
-                      filter: false,
-                      sortable: true,
-                      resizable: true,
-                      unSortIcon: true,
-                      wrapHeaderText: true,
-                      autoHeaderHeight: true,
-                    }}
-                    rowHeight={72}
-                    headerHeight={48}
-                    domLayout="autoHeight"
-                    animateRows={true}
-                    overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
-
-                  />
-                
+              <div
+                className="ag-theme-quartz custom-ag-grid"
+                style={{ width: "100%" }}
+              >
+                <AgGridReact
+                  rowData={rowData}
+                  columnDefs={columnDefs}
+                  defaultColDef={{
+                    flex: 1,
+                    minWidth: 120,
+                    filter: false,
+                    sortable: true,
+                    resizable: true,
+                    unSortIcon: true,
+                    wrapHeaderText: true,
+                    autoHeaderHeight: true,
+                  }}
+                  rowHeight={72}
+                  headerHeight={48}
+                  domLayout="autoHeight"
+                  animateRows={true}
+                  overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+                />
               </div>
             )}
 
@@ -733,9 +773,12 @@ function Agents() {
         onClose={() => setIsReinviteDialogOpen(false)}
         onConfirm={() => {
           if (userToReinvite) {
-            reinviteMutation.mutate({ email: userToReinvite.email }, {
-              onSettled: () => setIsReinviteDialogOpen(false)
-            });
+            reinviteMutation.mutate(
+              { email: userToReinvite.email },
+              {
+                onSettled: () => setIsReinviteDialogOpen(false),
+              },
+            );
           }
         }}
         isLoading={reinviteMutation?.isPending}

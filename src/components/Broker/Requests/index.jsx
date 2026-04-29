@@ -119,7 +119,7 @@ const RequestListTable = ({
         flex: 1,
         minWidth: 160,
         filter: false,
-         wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
       {
@@ -128,7 +128,7 @@ const RequestListTable = ({
         flex: 1,
         minWidth: 180,
         filter: false,
-         wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
       {
@@ -138,7 +138,7 @@ const RequestListTable = ({
         flex: 1,
         minWidth: 180,
         filter: false,
-         wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
       {
@@ -147,7 +147,7 @@ const RequestListTable = ({
         flex: 2,
         minWidth: 200,
         filter: false,
-         wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
     ];
@@ -178,28 +178,29 @@ const RequestListTable = ({
         {isRequestPending ? (
           <CenterLoader />
         ) : (
-          <div className="ag-theme-quartz custom-ag-grid" style={{ width: "100%" }}>
-          
-              <AgGridReact
-                rowData={data}
-                columnDefs={columnDefs}
-                defaultColDef={{
-                  flex: 1,
-                  minWidth: 120,
-                  filter: false,
-                  sortable: true,
-                  resizable: true,
-                  unSortIcon: true,
-                  wrapHeaderText: true,
-                  autoHeaderHeight: true,
-                }}
-                rowHeight={72}
-                headerHeight={48}
-                domLayout="autoHeight"
-                animateRows={true}
-                overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
-              />
-            
+          <div
+            className="ag-theme-quartz custom-ag-grid"
+            style={{ width: "100%" }}
+          >
+            <AgGridReact
+              rowData={data}
+              columnDefs={columnDefs}
+              defaultColDef={{
+                flex: 1,
+                minWidth: 120,
+                filter: false,
+                sortable: true,
+                resizable: true,
+                unSortIcon: true,
+                wrapHeaderText: true,
+                autoHeaderHeight: true,
+              }}
+              rowHeight={72}
+              headerHeight={48}
+              domLayout="autoHeight"
+              animateRows={true}
+              overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+            />
           </div>
         )}
       </div>
@@ -227,8 +228,8 @@ const MyRequestList = ({
         field: "index",
         cellRenderer: SrNoRenderer,
         width: 100,
-        minWidth: 100,
-        maxWidth: 100,
+        minWidth: 120,
+        maxWidth: 120,
         flex: 0,
         filter: false,
         sortable: false,
@@ -240,7 +241,7 @@ const MyRequestList = ({
         flex: 2,
         minWidth: 200,
         filter: false,
-         wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
       {
@@ -250,7 +251,7 @@ const MyRequestList = ({
         flex: 1,
         minWidth: 180,
         filter: false,
-         wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
       {
@@ -260,7 +261,7 @@ const MyRequestList = ({
         flex: 1,
         minWidth: 140,
         filter: false,
-         wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
       {
@@ -287,28 +288,29 @@ const MyRequestList = ({
         {isRequestPending ? (
           <CenterLoader />
         ) : (
-          <div className="ag-theme-quartz custom-ag-grid" style={{ width: "100%" }}>
-           
-              <AgGridReact
-                rowData={data}
-                columnDefs={columnDefs}
-                defaultColDef={{
-                  flex: 1,
-                  minWidth: 120,
-                  filter: false,
-                  sortable: true,
-                  resizable: true,
-                  unSortIcon: true,
-                  wrapHeaderText: true,
-                  autoHeaderHeight: true,
-                }}
-                rowHeight={72}
-                headerHeight={48}
-                domLayout="autoHeight"
-                animateRows={true}
-                overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
-              />
-          
+          <div
+            className="ag-theme-quartz custom-ag-grid"
+            style={{ width: "100%" }}
+          >
+            <AgGridReact
+              rowData={data}
+              columnDefs={columnDefs}
+              defaultColDef={{
+                flex: 1,
+                minWidth: 120,
+                filter: false,
+                sortable: true,
+                resizable: true,
+                unSortIcon: true,
+                wrapHeaderText: true,
+                autoHeaderHeight: true,
+              }}
+              rowHeight={72}
+              headerHeight={48}
+              domLayout="autoHeight"
+              animateRows={true}
+              overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+            />
           </div>
         )}
       </div>

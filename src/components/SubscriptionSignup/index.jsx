@@ -27,7 +27,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema } from "@/formSchema";
 import { formatUSPhone } from "@/utils/date";
 import { handleCreateAuditLog } from "@/utils";
-import { saveSubscriptionData, getSubscriptionData } from "@/utils/subscriptionStorage";
+import {
+  saveSubscriptionData,
+  getSubscriptionData,
+} from "@/utils/subscriptionStorage";
 function SubscriptionSignup() {
   const navigate = useNavigate();
   const { userType, planId } = useParams();
@@ -44,7 +47,7 @@ function SubscriptionSignup() {
     watch,
     getValues,
     formState: { errors, isSubmitting },
-    reset
+    reset,
   } = useForm({
     resolver: zodResolver(signupSchema),
     mode: "onChange",
@@ -69,7 +72,7 @@ function SubscriptionSignup() {
         email: savedData.email || "",
         password: savedData.password || "",
         confirmPassword: savedData.password || "",
-        termsAccepted: true
+        termsAccepted: true,
       });
       // If the user was on the OTP screen, show it again
       if (savedData.isOtpVisible) {
@@ -85,7 +88,7 @@ function SubscriptionSignup() {
     if (name || email || phoneNumber) {
       saveSubscriptionData(
         { name, email, phoneNumber, password, isOtpVisible: codeModal },
-        window.location.pathname
+        window.location.pathname,
       );
     }
   }, [formValues, codeModal]);
@@ -113,14 +116,14 @@ function SubscriptionSignup() {
     mutationFn: (data) => registerUser(data),
     onSuccess: (response) => {
       setCodeModal(true);
-      const userId = response?.id
-      const usertype = response?.__typename.toLowerCase()
+      const userId = response?.id;
+      const usertype = response?.__typename.toLowerCase();
       saveSubscriptionData({ userId, usertype }, window.location.pathname);
     },
     onError: (error) => {
       setError(
         error?.response?.data?.message ||
-        "Something went wrong. Please try again later.",
+          "Something went wrong. Please try again later.",
       );
     },
   });
@@ -128,6 +131,12 @@ function SubscriptionSignup() {
     await handleCreateAuditLog(
       "Account",
       { detail: `${userType} account created  successfully` },
+      userType === "agent",
+      userType,
+    );
+    await handleCreateAuditLog(
+      "Account",
+      { detail: `${userType} login successfully` },
       userType === "agent",
       userType,
     );

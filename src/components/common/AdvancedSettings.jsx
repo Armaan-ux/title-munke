@@ -177,7 +177,7 @@ const AdvancedSettings = () => {
     brokerAndOrganizationList.find((b) => b.id === selectedId) ||
     brokerAndOrganizationList[0] ||
     null;
-
+  console.log("selectedBroker", selectedBroker);
   const handleDropdownChange = useCallback((value) => {
     setSelectedId(value);
   }, []);
@@ -285,7 +285,7 @@ const AdvancedSettings = () => {
         onDropdownChange={handleDropdownChange}
         brokerName={selectedBroker?.name || ""}
         brokerEmail={selectedBroker?.email || "N/A"}
-        activeAgents={selectedBroker?.activeAgents || 0}
+        activeAgents={selectedBroker?.totalActiveAgents || 0}
         selectedId={selectedId || dropdownOptions?.[0]?.value || ""}
         isPending={joinRequestMutation?.isPending}
         isUnderBroker={isUnderBroker}
@@ -377,13 +377,15 @@ const AdvancedSettings = () => {
                   isUnderBroker ||
                   isUnderOrganisation ||
                   isPayAsYouGoSelected ||
-                  changingPlan === "PAY_AS_YOU_GO"
+                  (changingPlan === "PAY_AS_YOU_GO" &&
+                    changePlanMutation.isPending)
                 }
                 onClick={() => changePlanModalHandler("PAY_AS_YOU_GO")}
                 className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition"
               >
                 Get Started{" "}
-                {changingPlan === "PAY_AS_YOU_GO" ? (
+                {changingPlan === "PAY_AS_YOU_GO" &&
+                changePlanMutation.isPending ? (
                   <Loader className="animate-spin" size={18} />
                 ) : (
                   <ArrowRight size={16} />
@@ -408,13 +410,15 @@ const AdvancedSettings = () => {
                   isUnderBroker ||
                   isUnderOrganisation ||
                   isProfessionalSelected ||
-                  changingPlan === "PROFESSIONAL_PLAN"
+                  (changingPlan === "PROFESSIONAL_PLAN" &&
+                    changePlanMutation.isPending)
                 }
                 onClick={() => changePlanModalHandler("PROFESSIONAL_PLAN")}
                 className="flex items-center gap-2 bg-tertiary text-white px-4 py-2 rounded-md hover:bg-red-800 transition"
               >
                 Get Started
-                {changingPlan === "PROFESSIONAL_PLAN" ? (
+                {changingPlan === "PROFESSIONAL_PLAN" &&
+                changePlanMutation.isPending ? (
                   <Loader className="animate-spin" size={18} />
                 ) : (
                   <ArrowRight size={16} />

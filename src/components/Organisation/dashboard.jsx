@@ -43,10 +43,10 @@ const OrganisationDashboard = () => {
   };
 
   useEffect(() => {
+    localStorage.removeItem("planType");
     const plan = organisationDetail?.planType;
     const isCardAdded = iscardAddedForUser?.isCardAdded;
     if (!plan || isCardAdded !== false) return;
-
 
     localStorage.setItem("planType", plan);
 

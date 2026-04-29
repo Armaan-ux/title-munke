@@ -9,7 +9,10 @@ import { useUserIdType } from "@/hooks/useUserIdType";
 import { createAgentfromSignup } from "../service/userAdmin";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { saveSubscriptionData, clearSubscriptionData } from "@/utils/subscriptionStorage";
+import {
+  saveSubscriptionData,
+  clearSubscriptionData,
+} from "@/utils/subscriptionStorage";
 
 function SubscriptionCardDetails({ isAddCard = false }) {
   const { planId } = useParams();
@@ -416,7 +419,7 @@ function SubscriptionCardDetails({ isAddCard = false }) {
                   <p className="text-center text-xs text-[#7a5a49]">
                     Already have an account?{" "}
                     <a
-                      href="/subscription-payment"
+                      href="/subscription-login"
                       className="font-medium text-[#3b1f12] hover:underline"
                     >
                       Log In

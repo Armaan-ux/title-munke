@@ -60,7 +60,7 @@ function AuditLogsAgent() {
         valueGetter: (params) => getFormattedDateTime(params.data?.createdAt),
         flex: 1,
         minWidth: 180,
-         wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
     ],
@@ -77,28 +77,29 @@ function AuditLogsAgent() {
           />
         )}
         {auditLogAgentQuery?.isSuccess && (
-          <div className="ag-theme-quartz custom-ag-grid" style={{ width: "100%" }}>
-       
-              <AgGridReact
-                rowData={auditLogAgentQuery?.data?.items || []}
-                columnDefs={columnDefs}
-                defaultColDef={{
-                  flex: 1,
-                  minWidth: 120,
-                  filter: false,
-                  sortable: true,
-                  resizable: true,
-                  unSortIcon: true,
-                  wrapHeaderText: true,
-                  autoHeaderHeight: true,
-                }}
-                rowHeight={72}
-                headerHeight={48}
-                domLayout="autoHeight"
-                animateRows={true}
-                overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
-              />
-            
+          <div
+            className="ag-theme-quartz custom-ag-grid"
+            style={{ width: "100%" }}
+          >
+            <AgGridReact
+              rowData={auditLogAgentQuery?.data?.items || []}
+              columnDefs={columnDefs}
+              defaultColDef={{
+                flex: 1,
+                minWidth: 120,
+                filter: false,
+                sortable: true,
+                resizable: true,
+                unSortIcon: true,
+                wrapHeaderText: true,
+                autoHeaderHeight: true,
+              }}
+              rowHeight={72}
+              headerHeight={48}
+              domLayout="autoHeight"
+              animateRows={true}
+              overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+            />
           </div>
         )}
       </div>

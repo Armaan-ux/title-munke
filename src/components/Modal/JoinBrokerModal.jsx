@@ -24,7 +24,7 @@ export function JoinBrokerModal({
   selectedId,
   isPending,
   isUnderBroker,
-  isUnderOrganisation
+  isUnderOrganisation,
 }) {
   const [message, setMessage] = useState("");
 
@@ -49,15 +49,13 @@ export function JoinBrokerModal({
           {/* Header */}
           <DialogHeader>
             <h2 className="text-lg font-semibold text-secondary mb-4 text-start !font-poppins">
-            {
-  isUnderBroker
-    ? "Leave Broker"
-    : isUnderOrganisation
-    ? "Leave Organization"
-    : userType === "broker" &&  !isUnderOrganisation 
-    ? "Join Organization"
-    : "Join Broker"
-}
+              {isUnderBroker
+                ? "Leave Broker"
+                : isUnderOrganisation
+                  ? "Leave Organization"
+                  : userType === "broker" && !isUnderOrganisation
+                    ? "Join Organization"
+                    : "Join Broker"}
             </h2>
             <Separator className="bg-coffee-bg-billing-foreground" />
           </DialogHeader>
@@ -66,12 +64,12 @@ export function JoinBrokerModal({
           <div className="mt-4 mb-2">
             <Label className="text-sm text-secondary mb-1 block">Name</Label>
             <select
-            disabled={isUnderBroker || isUnderOrganisation}
+              disabled={isUnderBroker || isUnderOrganisation}
               className="w-full rounded-md border border-gray-200 p-3 text-sm text-secondary "
               value={selectedId}
               onChange={(e) => onDropdownChange(e.target.value)}
             >
-              <option value="">Select </option>
+              {/* <option value="">Select </option> */}
 
               {dropdownOptions.map((option) => (
                 <option key={option.value} value={option.value}>

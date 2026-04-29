@@ -14,53 +14,92 @@ const QUERY_KEY = ["email-preference"];
 const Notification = () => {
   const queryClient = useQueryClient();
 
-  const { data } = useQuery({
+  // Fetch preferences
+  const { data, isLoading } = useQuery({
     queryKey: QUERY_KEY,
     queryFn: fetchEmailPreference,
     onError: () => toast.error("Failed to fetch email preference"),
   });
 
-  const preference = data?.data ?? {};
+  // Safe default values
+  const preference = {
+    emailPreferenceSearchComplete:
+      data?.data?.emailPreferenceSearchComplete ?? false,
+    emailPreferenceWeeklyReport:
+      data?.data?.emailPreferenceWeeklyReport ?? false,
+  };
 
-  const createPreferenceMutation = (mutationFn, fieldName) =>
-    useMutation({
-      mutationFn,
-      onMutate: async (checked) => {
-        await queryClient.cancelQueries({ queryKey: QUERY_KEY });
+  // Search Complete Mutation
+  const searchCompleteMutation = useMutation({
+    mutationFn: emailPreferenceSearchComplete,
+    onMutate: async (checked) => {
+      await queryClient.cancelQueries({ queryKey: QUERY_KEY });
 
-        const previousData = queryClient.getQueryData(QUERY_KEY);
+      const previousData = queryClient.getQueryData(QUERY_KEY);
 
-        queryClient.setQueryData(QUERY_KEY, (old) => ({
-          ...old,
-          data: {
-            ...old?.data,
-            [fieldName]: checked,
-          },
-        }));
+      queryClient.setQueryData(QUERY_KEY, (old) => ({
+        ...old,
+        data: {
+          ...old?.data,
+          emailPreferenceSearchComplete: checked,
+        },
+      }));
 
-        return { previousData };
-      },
-      onError: (_err, _vars, context) => {
-        queryClient.setQueryData(QUERY_KEY, context?.previousData);
-        toast.error("Failed to update email preference");
-      },
-      onSuccess: () => {
-        toast.success("Email preference updated successfully");
-      },
-      onSettled: () => {
-        queryClient.invalidateQueries({ queryKey: QUERY_KEY });
-      },
-    });
+      return { previousData };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(QUERY_KEY, context.previousData);
+      }
+      toast.error("Failed to update search completion preference");
+    },
+    onSuccess: () => {
+      toast.success("Search completion preference updated");
+    },
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    },
+  });
 
-  const searchCompleteMutation = createPreferenceMutation(
-    emailPreferenceSearchComplete,
-    "emailPreferenceSearchComplete"
-  );
+  // Weekly Report Mutation
+  const weeklyReportMutation = useMutation({
+    mutationFn: emailPreferenceWeeklyReport,
+    onMutate: async (checked) => {
+      await queryClient.cancelQueries({ queryKey: QUERY_KEY });
 
-  const weeklyReportMutation = createPreferenceMutation(
-    emailPreferenceWeeklyReport,
-    "emailPreferenceWeeklyReport"
-  );
+      const previousData = queryClient.getQueryData(QUERY_KEY);
+
+      queryClient.setQueryData(QUERY_KEY, (old) => ({
+        ...old,
+        data: {
+          ...old?.data,
+          emailPreferenceWeeklyReport: checked,
+        },
+      }));
+
+      return { previousData };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(QUERY_KEY, context.previousData);
+      }
+      toast.error("Failed to update weekly report preference");
+    },
+    onSuccess: () => {
+      toast.success("Weekly report preference updated");
+    },
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="bg-white rounded-xl p-8 w-full shadow-md">
+        <p className="text-lg">Loading preferences...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-xl p-8 flex flex-col md:flex-row items-start gap-10 w-full shadow-md">
@@ -69,25 +108,27 @@ const Notification = () => {
           Choose how you'd like to receive notifications
         </p>
 
-        <div className="flex flex-row gap-10 pt-5">
+        {/* Search Completed */}
+        <div className="flex flex-row justify-flex-start items-center gap-10 pt-5">
           <Label>Email me when a search is completed</Label>
           <Switch
-            checked={!!preference.emailPreferenceSearchComplete}
+            checked={preference.emailPreferenceSearchComplete}
             onCheckedChange={(checked) =>
               searchCompleteMutation.mutate(checked)
             }
+            disabled={searchCompleteMutation.isPending}
             thumbColor="data-[state=unchecked]:bg-background data-[state=checked]:bg-tertiary"
             trackColor="data-[state=unchecked]:bg-[#F5F0EC] data-[state=checked]:bg-[#F5F0EC]"
           />
         </div>
 
-        <div className="flex flex-row gap-10 pt-5">
+        {/* Weekly Summary */}
+        <div className="flex flex-row justify-flex-start items-center gap-10 pt-5">
           <Label>Send me a weekly usage summary</Label>
           <Switch
-            checked={!!preference.emailPreferenceWeeklyReport}
-            onCheckedChange={(checked) =>
-              weeklyReportMutation.mutate(checked)
-            }
+            checked={preference.emailPreferenceWeeklyReport}
+            onCheckedChange={(checked) => weeklyReportMutation.mutate(checked)}
+            disabled={weeklyReportMutation.isPending}
             thumbColor="data-[state=unchecked]:bg-background data-[state=checked]:bg-tertiary"
             trackColor="data-[state=unchecked]:bg-[#F5F0EC] data-[state=checked]:bg-[#F5F0EC]"
           />

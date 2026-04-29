@@ -15,9 +15,9 @@ import { getAdminMetrics } from "../service/userAdmin";
 const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const AdminDashboard = () => {
   const [isDownload, setIsDoownload] = useState(false);
- const [activeTab, setActiveTab] = useState(
-  () => localStorage.getItem("adminDashboardActiveTab") || "organisation"
-);
+  const [activeTab, setActiveTab] = useState(
+    () => localStorage.getItem("adminDashboardActiveTab") || "organisation",
+  );
   const [active, setActive] = useState("all_time");
   const [resetChildState, setResetChildState] = useState(null);
   const metricQuery = useQuery({
@@ -30,9 +30,9 @@ const AdminDashboard = () => {
       resetChildState();
     }
   };
-    useEffect(() => {
-      localStorage.setItem("adminDashboardActiveTab", activeTab);
-    }, [activeTab]);
+  useEffect(() => {
+    localStorage.setItem("adminDashboardActiveTab", activeTab);
+  }, [activeTab]);
 
   return (
     <div className="my-4">

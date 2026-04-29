@@ -55,6 +55,7 @@ const BrokerDashboard = () => {
     enabled: !!userId
   })
 useEffect(() => {
+  localStorage.removeItem("planType");
   const plan = brokerDetailQuery?.data?.planType;
   const isCardAdded = iscardAddedForUser?.isCardAdded;
 

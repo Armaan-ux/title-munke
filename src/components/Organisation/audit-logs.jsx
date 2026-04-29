@@ -110,7 +110,7 @@ function AuditLogs() {
         flex: 1,
         minWidth: 200,
         filter: false,
-         wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
       {

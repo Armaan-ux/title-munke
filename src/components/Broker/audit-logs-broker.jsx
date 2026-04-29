@@ -32,9 +32,9 @@ function AuditLogsForBroker() {
         headerName: "Sr. No.",
         cellRenderer: SrNoRenderer,
         width: 100,
-        minWidth: 100,
-        maxWidth: 100,
-        flex: 0,
+        minWidth: 120,
+        // maxWidth: 120,
+        flex: 1,
         filter: false,
         sortable: false,
       },
@@ -42,10 +42,10 @@ function AuditLogsForBroker() {
         headerName: "Details",
         field: "detail",
         cellRenderer: DetailsRenderer,
-        flex: 3,
+        flex: 2,
         minWidth: 300,
         filter: false,
-         wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
       {
@@ -57,7 +57,7 @@ function AuditLogsForBroker() {
         filter: false,
         cellStyle: { textAlign: "right" },
         headerClass: "ag-header-cell-right",
-         wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
     ],
@@ -74,28 +74,29 @@ function AuditLogsForBroker() {
           />
         )}
         {auditLogBrokerQuery?.isSuccess && (
-          <div className="ag-theme-quartz custom-ag-grid" style={{ width: "100%" }}>
-       
-              <AgGridReact
-                rowData={auditLogBrokerQuery?.data?.items || []}
-                columnDefs={columnDefs}
-                defaultColDef={{
-                  flex: 1,
-                  minWidth: 120,
-                  filter: true,
-                  sortable: true,
-                  resizable: true,
-                  unSortIcon: true,
-                  wrapHeaderText: true,
-                  autoHeaderHeight: true,
-                }}
-                rowHeight={72}
-                headerHeight={48}
-                domLayout="autoHeight"
-                animateRows={true}
-                overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
-              />
-            
+          <div
+            className="ag-theme-quartz custom-ag-grid"
+            style={{ width: "100%" }}
+          >
+            <AgGridReact
+              rowData={auditLogBrokerQuery?.data?.items || []}
+              columnDefs={columnDefs}
+              defaultColDef={{
+                flex: 1,
+                minWidth: 120,
+                filter: true,
+                sortable: true,
+                resizable: true,
+                unSortIcon: true,
+                wrapHeaderText: true,
+                autoHeaderHeight: true,
+              }}
+              rowHeight={72}
+              headerHeight={48}
+              domLayout="autoHeight"
+              animateRows={true}
+              overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+            />
           </div>
         )}
       </div>

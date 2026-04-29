@@ -36,7 +36,9 @@ const StatusRenderer = (props) => {
 
   return (
     <div className="flex items-center h-full">
-      <span className={`${styles} text-[13px] font-medium px-3 py-1 rounded-md`}>
+      <span
+        className={`${styles} text-[13px] font-medium px-3 py-1 rounded-md`}
+      >
         {status === "IN_PROGRESS" ? "In Progress" : status}
       </span>
     </div>
@@ -51,7 +53,11 @@ const DownloadRenderer = (props) => {
         href={props.data.downloadLink}
         download
         onClick={() =>
-          handleCreateAuditLog("DOWNLOAD", { zipUrl: props.data.downloadLink }, true)
+          handleCreateAuditLog(
+            "DOWNLOAD",
+            { zipUrl: props.data.downloadLink },
+            true,
+          )
         }
       >
         <Link className="w-4 h-4" />
@@ -82,7 +88,8 @@ const ActionRenderer = (props) => {
 function History({ isAll = false }) {
   const queryClient = useQueryClient();
   const [searchHistories, setSearchHistories] = useState([]);
-  const { user, invalidateSearchHistory, setInvalidateSearchHistory } = useUser();
+  const { user, invalidateSearchHistory, setInvalidateSearchHistory } =
+    useUser();
   const { userId } = useUserIdType();
 
   const agentHistoryQuery = useQuery({
@@ -147,7 +154,9 @@ function History({ isAll = false }) {
     const inProgress = agentHistoryQuery.data.filter(
       ({ status }) => status === "In Progress",
     );
-    inProgress.forEach((search) => checkSearchStatus(search.searchId, search.id));
+    inProgress.forEach((search) =>
+      checkSearchStatus(search.searchId, search.id),
+    );
 
     const interval = setInterval(() => {
       inProgress.forEach((search) =>
@@ -156,7 +165,11 @@ function History({ isAll = false }) {
     }, INTERVALTIME);
 
     return () => clearInterval(interval);
-  }, [agentHistoryQuery.data, agentHistoryQuery.dataUpdatedAt, checkSearchStatus]);
+  }, [
+    agentHistoryQuery.data,
+    agentHistoryQuery.dataUpdatedAt,
+    checkSearchStatus,
+  ]);
 
   // Pre-sort and slice before passing to AG Grid
   const rowData = useMemo(() => {
@@ -165,7 +178,7 @@ function History({ isAll = false }) {
     );
     return isAll ? sorted : sorted.slice(0, 5);
   }, [searchHistories, isAll]);
-
+  console.log("rowData", rowData);
   const columnDefs = useMemo(
     () => [
       {
@@ -182,6 +195,8 @@ function History({ isAll = false }) {
         field: "address",
         flex: 2,
         minWidth: 260,
+        wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Date / Time",
@@ -189,6 +204,8 @@ function History({ isAll = false }) {
         valueGetter: (params) => getFormattedDateTime(params.data?.createdAt),
         flex: 1,
         minWidth: 180,
+        wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Status",
@@ -196,6 +213,8 @@ function History({ isAll = false }) {
         cellRenderer: StatusRenderer,
         flex: 1,
         minWidth: 140,
+        wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Download Link",
@@ -204,6 +223,8 @@ function History({ isAll = false }) {
         flex: 1,
         minWidth: 140,
         sortable: false,
+        wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Action",
@@ -228,7 +249,10 @@ function History({ isAll = false }) {
         />
       )}
       {agentHistoryQuery?.isSuccess && (
-        <div className="ag-theme-quartz custom-ag-grid" style={{ width: "100%" }}>
+        <div
+          className="ag-theme-quartz custom-ag-grid"
+          style={{ width: "100%" }}
+        >
           {rowData.length === 0 ? (
             <div className="flex items-center justify-center py-20 text-muted-foreground font-medium text-lg border rounded-xl bg-gray-50/50">
               No Records found.

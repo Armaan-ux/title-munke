@@ -51,6 +51,9 @@ function MembershipOrCardAddedModalContainer() {
     cardListingModal,
     setCardListingModal,
     setNewPlanType,
+    agentDetail,
+    brokerDetail,
+    organisationDetail,
   } = useUser();
 
   const queryClient = useQueryClient();
@@ -87,6 +90,13 @@ function MembershipOrCardAddedModalContainer() {
       toast.error("Failed to delete card");
     },
   });
+  const plan =
+    userType === "broker"
+      ? brokerDetail?.planType
+      : userType === "agent"
+        ? agentDetail?.planType
+        : organisationDetail?.planType;
+
   const planType = localStorage.getItem("planType");
   const isPlanMandatory = !!planType;
 
@@ -111,8 +121,20 @@ function MembershipOrCardAddedModalContainer() {
     navigate,
     pathname,
   ]);
-  if (!["agent", "broker","organisation"].includes(userType)) return null;
+  if (!["agent", "broker", "organisation"].includes(userType)) return null;
   const cards = subcriptionDetailQuery?.data?.payment_methods ?? [];
+  const handleAddCard = () => {
+    if (plan) {
+      localStorage.setItem("planType", plan);
+    }
+
+    setPaymentModal(true);
+    setCardListingModal(false);
+    setUser((prev) => ({
+      ...prev,
+      isAddCard: true,
+    }));
+  };
   return (
     <div>
       {cardListingModal && (
@@ -222,11 +244,7 @@ function MembershipOrCardAddedModalContainer() {
                 ))}
                 <Button
                   className="text-sm text-secondary bg-[#FDF6EE] hover:underline hover:bg-secondary hover:text-primary-foreground"
-                  onClick={() => {
-                    setPaymentModal(true);
-                    setCardListingModal(false);
-                    setUser((pre) => ({ ...pre, isAddCard: true }));
-                  }}
+                  onClick={handleAddCard}
                 >
                   + Add New Credit / Debit Card
                 </Button>
