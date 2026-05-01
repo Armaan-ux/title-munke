@@ -26,7 +26,7 @@ const SrNoRenderer = (props) => (
 
 const BrokerNameRenderer = (props) => (
   <span className="whitespace-pre-wrap">
-    {props.data?.toJoinName?.toUpperCase() || "N/A"}
+    {props?.data?.requestType === "JOIN" ? props?.data?.toJoinName?.toUpperCase() : props?.data?.requestType === "LEAVE" ? props?.data?.toLeaveName?.toUpperCase() : "N/A"}
   </span>
 );
 

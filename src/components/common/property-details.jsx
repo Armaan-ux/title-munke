@@ -22,9 +22,15 @@ import { AgGridReact } from "ag-grid-react";
 
 const SrNoRenderer = (props) => <span>{props.node.rowIndex + 1}</span>;
 
-const DocTypeRenderer = (props) => (
-  <span className="uppercase">Document {props.node.rowIndex + 1}</span>
-);
+const DocTypeRenderer = (props) => {
+  const totalRows = props?.totalRows || 0;
+  const isLastRow = props?.node?.rowIndex === totalRows - 1;
+  return (
+    <span className="uppercase">
+      {isLastRow ? "Final property report" : `Document ${props.node.rowIndex + 1}`}
+    </span>
+  );
+};
 
 const DateRecordedRenderer = (props) => {
   const value = props?.data?.date_of_record;
@@ -60,6 +66,12 @@ const PropertyDetails = () => {
     enabled: !!id,
   });
   console.log("propertyDetailQuery>>>>>>>", propertyDetailQuery?.data);
+
+  const pdfDocuments =
+    propertyDetailQuery?.data?.documents?.filter(
+      (item) => item?.type === "pdf",
+    ) ?? [];
+
   const columnDefs = useMemo(
     () => [
       {
@@ -75,6 +87,7 @@ const PropertyDetails = () => {
         headerName: "Document Type",
         field: "type",
         cellRenderer: DocTypeRenderer,
+        cellRendererParams: { totalRows: pdfDocuments.length },
         flex: 1,
         minWidth: 160,
         sortable: false,
@@ -97,7 +110,7 @@ const PropertyDetails = () => {
         headerClass: "ag-header-cell-center",
       },
     ],
-    [],
+    [pdfDocuments.length],
   );
 
   if (propertyDetailQuery?.isLoading) return <CenterLoader />;
@@ -107,11 +120,6 @@ const PropertyDetails = () => {
         message={propertyDetailQuery?.error?.response?.data?.message}
       />
     );
-
-  const pdfDocuments =
-    propertyDetailQuery?.data?.documents?.filter(
-      (item) => item?.type === "pdf",
-    ) ?? [];
 
   return (
     <>
