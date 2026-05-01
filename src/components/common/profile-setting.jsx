@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Auth } from "aws-amplify";
 import { ArrowLeft, Eye, EyeOff, PencilLine, Upload } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Separator } from "../ui/separator";
 import { useSidebar } from "../ui/sidebar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -53,6 +53,24 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
   const handleClick = () => {
     fileInputRef.current?.click();
   };
+
+  const resetProfilePreview = useCallback(() => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    if (preview) {
+      URL.revokeObjectURL(preview);
+    }
+    setPreView(null);
+    setProfileImage(null);
+  }, [preview]);
+
+  useEffect(() => {
+    if (!editProfile) {
+      resetProfilePreview();
+    }
+  }, [editProfile, resetProfilePreview]);
+
   // const getUserDetail = useQuery({
   //   queryKey: [queryKeys.getUserDetails, userId],
   //   queryFn: () => getAdminDetails(userId),
@@ -74,6 +92,9 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
       setPhone(phoneWithoutCountryCode);
     }
   }, [getUserDetail.isSuccess, getUserDetail.data, phoneWithoutCountryCode]);
+
+  const displayImage = preview || getUserDetail?.data?.profileImageUrl || "/dummy-profile.png";
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setProfileImage(file);
@@ -98,6 +119,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
         toast.success("Profile changed successfully");
         queryClient.invalidateQueries([queryKeys.getUserDetails]);
         setProfileImage(null);
+        setPreView(null);
         setIsProfile(false);
       }
     },
@@ -109,6 +131,11 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
       uploadToS3ApiMutation.mutate(data?.uploadUrl);
     },
   });
+
+  const handleCancel = () => {
+    resetProfilePreview();
+    setIsProfile(false);
+  };
 
   const handleProfileChange = (e) => {
     e.preventDefault();
@@ -166,7 +193,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
               <Button
                 type="ghost"
                 variant="secondary"
-                onClick={() => setIsProfile(false)}
+                onClick={handleCancel}
               >
                 <ArrowLeft />
               </Button>
@@ -178,11 +205,7 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
             >
               <div className="flex flex-col items-center gap-4">
                 <img
-                  src={
-                    preview ||
-                    getUserDetail?.data?.profileImageUrl ||
-                    "/dummy-profile.png"
-                  }
+                  src={displayImage}
                   alt="Profile"
                   className="w-60 h-60 rounded-2xl object-cover"
                 />
@@ -200,6 +223,16 @@ const ProfileSetting = ({ setIsProfile, editProfile }) => {
                 >
                   <Upload /> Upload Image
                 </Button>
+                {preview && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="border-none text-secondary hover:bg-[#F5F0EC] rounded-md px-6 w-full"
+                    onClick={resetProfilePreview}
+                  >
+                    Cancel Upload
+                  </Button>
+                )}
               </div>
 
               <form
