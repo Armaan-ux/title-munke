@@ -399,7 +399,7 @@ function AdminBrokersList() {
               {!hasMore && brokers?.length !== 0 && (
                 <p>No more data to load.</p>
               )}
-              {brokers?.length > 0 && hasMore && !isBrokerListLoading && (
+              {rowData?.length > 0 && hasMore && !isBrokerListLoading && (
                 <Button
                   size="sm"
                   onClick={() => handleFetchBrokersWithSearchCount()}
@@ -740,7 +740,7 @@ function Agents() {
               {!hasMore && !isAgentListLoading && agents?.length !== 0 && (
                 <p>No more data to load.</p>
               )}
-              {agents?.length > 0 && hasMore && !isAgentListLoading && (
+              {rowData?.length > 0 && hasMore && !isAgentListLoading && (
                 <Button size="sm" onClick={handleFetchAgentListing}>
                   Load More
                 </Button>

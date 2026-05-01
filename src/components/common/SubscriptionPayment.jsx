@@ -271,7 +271,7 @@ function SubscriptionPayment() {
                     <div className="text-center mb-8" type="button">
                       <button
                         onClick={skipPaymentHandler}
-                        className="inline-flex items-center gap-2 text-sm font-medium text-[#550000] hover:text-secondary-700 underline"
+                        className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-[#550000] hover:text-secondary-700 underline"
                       >
                         Skip Payment Method
                         <ArrowRight />

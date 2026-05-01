@@ -16,6 +16,7 @@ import { Check, RefreshCcw, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { AgGridReact } from "ag-grid-react";
+import ConfirmDeleteModal from "@/components/Modal/ConfirmDeleteModal";
 
 const brokerTypes = [
   { name: "Pending", id: "pending" },
@@ -47,33 +48,34 @@ const StatusRenderer = (props) => {
 };
 
 const ActionButtonsRenderer = (props) => {
-  const { onApprove, onReject, onRetry, onDelete, disabled } = props;
+  const {data, onApproveClick, onRejectClick, onRetryClick, onDeleteClick, disabled } = props;
+   const isAccepted = data?.status?.toUpperCase() === "ACCEPTED";
   return (
     <div className="flex items-center gap-2 h-full">
-      {onApprove && (
+      {onApproveClick && (
         <Button
           className="p-2 rounded-md hover:bg-[#eef9ff] text-secondary bg-[#F5F0EC]"
           disabled={disabled}
-          onClick={() => onApprove(props.data)}
+          onClick={() => onApproveClick(props.data)}
         >
           <Check size={16} />
         </Button>
       )}
-      {onRetry && (
+      {onRetryClick && !isAccepted && (
         <Button
           className="p-2 rounded-md hover:bg-[#eef9ff] text-secondary bg-[#F5F0EC]"
           disabled={disabled}
-          onClick={() => onRetry(props.data)}
+          onClick={() => onRetryClick(props.data)}
         >
           <RefreshCcw size={16} />
         </Button>
       )}
-      {(onReject || onDelete) && (
+      {(onRejectClick || onDeleteClick) && (
         <Button
           className="p-2 rounded-md hover:bg-[#eef9ff] text-[#FF645E] bg-[#F5F0EC]"
           disabled={disabled}
           onClick={() =>
-            onReject ? onReject(props.data) : onDelete(props.data?.id)
+            onRejectClick ? onRejectClick(props.data) : onDeleteClick(props.data?.id)
           }
         >
           <Trash2 size={16} />
@@ -89,8 +91,8 @@ const RequestListTable = ({
   data = [],
   isRequestPending,
   activeTab,
-  onApprove,
-  onReject,
+  onApproveClick,
+  onRejectClick,
   processJoinRequestMutation,
   processLeaveRequestMutation,
 }) => {
@@ -158,8 +160,8 @@ const RequestListTable = ({
         field: "action",
         cellRenderer: ActionButtonsRenderer,
         cellRendererParams: {
-          onApprove,
-          onReject,
+          onApproveClick,
+          onRejectClick,
           disabled: isActionDisabled,
         },
         flex: 1,
@@ -170,7 +172,7 @@ const RequestListTable = ({
     }
 
     return cols;
-  }, [showAction, onApprove, onReject, isActionDisabled]);
+  }, [showAction, onApproveClick, onRejectClick, isActionDisabled]);
 
   return (
     <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
@@ -213,14 +215,18 @@ const RequestListTable = ({
 const MyRequestList = ({
   data = [],
   isRequestPending,
-  onRetry,
-  onDelete,
+  onRetryClick,
+  onDeleteClick,
   newJoinRequestMutation,
   withdrawRequestMutation,
 }) => {
   const isActionDisabled =
     newJoinRequestMutation.isPending || withdrawRequestMutation.isPending;
-
+const OrganisationNameRenderer = (props) => (
+  <span className="whitespace-pre-wrap">
+    {props?.data?.requestType === "JOIN" ? props?.data?.toJoinName?.toUpperCase() : props?.data?.requestType === "LEAVE" ? props?.data?.toLeaveName?.toUpperCase() : "N/A"}
+  </span>
+);
   const columnDefs = useMemo(
     () => [
       {
@@ -236,8 +242,8 @@ const MyRequestList = ({
       },
       {
         headerName: "Organization Name",
-        field: "name",
-        valueGetter: (params) => params.data?.name?.toUpperCase(),
+        field: "toJoinName",
+        cellRenderer: OrganisationNameRenderer,
         flex: 2,
         minWidth: 200,
         filter: false,
@@ -269,8 +275,8 @@ const MyRequestList = ({
         field: "action",
         cellRenderer: ActionButtonsRenderer,
         cellRendererParams: {
-          onRetry,
-          onDelete,
+          onRetryClick,
+          onDeleteClick,
           disabled: isActionDisabled,
         },
         flex: 1,
@@ -279,7 +285,7 @@ const MyRequestList = ({
         sortable: false,
       },
     ],
-    [onRetry, onDelete, isActionDisabled],
+    [onRetryClick, onDeleteClick, isActionDisabled],
   );
 
   return (
@@ -325,6 +331,18 @@ export default function Request() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState(brokerTypes[0]);
   const [processingId, setProcessingId] = useState(null);
+  
+  // Modals for Pending tab (Approve/Reject)
+  const [approveModalOpen, setApproveModalOpen] = useState(false);
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [pendingApproveItem, setPendingApproveItem] = useState(null);
+  const [pendingRejectItem, setPendingRejectItem] = useState(null);
+  
+  // Modals for My Request tab (Retry/Delete)
+  const [retryModalOpen, setRetryModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [pendingRetryItem, setPendingRetryItem] = useState(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
 
   const tabToApiParam = {
     pending: "pending",
@@ -351,6 +369,8 @@ export default function Request() {
           ? "Request retried successfully"
           : "Request sent successfully",
       );
+      setRetryModalOpen(false);
+      setPendingRetryItem(null);
     },
     onError: (error) => {
       toast.error(
@@ -358,6 +378,8 @@ export default function Request() {
           error?.message ||
           "Something went wrong. Please try again.",
       );
+      setRetryModalOpen(false);
+      setPendingRetryItem(null);
     },
   });
 
@@ -374,6 +396,10 @@ export default function Request() {
             ? "Request rejected successfully"
             : "Request sent successfully",
       );
+      setApproveModalOpen(false);
+      setRejectModalOpen(false);
+      setPendingApproveItem(null);
+      setPendingRejectItem(null);
     },
     onError: (error) => {
       toast.error(
@@ -381,6 +407,10 @@ export default function Request() {
           error?.message ||
           "Something went wrong. Please try again.",
       );
+      setApproveModalOpen(false);
+      setRejectModalOpen(false);
+      setPendingApproveItem(null);
+      setPendingRejectItem(null);
     },
   });
 
@@ -397,6 +427,10 @@ export default function Request() {
             ? "Request rejected successfully"
             : "Request sent successfully",
       );
+      setApproveModalOpen(false);
+      setRejectModalOpen(false);
+      setPendingApproveItem(null);
+      setPendingRejectItem(null);
     },
     onError: (error) => {
       toast.error(
@@ -404,6 +438,10 @@ export default function Request() {
           error?.message ||
           "Something went wrong. Please try again.",
       );
+      setApproveModalOpen(false);
+      setRejectModalOpen(false);
+      setPendingApproveItem(null);
+      setPendingRejectItem(null);
     },
   });
 
@@ -414,12 +452,16 @@ export default function Request() {
         queryKey: [queryKeys.listRequestsByUserId, activeTab.id],
       });
       toast.success("Request withdrawn successfully");
+      setDeleteModalOpen(false);
+      setPendingDeleteId(null);
     },
     onError: (error) => {
       toast.error(
         error?.response?.data?.error ||
           "Something went wrong while withdrawing request.",
       );
+      setDeleteModalOpen(false);
+      setPendingDeleteId(null);
     },
   });
 
@@ -434,66 +476,78 @@ export default function Request() {
     };
   };
 
-  const handleRetry = useCallback(
-    (item) => {
-      if (!item?.id || newJoinRequestMutation.isPending) return;
-      newJoinRequestMutation.mutate({
-        ...buildRetryPayload(item),
-        actionType: "retry",
-      });
-    },
-    [newJoinRequestMutation],
-  );
+  // Handlers for My Request tab modals
+  const handleRetryClick = useCallback((item) => {
+    setPendingRetryItem(item);
+    setRetryModalOpen(true);
+  }, []);
 
-  const handleDelete = useCallback(
-    (id) => {
-      if (!id || withdrawRequestMutation.isPending) return;
-      withdrawRequestMutation.mutate({ requestId: id });
-    },
-    [withdrawRequestMutation],
-  );
+  const handleDeleteClick = useCallback((id) => {
+    setPendingDeleteId(id);
+    setDeleteModalOpen(true);
+  }, []);
 
-  const handleApprove = useCallback(
-    (item) => {
-      const id = item?.id;
-      if (!id || processingId === id) return;
-      setProcessingId(id);
-      if (item?.requestType === "LEAVE") {
-        processLeaveRequestMutation.mutate(
-          { requestId: id, action: "accept" },
-          { onSettled: () => setProcessingId(null) },
-        );
-      }
-      if (item?.requestType === "JOIN") {
-        processJoinRequestMutation.mutate(
-          { requestId: id, action: "accept" },
-          { onSettled: () => setProcessingId(null) },
-        );
-      }
-    },
-    [processingId, processJoinRequestMutation, processLeaveRequestMutation],
-  );
+  const handleRetryConfirm = useCallback(() => {
+    if (!pendingRetryItem?.id || newJoinRequestMutation.isPending) return;
+    newJoinRequestMutation.mutate({
+      ...buildRetryPayload(pendingRetryItem),
+      actionType: "retry",
+    });
+  }, [pendingRetryItem, newJoinRequestMutation]);
 
-  const handleReject = useCallback(
-    (item) => {
-      const id = item?.id;
-      if (!id || processingId === id) return;
-      setProcessingId(id);
-      if (item?.requestType === "LEAVE") {
-        processLeaveRequestMutation.mutate(
-          { requestId: id, action: "reject" },
-          { onSettled: () => setProcessingId(null) },
-        );
-      }
-      if (item?.requestType === "JOIN") {
-        processJoinRequestMutation.mutate(
-          { requestId: id, action: "reject" },
-          { onSettled: () => setProcessingId(null) },
-        );
-      }
-    },
-    [processingId, processJoinRequestMutation, processLeaveRequestMutation],
-  );
+  const handleDeleteConfirm = useCallback(() => {
+    if (!pendingDeleteId || withdrawRequestMutation.isPending) return;
+    withdrawRequestMutation.mutate({ requestId: pendingDeleteId });
+  }, [pendingDeleteId, withdrawRequestMutation]);
+
+  // Handlers for Pending tab modals
+  const handleApproveClick = useCallback((item) => {
+    setPendingApproveItem(item);
+    setApproveModalOpen(true);
+  }, []);
+
+  const handleRejectClick = useCallback((item) => {
+    setPendingRejectItem(item);
+    setRejectModalOpen(true);
+  }, []);
+
+  const handleApproveConfirm = useCallback(() => {
+    const item = pendingApproveItem;
+    const id = item?.id;
+    if (!id || processingId === id) return;
+    setProcessingId(id);
+    if (item?.requestType === "LEAVE") {
+      processLeaveRequestMutation.mutate(
+        { requestId: id, action: "accept" },
+        { onSettled: () => setProcessingId(null) },
+      );
+    }
+    if (item?.requestType === "JOIN") {
+      processJoinRequestMutation.mutate(
+        { requestId: id, action: "accept" },
+        { onSettled: () => setProcessingId(null) },
+      );
+    }
+  }, [pendingApproveItem, processingId, processJoinRequestMutation, processLeaveRequestMutation]);
+
+  const handleRejectConfirm = useCallback(() => {
+    const item = pendingRejectItem;
+    const id = item?.id;
+    if (!id || processingId === id) return;
+    setProcessingId(id);
+    if (item?.requestType === "LEAVE") {
+      processLeaveRequestMutation.mutate(
+        { requestId: id, action: "reject" },
+        { onSettled: () => setProcessingId(null) },
+      );
+    }
+    if (item?.requestType === "JOIN") {
+      processJoinRequestMutation.mutate(
+        { requestId: id, action: "reject" },
+        { onSettled: () => setProcessingId(null) },
+      );
+    }
+  }, [pendingRejectItem, processingId, processJoinRequestMutation, processLeaveRequestMutation]);
 
   const data = requestList?.data || [];
 
@@ -519,8 +573,8 @@ export default function Request() {
         <MyRequestList
           data={data}
           isRequestPending={isRequestPending}
-          onRetry={handleRetry}
-          onDelete={handleDelete}
+          onRetryClick={handleRetryClick}
+          onDeleteClick={handleDeleteClick}
           newJoinRequestMutation={newJoinRequestMutation}
           withdrawRequestMutation={withdrawRequestMutation}
         />
@@ -529,12 +583,70 @@ export default function Request() {
           data={data}
           isRequestPending={isRequestPending}
           activeTab={activeTab.id}
-          onApprove={handleApprove}
-          onReject={handleReject}
+          onApproveClick={handleApproveClick}
+          onRejectClick={handleRejectClick}
           processJoinRequestMutation={processJoinRequestMutation}
           processLeaveRequestMutation={processLeaveRequestMutation}
         />
       )}
+
+      {/* Modals for Pending Tab (Approve/Reject) */}
+      <ConfirmDeleteModal
+        open={approveModalOpen}
+        onClose={() => {
+          setApproveModalOpen(false);
+          setPendingApproveItem(null);
+        }}
+        onConfirm={handleApproveConfirm}
+        title="Approve Request?"
+        description="Are you sure you want to approve this request?"
+        confirmText="Approve"
+        loadingText="Approving..."
+        isLoading={processJoinRequestMutation?.isPending || processLeaveRequestMutation?.isPending}
+      />
+
+      <ConfirmDeleteModal
+        open={rejectModalOpen}
+        onClose={() => {
+          setRejectModalOpen(false);
+          setPendingRejectItem(null);
+        }}
+        onConfirm={handleRejectConfirm}
+        title="Reject Request?"
+        description="Are you sure you want to reject this request? This action cannot be undone."
+        confirmText="Reject"
+        loadingText="Rejecting..."
+        isLoading={processJoinRequestMutation?.isPending || processLeaveRequestMutation?.isPending}
+      />
+
+      {/* Modals for My Request Tab (Retry/Delete) */}
+      <ConfirmDeleteModal
+        open={retryModalOpen}
+        onClose={() => {
+          setRetryModalOpen(false);
+          setPendingRetryItem(null);
+        }}
+        onConfirm={handleRetryConfirm}
+        title="Retry Request?"
+        description="Are you sure you want to retry this request?"
+        confirmText="Retry"
+        loadingText="Retrying..."
+        isLoading={newJoinRequestMutation.isPending}
+      />
+
+      <ConfirmDeleteModal
+        open={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setPendingDeleteId(null);
+        }}
+        onConfirm={handleDeleteConfirm}
+        title="Withdraw Request?"
+        description="Are you sure you want to withdraw this request? This action cannot be undone."
+        confirmText="Withdraw"
+        loadingText="Withdrawing..."
+        isLoading={withdrawRequestMutation.isPending}
+      />
     </div>
   );
 }

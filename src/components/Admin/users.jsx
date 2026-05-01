@@ -194,6 +194,8 @@ function Organisation() {
         filter: false,
         flex: 1,
         minWidth: 160,
+          wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Email",
@@ -332,7 +334,7 @@ function Organisation() {
         <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
           {isOrgListLoading && <p>Loading...</p>}
           {!hasMore && !isOrgListLoading && <p>No more data to load.</p>}
-          {org?.length > 0 && hasMore && !isOrgListLoading && (
+          {filteredData?.length > 0 && hasMore && !isOrgListLoading && (
             <Button
               size="sm"
               className=""
@@ -427,6 +429,8 @@ function Admins() {
         filter: false,
         flex: 1,
         minWidth: 180,
+          wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Email",
@@ -570,7 +574,7 @@ function Admins() {
         <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
           {isAdminListLoading && <p>Loading...</p>}
           {!hasMore && !isAdminListLoading && <p>No more data to load.</p>}
-          {admins?.length > 0 && hasMore && !isAdminListLoading && (
+          {filteredData?.length > 0 && hasMore && !isAdminListLoading && (
             <Button
               size="sm"
               className=""
@@ -668,6 +672,8 @@ function AdminBrokersList() {
         cellStyle: { fontWeight: "500", color: "black" },
         flex: 1,
         minWidth: 180,
+          wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Email",
@@ -822,7 +828,7 @@ function AdminBrokersList() {
           <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
             {isBrokerListLoading && <p>Loading...</p>}
             {!hasMore && <p>No more data to load.</p>}
-            {brokers?.length > 0 && hasMore && !isBrokerListLoading && (
+            {filteredData?.length > 0 && hasMore && !isBrokerListLoading && (
               <Button
                 size="sm"
                 className=""
@@ -926,6 +932,8 @@ function Agents() {
         cellStyle: { fontWeight: "500", color: "black" },
         flex: 1,
         minWidth: 180,
+          wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Email",
@@ -1097,7 +1105,7 @@ function Agents() {
         <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
           {isAgentListLoading && <p>Loading...</p>}
           {!hasMore && !isAgentListLoading && <p>No more data to load.</p>}
-          {agents?.length > 0 && hasMore && !isAgentListLoading && (
+          {filteredData?.length > 0 && hasMore && !isAgentListLoading && (
             <Button
               size="sm"
               className=""

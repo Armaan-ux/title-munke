@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProfileSetting from "@/components/common/profile-setting";
 import Notification from "../common/notification-setting";
 import Billing from "../common/billing";
@@ -24,9 +24,14 @@ const agentTypes = [
 ];
 
 export default function AdminSettings() {
-  const [activeTab, setActiveTab] = useState(agentTypes[0]);
+  const [activeTab, setActiveTab] = useState(() => {
+    const savedTabId = localStorage.getItem("agentSettingsActiveTab");
+    return agentTypes.find((tab) => tab.id === savedTabId) || agentTypes[0];
+  });
   const [editProfile, setIsProfile] = useState(false);
-
+  useEffect(() => {
+    localStorage.setItem("agentSettingsActiveTab", activeTab.id);
+  }, [activeTab]);
   return (
     <div className="bg-[#F5F0EC] rounded-lg px-7 py-4 mt-3 text-secondary">
       {editProfile !== true && (

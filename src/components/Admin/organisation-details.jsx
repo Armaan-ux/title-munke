@@ -90,6 +90,8 @@ function OrganisationDetails() {
         flex: 1.5,
         minWidth: 200,
         filter: false,
+          wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Last Activity",

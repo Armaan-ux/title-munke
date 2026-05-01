@@ -13,6 +13,7 @@ import { useState, useMemo, useCallback } from "react";
 import { RefreshCcw, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { AgGridReact } from "ag-grid-react";
+import ConfirmDeleteModal from "@/components/Modal/ConfirmDeleteModal";
 
 const agentTypes = [
   { name: "My Requests", id: "request" },
@@ -51,19 +52,19 @@ const StatusRenderer = (props) => {
 };
 
 const ActionRenderer = (props) => {
-  const { onRetry, onDelete, isRetryPending } = props;
+  const { onRetry, onDelete, isRetryPending, onRetryClick, onDeleteClick } = props;
   return (
     <div className="flex items-center gap-2 h-full">
       <button
         disabled={isRetryPending}
         className="p-2 rounded-md hover:bg-[#eef9ff] text-[#000000] bg-[#F5F0EC]"
-        onClick={() => onRetry(props.data)}
+        onClick={() => onRetryClick(props.data)}
       >
         <RefreshCcw size={16} />
       </button>
       <button
         className="p-2 rounded-md hover:bg-[#FFE3D9] text-[#FF0000] bg-[#F5F0EC]"
-        onClick={() => onDelete(props.data?.id)}
+        onClick={() => onDeleteClick(props.data?.id)}
       >
         <Trash2 size={16} />
       </button>
@@ -76,6 +77,10 @@ const ActionRenderer = (props) => {
 const RequestListTable = () => {
   const { userId, userType } = useUserIdType();
   const queryClient = useQueryClient();
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [retryModalOpen, setRetryModalOpen] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [pendingRetryItem, setPendingRetryItem] = useState(null);
 
   const { data: requestList, isPending: isRequestPending } = useQuery({
     queryKey: [queryKeys.listRequestsByUserId],
@@ -94,6 +99,8 @@ const RequestListTable = () => {
           ? "Request retried successfully"
           : "Request sent successfully",
       );
+      setRetryModalOpen(false);
+      setPendingRetryItem(null);
     },
     onError: (error) => {
       toast.error(
@@ -101,6 +108,8 @@ const RequestListTable = () => {
           error?.message ||
           "Something went wrong. Please try again.",
       );
+      setRetryModalOpen(false);
+      setPendingRetryItem(null);
     },
   });
 
@@ -109,12 +118,16 @@ const RequestListTable = () => {
     onSuccess: () => {
       queryClient.invalidateQueries([queryKeys.listRequestsByUserId]);
       toast.success("Request withdrawn successfully");
+      setDeleteModalOpen(false);
+      setPendingDeleteId(null);
     },
     onError: (error) => {
       toast.error(
         error?.response?.data?.error ||
           "Something went wrong while withdrawing request.",
       );
+      setDeleteModalOpen(false);
+      setPendingDeleteId(null);
     },
   });
 
@@ -126,21 +139,25 @@ const RequestListTable = () => {
     ...(item?.requestMessage && { message: item.requestMessage }),
   });
 
-  const handleRetry = useCallback(
-    (item) => {
-      if (!item?.id || newJoinRequestMutation.isPending) return;
-      newJoinRequestMutation.mutate(buildRetryPayload(item));
-    },
-    [newJoinRequestMutation],
-  );
+  const handleRetryClick = useCallback((item) => {
+    setPendingRetryItem(item);
+    setRetryModalOpen(true);
+  }, []);
 
-  const handleDelete = useCallback(
-    (id) => {
-      if (!id || withdrawRequestMutation.isPending) return;
-      withdrawRequestMutation.mutate({ requestId: id });
-    },
-    [withdrawRequestMutation],
-  );
+  const handleDeleteClick = useCallback((id) => {
+    setPendingDeleteId(id);
+    setDeleteModalOpen(true);
+  }, []);
+
+  const handleRetryConfirm = useCallback(() => {
+    if (!pendingRetryItem?.id || newJoinRequestMutation.isPending) return;
+    newJoinRequestMutation.mutate(buildRetryPayload(pendingRetryItem));
+  }, [pendingRetryItem, newJoinRequestMutation]);
+
+  const handleDeleteConfirm = useCallback(() => {
+    if (!pendingDeleteId || withdrawRequestMutation.isPending) return;
+    withdrawRequestMutation.mutate({ requestId: pendingDeleteId });
+  }, [pendingDeleteId, withdrawRequestMutation]);
 
   const columnDefs = useMemo(
     () => [
@@ -190,17 +207,18 @@ const RequestListTable = () => {
         headerName: "Action",
         field: "action",
         cellRenderer: ActionRenderer,
-        cellRendererParams: {
-          onRetry: handleRetry,
-          onDelete: handleDelete,
-          isRetryPending: newJoinRequestMutation.isPending,
-        },
+       cellRendererParams: (params) => ({
+    onRetryClick: handleRetryClick,
+    onDeleteClick: handleDeleteClick,
+    isRetryPending: newJoinRequestMutation.isPending,
+    hideRetry: params?.data?.status?.toUpperCase() === "ACCEPTED", 
+  }),
         flex: 1,
         minWidth: 120,
         sortable: false,
       },
     ],
-    [handleRetry, handleDelete, newJoinRequestMutation.isPending],
+    [handleRetryClick, handleDeleteClick, newJoinRequestMutation.isPending],
   );
 
   return (
@@ -234,6 +252,34 @@ const RequestListTable = () => {
           </div>
         )}
       </div>
+
+      <ConfirmDeleteModal
+        open={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setPendingDeleteId(null);
+        }}
+        onConfirm={handleDeleteConfirm}
+        title="Withdraw Request?"
+        description="Are you sure you want to withdraw this request? This action cannot be undone."
+        confirmText="Withdraw"
+        loadingText="Withdrawing..."
+        isLoading={withdrawRequestMutation.isPending}
+      />
+
+      <ConfirmDeleteModal
+        open={retryModalOpen}
+        onClose={() => {
+          setRetryModalOpen(false);
+          setPendingRetryItem(null);
+        }}
+        onConfirm={handleRetryConfirm}
+        title="Retry Request?"
+        description="Are you sure you want to retry this request?"
+        confirmText="Retry"
+        loadingText="Retrying..."
+        isLoading={newJoinRequestMutation.isPending}
+      />
     </div>
   );
 };

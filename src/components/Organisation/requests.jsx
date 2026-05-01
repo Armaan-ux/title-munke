@@ -12,6 +12,7 @@ import { Check, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { AgGridReact } from "ag-grid-react";
+import ConfirmDeleteModal from "@/components/Modal/ConfirmDeleteModal";
 
 const brokerTypes = [
   { name: "Pending", id: "pending" },
@@ -28,20 +29,20 @@ const NameRenderer = (props) => (
 );
 
 const ActionRenderer = (props) => {
-  const { onApprove, onReject, disabled } = props;
+  const { onApproveClick, onRejectClick, disabled } = props;
   return (
     <div className="flex items-center gap-2 h-full">
       <Button
         className="p-2 rounded-md hover:bg-[#eef9ff] text-secondary bg-[#F5F0EC]"
         disabled={disabled}
-        onClick={() => onApprove(props.data)}
+        onClick={() => onApproveClick(props.data)}
       >
         <Check size={16} />
       </Button>
       <Button
         className="p-2 rounded-md hover:bg-[#eef9ff] text-[#FF645E] bg-[#F5F0EC]"
         disabled={disabled}
-        onClick={() => onReject(props.data)}
+        onClick={() => onRejectClick(props.data)}
       >
         <Trash2 size={16} />
       </Button>
@@ -55,10 +56,20 @@ const RequestListTable = ({
   data = [],
   isRequestPending,
   activeTab,
-  onApprove,
-  onReject,
+  onApproveClick,
+  onRejectClick,
+  onApproveConfirm,
+  onRejectConfirm,
   processJoinRequestMutation,
   processLeaveRequestMutation,
+  approveModalOpen,
+  rejectModalOpen,
+  setApproveModalOpen,
+  setRejectModalOpen,
+  pendingApproveItem,
+  setPendingApproveItem,
+  pendingRejectItem,
+  setPendingRejectItem,
 }) => {
   const showAction = activeTab === "pending";
   const isActionDisabled =
@@ -116,8 +127,8 @@ const RequestListTable = ({
         field: "action",
         cellRenderer: ActionRenderer,
         cellRendererParams: {
-          onApprove,
-          onReject,
+          onApproveClick,
+          onRejectClick,
           disabled: isActionDisabled,
         },
         flex: 1,
@@ -127,44 +138,74 @@ const RequestListTable = ({
     }
 
     return cols;
-  }, [showAction, onApprove, onReject, isActionDisabled]);
+  }, [showAction, onApproveClick, onRejectClick, isActionDisabled]);
 
   return (
-    <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
-      <div className="bg-white !p-4 rounded-xl">
-        {isRequestPending ? (
-          <CenterLoader />
-        ) : (
-          <div className="ag-theme-quartz custom-ag-grid" style={{ width: "100%" }}>
-            {/* {data.length === 0 ? (
-              <div className="flex items-center justify-center py-20 text-muted-foreground font-medium text-lg border rounded-xl bg-gray-50/50">
-                No Records found.
-              </div>
-            ) : ( */}
-              <AgGridReact
-                rowData={data}
-                columnDefs={columnDefs}
-                defaultColDef={{
-                  flex: 1,
-                  minWidth: 120,
-                  filter: false,
-                  sortable: true,
-                  resizable: true,
-                  unSortIcon: true,
-                  wrapHeaderText: true,
-                  autoHeaderHeight: true,
-                }}
-                rowHeight={72}
-                headerHeight={48}
-                domLayout="autoHeight"
-                animateRows={true}
-                overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
-              />
-            {/* )} */}
-          </div>
-        )}
+    <>
+      <div className="bg-[#F5F0EC] rounded-lg p-7 my-4 text-secondary">
+        <div className="bg-white !p-4 rounded-xl">
+          {isRequestPending ? (
+            <CenterLoader />
+          ) : (
+            <div className="ag-theme-quartz custom-ag-grid" style={{ width: "100%" }}>
+              {/* {data.length === 0 ? (
+                <div className="flex items-center justify-center py-20 text-muted-foreground font-medium text-lg border rounded-xl bg-gray-50/50">
+                  No Records found.
+                </div>
+              ) : ( */}
+                <AgGridReact
+                  rowData={data}
+                  columnDefs={columnDefs}
+                  defaultColDef={{
+                    flex: 1,
+                    minWidth: 120,
+                    filter: false,
+                    sortable: true,
+                    resizable: true,
+                    unSortIcon: true,
+                    wrapHeaderText: true,
+                    autoHeaderHeight: true,
+                  }}
+                  rowHeight={72}
+                  headerHeight={48}
+                  domLayout="autoHeight"
+                  animateRows={true}
+                  overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+                />
+              {/* )} */}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+
+      <ConfirmDeleteModal
+        open={approveModalOpen}
+        onClose={() => {
+          setApproveModalOpen(false);
+          setPendingApproveItem(null);
+        }}
+        onConfirm={onApproveConfirm}
+        title="Approve Request?"
+        description="Are you sure you want to approve this request?"
+        confirmText="Approve"
+        loadingText="Approving..."
+        isLoading={processJoinRequestMutation?.isPending || processLeaveRequestMutation?.isPending}
+      />
+
+      <ConfirmDeleteModal
+        open={rejectModalOpen}
+        onClose={() => {
+          setRejectModalOpen(false);
+          setPendingRejectItem(null);
+        }}
+        onConfirm={onRejectConfirm}
+        title="Reject Request?"
+        description="Are you sure you want to reject this request? This action cannot be undone."
+        confirmText="Reject"
+        loadingText="Rejecting..."
+        isLoading={processJoinRequestMutation?.isPending || processLeaveRequestMutation?.isPending}
+      />
+    </>
   );
 };
 
@@ -175,6 +216,10 @@ export default function Request() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState(brokerTypes[0]);
   const [processingId, setProcessingId] = useState(null);
+  const [approveModalOpen, setApproveModalOpen] = useState(false);
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [pendingApproveItem, setPendingApproveItem] = useState(null);
+  const [pendingRejectItem, setPendingRejectItem] = useState(null);
 
   const tabToApiParam = {
     pending: "pending",
@@ -202,6 +247,10 @@ export default function Request() {
             ? "Request rejected successfully"
             : "Request sent successfully",
       );
+      setApproveModalOpen(false);
+      setRejectModalOpen(false);
+      setPendingApproveItem(null);
+      setPendingRejectItem(null);
     },
     onError: (error) => {
       toast.error(
@@ -209,6 +258,10 @@ export default function Request() {
           error?.message ||
           "Something went wrong. Please try again.",
       );
+      setApproveModalOpen(false);
+      setRejectModalOpen(false);
+      setPendingApproveItem(null);
+      setPendingRejectItem(null);
     },
   });
 
@@ -225,6 +278,10 @@ export default function Request() {
             ? "Request rejected successfully"
             : "Request sent successfully",
       );
+      setApproveModalOpen(false);
+      setRejectModalOpen(false);
+      setPendingApproveItem(null);
+      setPendingRejectItem(null);
     },
     onError: (error) => {
       toast.error(
@@ -232,50 +289,60 @@ export default function Request() {
           error?.message ||
           "Something went wrong. Please try again.",
       );
+      setApproveModalOpen(false);
+      setRejectModalOpen(false);
+      setPendingApproveItem(null);
+      setPendingRejectItem(null);
     },
   });
 
-  const handleApprove = useCallback(
-    (item) => {
-      const id = item?.id;
-      if (!id || processingId === id) return;
-      setProcessingId(id);
-      if (item?.requestType === "LEAVE") {
-        processLeaveRequestMutation.mutate(
-          { requestId: id, action: "accept" },
-          { onSettled: () => setProcessingId(null) },
-        );
-      }
-      if (item?.requestType === "JOIN") {
-        processJoinRequestMutation.mutate(
-          { requestId: id, action: "accept" },
-          { onSettled: () => setProcessingId(null) },
-        );
-      }
-    },
-    [processingId, processJoinRequestMutation, processLeaveRequestMutation],
-  );
+  const handleApproveClick = useCallback((item) => {
+    setPendingApproveItem(item);
+    setApproveModalOpen(true);
+  }, []);
 
-  const handleReject = useCallback(
-    (item) => {
-      const id = item?.id;
-      if (!id || processingId === id) return;
-      setProcessingId(id);
-      if (item?.requestType === "LEAVE") {
-        processLeaveRequestMutation.mutate(
-          { requestId: id, action: "reject" },
-          { onSettled: () => setProcessingId(null) },
-        );
-      }
-      if (item?.requestType === "JOIN") {
-        processJoinRequestMutation.mutate(
-          { requestId: id, action: "reject" },
-          { onSettled: () => setProcessingId(null) },
-        );
-      }
-    },
-    [processingId, processJoinRequestMutation, processLeaveRequestMutation],
-  );
+  const handleRejectClick = useCallback((item) => {
+    setPendingRejectItem(item);
+    setRejectModalOpen(true);
+  }, []);
+
+  const handleApproveConfirm = useCallback(() => {
+    const item = pendingApproveItem;
+    const id = item?.id;
+    if (!id || processingId === id) return;
+    setProcessingId(id);
+    if (item?.requestType === "LEAVE") {
+      processLeaveRequestMutation.mutate(
+        { requestId: id, action: "accept" },
+        { onSettled: () => setProcessingId(null) },
+      );
+    }
+    if (item?.requestType === "JOIN") {
+      processJoinRequestMutation.mutate(
+        { requestId: id, action: "accept" },
+        { onSettled: () => setProcessingId(null) },
+      );
+    }
+  }, [pendingApproveItem, processingId, processJoinRequestMutation, processLeaveRequestMutation]);
+
+  const handleRejectConfirm = useCallback(() => {
+    const item = pendingRejectItem;
+    const id = item?.id;
+    if (!id || processingId === id) return;
+    setProcessingId(id);
+    if (item?.requestType === "LEAVE") {
+      processLeaveRequestMutation.mutate(
+        { requestId: id, action: "reject" },
+        { onSettled: () => setProcessingId(null) },
+      );
+    }
+    if (item?.requestType === "JOIN") {
+      processJoinRequestMutation.mutate(
+        { requestId: id, action: "reject" },
+        { onSettled: () => setProcessingId(null) },
+      );
+    }
+  }, [pendingRejectItem, processingId, processJoinRequestMutation, processLeaveRequestMutation]);
 
   const data = requestList?.data || [];
 
@@ -301,10 +368,20 @@ export default function Request() {
         data={data}
         isRequestPending={isRequestPending}
         activeTab={activeTab.id}
-        onApprove={handleApprove}
-        onReject={handleReject}
+        onApproveClick={handleApproveClick}
+        onRejectClick={handleRejectClick}
+        onApproveConfirm={handleApproveConfirm}
+        onRejectConfirm={handleRejectConfirm}
         processJoinRequestMutation={processJoinRequestMutation}
         processLeaveRequestMutation={processLeaveRequestMutation}
+        approveModalOpen={approveModalOpen}
+        rejectModalOpen={rejectModalOpen}
+        setApproveModalOpen={setApproveModalOpen}
+        setRejectModalOpen={setRejectModalOpen}
+        pendingApproveItem={pendingApproveItem}
+        setPendingApproveItem={setPendingApproveItem}
+        pendingRejectItem={pendingRejectItem}
+        setPendingRejectItem={setPendingRejectItem}
       />
     </div>
   );

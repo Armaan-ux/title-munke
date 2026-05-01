@@ -77,6 +77,8 @@ export default function IndividualBusinessTable({
         minWidth: 160,
         filter: false,
         cellStyle: { fontWeight: 500, color: "black" },
+          wrapText: true,
+        autoHeight: true,
       },
       {
         headerName: "Property Searches",
