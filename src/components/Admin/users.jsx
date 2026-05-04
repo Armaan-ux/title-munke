@@ -1,17 +1,8 @@
 import { API } from "aws-amplify";
-import { useState, useEffect, useMemo } from "react";
-// import "./index.css";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { getFormattedDateTime } from "@/utils";
 import { fetchAgentsWithSearchCount } from "@/components/service/broker";
 import { AgGridReact } from "ag-grid-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   Select,
   SelectContent,
@@ -22,47 +13,62 @@ import {
 import { Button } from "@/components/ui/button";
 import {
   ArchiveRestore,
-  EyeIcon,
+  Download,
   PencilLine,
   PlusCircle,
   Trash2,
   UserPlus,
 } from "lucide-react";
-import AddUserModal from "../Modal/AddUserModal";
-import AgentList from "../Modal/AgentList";
-import AddAgentByAdminModal from "../Modal/AddAgentByAdminModal";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { toast } from "react-toastify";
-import {
-  CONSTANTS,
-  deleteUser,
-  getActiveBrokers,
-  getAgentListings,
-  getBrokersWithSearchCount,
-  getTotalBrokers,
-  getTotalBrokerSearchesThisMonth,
-  listAdmins,
-  listOrganisation,
-  reinviteUser,
-  updateBrokerStatus,
-} from "../service/userAdmin";
-import { Badge } from "../ui/badge";
 import AddAdminModal from "../Modal/AddAdminModal";
 import ConfirmDeleteModal from "../Modal/ConfirmDeleteModal";
 import { useDeleteUser } from "@/hooks/useDeleteUser";
 import { useRestoreUser } from "@/hooks/useRestoreUser";
 import { useMutation } from "@tanstack/react-query";
 import { useUserIdType } from "@/hooks/useUserIdType";
-import { set } from "zod";
+import { Badge } from "../ui/badge";
+import { toast } from "react-toastify";
+import {
+  deleteUser,
+  getActiveBrokers,
+  getAgentListings,
+  getBrokersWithSearchCount,
+  listAdmins,
+  listOrganisation,
+  reinviteUser,
+} from "../service/userAdmin";
 
-const SrNoRenderer = (props) => {
-  return <span>{props.node.rowIndex + 1}</span>;
+// ─── Shared CSV export utility ───────────────────────────────────────────────
+/**
+ * @param {object[]} rows        - array of data objects
+ * @param {string[]} headers     - column header labels
+ * @param {Function[]} getters   - one getter per header: (row) => value
+ * @param {string} filename      - downloaded file name
+ */
+const exportToCSV = (rows, headers, getters, filename) => {
+  if (!rows?.length) return;
+
+  const escape = (val) => `"${String(val ?? "").replace(/"/g, '""')}"`;
+
+  const csvRows = rows.map((row, index) =>
+    getters.map((get) => escape(get(row, index))).join(","),
+  );
+
+  const csvContent = [headers.join(","), ...csvRows].join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 };
+
+const todayStr = () => new Date().toISOString().slice(0, 10);
+// ─────────────────────────────────────────────────────────────────────────────
+
+const SrNoRenderer = (props) => <span>{props.node.rowIndex + 1}</span>;
 
 const StatusRenderer = (props) => {
   const status = props.value;
@@ -72,7 +78,7 @@ const StatusRenderer = (props) => {
         status === "ACTIVE"
           ? "bg-[#E9F3E9] text-[#1E8221]"
           : status === "DELETED"
-            ? " text-destructive/80 bg-destructive/20"
+            ? "text-destructive/80 bg-destructive/20"
             : "bg-[#FFF3D9] text-[#A2781E]"
       } text-[13px] font-medium px-3 py-1 rounded-full`}
     >
@@ -82,22 +88,10 @@ const StatusRenderer = (props) => {
 };
 
 const userTypes = [
-  {
-    name: "Admin",
-    id: "admin",
-  },
-  {
-    name: "Organization",
-    id: "organisation",
-  },
-  {
-    name: "Broker",
-    id: "broker",
-  },
-  {
-    name: "Agent",
-    id: "agent",
-  },
+  { name: "Admin", id: "admin" },
+  { name: "Organization", id: "organisation" },
+  { name: "Broker", id: "broker" },
+  { name: "Agent", id: "agent" },
 ];
 
 export default function Users() {
@@ -106,14 +100,14 @@ export default function Users() {
   return (
     <div className="bg-[#F5F0EC] rounded-lg px-7 py-4 my-4 text-secondary">
       <div className="space-x-3 mb-4">
-        {userTypes.map((item, index) => (
+        {userTypes.map((item) => (
           <button
             key={item.id}
-            className={` ${
+            className={`${
               activeTab.id === item.id
                 ? "bg-tertiary text-white"
-                : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] "
-            } transition-all  rounded-full px-10 py-3 `}
+                : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055]"
+            } transition-all rounded-full px-10 py-3`}
             onClick={() => setActiveTab(item)}
           >
             {item.name}
@@ -129,244 +123,17 @@ export default function Users() {
   );
 }
 
-function Organisation() {
-  const { userId } = useUserIdType();
-  const [isOpen, setIsOpen] = useState(false);
-  const [org, setOrg] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
-  const [isOrgListLoading, setIsOrgListLoading] = useState(false);
-  const [nextToken, setNextToken] = useState(null);
-  const [selectedUser, setSelectedUser] = useState({});
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [userToDelete, setUserToDelete] = useState(null);
-  const [statusFilter, setStatusFilter] = useState("ALL");
-  const { deleteUserMutation } = useDeleteUser(() => {
-    handleFetchOrgListing(true);
-    setHasMore(true);
-  });
-  const { restoreUserMutation } = useRestoreUser(() => {
-    handleFetchOrgListing(true);
-    setHasMore(true);
-  });
-  const handleFetchOrgListing = async (isRefetch) => {
-    setIsOrgListLoading(true);
-    try {
-      const response = await listOrganisation(isRefetch ? null : nextToken);
-
-      const { updatedOrganisations, nextToken: newNextToken } = response;
-      setOrg((pre) => {
-        const allData = isRefetch
-          ? updatedOrganisations
-          : [...pre, ...updatedOrganisations];
-        return Array.from(
-          new Map(allData.map((item) => [item.id, item])).values(),
-        );
-      });
-      setNextToken(newNextToken);
-      setHasMore(!!newNextToken);
-    } catch (error) {
-      console.log(error);
-    }
-    setIsOrgListLoading(false);
-  };
-
-  useEffect(() => {
-    handleFetchOrgListing();
-  }, []);
-
-  const columnDefs = useMemo(
-    () => [
-      {
-        headerName: "Sr. No.",
-        field: "index",
-        cellRenderer: SrNoRenderer,
-        width: 120,
-        minWidth: 120,
-        maxWidth: 120,
-        flex: 0,
-        sortable: false,
-        filter: false,
-      },
-      {
-        headerName: "Name",
-        field: "name",
-        cellStyle: { fontWeight: "500", color: "black" },
-        filter: false,
-        flex: 1,
-        minWidth: 160,
-          wrapText: true,
-        autoHeight: true,
-      },
-      {
-        headerName: "Email",
-        field: "email",
-        filter: false,
-        flex: 1.5,
-        minWidth: 200,
-      },
-      {
-        headerName: "Status",
-        field: "status",
-        filter: false,
-        flex: 1,
-        minWidth: 160,
-        cellRenderer: StatusRenderer,
-      },
-      {
-        headerName: "Action",
-        field: "id",
-        filter: false,
-        sortable: false,
-        cellRenderer: (params) => {
-          const item = params.data;
-          return (
-            <div className="flex items-center gap-2 h-full">
-              <Button
-                size="icon"
-                className="text-md"
-                variant="ghost"
-                disabled={item?.status === "DELETED"}
-                onClick={() => {
-                  setSelectedUser(item);
-                  setIsOpen(true);
-                }}
-              >
-                <PencilLine />
-              </Button>
-              {userId !== item?.id && (
-                <Button
-                  size="icon"
-                  className="text-md"
-                  variant="ghost"
-                  onClick={() => {
-                    if (item?.status === "DELETED") {
-                      restoreUserMutation.mutate({
-                        userId: item.id,
-                        email: item.email,
-                        userType: "organisation",
-                      });
-                    } else {
-                      setUserToDelete(item);
-                      setIsDeleteDialogOpen(true);
-                    }
-                  }}
-                >
-                  {item?.status === "DELETED" ? <ArchiveRestore /> : <Trash2 />}
-                </Button>
-              )}
-            </div>
-          );
-        },
-      },
-    ],
-    [userId, restoreUserMutation, deleteUserMutation],
-  );
-
-  const filteredData = useMemo(() => {
-    return org?.filter(
-      (item) => statusFilter === "ALL" || item.status === statusFilter,
-    );
-  }, [org, statusFilter]);
+// ─── Export button (reusable small component) ─────────────────────────────────
+function ExportCSVButton({ onClick, disabled }) {
   return (
-    <>
-      {isOpen && (
-        <AddAdminModal
-          open={isOpen}
-          onClose={() => {
-            setIsOpen(false);
-            setSelectedUser({});
-          }}
-          title="Organization"
-          userType="organisation"
-          invalidateFun={() => {
-            handleFetchOrgListing(true);
-            setHasMore(true);
-          }}
-          selectedUser={selectedUser}
-        />
-      )}
-      <div className="bg-white !p-4 rounded-xl">
-        <div className="flex justify-between gap-4 items-center mb-4">
-          <div className="flex items-center gap-4">
-            <p className="text-lg font-medium">All Organizations</p>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[180px] bg-white">
-                <SelectValue placeholder="Filter by Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL">All Status</SelectItem>
-                <SelectItem value="ACTIVE">Active</SelectItem>
-                <SelectItem value="UNCONFIRMED">Unconfirmed</SelectItem>
-                <SelectItem value="DELETED">Deleted</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <Button variant="secondary" onClick={() => setIsOpen(true)}>
-            {" "}
-            <PlusCircle /> Add Organization
-          </Button>
-        </div>
-
-        <div
-          className="ag-theme-quartz custom-ag-grid"
-          style={{ width: "100%" }}
-        >
-          <AgGridReact
-            rowData={filteredData || []}
-            columnDefs={columnDefs}
-            defaultColDef={{
-              flex: 1,
-              minWidth: 120,
-              filter: false,
-              sortable: true,
-              resizable: true,
-              unSortIcon: true,
-              wrapHeaderText: true,
-              autoHeaderHeight: true,
-            }}
-            rowHeight={72}
-            headerHeight={48}
-            domLayout="autoHeight"
-            animateRows={true}
-            overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
-          />
-        </div>
-        <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
-          {isOrgListLoading && <p>Loading...</p>}
-          {!hasMore && !isOrgListLoading && <p>No more data to load.</p>}
-          {filteredData?.length > 0 && hasMore && !isOrgListLoading && (
-            <Button
-              size="sm"
-              className=""
-              onClick={() => handleFetchOrgListing()}
-            >
-              Load More
-            </Button>
-          )}
-        </div>
-      </div>
-
-      <ConfirmDeleteModal
-        open={isDeleteDialogOpen}
-        onClose={() => setIsDeleteDialogOpen(false)}
-        onConfirm={() => {
-          if (userToDelete) {
-            deleteUserMutation.mutate({
-              userId: userToDelete.id,
-              email: userToDelete.email,
-              userType: "organisation",
-            });
-            setIsDeleteDialogOpen(false);
-          }
-        }}
-        isLoading={deleteUserMutation?.isPending}
-        title="Delete Organisation"
-        description={`Are you sure you want to delete ${userToDelete?.name || "this organisation"}? This action cannot be undone.`}
-      />
-    </>
+    <Button onClick={onClick} disabled={disabled} variant="secondary">
+      <Download className="size-4" />
+      Export CSV
+    </Button>
   );
 }
 
+// ─── Admins ───────────────────────────────────────────────────────────────────
 function Admins() {
   const { userId } = useUserIdType();
   const [isOpen, setIsOpen] = useState(false);
@@ -378,6 +145,7 @@ function Admins() {
   const [selectedUser, setSelectedUser] = useState({});
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+
   const { deleteUserMutation } = useDeleteUser(() => {
     handleFetchAdminListing(true);
     setHasMore(true);
@@ -386,6 +154,7 @@ function Admins() {
     handleFetchAdminListing(true);
     setHasMore(true);
   });
+
   const handleFetchAdminListing = async (isRefetch) => {
     setIsAdminListLoading(true);
     try {
@@ -393,9 +162,7 @@ function Admins() {
       const { items, nextToken: newNextToken } = response;
       setAdmins((pre) => {
         const allData = isRefetch ? items : [...pre, ...items];
-        return Array.from(
-          new Map(allData.map((item) => [item.id, item])).values(),
-        );
+        return Array.from(new Map(allData.map((i) => [i.id, i])).values());
       });
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
@@ -408,6 +175,28 @@ function Admins() {
   useEffect(() => {
     handleFetchAdminListing();
   }, []);
+
+  const filteredData = useMemo(
+    () =>
+      admins?.filter(
+        (i) => statusFilter === "ALL" || i.status === statusFilter,
+      ),
+    [admins, statusFilter],
+  );
+
+  const handleExport = useCallback(() => {
+    exportToCSV(
+      filteredData,
+      ["Sr. No.", "Name", "Email", "Status"],
+      [
+        (row, idx) => idx + 1,
+        (row) => row.name,
+        (row) => row.email,
+        (row) => row.status,
+      ],
+      `admins-${statusFilter.toLowerCase()}-${todayStr()}.csv`,
+    );
+  }, [filteredData, statusFilter]);
 
   const columnDefs = useMemo(
     () => [
@@ -429,7 +218,7 @@ function Admins() {
         filter: false,
         flex: 1,
         minWidth: 180,
-          wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
       {
@@ -462,7 +251,6 @@ function Admins() {
             <div className="flex items-center gap-2 h-full">
               <Button
                 size="icon"
-                className="text-md"
                 variant="ghost"
                 disabled={item?.status === "DELETED"}
                 onClick={() => {
@@ -475,7 +263,6 @@ function Admins() {
               {userId !== item?.id && (
                 <Button
                   size="icon"
-                  className="text-md"
                   variant="ghost"
                   onClick={() => {
                     if (item?.status === "DELETED") {
@@ -500,12 +287,6 @@ function Admins() {
     ],
     [userId, restoreUserMutation, deleteUserMutation],
   );
-
-  const filteredData = useMemo(() => {
-    return admins?.filter(
-      (item) => statusFilter === "ALL" || item.status === statusFilter,
-    );
-  }, [admins, statusFilter]);
 
   return (
     <>
@@ -541,10 +322,15 @@ function Admins() {
               </SelectContent>
             </Select>
           </div>
-          <Button variant="secondary" onClick={() => setIsOpen(true)}>
-            {" "}
-            <PlusCircle /> Add Admin
-          </Button>
+          <div className="flex items-center gap-2">
+            <ExportCSVButton
+              onClick={handleExport}
+              disabled={!filteredData?.length}
+            />
+            <Button variant="secondary" onClick={() => setIsOpen(true)}>
+              <PlusCircle /> Add Admin
+            </Button>
+          </div>
         </div>
 
         <div
@@ -571,15 +357,11 @@ function Admins() {
             overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
           />
         </div>
-        <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
+        <div className="text-center flex flex-col gap-4 my-4 text-muted-foreground">
           {isAdminListLoading && <p>Loading...</p>}
           {!hasMore && !isAdminListLoading && <p>No more data to load.</p>}
           {filteredData?.length > 0 && hasMore && !isAdminListLoading && (
-            <Button
-              size="sm"
-              className=""
-              onClick={() => handleFetchAdminListing()}
-            >
+            <Button size="sm" onClick={() => handleFetchAdminListing()}>
               Load More
             </Button>
           )}
@@ -607,6 +389,259 @@ function Admins() {
   );
 }
 
+// ─── Organisation ─────────────────────────────────────────────────────────────
+function Organisation() {
+  const { userId } = useUserIdType();
+  const [isOpen, setIsOpen] = useState(false);
+  const [org, setOrg] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [isOrgListLoading, setIsOrgListLoading] = useState(false);
+  const [nextToken, setNextToken] = useState(null);
+  const [selectedUser, setSelectedUser] = useState({});
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("ALL");
+
+  const { deleteUserMutation } = useDeleteUser(() => {
+    handleFetchOrgListing(true);
+    setHasMore(true);
+  });
+  const { restoreUserMutation } = useRestoreUser(() => {
+    handleFetchOrgListing(true);
+    setHasMore(true);
+  });
+
+  const handleFetchOrgListing = async (isRefetch) => {
+    setIsOrgListLoading(true);
+    try {
+      const response = await listOrganisation(isRefetch ? null : nextToken);
+      const { updatedOrganisations, nextToken: newNextToken } = response;
+      setOrg((pre) => {
+        const allData = isRefetch
+          ? updatedOrganisations
+          : [...pre, ...updatedOrganisations];
+        return Array.from(new Map(allData.map((i) => [i.id, i])).values());
+      });
+      setNextToken(newNextToken);
+      setHasMore(!!newNextToken);
+    } catch (error) {
+      console.log(error);
+    }
+    setIsOrgListLoading(false);
+  };
+
+  useEffect(() => {
+    handleFetchOrgListing();
+  }, []);
+
+  const filteredData = useMemo(
+    () =>
+      org?.filter((i) => statusFilter === "ALL" || i.status === statusFilter),
+    [org, statusFilter],
+  );
+
+  const handleExport = useCallback(() => {
+    exportToCSV(
+      filteredData,
+      ["Sr. No.", "Name", "Email", "Status"],
+      [
+        (row, idx) => idx + 1,
+        (row) => row.name,
+        (row) => row.email,
+        (row) => row.status,
+      ],
+      `organisations-${statusFilter.toLowerCase()}-${todayStr()}.csv`,
+    );
+  }, [filteredData, statusFilter]);
+
+  const columnDefs = useMemo(
+    () => [
+      {
+        headerName: "Sr. No.",
+        field: "index",
+        cellRenderer: SrNoRenderer,
+        width: 120,
+        minWidth: 120,
+        maxWidth: 120,
+        flex: 0,
+        sortable: false,
+        filter: false,
+      },
+      {
+        headerName: "Name",
+        field: "name",
+        cellStyle: { fontWeight: "500", color: "black" },
+        filter: false,
+        flex: 1,
+        minWidth: 160,
+        wrapText: true,
+        autoHeight: true,
+      },
+      {
+        headerName: "Email",
+        field: "email",
+        filter: false,
+        flex: 1.5,
+        minWidth: 200,
+      },
+      {
+        headerName: "Status",
+        field: "status",
+        filter: false,
+        flex: 1,
+        minWidth: 160,
+        cellRenderer: StatusRenderer,
+      },
+      {
+        headerName: "Action",
+        field: "id",
+        filter: false,
+        sortable: false,
+        cellRenderer: (params) => {
+          const item = params.data;
+          return (
+            <div className="flex items-center gap-2 h-full">
+              <Button
+                size="icon"
+                variant="ghost"
+                disabled={item?.status === "DELETED"}
+                onClick={() => {
+                  setSelectedUser(item);
+                  setIsOpen(true);
+                }}
+              >
+                <PencilLine />
+              </Button>
+              {userId !== item?.id && (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => {
+                    if (item?.status === "DELETED") {
+                      restoreUserMutation.mutate({
+                        userId: item.id,
+                        email: item.email,
+                        userType: "organisation",
+                      });
+                    } else {
+                      setUserToDelete(item);
+                      setIsDeleteDialogOpen(true);
+                    }
+                  }}
+                >
+                  {item?.status === "DELETED" ? <ArchiveRestore /> : <Trash2 />}
+                </Button>
+              )}
+            </div>
+          );
+        },
+      },
+    ],
+    [userId, restoreUserMutation, deleteUserMutation],
+  );
+
+  return (
+    <>
+      {isOpen && (
+        <AddAdminModal
+          open={isOpen}
+          onClose={() => {
+            setIsOpen(false);
+            setSelectedUser({});
+          }}
+          title="Organization"
+          userType="organisation"
+          invalidateFun={() => {
+            handleFetchOrgListing(true);
+            setHasMore(true);
+          }}
+          selectedUser={selectedUser}
+        />
+      )}
+      <div className="bg-white !p-4 rounded-xl">
+        <div className="flex justify-between gap-4 items-center mb-4">
+          <div className="flex items-center gap-4">
+            <p className="text-lg font-medium">All Organizations</p>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[180px] bg-white">
+                <SelectValue placeholder="Filter by Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">All Status</SelectItem>
+                <SelectItem value="ACTIVE">Active</SelectItem>
+                <SelectItem value="UNCONFIRMED">Unconfirmed</SelectItem>
+                <SelectItem value="DELETED">Deleted</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-2">
+            <ExportCSVButton
+              onClick={handleExport}
+              disabled={!filteredData?.length}
+            />
+            <Button variant="secondary" onClick={() => setIsOpen(true)}>
+              <PlusCircle /> Add Organization
+            </Button>
+          </div>
+        </div>
+
+        <div
+          className="ag-theme-quartz custom-ag-grid"
+          style={{ width: "100%" }}
+        >
+          <AgGridReact
+            rowData={filteredData || []}
+            columnDefs={columnDefs}
+            defaultColDef={{
+              flex: 1,
+              minWidth: 120,
+              filter: false,
+              sortable: true,
+              resizable: true,
+              unSortIcon: true,
+              wrapHeaderText: true,
+              autoHeaderHeight: true,
+            }}
+            rowHeight={72}
+            headerHeight={48}
+            domLayout="autoHeight"
+            animateRows={true}
+            overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+          />
+        </div>
+        <div className="text-center flex flex-col gap-4 my-4 text-muted-foreground">
+          {isOrgListLoading && <p>Loading...</p>}
+          {!hasMore && !isOrgListLoading && <p>No more data to load.</p>}
+          {filteredData?.length > 0 && hasMore && !isOrgListLoading && (
+            <Button size="sm" onClick={() => handleFetchOrgListing()}>
+              Load More
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <ConfirmDeleteModal
+        open={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={() => {
+          if (userToDelete) {
+            deleteUserMutation.mutate({
+              userId: userToDelete.id,
+              email: userToDelete.email,
+              userType: "organisation",
+            });
+            setIsDeleteDialogOpen(false);
+          }
+        }}
+        isLoading={deleteUserMutation?.isPending}
+        title="Delete Organisation"
+        description={`Are you sure you want to delete ${userToDelete?.name || "this organisation"}? This action cannot be undone.`}
+      />
+    </>
+  );
+}
+
+// ─── Brokers ──────────────────────────────────────────────────────────────────
 function AdminBrokersList() {
   const [isBrokerListLoading, setIsBrokerListLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -617,6 +652,7 @@ function AdminBrokersList() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+
   const { deleteUserMutation } = useDeleteUser(() => {
     handleFetchBrokersWithSearchCount(true);
     setHasMore(true);
@@ -637,20 +673,40 @@ function AdminBrokersList() {
         isRefetch ? null : nextToken,
       );
       const { updatedBrokers, nextToken: newNextToken } = response;
-
       setBrokers((pre) => {
         const allData = isRefetch
           ? updatedBrokers
           : [...pre, ...updatedBrokers];
-        return Array.from(
-          new Map(allData.map((item) => [item.id, item])).values(),
-        );
+        return Array.from(new Map(allData.map((i) => [i.id, i])).values());
       });
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
     } catch (error) {}
     setIsBrokerListLoading(false);
   };
+
+  const filteredData = useMemo(
+    () =>
+      brokers?.filter(
+        (i) => statusFilter === "ALL" || i.status === statusFilter,
+      ),
+    [brokers, statusFilter],
+  );
+
+  const handleExport = useCallback(() => {
+    exportToCSV(
+      filteredData,
+      ["Sr. No.", "Name", "Email", "Team Strength", "Status"],
+      [
+        (row, idx) => idx + 1,
+        (row) => row.name,
+        (row) => row.email,
+        (row) => row.teamStrength || "-",
+        (row) => row.status,
+      ],
+      `brokers-${statusFilter.toLowerCase()}-${todayStr()}.csv`,
+    );
+  }, [filteredData, statusFilter]);
 
   const columnDefs = useMemo(
     () => [
@@ -672,7 +728,7 @@ function AdminBrokersList() {
         cellStyle: { fontWeight: "500", color: "black" },
         flex: 1,
         minWidth: 180,
-          wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
       {
@@ -712,7 +768,6 @@ function AdminBrokersList() {
             <div className="flex items-center gap-2 h-full">
               <Button
                 size="icon"
-                className="text-md"
                 variant="ghost"
                 disabled={item?.status === "DELETED"}
                 onClick={() => {
@@ -724,7 +779,6 @@ function AdminBrokersList() {
               </Button>
               <Button
                 size="icon"
-                className="text-md"
                 variant="ghost"
                 onClick={() => {
                   if (item?.status === "DELETED") {
@@ -749,12 +803,6 @@ function AdminBrokersList() {
     [restoreUserMutation, deleteUserMutation],
   );
 
-  const filteredData = useMemo(() => {
-    return brokers?.filter(
-      (item) => statusFilter === "ALL" || item.status === statusFilter,
-    );
-  }, [brokers, statusFilter]);
-
   return (
     <>
       {isOpen && (
@@ -773,71 +821,68 @@ function AdminBrokersList() {
           selectedUser={selectedBroker}
         />
       )}
-
-      <div>
-        <div className="bg-white !p-4 rounded-xl">
-          <div className="flex justify-between gap-4 items-center mb-4 flex-wrap">
-            <div className="flex items-center gap-4">
-              <p className="text-lg font-medium">All Brokers</p>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[180px] bg-white">
-                  <SelectValue placeholder="Filter by Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">All Status</SelectItem>
-                  <SelectItem value="ACTIVE">Active</SelectItem>
-                  <SelectItem value="UNCONFIRMED">Unconfirmed</SelectItem>
-                  <SelectItem value="DELETED">Deleted</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-x-2">
-              <Button variant="secondary" onClick={() => setIsOpen(true)}>
-                {" "}
-                <PlusCircle /> Add Broker
-              </Button>
-            </div>
+      <div className="bg-white !p-4 rounded-xl">
+        <div className="flex justify-between gap-4 items-center mb-4 flex-wrap">
+          <div className="flex items-center gap-4">
+            <p className="text-lg font-medium">All Brokers</p>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[180px] bg-white">
+                <SelectValue placeholder="Filter by Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">All Status</SelectItem>
+                <SelectItem value="ACTIVE">Active</SelectItem>
+                <SelectItem value="UNCONFIRMED">Unconfirmed</SelectItem>
+                <SelectItem value="DELETED">Deleted</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-
-          <div
-            className="ag-theme-quartz custom-ag-grid"
-            style={{ width: "100%" }}
-          >
-            <AgGridReact
-              rowData={filteredData || []}
-              columnDefs={columnDefs}
-              defaultColDef={{
-                flex: 1,
-                minWidth: 120,
-                filter: false,
-                sortable: true,
-                resizable: true,
-                unSortIcon: true,
-                wrapHeaderText: true,
-                autoHeaderHeight: true,
-              }}
-              rowHeight={72}
-              headerHeight={48}
-              domLayout="autoHeight"
-              animateRows={true}
-              overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+          <div className="flex items-center gap-2">
+            <ExportCSVButton
+              onClick={handleExport}
+              disabled={!filteredData?.length}
             />
+            <Button variant="secondary" onClick={() => setIsOpen(true)}>
+              <PlusCircle /> Add Broker
+            </Button>
           </div>
+        </div>
 
-          <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
-            {isBrokerListLoading && <p>Loading...</p>}
-            {!hasMore && <p>No more data to load.</p>}
-            {filteredData?.length > 0 && hasMore && !isBrokerListLoading && (
-              <Button
-                size="sm"
-                className=""
-                onClick={() => handleFetchBrokersWithSearchCount()}
-              >
-                Load More
-              </Button>
-            )}
-          </div>
+        <div
+          className="ag-theme-quartz custom-ag-grid"
+          style={{ width: "100%" }}
+        >
+          <AgGridReact
+            rowData={filteredData || []}
+            columnDefs={columnDefs}
+            defaultColDef={{
+              flex: 1,
+              minWidth: 120,
+              filter: false,
+              sortable: true,
+              resizable: true,
+              unSortIcon: true,
+              wrapHeaderText: true,
+              autoHeaderHeight: true,
+            }}
+            rowHeight={72}
+            headerHeight={48}
+            domLayout="autoHeight"
+            animateRows={true}
+            overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
+          />
+        </div>
+        <div className="text-center flex flex-col gap-4 my-4 text-muted-foreground">
+          {isBrokerListLoading && <p>Loading...</p>}
+          {!hasMore && <p>No more data to load.</p>}
+          {filteredData?.length > 0 && hasMore && !isBrokerListLoading && (
+            <Button
+              size="sm"
+              onClick={() => handleFetchBrokersWithSearchCount()}
+            >
+              Load More
+            </Button>
+          )}
         </div>
       </div>
 
@@ -862,6 +907,7 @@ function AdminBrokersList() {
   );
 }
 
+// ─── Agents ───────────────────────────────────────────────────────────────────
 function Agents() {
   const [isOpen, setIsOpen] = useState(false);
   const [agents, setAgents] = useState([]);
@@ -875,9 +921,6 @@ function Agents() {
   const [userToReinvite, setUserToReinvite] = useState(null);
   const [statusFilter, setStatusFilter] = useState("ALL");
 
-  useEffect(() => {
-    handleFetchAgentListing();
-  }, []);
   const { deleteUserMutation } = useDeleteUser(() => {
     handleFetchAgentListing(true);
     setHasMore(true);
@@ -894,23 +937,47 @@ function Agents() {
       setHasMore(true);
     },
   });
+
   const handleFetchAgentListing = async (isRefetch) => {
     setIsAgentListLoading(true);
     try {
       const response = await getAgentListings(isRefetch ? null : nextToken);
       const { items, nextToken: newNextToken } = response;
-
       setAgents((pre) => {
         const allData = isRefetch ? items : [...pre, ...items];
-        return Array.from(
-          new Map(allData.map((item) => [item.id, item])).values(),
-        );
+        return Array.from(new Map(allData.map((i) => [i.id, i])).values());
       });
       setNextToken(newNextToken);
       setHasMore(!!newNextToken);
     } catch (error) {}
     setIsAgentListLoading(false);
   };
+
+  useEffect(() => {
+    handleFetchAgentListing();
+  }, []);
+
+  const filteredData = useMemo(
+    () =>
+      agents?.filter(
+        (i) => statusFilter === "ALL" || i.status === statusFilter,
+      ),
+    [agents, statusFilter],
+  );
+
+  const handleExport = useCallback(() => {
+    exportToCSV(
+      filteredData,
+      ["Sr. No.", "Name", "Email", "Status"],
+      [
+        (row, idx) => idx + 1,
+        (row) => row.name,
+        (row) => row.email,
+        (row) => row.status,
+      ],
+      `agents-${statusFilter.toLowerCase()}-${todayStr()}.csv`,
+    );
+  }, [filteredData, statusFilter]);
 
   const columnDefs = useMemo(
     () => [
@@ -932,7 +999,7 @@ function Agents() {
         cellStyle: { fontWeight: "500", color: "black" },
         flex: 1,
         minWidth: 180,
-          wrapText: true,
+        wrapText: true,
         autoHeight: true,
       },
       {
@@ -966,7 +1033,6 @@ function Agents() {
               <div className="flex justify-center items-center h-full">
                 <Button
                   size="icon"
-                  className="text-md"
                   variant="ghost"
                   onClick={() => {
                     setUserToReinvite(item);
@@ -995,7 +1061,6 @@ function Agents() {
             <div className="flex items-center gap-2 h-full">
               <Button
                 size="icon"
-                className="text-md"
                 variant="ghost"
                 disabled={item?.status === "DELETED"}
                 onClick={() => {
@@ -1007,7 +1072,6 @@ function Agents() {
               </Button>
               <Button
                 size="icon"
-                className="text-md"
                 variant="ghost"
                 onClick={() => {
                   if (item?.status === "DELETED") {
@@ -1032,11 +1096,6 @@ function Agents() {
     [reinviteMutation, restoreUserMutation, deleteUserMutation],
   );
 
-  const filteredData = useMemo(() => {
-    return agents?.filter(
-      (item) => statusFilter === "ALL" || item.status === statusFilter,
-    );
-  }, [agents, statusFilter]);
   return (
     <>
       {isOpen && (
@@ -1071,10 +1130,15 @@ function Agents() {
               </SelectContent>
             </Select>
           </div>
-          <Button variant="secondary" onClick={() => setIsOpen(true)}>
-            {" "}
-            <PlusCircle /> Add Agent
-          </Button>
+          <div className="flex items-center gap-2">
+            <ExportCSVButton
+              onClick={handleExport}
+              disabled={!filteredData?.length}
+            />
+            <Button variant="secondary" onClick={() => setIsOpen(true)}>
+              <PlusCircle /> Add Agent
+            </Button>
+          </div>
         </div>
 
         <div
@@ -1101,16 +1165,11 @@ function Agents() {
             overlayNoRowsTemplate='<span class="text-muted-foreground font-medium text-lg">No Records found.</span>'
           />
         </div>
-
-        <div className="text-center flex flex-col gap-4 my-4  text-muted-foreground">
+        <div className="text-center flex flex-col gap-4 my-4 text-muted-foreground">
           {isAgentListLoading && <p>Loading...</p>}
           {!hasMore && !isAgentListLoading && <p>No more data to load.</p>}
           {filteredData?.length > 0 && hasMore && !isAgentListLoading && (
-            <Button
-              size="sm"
-              className=""
-              onClick={() => handleFetchAgentListing()}
-            >
+            <Button size="sm" onClick={() => handleFetchAgentListing()}>
               Load More
             </Button>
           )}
@@ -1142,9 +1201,7 @@ function Agents() {
           if (userToReinvite) {
             reinviteMutation.mutate(
               { email: userToReinvite.email },
-              {
-                onSettled: () => setIsReinviteDialogOpen(false),
-              },
+              { onSettled: () => setIsReinviteDialogOpen(false) },
             );
           }
         }}

@@ -31,6 +31,10 @@ import SubscriptionCardDetails from "./components/common/SubscriptionCardDetails
 import SubscriptionAddAgent from "./components/SubscriptionAddAgent/Index";
 import SubscriptionAddBroker from "./components/SubscriptionAddBroker";
 import SubscriptionAddOrdAgent from "./components/SubscriptionAddOrgAgent";
+import PrivacyPolicy from "./components/LegalTerms/PrivacyPolicy";
+import TermsAndConditions from "./components/LegalTerms/TermsAndConditions";
+
+
 
 function App() {
   const { isLoading } = useUser();
@@ -44,6 +48,8 @@ function App() {
     // <Router>
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
       <Route path="/viewmore" element={<OrganizationRoleOverview />} />
       <Route path="/contactus" element={<ContactUs />} />
       <Route path="/login" element={<Login />} />

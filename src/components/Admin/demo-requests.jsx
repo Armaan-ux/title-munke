@@ -1,6 +1,6 @@
 import { convertFromTimestamp, getFormattedDateTime, queryKeys } from "@/utils";
-import { Repeat2 } from "lucide-react";
-import { useState, useMemo } from "react";
+import { Repeat2, Download } from "lucide-react";
+import { useState, useMemo, useCallback } from "react";
 import { Button } from "../ui/button";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getListDemoReq, markDemoRequestContacted } from "../service/userAdmin";
@@ -12,8 +12,55 @@ const SrNoRenderer = (props) => {
   return <span>{props.node.rowIndex + 1}</span>;
 };
 
+// Helper to convert row data to CSV and trigger download
+const exportToCSV = (rows, filename) => {
+  if (!rows?.length) return;
+
+  const headers = [
+    "Sr. No.",
+    "Name",
+    "Email / Phone No.",
+    "Country",
+    "State",
+    "Date",
+    "Description",
+  ];
+
+  const csvRows = rows.map((row, index) => {
+    const date = convertFromTimestamp(
+      parseInt(new Date(row.createdAt).getTime() / 1000),
+      "monthDateYear",
+    );
+    // Wrap each cell in quotes and escape inner quotes to handle commas/newlines
+    const cells = [
+      index + 1,
+      row.name,
+      row.email,
+      row.country,
+      row.state,
+      date,
+      row.additionalMessage,
+    ].map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`);
+
+    return cells.join(",");
+  });
+
+  const csvContent = [headers.join(","), ...csvRows].join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
 export default function DemoRequests() {
   const [activeTab, setActiveTab] = useState("pending");
+
   const demoReqQuery = useQuery({
     queryKey: ["getListDemoReq"],
     queryFn: getListDemoReq,
@@ -30,6 +77,17 @@ export default function DemoRequests() {
       demoReqContactedQuery.refetch();
     },
   });
+
+  const rowData = useMemo(() => {
+    return activeTab === "pending"
+      ? demoReqQuery?.data?.items || []
+      : demoReqContactedQuery?.data?.items || [];
+  }, [activeTab, demoReqQuery.data, demoReqContactedQuery.data]);
+
+  const handleExport = useCallback(() => {
+    const filename = `demo-requests-${activeTab}-${new Date().toISOString().slice(0, 10)}.csv`;
+    exportToCSV(rowData, filename);
+  }, [rowData, activeTab]);
 
   const columnDefs = useMemo(() => {
     const baseCols = [
@@ -131,35 +189,42 @@ export default function DemoRequests() {
     return baseCols;
   }, [activeTab, markDemoRequestContactedMutation.isPending]);
 
-  const rowData = useMemo(() => {
-    return activeTab === "pending"
-      ? demoReqQuery?.data?.items || []
-      : demoReqContactedQuery?.data?.items || [];
-  }, [activeTab, demoReqQuery.data, demoReqContactedQuery.data]);
-
   return (
     <div className="bg-[#F5F0EC] rounded-lg px-7 py-4 my-4 text-secondary">
-      <div className="space-x-3 mb-4">
-        <button
-          onClick={() => setActiveTab("pending")}
-          className={` ${
-            activeTab === "pending"
-              ? "bg-tertiary text-white hover:bg-tertiary"
-              : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] "
-          } transition-all  rounded-full px-10 py-3 `}
+      {/* Tabs + Export Row */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="space-x-3">
+          <button
+            onClick={() => setActiveTab("pending")}
+            className={`${
+              activeTab === "pending"
+                ? "bg-tertiary text-white hover:bg-tertiary"
+                : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055]"
+            } transition-all rounded-full px-10 py-3`}
+          >
+            Pending
+          </button>
+          <button
+            onClick={() => setActiveTab("contacted")}
+            className={`${
+              activeTab === "contacted"
+                ? "bg-tertiary text-white hover:bg-tertiary"
+                : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055]"
+            } transition-all rounded-full px-10 py-3`}
+          >
+            Contacted
+          </button>
+        </div>
+
+        {/* Export Button */}
+        <Button
+          onClick={handleExport}
+          disabled={!rowData.length}
+          variant="secondary"
         >
-          Pending
-        </button>
-        <button
-          onClick={() => setActiveTab("contacted")}
-          className={` ${
-            activeTab === "contacted"
-              ? "bg-tertiary text-white hover:bg-tertiary"
-              : "bg-white hover:bg-coffee-bg-foreground cursor-pointer text-[#7C6055] "
-          } transition-all  rounded-full px-10 py-3 `}
-        >
-          Contacted
-        </button>
+          <Download className="size-4" />
+          Export Request
+        </Button>
       </div>
 
       <div className="bg-white !p-4 rounded-xl">
